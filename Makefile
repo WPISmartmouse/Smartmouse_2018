@@ -1,6 +1,4 @@
-all: explore
-
-
+all: explore read_and_print
 
 explore: build/explore.o build/solvers.o build/maze_io.o build/maze.o build/mouse.o
 	gcc -g build/explore.o build/solvers.o build/maze_io.o build/maze.o build/mouse.o -o build/explore
@@ -27,4 +25,4 @@ build/maze.o: src/maze.c src/maze.h
 	gcc -g -Wall -c src/maze.c -o build/maze.o
 
 clean:
-	rm build/* build/*
+	rm build/*
