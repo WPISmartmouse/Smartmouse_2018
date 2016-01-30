@@ -84,7 +84,7 @@ bool visited(int row, int col,  Direction dir, Maze *maze);
  */
 bool free_maze(Maze *maze);
 
-/** free's a node 
+/** free's a node
  * @param return false on failure
  */
 bool free_node(Node *node);
