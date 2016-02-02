@@ -1,7 +1,7 @@
 all: explore read_and_print
 
 arduino:
-	ano build --cppflags="-std=c++11 -DARDUINO"
+	ano build --cppflags="-std=c++11 -DEMBED"
 
 explore: build/explore.o build/solvers.o build/maze_io.o build/maze.o build/mouse.o
 	g++ -std=c++11 -g build/explore.o build/solvers.o build/maze_io.o build/maze.o build/mouse.o -o build/explore
@@ -29,3 +29,4 @@ build/maze.o: src/maze.cpp src/maze.h
 
 clean:
 	rm build/*
+	ano clean

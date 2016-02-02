@@ -34,39 +34,39 @@
  * \subsection step1_win No.
  *
  */
-
 #ifndef EMBED
 
 #include "maze.h"
 #include "maze_io.h"
 #include "solvers.h"
 #include <errno.h>
-#include  <fstream>
 
 int main(int argc, char* argv[]){
 
-  std::string maze_file;
-  if (argc < 2) {
-    maze_file = "mazes/16x16.mz";
-  }
-  else {
-    maze_file = std::string(argv[1]);
-  }
+	char *filename;
+	if (argc >= 2){
+		filename = argv[1];
+	}
+	else {
+		filename = "mazes/16x16_3.mz";
+	}
 
-  std::fstream fs;
-  fs.open(maze_file, std::fstream::in);
+	FILE *f = fopen(filename,"r");
 
-  if (fs.good()){
-    Maze *maze = new Maze(fs);
-    //left_hand_follow(maze);
-    fs.close();
-    return EXIT_SUCCESS;
-  }
-  else {
-		printf("error opening maze file!\n");
-    fs.close();
-    return EXIT_FAILURE;
-  }
+	if (f == NULL){
+		printf("error opening maze file %s %s\n",filename,strerror(errno));
+		return EXIT_FAILURE;
+	}
+
+	printf("using maze file %s\n",filename);
+	Maze *maze = read_from_file(f);
+
+	left_hand_follow(maze);
+
+	free_maze(maze);
+	fclose(f);
+
+	return EXIT_SUCCESS;
 }
 
 #endif

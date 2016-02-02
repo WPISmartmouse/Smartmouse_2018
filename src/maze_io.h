@@ -1,6 +1,5 @@
 /** these functions read in a .mz file and parse it into a valid maze*/
-#ifndef READ_MAZE_H
-#define READ_MAZE_H
+#pragma once
 
 #include "maze.h"
 #include "mouse.h"
@@ -36,5 +35,3 @@ void print_weight_maze(Maze *maze);
 
 /** duh*/
 void print_dist_maze(Maze *maze);
-
-#endif

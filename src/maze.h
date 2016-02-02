@@ -6,7 +6,9 @@
 #define MAZE_SIZE (16)
 #define PATH_SIZE (100)
 
-#include <fstream>
+#ifndef EMBED
+  #include <fstream>
+#endif
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -84,9 +86,11 @@ class Maze {
      */
     Maze();
 
+#ifndef EMBED
     /** overall function to create a maze from file. any error will result in a null return.  * @return a valid maze pointer to the maze struct, null on any sort of error
     */
     Maze(std::fstream& fs);
+#endif
 
     /** \brief check if a node in a direction is visited
      * looks up (row,col) in maze and checks its neighbors[dir] and returns if that neighbor is known

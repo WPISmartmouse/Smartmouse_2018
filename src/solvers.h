@@ -1,6 +1,5 @@
 /** functions for exploring and solving mazes */
-#ifndef SOLVERS_H
-#define SOLVERS_H
+#pragma once
 
 #include "maze.h"
 #include "mouse.h"
@@ -88,5 +87,3 @@ bool atCenter(Mouse mouse);
 * @param mouse the mouse
 */
 bool isCenter(int row, int col);
-
-#endif

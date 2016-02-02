@@ -87,7 +87,7 @@ Maze::Maze() : solved(false) {
   }
 }
 
-#ifndef ARDUINO
+#ifndef EMBED
 Maze::Maze(std::fstream& fs){
   fastest_route = (char *)malloc(PATH_SIZE*sizeof(char)); //assume really bad route--visits all squares.
   for (int i=0;i<MAZE_SIZE;i++){
