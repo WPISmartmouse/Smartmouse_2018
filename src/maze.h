@@ -1,19 +1,44 @@
 /** maze.h
  * \brief Contains functions for creating and using the Maze and Node structs
  */
-#ifndef MAZE_H
-#define MAZE_H
+#pragma once
 
 #define MAZE_SIZE (16)
 #define PATH_SIZE (100)
 
+#include <fstream>
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
 
-enum _DIRECTION{N,E,S,W};
+enum class Direction {
+  N,
+  E,
+  S,
+  W,
+	Last,
+	First = N,
+  INVALID = -1
+};
 
-typedef enum _DIRECTION Direction;
+/** \brief returns the left of the given direction */
+Direction left_of_dir(Direction d);
+
+
+/**
+ * \brief increments the direction in the order N, E, S, W, N, ...
+ */
+Direction operator++(Direction& dir, int);
+
+/**
+ * \brief returns the opposite direction of the input direction
+ * \param d direction you want the opposite of
+ * \return the opposite direction of d
+ */
+Direction opposite_direction(Direction d);
+
+/** translate a Dir (integer 0=N 1=E 2=S 3=W) into the character representation*/
+char dir_to_char(Direction dir);
 
 /**
  * \brief holds its location & neighbors, as well as a bool for indicating if it has been discovered
@@ -22,71 +47,98 @@ typedef enum _DIRECTION Direction;
  * Don't ever move a node around in maze because you risk getting the actual row/col off from the nodes row/col
  * visited is meant for ACTUALLY visiting, known is just used for searching/solving
  */
-struct _NODE{
-	bool known;
-	bool visited;
-	int row;
-	int col;
-	int weight; //used for flood-fill
-	int distance; //used for a star
-	//if you want to iterate over neighbors, just increment the pointer to north
-	struct _NODE *neighbors[4];
-};
+class Node {
+  public:
+    bool known;
+    bool visited;
+    int row;
+    int col;
+    int weight; //used for flood-fill
+    int distance; //used for a star
+    //if you want to iterate over neighbors, just increment the pointer to north
+    Node *neighbors[4];
 
-typedef struct _NODE Node;
+    /** \brief intializes a node */
+    Node();
+
+    /** \brief get the neighbor in the given direction */
+    Node *neighbor(const Direction dir);
+};
 
 /**
  * \brief the maze is graph of nodes, stored internally as an matrix.
  * don't forget to call free_maze(maze) after a maze is done being used
  */
-struct _MAZE{
-	bool solved; //boolean for if we know the fastest rout
-	Node *nodes[MAZE_SIZE][MAZE_SIZE]; // array of node pointers
-	char *fastest_route; //a char array like NSEWNENNSNE, which means North, South, East...
+class Maze {
+  public:
+
+    bool solved; //boolean for if we know the fastest route
+    Node *nodes[MAZE_SIZE][MAZE_SIZE]; // array of node pointers
+    char *fastest_route; //a char array like NSEWNENNSNE, which means North, South, East...
+
+    /** \brief allocates and initializes a node
+     * allocates a maze of the given size and sets all links in graph to be null. Naturally, it's column major.
+     */
+    Maze();
+
+    /** overall function to create a maze from file. any error will result in a null return.  * @return a valid maze pointer to the maze struct, null on any sort of error
+    */
+    Maze(std::fstream& fs);
+
+    /** \brief check if a node in a direction is visited
+     * looks up (row,col) in maze and checks its neighbors[dir] and returns if that neighbor is known
+     */
+    bool visited(int row, int col,  Direction dir);
+
+    /** goes through all the squares in two mazes and compares how many neighbors exist.
+     * the highest-difference unvisted node
+     */
+     Node *maze_diff(Maze *maze2);
+
+    /** \brief get node by its position
+     * this is equlvelant to maze->nodes[x][y]
+     */
+    Node *get_node(int x, int y);
+
+    /** \brief get neighbor node in a direction from a position
+     * \param row starting row
+     * \param col starting col
+     * \param dir the direction of the neighbor you want
+     */
+    Node *get_node_in_direction(int row, int col, const Direction dir);
+
+    /** \brief connect all neighbors in the whole maze
+     * \param i row
+     * \param j col
+     */
+    void connect_all_neighbors_in_maze();
+
+    /** \brief add the neighbor in the given direction
+     * \param dir direction connect in
+     */
+    void connect_neighbor(int row, int col, const Direction dir);
+
+    /** \brief add all the neighbors
+     */
+    void connect_all_neighbors(int row, int col);
+
+    /** \brief remove any neighbor in the given direction
+     * \param dir direction connect in
+     */
+    void remove_neighbor(int row, int col, const Direction dir);
+
+    /** \brief mark the position a known
+     * \param row row
+     * \param col col
+     */
+    void mark_known(int row, int col);
+
+    /**
+     * \brief uses the information from a sensor read and correctly adds or removes walls from nodes
+     * \param row row
+     * \param col col
+     * \param walls the array of walls
+     * \param n the node to update the neighbors of
+     */
+    void update_nodes(int row, int col, bool *walls);
 };
-
-typedef struct _MAZE Maze;
-
-/** \brief allocates and initializes a node
- * allocates a maze of the given size and sets all links in graph to be null. Naturally, it's column major.
- */
-Maze *create_maze();
-
-/** \brief allocates and intializes a node
- * 	allocates a node setting all nighbors to null. Function does NOT allocate for neighbors.
- */
-Node *create_node();
-
-/** \brief get node by its position
- * this is equlvelant to maze->nodes[x][y]
- */
-Node *get_node(Maze *maze, int x, int y);
-
-/**
- * \brief uses the information from a sensor read and correctly adds or removes walls from nodes
- * if sensors see a wall, it will remove a connection in the no_wall_node
- * if the sensors don't see a wall, it will add a connection in the all_wall_node
- */
-void update_nodes(bool *walls, Direction dir,Node *no, Node *all, Node *all_neighbor);
-
-/** goes through all the squares in two mazes and compares how many neighbors exist.
- * the highest-difference unvisted node
- */
- Node *maze_diff(Maze *maze1, Maze *maze2);
-
-/** \brief check if a node in a direction is visited
- * looks up (row,col) in maze and checks its neighbors[dir] and returns if that neighbor is known
- */
-bool visited(int row, int col,  Direction dir, Maze *maze);
-
-/** free's the maze and all nodes
- * @param return false on failure
- */
-bool free_maze(Maze *maze);
-
-/** free's a node
- * @param return false on failure
- */
-bool free_node(Node *node);
-
-#endif

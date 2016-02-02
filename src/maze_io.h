@@ -8,12 +8,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
-/** overall function to create a maze from file. any error will result in a null return.
-* @return a valid maze pointer to the maze struct, null on any sort of error
-*/
-Maze *read_from_file(FILE *f);
-
 /** prints a maze
 * @param maze the maze
 */

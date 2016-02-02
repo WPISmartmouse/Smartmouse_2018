@@ -14,29 +14,18 @@
 //kmaze is the known maze,  and should only be used to call sense()
 void flood_explore(Maze *kmaze){
 
-	Mouse *mouse = create_mouse();
+	Mouse mouse;
 
-	Maze* no_wall_maze = create_maze(); //this maze is initially no walls,  and walls are filled out every time the mouse moves
-	Maze* all_wall_maze = create_maze(); //this maze is initially no walls,  and walls are removed every time the mouse moves
+	Maze no_wall_maze; //this maze is initially no walls,  and walls are filled out every time the mouse moves
+	Maze all_wall_maze; //this maze is initially no walls,  and walls are removed every time the mouse moves
 
 	//make all connections open in the no_wall_maze
-	int i, j;
-	for (i=0;i<MAZE_SIZE;i++){
-		for (j=0;j<MAZE_SIZE;j++){
-			get_node(no_wall_maze, i, j)->neighbors[N] = get_node(no_wall_maze,  i-1,  j);
-			get_node(no_wall_maze, i, j)->neighbors[E] = get_node(no_wall_maze,  i,  j+1);
-			get_node(no_wall_maze, i, j)->neighbors[S] = get_node(no_wall_maze,  i+1,  j);
-			get_node(no_wall_maze, i, j)->neighbors[W] = get_node(no_wall_maze,  i,  j-1);
-		}
-	}
+  all_wall_maze.connect_all_neighbors_in_maze();
 
 	char *no_wall_path;
-	no_wall_path = calloc(PATH_SIZE, sizeof(char));
+	no_wall_path = (char*)calloc(PATH_SIZE, sizeof(char));
 	char *all_wall_path;
-	all_wall_path = calloc(PATH_SIZE, sizeof(char));
-
-	//count for debug info
-	int moves = 0;
+	all_wall_path = (char *)calloc(PATH_SIZE, sizeof(char));
 
 	//exit if no solutions are found
 	bool solvable = true;
@@ -48,27 +37,21 @@ void flood_explore(Maze *kmaze){
 	do {
 		//check left right and front sides
 		//eventually this will return values from sensors
-		bool *walls = sense(kmaze, mouse);
+		bool *walls = (bool *)malloc(4 * sizeof(bool));
+    mouse.sense(kmaze, walls);
 
 		//check each direction around the mouse for walls and update our mazes
-		Node *no_wall_node = get_node(no_wall_maze, mouse->row, mouse->col);
-		Node *all_wall_node = get_node(all_wall_maze, mouse->row, mouse->col);
-		int i;
-    int r = mouse->row;
-    int c = mouse->col;
-		for (i=0;i<4;i++){
-			update_pos(i,  &r,  &c);
-			Node *all_wall_node_neighbor = get_node(all_wall_maze, r, c);
-
-			update_nodes(walls, i, no_wall_node, all_wall_node, all_wall_node_neighbor);
-		}
+    int r = mouse.row;
+    int c = mouse.col;
+    no_wall_maze.update_nodes(r, c, walls);
+    all_wall_maze.update_nodes(r, c, walls);
 
 		//don't need the walls anymore
 		free(walls);
 
 		//first priority is look for the goal,  so follow the no_wall_path until the goal is found
 		//when you're at the goal,  the path will be empty.
-		if (mouse->row == 7 && mouse->col == 7){
+		if (mouse.row == 7 && mouse.col == 7){
 			solved = true;
 		}
 
@@ -80,7 +63,7 @@ void flood_explore(Maze *kmaze){
 		if (solved){
 			//diffs all squares and returns sorted list of nodes to visit
 			//the row/col of this goal will be used by flood_fill_custom
-			goal = maze_diff(no_wall_maze, all_wall_maze);
+			goal = no_wall_maze.maze_diff(&all_wall_maze);
 
 			//if there aren't any unvisted nodes left,  stop!
 			if (goal == NULL){
@@ -92,44 +75,44 @@ void flood_explore(Maze *kmaze){
 		else {
 			//it doesn't matter which maze this is from
 			//all that happens is it's row & col get sent to flood_fill_custom
-			goal = get_node(no_wall_maze, 7, 7);
+			goal = no_wall_maze.get_node(7, 7);
 		}
 
 		//solve flood fill on the two mazes from special start and end points
-		solvable = flood_fill_custom(no_wall_maze,
+		solvable = flood_fill_custom(&no_wall_maze,
 			no_wall_path,
-			mouse->row,
-			mouse->col,
+			mouse.row,
+			mouse.col,
 			goal->row,
 			goal->col);
 
-		flood_fill_custom(all_wall_maze,
+		flood_fill_custom(&all_wall_maze,
 			all_wall_path,
-			mouse->row,
-			mouse->col,
+			mouse.row,
+			mouse.col,
 			goal->row,
 			goal->col);
 
 		//solve from origin to center
 		//this is what tells us whether or not we need to keep searching
-		flood_fill(no_wall_maze, no_wall_maze->fastest_route);
-		flood_fill(all_wall_maze, all_wall_maze->fastest_route);
+		flood_fill(&no_wall_maze, no_wall_maze.fastest_route);
+		flood_fill(&all_wall_maze, all_wall_maze.fastest_route);
 
 		#if defined(DEBUG_PATH) || defined(DEBUG_FULL)
 		printf("no wall path  = %s\n", no_wall_path);
 		printf("all wall path = %s\n", all_wall_path);
-		printf("no wall path (from 0, 0) = %s\n", no_wall_maze->fastest_route);
-		printf("all wall path (from 0, 0)= %s\n", all_wall_maze->fastest_route);
+		printf("no wall path (from 0, 0) = %s\n", no_wall_maze.fastest_route);
+		printf("all wall path (from 0, 0)= %s\n", all_wall_maze.fastest_route);
 		#endif
 
 		//follow the no_wall path towards the previously defined goal
 		//this will be the center if we haven't already found it,
 		//or some other node if we have
-		execute_command(mouse, *no_wall_path);
+		mouse.execute_command(*no_wall_path);
 
 		//mark the nodes visted in both the mazes
-		mark_position(mouse, no_wall_maze);
-		mark_position(mouse, all_wall_maze);
+		no_wall_maze.mark_known(mouse.row, mouse.col);
+		all_wall_maze.mark_known(mouse.row, mouse.col);
 
 
 		#if defined(DEBUG) ||  defined(DEBUG_PATH) || defined(DEBUG_FULL)
@@ -139,22 +122,19 @@ void flood_explore(Maze *kmaze){
 		#endif
 
 	}
-	while (strcmp(no_wall_maze->fastest_route, all_wall_maze->fastest_route) != 0 && solvable); //don't let it go forever
+	while (strcmp(no_wall_maze.fastest_route, all_wall_maze.fastest_route) != 0 && solvable); //don't let it go forever
 
 
 	//this is the final solution which represents how the mouse should travel from start to finish
 	if (solvable){
-		printf("SOLUTION = %s\n", all_wall_maze->fastest_route);
+		printf("SOLUTION = %s\n", all_wall_maze.fastest_route);
 	}
 	else {
 		printf("NO POSSIBLE SOLUTION\n");
 	}
 
-	free(mouse);
 	free(no_wall_path);
 	free(all_wall_path);
-	free_maze(no_wall_maze);
-	free_maze(all_wall_maze);
 }
 
 //this should be used if you just want to start at 0, 0 and ends at 7, 7 (center)
@@ -165,9 +145,9 @@ bool flood_fill(Maze *maze,  char *path){
 //This method will take a maze and perform a traditional flood fill
 //the fill starts from r0, c0 and ends at r1, c1
 bool flood_fill_custom(Maze *maze,  char *path,  int r0,  int c0,  int r1,  int c1){
-	Node *n = get_node(maze, r0, c0);
-	Node *root = get_node(maze, r0, c0);
-	Node *goal = get_node(maze, r1, c1);
+	Node *n = maze->get_node(r0, c0);
+	Node *root = maze->get_node(r0, c0);
+	Node *goal = maze->get_node(r1, c1);
 
 	//incase the maze has already been solved,  reset all weight and known values
 	int i, j;
@@ -196,19 +176,19 @@ bool flood_fill_custom(Maze *maze,  char *path,  int r0,  int c0,  int r1,  int 
 	n = goal;
 
 	//if we solved the maze,  traverse from goal back to root and record what direction is shortest
-	char *r_path = malloc(PATH_SIZE*sizeof(char));
+	char *r_path = (char *)malloc(PATH_SIZE*sizeof(char));
 	char *r_p = r_path;
 	while (n != root){
 		Node *min_node = n;
-		Direction min_dir = N;
+		Direction min_dir = Direction::N;
 
 		//find the neighbor with the lowest weight and go there,  that is the fastest route
-		int i;
-		for (i=0;i<4;i++){
-			if (n->neighbors[i] != NULL){
-				if (n->neighbors[i]->weight < min_node->weight){
-					min_node = n->neighbors[i];
-					min_dir = i;
+    Direction d;
+    for (d=Direction::First;d<Direction::Last;d++){
+			if (n->neighbor(d) != NULL){
+				if (n->neighbor(d)->weight < min_node->weight){
+					min_node = n->neighbor(d);
+					min_dir = d;
 				}
 			}
 		}
@@ -270,48 +250,44 @@ void explore_neighbors(Node *node,  Node *goal,  int weight,  bool *success){
 void left_hand_follow(Maze *maze){
 
 	maze->nodes[0][0]->known=true;
-	Mouse *mouse = create_mouse();
+	Mouse mouse;
 
 	//run till you find the goal
 	int step=0;
 	while (!atCenter(mouse)){
-		Direction dir = (mouse->dir-1)%4; //check left first
+		Direction dir = left_of_dir(mouse.dir); //check left first
 
-		while (blocked_in_dir(mouse->row, mouse->col, dir, maze)){
-			dir=(dir+1)%4;
+		while (blocked_in_dir(mouse.row, mouse.col, dir, maze)){
+			dir=left_of_dir(dir);
 		}
 
-		if (dir != mouse->dir){
-			maze->fastest_route[step] = dir_to_char(mouse->dir);
+		if (dir != mouse.dir){
+			maze->fastest_route[step] = dir_to_char(mouse.dir);
 			step++;
 		}
 
-		mouse->dir = dir;
+		mouse.dir = dir;
 
-		forward(mouse);
-		mark_position(mouse, maze);
+		mouse.forward();
+		maze->mark_known(mouse.row, mouse.col);
 
-		printf("{%d, %d} \n", mouse->row, mouse->col);
+		printf("{%d, %d} \n", mouse.row, mouse.col);
 	}
 	maze->fastest_route[step]=0;
 	printf("solved! %s\n", maze->fastest_route);
 
 }
 
-void mark_position(Mouse *mouse,  Maze *maze){
-	maze->nodes[mouse->row][mouse->col]->known = true;
-}
-
-bool blocked(Mouse *mouse,  Maze *maze){
-	return blocked_in_dir(mouse->row, mouse->col, mouse->dir, maze);
+bool blocked(Mouse mouse,  Maze *maze){
+	return blocked_in_dir(mouse.row, mouse.col, mouse.dir, maze);
 }
 
 bool blocked_in_dir(int row,  int col,  Direction dir,  Maze *maze){
-	return !maze->nodes[row][col]->neighbors[dir];
+	return !maze->nodes[row][col]->neighbor(dir);
 }
 
-bool atCenter(Mouse *mouse){
-	return isCenter(mouse->row,  mouse->col);
+bool atCenter(Mouse mouse){
+	return isCenter(mouse.row,  mouse.col);
 }
 
 bool isCenter(int row,  int col){
