@@ -5,9 +5,12 @@
 #include "maze_io.h"
 
 int main(int argc, char *argv[]){
-  std::string maze_file(argv[1]);
+  std::string maze_file;
   if (argc < 2) {
     maze_file = "mazes/16x16.mz";
+  }
+  else {
+    maze_file = std::string(argv[1]);
   }
 
   std::fstream fs;

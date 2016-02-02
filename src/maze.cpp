@@ -1,36 +1,36 @@
 /** maze.c implements the functions used to create, free, and manipulate maze
-	@author Peter Mitrano
-*/
+  @author Peter Mitrano
+  */
 #include "maze.h"
 
 Direction left_of_dir(Direction dir) {
-	switch(dir){
-		case Direction::N:
+  switch(dir){
+    case Direction::N:
       return Direction::W;
-		case Direction::E:
+    case Direction::E:
       return Direction::N;
-		case Direction::S:
+    case Direction::S:
       return Direction::E;
-		case Direction::W:
+    case Direction::W:
       return Direction::S;
     default:
       return Direction::INVALID;
-	}
+  }
 }
 
 Direction operator++(Direction& dir, int) {
-	switch(dir){
-		case Direction::N:
+  switch(dir){
+    case Direction::N:
       return Direction::E;
-		case Direction::E:
+    case Direction::E:
       return Direction::S;
-		case Direction::S:
+    case Direction::S:
       return Direction::W;
-		case Direction::W:
+    case Direction::W:
       return Direction::N;
     default:
       return Direction::INVALID;
-	}
+  }
 }
 
 Direction opposite_direction(Direction d){
@@ -45,89 +45,96 @@ Direction opposite_direction(Direction d){
       return Direction::E;
     default:
       return Direction::INVALID;
-    }
+  }
 }
 
 char dir_to_char(Direction dir){
-	switch(dir){
+  switch(dir){
     case Direction::N: return 'N';
-		case Direction::S: return 'S';
-		case Direction::E: return 'E';
-		case Direction::W: return 'W';
+    case Direction::S: return 'S';
+    case Direction::E: return 'E';
+    case Direction::W: return 'W';
     default: return '\0';
-	}
+  }
 }
 
 Node *Node::neighbor(const Direction dir){
-	switch(dir){
-		case Direction::N:
+  switch(dir){
+    case Direction::N:
       return neighbors[0];
-		case Direction::E:
+    case Direction::E:
       return neighbors[1];
-		case Direction::S:
+    case Direction::S:
       return neighbors[2];
-		case Direction::W:
+    case Direction::W:
       return neighbors[3];
     default: return NULL;
-	}
+  }
 }
 
 Node::Node() : known(false), weight(-1), neighbors{NULL, NULL, NULL, NULL} {
 }
 
 Maze::Maze() : solved(false) {
-	fastest_route = (char *)malloc(PATH_SIZE*sizeof(char)); //assume really bad route--visits all squares.
-	int i,j;
-	for (i=0;i<MAZE_SIZE;i++){
-		for (j=0;j<MAZE_SIZE;j++){
-			nodes[i][j] = new Node();
-			nodes[i][j]->row = i;
-			nodes[i][j]->col = j;
-		}
-	}
+  fastest_route = (char *)malloc(PATH_SIZE*sizeof(char)); //assume really bad route--visits all squares.
+  int i,j;
+  for (i=0;i<MAZE_SIZE;i++){
+    for (j=0;j<MAZE_SIZE;j++){
+      nodes[i][j] = new Node();
+      nodes[i][j]->row = i;
+      nodes[i][j]->col = j;
+    }
+  }
 }
 
 #ifndef ARDUINO
 Maze::Maze(std::fstream& fs){
-	fastest_route = (char *)malloc(PATH_SIZE*sizeof(char)); //assume really bad route--visits all squares.
-	for (int i=0;i<MAZE_SIZE;i++){
-		for (int j=0;j<MAZE_SIZE;j++){
-			nodes[i][j] = new Node();
-			nodes[i][j]->row = i;
-			nodes[i][j]->col = j;
-		}
-	}
+  fastest_route = (char *)malloc(PATH_SIZE*sizeof(char)); //assume really bad route--visits all squares.
+  for (int i=0;i<MAZE_SIZE;i++){
+    for (int j=0;j<MAZE_SIZE;j++){
+      nodes[i][j] = new Node();
+      nodes[i][j]->row = i;
+      nodes[i][j]->col = j;
+    }
+  }
 
   std::string line;
 
-	for (int i=0;i< MAZE_SIZE;i++){ //read in each line
-		std::getline(fs, line);
+  //look West and North to connect any nodes
+  for (int i=0;i<MAZE_SIZE;i++){ //read in each line
+    std::getline(fs, line);
 
-		if (fs) {
+    if (!fs) {
       printf("getline failed\n.");
       return;
     }
 
-		int j;
-		for (j=0;j<MAZE_SIZE;j++){
-      if (line.at(j) != '|'){
+    int charPos = 0;
+    for (int j=0;j<MAZE_SIZE;j++){
+      if (line.at(charPos) != '|'){
         connect_neighbor(i, j, Direction::W);
       }
-      else if (line.at(j) != '_'){
+      charPos++;
+      if (line.at(charPos) != '_'){
         connect_neighbor(i, j, Direction::S);
       }
-
-		}
-	}
-	printf("\n");
+      charPos++;
+    }
+  }
+  printf("\n");
 }
 #endif
 
-Node *Maze::get_node(int row, int col){
-	if (col < 0 || col >= MAZE_SIZE || row < 0 || row >= MAZE_SIZE){
-		return NULL;
-	}
-	return nodes[row][col];
+int Maze::get_node(Node **out, int row, int col){
+  if (col < 0 || col >= MAZE_SIZE || row < 0 || row >= MAZE_SIZE){
+    return Node::OUT_OF_BOUNDS;
+  }
+
+  if(nodes[row][col] == NULL){
+    return -1;
+  }
+  (*out) = nodes[row][col];
+  return 0;
 }
 
 void Maze::update_nodes(int row, int col, bool *walls){
@@ -147,70 +154,87 @@ void Maze::update_nodes(int row, int col, bool *walls){
 }
 
 Node *Maze::maze_diff(Maze *maze2){
-	Node *new_goal = NULL;
+  Node *new_goal = NULL;
 
-	int i,j,max = -1;
-	for (i=0;i<MAZE_SIZE;i++){
-		for (j=0;j<MAZE_SIZE;j++){
+  int i,j,max = -1;
+  for (i=0;i<MAZE_SIZE;i++){
+    for (j=0;j<MAZE_SIZE;j++){
 
-			Node *n1 = this->get_node(i,j);
-			Node *n2 = maze2->get_node(i,j);
+      Node *n1;
+      this->get_node(&n1, i,j);
+      Node *n2;
+      maze2->get_node(&n2, i,j);
 
-			//don't look at nodes you've already actually visited
-			if (!n1->visited && !n2->visited){
-				int count1=0,count2=0;
+      //don't look at nodes you've already actually visited
+      if (!n1->visited && !n2->visited){
+        int count1=0,count2=0;
 
-				Direction d;
-				for (d=Direction::First;d<Direction::Last;d++){
-					if (n1->neighbor(d) ==  NULL) count1++;
-					if (n2->neighbor(d) == NULL) count2++;
-				}
+        Direction d;
+        for (d=Direction::First;d<Direction::Last;d++){
+          if (n1->neighbor(d) ==  NULL) count1++;
+          if (n2->neighbor(d) == NULL) count2++;
+        }
 
-				int diff = abs(count2-count1);
+        int diff = abs(count2-count1);
 
-				if (diff > max){
-					max = diff;
-					//doesn't matter n1 or n2, all we're using are the row/col
-					new_goal = n1;
-				}
-			}
-		}
-	}
+        if (diff > max){
+          max = diff;
+          //doesn't matter n1 or n2, all we're using are the row/col
+          new_goal = n1;
+        }
+      }
+    }
+  }
 
-	return new_goal;
+  return new_goal;
 }
 
 bool Maze::visited(int row, int col, Direction dir){
-	return nodes[row][col]->neighbor(dir)->known;
+  return nodes[row][col]->neighbor(dir)->known;
 }
 
-Node *Maze::get_node_in_direction(int row, int col, const Direction dir){
-	switch(dir){
-		case Direction::N:
-      return get_node(row-1,col);
-		case Direction::E:
-      return get_node(row,col+1);
-		case Direction::S:
-      return get_node(row+1,col);
-		case Direction::W:
-      return get_node(row,col-1);
+int Maze::get_node_in_direction(Node **out, int row, int col, const Direction dir){
+  switch(dir){
+    case Direction::N:
+      return get_node(out, row-1,col);
+      break;
+    case Direction::E:
+      return get_node(out, row,col+1);
+      break;
+    case Direction::S:
+      return get_node(out, row+1,col);
+      break;
+    case Direction::W:
+      return get_node(out, row,col-1);
+      break;
     default:
-      return NULL;
-	}
+      return -1;
+  }
 }
 
 void Maze::remove_neighbor(int row, int col, const Direction dir){
-  Node *n1 = get_node(row, col);
-  Node *n2 = get_node_in_direction(row, col, dir);
+  Node *n1;
+  get_node(&n1, row, col);
+  Node *n2;
+  get_node_in_direction(&n2, row, col, dir);
   n1->neighbors[static_cast<int>(dir)] = NULL;
   n2->neighbors[static_cast<int>(dir)] = NULL;
 }
 
 void Maze::connect_neighbor(int row, int col, const Direction dir){
-  Node *n1 = get_node(row, col);
-  Node *n2 = get_node_in_direction(row, col, dir);
-  n1->neighbors[static_cast<int>(dir)] = n2;
-  n2->neighbors[static_cast<int>(dir)] = n1;
+  Node *n1;
+  int n1_status = get_node(&n1, row, col);
+  Node *n2;
+  int n2_status = get_node_in_direction(&n2, row, col, dir);
+
+  Direction opposite = opposite_direction(dir);
+
+  if (n1_status != Node::OUT_OF_BOUNDS) {
+    n1->neighbors[static_cast<int>(dir)] = n2;
+  }
+  if (n2_status != Node::OUT_OF_BOUNDS) {
+    n2->neighbors[static_cast<int>(opposite)] = n1;
+  }
 }
 
 void Maze::connect_all_neighbors(int row, int col){
@@ -220,14 +244,14 @@ void Maze::connect_all_neighbors(int row, int col){
 }
 
 void Maze::connect_all_neighbors_in_maze() {
-	int i, j;
-	for (i=0;i<MAZE_SIZE;i++){
-		for (j=0;j<MAZE_SIZE;j++){
-			connect_all_neighbors(i, j);
+  int i, j;
+  for (i=0;i<MAZE_SIZE;i++){
+    for (j=0;j<MAZE_SIZE;j++){
+      connect_all_neighbors(i, j);
     }
   }
 }
 
 void Maze::mark_known(int row, int col){
-	nodes[row][col]->known = true;
+  nodes[row][col]->known = true;
 }

@@ -75,7 +75,7 @@ void flood_explore(Maze *kmaze){
 		else {
 			//it doesn't matter which maze this is from
 			//all that happens is it's row & col get sent to flood_fill_custom
-			goal = no_wall_maze.get_node(7, 7);
+			no_wall_maze.get_node(&goal, 7, 7);
 		}
 
 		//solve flood fill on the two mazes from special start and end points
@@ -145,9 +145,12 @@ bool flood_fill(Maze *maze,  char *path){
 //This method will take a maze and perform a traditional flood fill
 //the fill starts from r0, c0 and ends at r1, c1
 bool flood_fill_custom(Maze *maze,  char *path,  int r0,  int c0,  int r1,  int c1){
-	Node *n = maze->get_node(r0, c0);
-	Node *root = maze->get_node(r0, c0);
-	Node *goal = maze->get_node(r1, c1);
+	Node *n;
+  maze->get_node(&n, r0, c0);
+	Node *root;
+  maze->get_node(&root, r0, c0);
+	Node *goal;
+  maze->get_node(&goal, r1, c1);
 
 	//incase the maze has already been solved,  reset all weight and known values
 	int i, j;

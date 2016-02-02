@@ -7,7 +7,9 @@ void print_maze_mouse(Maze *maze, Mouse *mouse){
 
 		char *s=str;
 		for (j=0;j<MAZE_SIZE;j++){
-			if (maze->get_node(i,j)->neighbor(Direction::W) == NULL){
+      Node *n;
+      maze->get_node(&n, i, j);
+			if (n->neighbor(Direction::W) == NULL){
 				strcpy(s++,"|");
 			}
 			else {
@@ -17,7 +19,7 @@ void print_maze_mouse(Maze *maze, Mouse *mouse){
 			if (mouse->row == i && mouse->col == j){
 					strcpy(s++,"o");
 			}
-			else if (maze->get_node(i,j)->neighbor(Direction::S) == NULL){
+			else if (n->neighbor(Direction::S) == NULL){
 					strcpy(s++,"_");
 			}
 			else {
@@ -38,9 +40,11 @@ void print_maze(Maze *maze){
 
 		char *s=str;
 		for (j=0;j<MAZE_SIZE;j++){
-			if (maze->get_node(i,j)->neighbor(Direction::W) == NULL){
+      Node *n;
+      maze->get_node(&n, i, j);
+			if (n->neighbor(Direction::W) == NULL){
 				strcpy(s++,"|");
-				if (maze->get_node(i,j)->neighbor(Direction::S) == NULL){
+				if (n->neighbor(Direction::S) == NULL){
 					strcpy(s++,"_");
 				}
 				else {
@@ -49,7 +53,7 @@ void print_maze(Maze *maze){
 			}
 			else {
 				strcpy(s++,"_");
-				if (maze->get_node(i,j)->neighbor(Direction::S) == NULL){
+				if (n->neighbor(Direction::S) == NULL){
 					strcpy(s++,"_");
 				}
 				else {
@@ -94,7 +98,9 @@ void print_dist_maze(Maze *maze){
 	int i,j;
 	for (i=0;i<MAZE_SIZE;i++){
 		for (j=0;j<MAZE_SIZE;j++){
-			int d = maze->get_node(i,j)->distance;
+      Node *n;
+      maze->get_node(&n, i, j);
+			int d = n->distance;
 			if (d<10){
 				printf("  %d ",d);
 			}
@@ -113,7 +119,9 @@ void print_pointer_maze(Maze *maze){
 	int i,j;
 	for (i=0;i<MAZE_SIZE;i++){
 		for (j=0;j<MAZE_SIZE;j++){
-			printf("%p ", maze->get_node(i,j));
+      Node *n;
+      maze->get_node(&n, i, j);
+			printf("%p ", n);
 		}
 		printf("\n");
 	}

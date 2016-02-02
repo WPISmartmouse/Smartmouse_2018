@@ -55,8 +55,11 @@ class Node {
     int col;
     int weight; //used for flood-fill
     int distance; //used for a star
+
     //if you want to iterate over neighbors, just increment the pointer to north
     Node *neighbors[4];
+
+    static const int OUT_OF_BOUNDS = -2;
 
     /** \brief intializes a node */
     Node();
@@ -96,16 +99,18 @@ class Maze {
      Node *maze_diff(Maze *maze2);
 
     /** \brief get node by its position
-     * this is equlvelant to maze->nodes[x][y]
+     * \return 0 on success, OUT_OF_BOUNDS, or -1 on NULL
      */
-    Node *get_node(int x, int y);
+    int get_node(Node **out, int x, int y);
 
     /** \brief get neighbor node in a direction from a position
+     * \param the adress of the node to set
      * \param row starting row
      * \param col starting col
      * \param dir the direction of the neighbor you want
+     * \return 0 on success, OUT_OF_BOUNDS, or -1 on NULL
      */
-    Node *get_node_in_direction(int row, int col, const Direction dir);
+    int get_node_in_direction(Node **out, int row, int col, const Direction dir);
 
     /** \brief connect all neighbors in the whole maze
      * \param i row
