@@ -45,27 +45,23 @@
 int main(int argc, char* argv[]){
 
 	srand(time(NULL));
-	char *filename;
-	if (argc >= 2){
-		filename = argv[1];
-	}
-	else {
-		filename = "mazes/16x16_3.mz";
-	}
+  std::string maze_file(argv[1]);
+  if (argc < 2) {
+    maze_file = "mazes/16x16.mz";
+  }
 
   std::fstream fs;
-  fs.open(filename, std::fstream::in);
+  fs.open(maze_file, std::fstream::in);
 
-	if (fs.fail()){
+  if (fs.good()){
+    Maze *maze = new Maze(fs);
+    left_hand_follow(maze);
+    fs.close();
+    return EXIT_SUCCESS;
+  }
+  else {
 		printf("error opening maze file!\n");
-		return EXIT_FAILURE;
-	}
-
-	printf("using maze file %s\n",filename);
-	Maze *maze = new Maze(fs);
-
-	left_hand_follow(maze);
-
-  fs.close();
-	return EXIT_SUCCESS;
+    fs.close();
+    return EXIT_FAILURE;
+  }
 }
