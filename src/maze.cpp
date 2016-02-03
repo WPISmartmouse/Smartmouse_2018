@@ -2,6 +2,7 @@
   @author Peter Mitrano
   */
 #include "maze.h"
+#include "mouse.h"
 
 Direction left_of_dir(Direction dir) {
   switch(dir){
@@ -254,4 +255,8 @@ void Maze::connect_all_neighbors_in_maze() {
 
 void Maze::mark_known(int row, int col){
   nodes[row][col]->known = true;
+}
+
+bool Maze::blocked_in_dir(Mouse mouse, Direction dir){
+  return nodes[mouse.row][mouse.col]->neighbor(dir) == NULL;
 }

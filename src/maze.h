@@ -13,6 +13,8 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+class Mouse;
+
 enum class Direction {
   N,
   E,
@@ -150,4 +152,6 @@ class Maze {
      * \param n the node to update the neighbors of
      */
     void update_nodes(int row, int col, bool *walls);
+
+    bool blocked_in_dir(Mouse mouse, Direction dir);
 };

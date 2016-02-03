@@ -7,6 +7,7 @@
 
 */
 #include "solvers.h"
+#include <iostream>
 
 #define min(a,  b) ((a) < (b) ? (a) : (b))
 
@@ -250,43 +251,46 @@ void explore_neighbors(Node *node,  Node *goal,  int weight,  bool *success){
 }
 
 
-void left_hand_follow(Maze *maze){
-
-	maze->nodes[0][0]->known=true;
+void left_hand_follow(Maze maze){
+	maze.nodes[0][0]->known=true;
 	Mouse mouse;
 
 	//run till you find the goal
 	int step=0;
 	while (!atCenter(mouse)){
-		Direction dir = left_of_dir(mouse.dir); //check left first
 
-		while (blocked_in_dir(mouse.row, mouse.col, dir, maze)){
-			dir=left_of_dir(dir);
-		}
+    print_maze_mouse(&maze, &mouse);
 
-		if (dir != mouse.dir){
-			maze->fastest_route[step] = dir_to_char(mouse.dir);
-			step++;
-		}
+		Direction dir = left_of_dir(mouse.dir);
 
-		mouse.dir = dir;
+    if (!maze.blocked_in_dir(mouse, dir)){
+      //if you can left you must
+      mouse.dir = dir;
+    }
+    else if (maze.blocked_in_dir(mouse, mouse.dir)){
+      if (!maze.blocked_in_dir(mouse, opposite_direction(dir))){
+        //if you can't go left or forward try right
+        mouse.dir = opposite_direction(dir);
+      }
+      else {
+        //you must do a 180
+        mouse.dir = opposite_direction(mouse.dir);
+      }
+    }
 
 		mouse.forward();
-		maze->mark_known(mouse.row, mouse.col);
+		maze.mark_known(mouse.row, mouse.col);
 
-		printf("{%d, %d} \n", mouse.row, mouse.col);
+    std::cin.get();
+    system("clear");
+
 	}
-	maze->fastest_route[step]=0;
-	printf("solved! %s\n", maze->fastest_route);
-
+	maze.fastest_route[step]=0;
+	printf("solved! %s\n", maze.fastest_route);
 }
 
 bool blocked(Mouse mouse,  Maze *maze){
-	return blocked_in_dir(mouse.row, mouse.col, mouse.dir, maze);
-}
-
-bool blocked_in_dir(int row,  int col,  Direction dir,  Maze *maze){
-	return !maze->nodes[row][col]->neighbor(dir);
+	return maze->blocked_in_dir(mouse, mouse.dir);
 }
 
 bool atCenter(Mouse mouse){

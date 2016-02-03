@@ -53,7 +53,7 @@ void explore_neighbors(Node *node,Node *goal, int weight, bool *success);
 /** set starting point to 0,0. follow left hand wall
 * @param maze maze to solve
 */
-void left_hand_follow(Maze *maze);
+void left_hand_follow(Maze maze);
 
 /** marks the mouses given position as known
 * @param mouse the mouse

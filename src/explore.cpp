@@ -57,8 +57,8 @@ int main(int argc, char* argv[]){
   fs.open(maze_file, std::fstream::in);
 
   if (fs.good()){
-    Maze *maze = new Maze(fs);
-    //left_hand_follow(maze);
+    Maze maze(fs);
+    left_hand_follow(maze);
     fs.close();
     return EXIT_SUCCESS;
   }
