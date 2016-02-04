@@ -13,8 +13,7 @@
 
 //starts at 0, 0 and explores the whole maze
 //kmaze is the known maze,  and should only be used to call sense()
-void flood_explore(Maze *kmaze){
-
+void flood_explore(Maze kmaze){
 	Mouse mouse;
 
 	Maze no_wall_maze; //this maze is initially no walls,  and walls are filled out every time the mouse moves
@@ -99,13 +98,6 @@ void flood_explore(Maze *kmaze){
 		flood_fill(&no_wall_maze, no_wall_maze.fastest_route);
 		flood_fill(&all_wall_maze, all_wall_maze.fastest_route);
 
-		#if defined(DEBUG_PATH) || defined(DEBUG_FULL)
-		printf("no wall path  = %s\n", no_wall_path);
-		printf("all wall path = %s\n", all_wall_path);
-		printf("no wall path (from 0, 0) = %s\n", no_wall_maze.fastest_route);
-		printf("all wall path (from 0, 0)= %s\n", all_wall_maze.fastest_route);
-		#endif
-
 		//follow the no_wall path towards the previously defined goal
 		//this will be the center if we haven't already found it,
 		//or some other node if we have
@@ -115,13 +107,8 @@ void flood_explore(Maze *kmaze){
 		no_wall_maze.mark_known(mouse.row, mouse.col);
 		all_wall_maze.mark_known(mouse.row, mouse.col);
 
-
-		#if defined(DEBUG) ||  defined(DEBUG_PATH) || defined(DEBUG_FULL)
 		print_maze_mouse(all_wall_maze, mouse);
-		printf("[MOVES]   =   %i\n", moves++);
-		getchar();
-		#endif
-
+    std::cin.get();
 	}
 	while (strcmp(no_wall_maze.fastest_route, all_wall_maze.fastest_route) != 0 && solvable); //don't let it go forever
 
@@ -166,11 +153,6 @@ bool flood_fill_custom(Maze *maze,  char *path,  int r0,  int c0,  int r1,  int 
 	//return 1 means path to goal was found
 	bool success = false;
 	explore_neighbors(n,  goal,  0,  &success);
-
-	#if defined(DEBUG_FULL)
-	print_weight_maze(maze);
-	print_maze(maze);
-	#endif
 
 	if (!success){
 		return false;
@@ -259,7 +241,7 @@ void left_hand_follow(Maze maze){
 	int step=0;
 	while (!atCenter(mouse)){
 
-    print_maze_mouse(&maze, &mouse);
+    print_maze_mouse(maze, mouse);
 
 		Direction dir = left_of_dir(mouse.dir);
 

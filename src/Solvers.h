@@ -25,7 +25,7 @@ void update_neighbors(Node *node);
  * when the solution for those two mazes are the same, then it knows the fastest route
  * @param kmaze the known maze. in reality this won't exist because the sensors can read from the real world
  */
-void flood_explore(Maze *kmaze);
+void flood_explore(Maze kmaze);
 
 /** set starting point 0,0 & S. depth-first search of all nodes in the grid, adding 1 each time.
 * once all nodes are discovered, the path is solved by going backwards from the center to the lowest neighbor each time

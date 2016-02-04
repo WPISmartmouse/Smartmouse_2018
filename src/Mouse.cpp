@@ -53,11 +53,11 @@ Direction Mouse::char_to_dir(char c){
 }
 
 /**true means a wall exists**/
-void Mouse::sense(Maze *maze, bool *walls){
+void Mouse::sense(Maze maze, bool *walls){
 	bool *w = walls;
 	int i;
 	Node *n;
-  maze->get_node(&n,row,col);
+  maze.get_node(&n,row,col);
 	for (i=0;i<4;i++){
 		*(w++) = (n->neighbors[i] == NULL);
 	}

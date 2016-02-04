@@ -33,7 +33,7 @@ class Mouse {
     Direction char_to_dir(char c);
 
     /** returns length 4 array of bools. must be freed */
-    void sense(Maze *maze, bool *walls);
+    void sense(Maze maze, bool *walls);
 
     int row;
     int col;

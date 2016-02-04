@@ -58,7 +58,7 @@ int main(int argc, char* argv[]){
 
   if (fs.good()){
     Maze maze(fs);
-    left_hand_follow(maze);
+    flood_explore(maze);
     fs.close();
     return EXIT_SUCCESS;
   }
