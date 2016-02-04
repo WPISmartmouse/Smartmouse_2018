@@ -37,9 +37,9 @@
 
 #ifndef EMBED
 
-#include "maze.h"
-#include "maze_io.h"
-#include "solvers.h"
+#include "Maze.h"
+#include "MazeIO.h"
+#include "Solvers.h"
 #include <errno.h>
 #include  <fstream>
 

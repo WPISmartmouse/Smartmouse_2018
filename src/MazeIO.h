@@ -1,8 +1,8 @@
 /** these functions read in a .mz file and parse it into a valid maze*/
 #pragma once
 
-#include "maze.h"
-#include "mouse.h"
+#include "Maze.h"
+#include "Mouse.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>

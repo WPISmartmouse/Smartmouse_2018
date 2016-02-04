@@ -1,8 +1,8 @@
 /** maze.c implements the functions used to create, free, and manipulate maze
   @author Peter Mitrano
   */
-#include "maze.h"
-#include "mouse.h"
+#include "Maze.h"
+#include "Mouse.h"
 
 Direction left_of_dir(Direction dir) {
   switch(dir){

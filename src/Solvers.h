@@ -1,9 +1,9 @@
 /** functions for exploring and solving mazes */
 #pragma once
 
-#include "maze.h"
-#include "mouse.h"
-#include "maze_io.h"
+#include "Maze.h"
+#include "Mouse.h"
+#include "MazeIO.h"
 #include <stdbool.h>
 
 /*not used */

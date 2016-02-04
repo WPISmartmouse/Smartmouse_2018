@@ -6,7 +6,7 @@
 	ARGS=-DDEBUG_PATH prints just paths
 
 */
-#include "solvers.h"
+#include "Solvers.h"
 #include <iostream>
 
 #define min(a,  b) ((a) < (b) ? (a) : (b))

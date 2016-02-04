@@ -3,8 +3,8 @@
 #include <fstream>
 #include <string>
 
-#include "maze.h"
-#include "maze_io.h"
+#include "Maze.h"
+#include "MazeIO.h"
 
 int main(int argc, char *argv[]){
   std::string maze_file;

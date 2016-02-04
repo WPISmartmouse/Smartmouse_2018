@@ -1,6 +1,6 @@
 #pragma once
 
-#include "maze.h"
+#include "Maze.h"
 #include <stdlib.h>
 
 /** \brief depresents a mouse

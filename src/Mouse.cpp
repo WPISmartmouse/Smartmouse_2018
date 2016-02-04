@@ -1,4 +1,4 @@
-#include "mouse.h"
+#include "Mouse.h"
 
 Mouse::Mouse() : row(0), col(0), dir(Direction::S)
  {}
