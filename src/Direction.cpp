@@ -18,16 +18,21 @@ Direction left_of_dir(Direction dir) {
 Direction operator++(Direction& dir, int) {
   switch(dir){
     case Direction::N:
-      return Direction::E;
+      dir = Direction::E;
+      break;
     case Direction::E:
-      return Direction::S;
+      dir = Direction::S;
+      break;
     case Direction::S:
-      return Direction::W;
+      dir = Direction::W;
+      break;
     case Direction::W:
-      return Direction::N;
+      dir = Direction::N;
+      break;
     default:
-      return Direction::INVALID;
+      dir = Direction::INVALID;
   }
+  return dir;
 }
 
 Direction opposite_direction(Direction d){
