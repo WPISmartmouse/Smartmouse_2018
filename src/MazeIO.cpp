@@ -1,4 +1,6 @@
 #include "MazeIO.h"
+#include "Direction.h"
+#include "Node.h"
 
 void print_maze_mouse(Maze *maze, Mouse *mouse){
 	int i,j;

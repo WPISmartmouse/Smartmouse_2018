@@ -2,6 +2,8 @@
 #pragma once
 
 #include "Maze.h"
+#include "Direction.h"
+#include "Node.h"
 #include "Mouse.h"
 #include "MazeIO.h"
 #include <stdbool.h>
