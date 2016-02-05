@@ -158,10 +158,8 @@ void Maze::connect_neighbor(int row, int col, const Direction dir){
 
   Direction opposite = opposite_direction(dir);
 
-  if (n1_status != Node::OUT_OF_BOUNDS) {
+  if ((n1_status != Node::OUT_OF_BOUNDS) && (n2_status != Node::OUT_OF_BOUNDS)) {
     n1->neighbors[static_cast<int>(dir)] = n2;
-  }
-  if (n2_status != Node::OUT_OF_BOUNDS) {
     n2->neighbors[static_cast<int>(opposite)] = n1;
   }
 }
