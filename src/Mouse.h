@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Maze.h"
 #include "Direction.h"
 #include <stdlib.h>
 
@@ -11,31 +10,37 @@
 class Mouse {
 
   public:
-    /** \biref allocates and initializes a mouse */
-    Mouse();
-
-    /** takes the given character and moves in that direction
-     * @param dir_char the direciton do drive: 'N', 'E', 'S', or 'W'
+    /** \brief return the current column.
+     * Guaranteed to be between 0 and MAZE_SIZE
+     * \return current column
      */
-    void execute_command(char dir_char);
+    static int getCol();
+
+    /** \brief return the current row.
+     * Guaranteed to be between 0 and MAZE_SIZE
+     * \return current row
+     */
+    static int getRow();
+
+    /** \brief return the current direction.
+     * \return current direction
+     */
+    static Direction getDir();
 
     /** base functions the emulate mouse movement calls
+     * returns -1 if you ran into a wall
+     * returns -2 if the mouses's direction is messed up
     */
-    void forward();
+    static int forward();
 
-    /**update row and col numbers given based on dir*/
-    void update_pos();
+    /** \brief is the mouse at the center of the maze? */
+    static bool atCenter();
 
     /** literally just sets mouse position. pretty useless, but eventually will cause physical mouse to turn */
-    void turn_to_face(Direction d);
+    static void turn_to_face(Direction d);
 
-    /** the obvious opposite of dir to char **/
-    Direction char_to_dir(char c);
+  private:
 
-    /** returns length 4 array of bools. must be freed */
-    void sense(Maze maze, bool *walls);
-
-    int row;
-    int col;
-    Direction dir;
+    static int row, col;
+    static Direction dir;
 };

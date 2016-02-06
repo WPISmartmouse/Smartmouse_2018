@@ -1,64 +1,59 @@
 #include "Mouse.h"
+#include "AbstractMaze.h"
 
-Mouse::Mouse() : row(0), col(0), dir(Direction::S)
- {}
+int Mouse::row = 0;
+int Mouse::col = 0;
+Direction Mouse::dir = Direction::S;
 
-void Mouse::execute_command(char dir_char){
-	Direction dir = char_to_dir(dir_char);
-	turn_to_face(dir);
-	forward();
+int Mouse::getRow(){
+  return Mouse::row;
 }
 
-void Mouse::forward(){
-	update_pos();
-	if (row >= MAZE_SIZE || row < 0 || col >= MAZE_SIZE || col < 0){
-		printf("OH SHIT I HIT A WALL!\n");
-	}
+int Mouse::getCol(){
+  return Mouse::col;
 }
 
-void Mouse::update_pos(){
-	switch(dir){
-		case Direction::N:
+Direction Mouse::getDir(){
+  return Mouse::dir;
+}
+
+bool Mouse::atCenter(){
+	return (row == AbstractMaze::MAZE_SIZE/2 || row == AbstractMaze::MAZE_SIZE/2-1) && (col == AbstractMaze::MAZE_SIZE/2 || col == AbstractMaze::MAZE_SIZE/2-1);
+}
+
+int Mouse::forward(){
+  switch(dir){
+    case Direction::N:
       row--;
       break;
-		case Direction::E:
+    case Direction::E:
       col++;
       break;
-		case Direction::S:
+    case Direction::S:
       row++;
       break;
-		case Direction::W:
+    case Direction::W:
       col--;
       break;
     default:
-      break;
+      return -2;
   }
+
+	if (row >= AbstractMaze::MAZE_SIZE || row < 0 || col >= AbstractMaze::MAZE_SIZE || col < 0){
+    //this is probably the most serious error possible
+    //it means you've run into a wall. Just give up.
+    exit(-1);
+	}
+  return 0;
 }
 
 void Mouse::turn_to_face(Direction d){
+  if (d == Direction::INVALID){
+    //again, this is a super serious error... you can't ever do this.
+    exit(-1);
+  }
 	if (dir != d){
 		dir = d;
 	}
 	//in reality this will turn the physical mouse
-}
-
-Direction Mouse::char_to_dir(char c){
-	switch(c){
-    case 'N':return Direction::N;
-    case 'S':return Direction::S;
-    case 'E':return Direction::E;
-    case 'W':return Direction::W;
-    default: return Direction::INVALID;
-	}
-}
-
-/**true means a wall exists**/
-void Mouse::sense(Maze maze, bool *walls){
-	bool *w = walls;
-	int i;
-	Node *n;
-  maze.get_node(&n,row,col);
-	for (i=0;i<4;i++){
-		*(w++) = (n->neighbors[i] == NULL);
-	}
 }

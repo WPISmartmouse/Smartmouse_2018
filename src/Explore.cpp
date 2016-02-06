@@ -37,8 +37,7 @@
 
 #ifndef EMBED
 
-#include "Maze.h"
-#include "MazeIO.h"
+#include "KnownMaze.h"
 #include "Solvers.h"
 #include <errno.h>
 #include  <fstream>
@@ -57,7 +56,7 @@ int main(int argc, char* argv[]){
   fs.open(maze_file, std::fstream::in);
 
   if (fs.good()){
-    Maze maze(fs);
+    KnownMaze maze(fs);
     flood_explore(maze);
     fs.close();
     return EXIT_SUCCESS;

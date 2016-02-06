@@ -11,12 +11,10 @@
  */
 class Node {
   public:
-    bool known;
-    bool visited;
-    int row;
-    int col;
     int weight; //used for flood-fill
     int distance; //used for a star
+    bool known;
+    bool visited;
 
     //if you want to iterate over neighbors, just increment the pointer to north
     Node *neighbors[4];
@@ -24,8 +22,18 @@ class Node {
     static const int OUT_OF_BOUNDS = -2;
 
     /** \brief intializes a node */
+    Node(int row, int col);
     Node();
+
+    int row();
+    int col();
 
     /** \brief get the neighbor in the given direction */
     Node *neighbor(const Direction dir);
+
+    void explore_neighbors(Node *goal, int weight,  bool *success);
+
+  private:
+    int r;
+    int c;
 };

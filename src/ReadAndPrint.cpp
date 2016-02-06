@@ -3,8 +3,7 @@
 #include <fstream>
 #include <string>
 
-#include "Maze.h"
-#include "MazeIO.h"
+#include "KnownMaze.h"
 
 int main(int argc, char *argv[]){
   std::string maze_file;
@@ -19,8 +18,8 @@ int main(int argc, char *argv[]){
   fs.open(maze_file, std::fstream::in);
 
   if (fs.good()){
-    Maze maze(fs);
-    print_maze(maze);
+    KnownMaze maze(fs);
+    maze.print_maze();
     fs.close();
     return EXIT_SUCCESS;
   }
