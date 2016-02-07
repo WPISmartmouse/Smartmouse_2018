@@ -27,7 +27,7 @@ Direction operator++(Direction& dir, int) {
       dir = Direction::W;
       break;
     case Direction::W:
-      dir = Direction::N;
+      dir = Direction::Last;
       break;
     default:
       dir = Direction::INVALID;

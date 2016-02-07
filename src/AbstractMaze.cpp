@@ -193,11 +193,17 @@ bool AbstractMaze::flood_fill(char *path, int r0, int c0, int r1,  int c1){
 
 void AbstractMaze::remove_neighbor(int row, int col, const Direction dir){
   Node *n1;
-  get_node(&n1, row, col);
+  int n1_status = get_node(&n1, row, col);
   Node *n2;
-  get_node_in_direction(&n2, row, col, dir);
-  n1->neighbors[static_cast<int>(dir)] = NULL;
-  n2->neighbors[static_cast<int>(dir)] = NULL;
+  int n2_status = get_node_in_direction(&n2, row, col, dir);
+
+  if (n1_status != Node::OUT_OF_BOUNDS){
+    n1->neighbors[static_cast<int>(dir)] = NULL;
+  }
+
+  if (n2_status != Node::OUT_OF_BOUNDS){
+    n2->neighbors[static_cast<int>(dir)] = NULL;
+  }
 }
 
 void AbstractMaze::connect_neighbor(int row, int col, const Direction dir){
@@ -311,9 +317,8 @@ void AbstractMaze::print_neighbor_maze(){
 	int i,j;
 	for (i=0;i<AbstractMaze::MAZE_SIZE;i++){
 		for (j=0;j<AbstractMaze::MAZE_SIZE;j++){
-			int d;
-			for (d=0;d<4;d++){
-				bool wall = (nodes[i][j]->neighbors[d] == NULL);
+			for (Direction d=Direction::First;d<Direction::Last;d++){
+				bool wall = (nodes[i][j]->neighbor(d) == NULL);
 				printf("%i",wall);
 			}
 			printf(" ");
