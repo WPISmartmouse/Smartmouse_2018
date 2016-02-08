@@ -8,18 +8,20 @@
 */
 #include "Solvers.h"
 #include <string.h>
-#include <iostream>
+#ifndef EMBED
+  #include <iostream>
+#endif
 
 #define min(a,  b) ((a) < (b) ? (a) : (b))
 
 //starts at 0, 0 and explores the whole maze
 //kmaze is the known maze,  and should only be used to call sense()
-void flood_explore(KnownMaze kmaze){
+void Solvers::flood_explore(KnownMaze kmaze){
 	AbstractMaze no_wall_maze; //this maze is initially no walls,  and walls are filled out every time the mouse moves
 	AbstractMaze all_wall_maze; //this maze is initially no walls,  and walls are removed every time the mouse moves
 
 	//make all connections open in the no_wall_maze
-  all_wall_maze.connect_all_neighbors_in_maze();
+  no_wall_maze.connect_all_neighbors_in_maze();
 
 	char *no_wall_path;
 	no_wall_path = (char*)calloc(AbstractMaze::PATH_SIZE, sizeof(char));
@@ -74,21 +76,14 @@ void flood_explore(KnownMaze kmaze){
 		}
 
 		//solve flood fill on the two mazes from mouse to goal
-		solvable = no_wall_maze.flood_fill_from_mouse(no_wall_path,
-			goal->row(),
-			goal->col());
-		all_wall_maze.flood_fill_from_mouse(all_wall_path,
-			goal->row(),
-			goal->col());
+		solvable = no_wall_maze.flood_fill_from_mouse(no_wall_path,goal->row(),goal->col());
+		all_wall_maze.flood_fill_from_mouse(all_wall_path,goal->row(),goal->col());
 
 		//solve from origin to center
 		//this is what tells us whether or not we need to keep searching
-		no_wall_maze.flood_fill_from_origin(no_wall_maze.fastest_route,
-        goal->row(),
+		no_wall_maze.flood_fill_from_origin(no_wall_maze.fastest_route,goal->row(),
         goal->col());
-		all_wall_maze.flood_fill_from_origin(all_wall_maze.fastest_route,
-        goal->row(),
-        goal->col());
+		all_wall_maze.flood_fill_from_origin(all_wall_maze.fastest_route,goal->row(),goal->col());
 
 		//follow the no_wall path towards the previously defined goal
 		//this will be the center if we haven't already found it,
@@ -101,7 +96,9 @@ void flood_explore(KnownMaze kmaze){
 		all_wall_maze.mark_mouse_position_visited();
 
 		all_wall_maze.print_maze_mouse();
+#ifndef EMBED
     std::cin.get();
+#endif
 	}
 	while (strcmp(no_wall_maze.fastest_route, all_wall_maze.fastest_route) != 0 && solvable); //don't let it go forever
 
@@ -118,7 +115,7 @@ void flood_explore(KnownMaze kmaze){
 	free(all_wall_path);
 }
 
-void left_hand_follow(KnownMaze kmaze){
+void Solvers::left_hand_follow(KnownMaze kmaze){
   kmaze.mark_origin_known();
 
 	//run till you find the goal

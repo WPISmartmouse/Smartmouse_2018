@@ -57,7 +57,7 @@ int main(int argc, char* argv[]){
 
   if (fs.good()){
     KnownMaze maze(fs);
-    flood_explore(maze);
+    Solvers::flood_explore(maze);
     fs.close();
     return EXIT_SUCCESS;
   }

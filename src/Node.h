@@ -31,7 +31,7 @@ class Node {
     /** \brief get the neighbor in the given direction */
     Node *neighbor(const Direction dir);
 
-    void explore_neighbors(Node *goal, int weight,  bool *success);
+    void assign_weights_to_neighbors(Node *goal, int weight,  bool *success);
 
   private:
     int r;

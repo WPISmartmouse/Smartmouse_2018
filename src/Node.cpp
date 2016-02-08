@@ -16,7 +16,7 @@ Node *Node::neighbor(const Direction dir){
   }
 }
 
-Node::Node() : known(false), weight(-1), neighbors{NULL, NULL, NULL, NULL} {
+Node::Node() : known(false), weight(32767), neighbors{NULL, NULL, NULL, NULL} {
 }
 
 Node::Node(int row, int col) : r(row), c(col), known(false), weight(-1), neighbors{NULL, NULL, NULL, NULL} {
@@ -31,10 +31,10 @@ int Node::col(){
 }
 
 
-void Node::explore_neighbors(Node *goal,  int weight,  bool *success){
-  //check all nodes that are unvisited,  or would be given a lower weight
+void Node::assign_weights_to_neighbors(Node *goal,  int weight,  bool *success){
+  //check all nodes that are unvisited, or would be given a lower weight
   if (!this->known || weight < this->weight){
-    //don't visiti it again unless you find a shorter path
+    //don't visit it again unless you find a shorter path
     this->known = true;
 
     //check if path to goal node was found
@@ -49,7 +49,7 @@ void Node::explore_neighbors(Node *goal,  int weight,  bool *success){
     int i;
     for (i=0;i<4;i++){
       if (this->neighbors[i] != NULL){
-        this->neighbors[i]->explore_neighbors(goal, weight+1, success);
+        this->neighbors[i]->assign_weights_to_neighbors(goal, weight+1, success);
       }
     }
   }

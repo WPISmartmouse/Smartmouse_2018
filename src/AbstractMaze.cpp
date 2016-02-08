@@ -47,13 +47,13 @@ int AbstractMaze::get_node_in_direction(Node **out, int row, int col, const Dire
 }
 
 void AbstractMaze::reset() {
-	int i, j;
-	for (i=0;i<AbstractMaze::MAZE_SIZE;i++){
-		for (j=0;j<AbstractMaze::MAZE_SIZE;j++){
-			nodes[i][j]->weight = -1;
-			nodes[i][j]->known = false;
-		}
-	}
+  int i, j;
+  for (i=0;i<AbstractMaze::MAZE_SIZE;i++){
+    for (j=0;j<AbstractMaze::MAZE_SIZE;j++){
+      nodes[i][j]->weight = -1;
+      nodes[i][j]->known = false;
+    }
+  }
 }
 
 void AbstractMaze::update(SensorReading sr){
@@ -128,67 +128,68 @@ bool AbstractMaze::flood_fill_from_origin(char *path, int r1,  int c1){
 }
 
 bool AbstractMaze::flood_fill(char *path, int r0, int c0, int r1,  int c1){
-	Node *n = nodes[r0][c0];
-	Node *root = nodes[r1][c1];
-	Node *goal = nodes[r1][c1];
+  Node *n;
+  Node *goal = nodes[r1][c1];
 
-	//incase the maze has already been solved,  reset all weight and known values
+  //incase the maze has already been solved,  reset all weight and known values
   reset();
 
-	//explore all neighbors of the current node starting  with a weight of 1
-	//return 1 means path to goal was found
-	bool success = false;
-	n->explore_neighbors(goal,  0,  &success);
+  if (r0 == r1 && c0 == c1){
+    return true;
+  }
 
-	if (!success){
-		return false;
-	}
+  //explore all neighbors of the current node starting  with a weight of 1
+  //return 1 means path to goal was found
+  bool success = false;
 
-	//start at the goal
-	n = goal;
+  //start at the goal
+  n = goal;
 
-	//if we solved the maze,  traverse from goal back to root and record what direction is shortest
-	char *r_path = (char *)malloc(AbstractMaze::PATH_SIZE*sizeof(char));
-	char *r_p = r_path;
-	while (n != root){
-		Node *min_node = n;
-		Direction min_dir = Direction::N;
+  //recursively visits all neighbors
+  n->assign_weights_to_neighbors(nodes[r0][c0], 0, &success);
 
-		//find the neighbor with the lowest weight and go there,  that is the fastest route
+  //if we solved the maze,  traverse from goal back to root and record what direction is shortest
+  char *r_path = (char *)malloc(AbstractMaze::PATH_SIZE*sizeof(char));
+  char *r_p = r_path;
+  while (n != nodes[r0][c0]){
+    Node *min_node = n;
+    Direction min_dir = Direction::N;
+
+    //find the neighbor with the lowest weight and go there,  that is the fastest route
     Direction d;
     for (d=Direction::First;d<Direction::Last;d++){
-			if (n->neighbor(d) != NULL){
-				if (n->neighbor(d)->weight < min_node->weight){
-					min_node = n->neighbor(d);
-					min_dir = d;
-				}
-			}
-		}
+      if (n->neighbor(d) != NULL){
+        if (n->neighbor(d)->weight < min_node->weight){
+          min_node = n->neighbor(d);
+          min_dir = d;
+        }
+      }
+    }
 
-		n = min_node;
+    n = min_node;
 
-		*(r_p++) = dir_to_char(min_dir);
-	}
-	*r_p = '\0';
-	r_p = r_path;
+    *(r_p++) = dir_to_char(min_dir);
+  }
+  *r_p = '\0';
+  r_p = r_path;
 
-	//the create path is from goal to start,  so now we "reverse" it
-	char* p = path + strlen(r_p);
-    *(p--) = '\0';
-	while ((*r_p) != '\0'){
-		char c;
-		switch(*r_p){
-			case 'N':c='S';break;
-			case 'E':c='W';break;
-			case 'S':c='N';break;
-			case 'W':c='E';break;
-		}
-		*(p--) = c;
-		r_p++;
-	}
+  //the create path is from goal to start,  so now we "reverse" it
+  char* p = path + strlen(r_p);
+  *(p--) = '\0';
+  while ((*r_p) != '\0'){
+    char c;
+    switch(*r_p){
+      case 'N':c='S';break;
+      case 'E':c='W';break;
+      case 'S':c='N';break;
+      case 'W':c='E';break;
+    }
+    *(p--) = c;
+    r_p++;
+  }
 
-	free(r_path);
-	return true;
+  free(r_path);
+  return true;
 }
 
 void AbstractMaze::remove_neighbor(int row, int col, const Direction dir){
@@ -248,122 +249,122 @@ bool AbstractMaze::is_mouse_blocked(Direction dir){
 }
 
 void AbstractMaze::print_maze_mouse(){
-	int i,j;
-	for (i=0;i<AbstractMaze::MAZE_SIZE;i++){
-		char *str = (char *)malloc((AbstractMaze::MAZE_SIZE * 2 + 1) * sizeof(char));
+  int i,j;
+  for (i=0;i<AbstractMaze::MAZE_SIZE;i++){
+    char *str = (char *)malloc((AbstractMaze::MAZE_SIZE * 2 + 1) * sizeof(char));
 
-		char *s=str;
-		for (j=0;j<AbstractMaze::MAZE_SIZE;j++){
+    char *s=str;
+    for (j=0;j<AbstractMaze::MAZE_SIZE;j++){
       Node *n = nodes[i][j];
-			if (n->neighbor(Direction::W) == NULL){
-				strcpy(s++,"|");
-			}
-			else {
-				strcpy(s++,"_");
-			}
+      if (n->neighbor(Direction::W) == NULL){
+        strcpy(s++,"|");
+      }
+      else {
+        strcpy(s++,"_");
+      }
 
-			if (Mouse::getRow()  == i && Mouse::getCol() == j){
-					strcpy(s++,"o");
-			}
-			else if (n->neighbor(Direction::S) == NULL){
-					strcpy(s++,"_");
-			}
-			else {
-				strcpy(s++," ");
-			}
-		}
-		*(s++) = '|';
-		*s = '\0';
-		printf("%s\n",str);
-		free(str);
-	}
+      if (Mouse::getRow()  == i && Mouse::getCol() == j){
+        strcpy(s++,"o");
+      }
+      else if (n->neighbor(Direction::S) == NULL){
+        strcpy(s++,"_");
+      }
+      else {
+        strcpy(s++," ");
+      }
+    }
+    *(s++) = '|';
+    *s = '\0';
+    printf("%s\n",str);
+    free(str);
+  }
 }
 
 void AbstractMaze::print_maze(){
-	int i,j;
-	for (i=0;i<AbstractMaze::MAZE_SIZE;i++){
-		char *str = (char *)malloc((AbstractMaze::MAZE_SIZE * 2 + 1) * sizeof(char));
+  int i,j;
+  for (i=0;i<AbstractMaze::MAZE_SIZE;i++){
+    char *str = (char *)malloc((AbstractMaze::MAZE_SIZE * 2 + 1) * sizeof(char));
 
-		char *s=str;
-		for (j=0;j<AbstractMaze::MAZE_SIZE;j++){
+    char *s=str;
+    for (j=0;j<AbstractMaze::MAZE_SIZE;j++){
       Node *n = nodes[i][j];
-			if (n->neighbor(Direction::W) == NULL){
-				strcpy(s++,"|");
-				if (n->neighbor(Direction::S) == NULL){
-					strcpy(s++,"_");
-				}
-				else {
-					strcpy(s++," ");
-				}
-			}
-			else {
-				strcpy(s++,"_");
-				if (n->neighbor(Direction::S) == NULL){
-					strcpy(s++,"_");
-				}
-				else {
-					strcpy(s++," ");
-				}
-			}
-		}
-		*(s++) = '|';
-		*s = '\0';
-		printf("%s\n",str);
-		free(str);
-	}
+      if (n->neighbor(Direction::W) == NULL){
+        strcpy(s++,"|");
+        if (n->neighbor(Direction::S) == NULL){
+          strcpy(s++,"_");
+        }
+        else {
+          strcpy(s++," ");
+        }
+      }
+      else {
+        strcpy(s++,"_");
+        if (n->neighbor(Direction::S) == NULL){
+          strcpy(s++,"_");
+        }
+        else {
+          strcpy(s++," ");
+        }
+      }
+    }
+    *(s++) = '|';
+    *s = '\0';
+    printf("%s\n",str);
+    free(str);
+  }
 }
 
 void AbstractMaze::print_neighbor_maze(){
-	int i,j;
-	for (i=0;i<AbstractMaze::MAZE_SIZE;i++){
-		for (j=0;j<AbstractMaze::MAZE_SIZE;j++){
-			for (Direction d=Direction::First;d<Direction::Last;d++){
-				bool wall = (nodes[i][j]->neighbor(d) == NULL);
-				printf("%i",wall);
-			}
-			printf(" ");
-		}
-		printf("\n");
-	}
+  int i,j;
+  for (i=0;i<AbstractMaze::MAZE_SIZE;i++){
+    for (j=0;j<AbstractMaze::MAZE_SIZE;j++){
+      for (Direction d=Direction::First;d<Direction::Last;d++){
+        bool wall = (nodes[i][j]->neighbor(d) == NULL);
+        printf("%i",wall);
+      }
+      printf(" ");
+    }
+    printf("\n");
+  }
 }
 
 void AbstractMaze::print_weight_maze(){
-	int i,j;
-	for (i=0;i<AbstractMaze::MAZE_SIZE;i++){
-		for (j=0;j<AbstractMaze::MAZE_SIZE;j++){
-			int w = nodes[i][j]->weight;
-			printf("%03d ",w);
-		}
-		printf("\n");
-	}
+  int i,j;
+  for (i=0;i<AbstractMaze::MAZE_SIZE;i++){
+    for (j=0;j<AbstractMaze::MAZE_SIZE;j++){
+      int w = nodes[i][j]->weight;
+      printf("%03d ",w);
+    }
+    printf("\n");
+  }
 }
 
 void AbstractMaze::print_dist_maze(){
-	int i,j;
-	for (i=0;i<AbstractMaze::MAZE_SIZE;i++){
-		for (j=0;j<AbstractMaze::MAZE_SIZE;j++){
+  int i,j;
+  for (i=0;i<AbstractMaze::MAZE_SIZE;i++){
+    for (j=0;j<AbstractMaze::MAZE_SIZE;j++){
       Node *n = nodes[i][j];
-			int d = n->distance;
-			if (d<10){
-				printf("  %d ",d);
-			}
-			else if (d<100){
-				printf(" %d ",d);
-			}
-			else {
-				printf("%d ",d);
-			}
-		}
-		printf("\n");
-	}
+      int d = n->distance;
+      if (d<10){
+        printf("  %d ",d);
+      }
+      else if (d<100){
+        printf(" %d ",d);
+      }
+      else {
+        printf("%d ",d);
+      }
+    }
+    printf("\n");
+  }
 }
 
 void AbstractMaze::print_pointer_maze(){
-	int i,j;
-	for (i=0;i<AbstractMaze::MAZE_SIZE;i++){
-		for (j=0;j<AbstractMaze::MAZE_SIZE;j++){
-			printf("%p ", nodes[i][j]);
-		}
-		printf("\n");
-	}
+  int i,j;
+  for (i=0;i<AbstractMaze::MAZE_SIZE;i++){
+    for (j=0;j<AbstractMaze::MAZE_SIZE;j++){
+      printf("%p ", nodes[i][j]);
+    }
+    printf("\n");
+  }
 }
