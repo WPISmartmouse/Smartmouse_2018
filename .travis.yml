@@ -7,7 +7,7 @@ before_script:
   - mkdir build
   - cd build
   - cmake ..
-script: make && make arduino && make test
+script: make && make arduino
 before_install:
   - sudo apt-get -qq update
   - sudo apt-get install -y arduino
