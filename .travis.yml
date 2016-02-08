@@ -2,8 +2,11 @@ language: cpp
 sudo: required
 dist: trusty
 compiler: gcc
-before_script: mkdir build
-script: ./configure && cmake .. && make && make arduino && make test
+before_script:
+  - mkdir build
+  - cd build
+  - cmake ..
+script: ./configure && make && make arduino && make test
 before_install:
   - sudo apt-get -qq update
   - sudo apt-get install -y arduino
