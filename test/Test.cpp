@@ -58,6 +58,50 @@ TEST(NeighborTest, NeighborOfNeighborIsMyself) {
   EXPECT_EQ(myself, neighborOfNeighbor);
 }
 
+TEST(ConnectMazeTest, ConnectAllNeighbors) {
+  AbstractMaze maze;
+  maze.connect_all_neighbors_in_maze();
+
+  for (int i=0;i<AbstractMaze::MAZE_SIZE;i++){
+    for (int j=0;j<AbstractMaze::MAZE_SIZE;j++){
+      Node *n;
+      int status = maze.get_node(&n, i, j);
+
+      ASSERT_EQ(status, 0);
+      ASSERT_NE(n, (Node *)NULL);
+
+      if (i == 0) {
+        EXPECT_EQ(n->neighbor(Direction::N), (Node *)NULL);
+
+        if (j == 0) {
+          EXPECT_EQ(n->neighbor(Direction::W), (Node *)NULL);
+          EXPECT_NE(n->neighbor(Direction::E), (Node *)NULL);
+          EXPECT_NE(n->neighbor(Direction::S), (Node *)NULL);
+        }
+        else if (j == AbstractMaze::MAZE_SIZE - 1) {
+          EXPECT_EQ(n->neighbor(Direction::E), (Node *)NULL);
+          EXPECT_NE(n->neighbor(Direction::W), (Node *)NULL);
+          EXPECT_NE(n->neighbor(Direction::S), (Node *)NULL);
+        }
+      }
+      else if (i == AbstractMaze::MAZE_SIZE - 1) {
+        EXPECT_EQ(n->neighbor(Direction::S), (Node *)NULL);
+
+        if (j == 0) {
+          EXPECT_EQ(n->neighbor(Direction::W), (Node *)NULL);
+          EXPECT_NE(n->neighbor(Direction::E), (Node *)NULL);
+          EXPECT_NE(n->neighbor(Direction::N), (Node *)NULL);
+        }
+        else if (j == AbstractMaze::MAZE_SIZE - 1) {
+          EXPECT_EQ(n->neighbor(Direction::E), (Node *)NULL);
+          EXPECT_NE(n->neighbor(Direction::W), (Node *)NULL);
+          EXPECT_NE(n->neighbor(Direction::N), (Node *)NULL);
+        }
+      }
+    }
+  }
+}
+
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
