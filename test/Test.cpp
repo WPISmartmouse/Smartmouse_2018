@@ -19,6 +19,45 @@ TEST(NodeTest, InBoundsGetNode) {
   EXPECT_EQ(status, 0);
 }
 
+TEST(NodeTest, NeighborTest) {
+  AbstractMaze maze;
+  Node *n;
+  int status = maze.get_node(&n, 0, 0);
+  EXPECT_EQ(status, 0);
+
+  Node *nSouth;
+  status = maze.get_node(&nSouth, 1, 0);
+  EXPECT_EQ(status, 0);
+
+  Node *neighbor = n->neighbor(Direction::S);
+  EXPECT_NE(nSouth, neighbor);
+
+  maze.connect_neighbor(0, 0, Direction::S);
+
+  neighbor = n->neighbor(Direction::S);
+  EXPECT_EQ(nSouth, neighbor);
+}
+
+TEST(NodeTest, NeighborOfNeighborIsMyself) {
+  AbstractMaze maze;
+  maze.connect_all_neighbors(0, 0);
+  Node *myself;
+  Node *neighbor;
+  Node *neighborOfNeighbor;
+  int status = maze.get_node(&myself, 0, 0);
+  EXPECT_EQ(status, 0);
+
+  maze.connect_neighbor(0, 0, Direction::S);
+
+  neighbor = myself->neighbor(Direction::S);
+
+  ASSERT_NE(neighbor, (Node *)NULL);
+
+  neighborOfNeighbor = neighbor->neighbor(Direction::N);
+
+  EXPECT_EQ(myself, neighborOfNeighbor);
+}
+
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
