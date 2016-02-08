@@ -1,45 +1,42 @@
-#include "Test.h"
 #include "AbstractMaze.h"
-#define RED     "\x1b[31m"
-#define GREEN   "\x1b[32m"
-#define YELLOW  "\x1b[33m"
-#define BLUE    "\x1b[34m"
-#define MAGENTA "\x1b[35m"
-#define CYAN    "\x1b[36m"
-#define RESET   "\x1b[0m"
+#include "Node.h"
+#include "gtest/gtest.h"
 
-TestResult::TestResult() : success(false), status(-1), msg("uninitialized"){}
-TestResult::TestResult(bool success, int status, const char *msg) :
-     success(success), status(status), msg(msg){}
+class FooTest : public ::testing::Test {
+ protected:
 
-TestResult results[100];
+  FooTest() {
+    // You can do set-up work for each test here.
+  }
 
-TestResult testOutOfBounds(){
+  virtual ~FooTest() {
+    // You can do clean-up work that doesn't throw exceptions here.
+  }
+
+  // If the constructor and destructor are not enough for setting up
+  // and cleaning up each test, you can define the following methods:
+
+  virtual void SetUp() {
+    // Code here will be called immediately after the constructor (right
+    // before each test).
+  }
+
+  virtual void TearDown() {
+    // Code here will be called immediately after each test (right
+    // before the destructor).
+  }
+
+  // Objects declared here can be used by all tests in the test case for Foo.
+};
+
+TEST(NodeTest, OutOfBounds) {
   AbstractMaze maze;
   Node *n;
   int status = maze.get_node(&n, -1, -1);
-
-  if (status != Node::OUT_OF_BOUNDS){
-    return TestResult(false,-1,"Node out of Bounds");
-  }
-  else {
-    return TestResult(true,0,"testOutOfBounds Passed!");
-  }
+  EXPECT_EQ(status, Node::OUT_OF_BOUNDS);
 }
 
-int main(){
-  int index = 0;
-  results[index++] = testOutOfBounds();
-
-
-  for (int i=0;i<index;i++){
-    TestResult r = results[i];
-    printf(YELLOW "[%s]  " RESET,r.msg);
-    if (r.success){
-      printf(GREEN "PASSED (%d)\n" RESET, r.status);
-    }
-    else {
-      printf(RED "FAILED (%d)\n" RESET, r.status);
-    }
-  }
+int main(int argc, char **argv) {
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 }

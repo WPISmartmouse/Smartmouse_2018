@@ -6,7 +6,7 @@ before_script:
   - ./configure
   - mkdir build
   - cd build
-  - cmake ..
+  - cmake -Dtest=ON ..
 script: make && make arduino && make test
 before_install:
   - sudo apt-get -qq update

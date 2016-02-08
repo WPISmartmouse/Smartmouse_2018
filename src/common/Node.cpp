@@ -2,6 +2,8 @@
 
 #include <stdlib.h>
 
+const int Node::OUT_OF_BOUNDS = -2;
+
 Node *Node::neighbor(const Direction dir){
   switch(dir){
     case Direction::N:
