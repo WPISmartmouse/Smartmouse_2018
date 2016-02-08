@@ -19,7 +19,7 @@ TEST(NodeTest, InBoundsGetNode) {
   EXPECT_EQ(status, 0);
 }
 
-TEST(NodeTest, NeighborTest) {
+TEST(NeighborTest, NeighborTest) {
   AbstractMaze maze;
   Node *n;
   int status = maze.get_node(&n, 0, 0);
@@ -38,7 +38,7 @@ TEST(NodeTest, NeighborTest) {
   EXPECT_EQ(nSouth, neighbor);
 }
 
-TEST(NodeTest, NeighborOfNeighborIsMyself) {
+TEST(NeighborTest, NeighborOfNeighborIsMyself) {
   AbstractMaze maze;
   maze.connect_all_neighbors(0, 0);
   Node *myself;
