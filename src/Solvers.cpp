@@ -144,8 +144,10 @@ void Solvers::left_hand_follow(KnownMaze kmaze){
     Mouse::forward();
 		kmaze.mark_mouse_position_visited();
 
+#ifndef EMBED
     std::cin.get();
     system("clear");
+#endif
 
 	}
 	kmaze.fastest_route[step]=0;
