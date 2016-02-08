@@ -11,6 +11,13 @@ read_and_print: src/SensorReading.cpp src/SensorReading.h src/ReadAndPrint.cpp s
 	mkdir -p build
 	g++ -std=c++11 -g -o build/read_and_print src/ReadAndPrint.cpp src/Mouse.cpp src/Solvers.cpp src/Node.cpp src/Direction.cpp src/AbstractMaze.cpp src/KnownMaze.cpp src/SensorReading.cpp
 
+test: all test/Test.h test/Test.cpp
+	mkdir -p build
+	g++ -std=c++11 -g -o build/test -I src/ test/Test.cpp src/Mouse.cpp src/Solvers.cpp src/Node.cpp src/Direction.cpp src/AbstractMaze.cpp src/KnownMaze.cpp src/SensorReading.cpp
+
+	./build/test
+
+
 clean:
 	rm build/*
 	ano clean

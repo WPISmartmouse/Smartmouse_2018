@@ -2,3 +2,4 @@ language: cpp
 sudo: required
 dist: trusty
 compiler: gcc
+script: ./configure && make && make arduino && make test
