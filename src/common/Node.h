@@ -19,7 +19,7 @@ class Node {
     //if you want to iterate over neighbors, just increment the pointer to north
     Node *neighbors[4];
 
-    static const int OUT_OF_BOUNDS = -2;
+    static const int OUT_OF_BOUNDS;
 
     /** \brief intializes a node */
     Node(int row, int col);
