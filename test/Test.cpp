@@ -1,6 +1,11 @@
 #include "AbstractMaze.h"
+#include "KnownMaze.h"
+#include <fstream>
+#include "WallFollow.h"
 #include "Node.h"
 #include "gtest/gtest.h"
+
+const char *MAZE_SLN = "SSSSSSSSSSSSSSSEEEEEEENNNNNNWSSSSSWNSENNWWWWWSSEEENWWEESWWWNNNNNNNNENWEENWWENWNNSENSEENNWSNWWEEEEEEEEWSNWSSNNWSSSEENENSWSESSEEENWWEENNNWSSWNSENNWNSENSENEEESSSSSSSSSSNNNNNWSSWWWSWWNNWWNNSSENNSSESSENNEEENSWWWSSENEEENNNWENWENWNSESSSENNNNNWSNWWSSSSSWWWNNWWWSNNNNWSSNWSWWWSEESENESNWSWSEWSSNNWSSSEENNENESSE";
 
 TEST(NodeTest, OutOfBoundsGetNode) {
   AbstractMaze maze;
@@ -100,6 +105,25 @@ TEST(ConnectMazeTest, ConnectAllNeighbors) {
       }
     }
   }
+}
+
+TEST(SolveMazeTest, WallFollowSolve) {
+  std::string maze_file = "../mazes/16x16.mz";
+  std::fstream fs;
+  fs.open(maze_file, std::fstream::in);
+
+  ASSERT_TRUE(fs.good());
+
+  KnownMaze maze(fs);
+  WallFollow solver;
+  solver.setup(maze);
+  char *solution = solver.solve();
+  solver.teardown();
+
+  ASSERT_NE(solution, (char *)NULL);
+  EXPECT_STREQ(MAZE_SLN, solution);
+
+  fs.close();
 }
 
 int main(int argc, char **argv) {

@@ -22,8 +22,9 @@ int main(int argc, char* argv[]){
     KnownMaze maze(fs);
     WallFollow solver;
     solver.setup(maze);
-    maze.print_maze_mouse();
     char *solution = solver.solve();
+    solver.teardown();
+    maze.print_maze_mouse();
     printf("SOLUTION: %s\n", solution);
     fs.close();
     return EXIT_SUCCESS;

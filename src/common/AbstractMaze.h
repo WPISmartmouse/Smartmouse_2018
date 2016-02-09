@@ -11,8 +11,6 @@
 #include "Node.h"
 #include "Direction.h"
 
-class Mouse;
-
 /**
  * \brief the maze is graph of nodes, stored internally as an matrix.
  * don't forget to call free_maze(maze) after a maze is done being used

@@ -28,6 +28,7 @@ int main(int argc, char* argv[]){
       std::cin.get();
     }
 
+    solver.teardown();
     fs.close();
     return EXIT_SUCCESS;
   }
