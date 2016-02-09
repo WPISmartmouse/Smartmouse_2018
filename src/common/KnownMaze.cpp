@@ -55,4 +55,12 @@ SensorReading KnownMaze::sense(){
 }
 #endif
 
-KnownMaze::KnownMaze(){}
+KnownMaze::KnownMaze(){
+  fastest_route = (char *)malloc(PATH_SIZE*sizeof(char));
+  int i,j;
+  for (i=0;i<AbstractMaze::MAZE_SIZE;i++){
+    for (j=0;j<AbstractMaze::MAZE_SIZE;j++){
+      nodes[i][j] = new Node(i,j);
+    }
+  }
+}

@@ -8,11 +8,11 @@ void WallFollow::setup(KnownMaze kmaze) {
   this->kmaze = kmaze;
   kmaze.reset();
   kmaze.mark_origin_known();
+	step=0;
 }
 
 char *WallFollow::solve(){
 	//run till you find the goal
-	int step=0;
 	while (!isFinished()){
     stepOnce();
 	}
@@ -29,7 +29,6 @@ void WallFollow::teardown() {
 }
 
 AbstractMaze WallFollow::stepOnce(){
-  kmaze.print_maze_mouse();
 
   Direction dir = left_of_dir(Mouse::getDir());
 
@@ -49,6 +48,7 @@ AbstractMaze WallFollow::stepOnce(){
   }
 
   Mouse::forward();
+  kmaze.fastest_route[step++] = dir_to_char(Mouse::getDir());
   kmaze.mark_mouse_position_visited();
 
   return kmaze;

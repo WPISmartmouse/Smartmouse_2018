@@ -6,7 +6,7 @@
 #include <string.h>
 
 AbstractMaze::AbstractMaze() : solved(false) {
-  fastest_route = (char *)malloc(PATH_SIZE*sizeof(char)); //assume really bad route--visits all squares.
+  fastest_route = (char *)malloc(PATH_SIZE*sizeof(char));
   int i,j;
   for (i=0;i<AbstractMaze::MAZE_SIZE;i++){
     for (j=0;j<AbstractMaze::MAZE_SIZE;j++){
