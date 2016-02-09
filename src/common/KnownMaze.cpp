@@ -50,3 +50,5 @@ SensorReading KnownMaze::sense(){
       walls);
 }
 #endif
+
+KnownMaze::KnownMaze(){}

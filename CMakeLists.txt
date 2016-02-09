@@ -7,8 +7,11 @@ set(CMAKE_CXX_FLAGS "-g")
 
 include_directories(src src/common)
 
-add_executable(explore src/Explore.cpp ${COM_SRC})
-target_compile_features(explore PRIVATE cxx_strong_enums)
+add_executable(solve src/Solve.cpp ${COM_SRC})
+target_compile_features(solve PRIVATE cxx_strong_enums)
+
+add_executable(step_solve src/StepSolve.cpp ${COM_SRC})
+target_compile_features(step_solve PRIVATE cxx_strong_enums)
 
 add_executable(read_and_print src/ReadAndPrint.cpp ${COM_SRC})
 target_compile_features(read_and_print PRIVATE cxx_strong_enums)
