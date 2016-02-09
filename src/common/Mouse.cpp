@@ -21,6 +21,7 @@ bool Mouse::atCenter(){
 	return (row == AbstractMaze::MAZE_SIZE/2 || row == AbstractMaze::MAZE_SIZE/2-1) && (col == AbstractMaze::MAZE_SIZE/2 || col == AbstractMaze::MAZE_SIZE/2-1);
 }
 
+#ifndef EMBED
 int Mouse::forward(){
   switch(dir){
     case Direction::N:
@@ -46,6 +47,12 @@ int Mouse::forward(){
 	}
   return 0;
 }
+#else
+int Mouse::forward(){
+  //#TODO ACTUAL MOUSE MOVE CODE HERE
+  return 0;
+}
+#endif
 
 void Mouse::turn_to_face(Direction d){
   if (d == Direction::INVALID){

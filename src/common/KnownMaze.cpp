@@ -49,6 +49,10 @@ SensorReading KnownMaze::sense(){
       Mouse::getCol(),
       walls);
 }
+#else
+SensorReading KnownMaze::sense(){
+  //#TODO actual sensor code here
+}
 #endif
 
 KnownMaze::KnownMaze(){}
