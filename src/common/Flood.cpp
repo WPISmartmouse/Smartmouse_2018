@@ -17,6 +17,7 @@ void Flood::setup(KnownMaze kmaze){
 	//make all connections open in the no_wall_maze
   kmaze.reset();
   no_wall_maze.connect_all_neighbors_in_maze();
+  stepOnce();
 }
 
 AbstractMaze Flood::stepOnce(){
@@ -82,10 +83,9 @@ AbstractMaze Flood::stepOnce(){
 
 char *Flood::solve(){
 	//mouse starts at 0, 0
-	do {
+	while (!isFinished()){
     stepOnce();
-	}
-	while (!isFinished());
+  }
 
   return all_wall_maze.fastest_route;
 }

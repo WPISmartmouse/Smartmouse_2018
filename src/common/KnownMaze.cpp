@@ -37,17 +37,15 @@ KnownMaze::KnownMaze(std::fstream& fs){
 }
 
 SensorReading KnownMaze::sense(){
-	bool *walls;
-  bool *w = walls;
+  SensorReading sr(Mouse::getRow(), Mouse::getCol());
+  bool *w = sr.walls;
 	Node *n = get_mouse_node();
 
 	for (int i=0;i<4;i++){
 		*(w++) = (n->neighbors[i] == NULL);
 	}
 
-  return SensorReading(Mouse::getRow(),
-      Mouse::getCol(),
-      walls);
+  return sr;
 }
 #else
 SensorReading KnownMaze::sense(){

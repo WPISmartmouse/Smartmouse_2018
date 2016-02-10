@@ -107,6 +107,78 @@ TEST(ConnectMazeTest, ConnectAllNeighbors) {
   }
 }
 
+TEST(FloodFillTest, EmptyMaze){
+  std::string maze_file = "../mazes/empty.mz";
+  std::fstream fs;
+  fs.open(maze_file, std::fstream::in);
+
+  ASSERT_TRUE(fs.good());
+
+  KnownMaze maze(fs);
+  Node *origin;
+  Node *center;
+
+  int status = maze.get_node(&origin, 0, 0);
+  ASSERT_EQ(status, 0);
+
+  status = maze.get_node(&center,
+      AbstractMaze::MAZE_SIZE/2,
+      AbstractMaze::MAZE_SIZE/2);
+  ASSERT_EQ(status, 0);
+
+  bool success = false;
+  origin->assign_weights_to_neighbors(center, 0, &success);
+
+
+  for (int i=0;i<AbstractMaze::MAZE_SIZE;i++){
+    for (int j=0;j<AbstractMaze::MAZE_SIZE;j++){
+      Node *n;
+      int status = maze.get_node(&n, i, j);
+
+      ASSERT_EQ(status, 0);
+      ASSERT_NE(n, (Node *)NULL);
+
+      EXPECT_EQ(i+j, n->weight);
+    }
+  }
+}
+
+TEST(FloodFillTest, StripedMaze){
+  std::string maze_file = "../mazes/stripes.mz";
+  std::fstream fs;
+  fs.open(maze_file, std::fstream::in);
+
+  ASSERT_TRUE(fs.good());
+
+  KnownMaze maze(fs);
+  Node *origin;
+  Node *center;
+
+  int status = maze.get_node(&origin, 0, 0);
+  ASSERT_EQ(status, 0);
+
+  status = maze.get_node(&center,
+      AbstractMaze::MAZE_SIZE/2,
+      AbstractMaze::MAZE_SIZE/2);
+  ASSERT_EQ(status, 0);
+
+  bool success = false;
+  origin->assign_weights_to_neighbors(center, 0, &success);
+
+
+  for (int i=0;i<AbstractMaze::MAZE_SIZE;i++){
+    for (int j=0;j<AbstractMaze::MAZE_SIZE;j++){
+      Node *n;
+      int status = maze.get_node(&n, i, j);
+
+      ASSERT_EQ(status, 0);
+      ASSERT_NE(n, (Node *)NULL);
+
+      EXPECT_EQ(i+j, n->weight);
+    }
+  }
+}
+
 TEST(SolveMazeTest, WallFollowSolve) {
   std::string maze_file = "../mazes/16x16.mz";
   std::fstream fs;
