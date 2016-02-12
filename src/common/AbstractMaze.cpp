@@ -108,7 +108,7 @@ Node *AbstractMaze::maze_diff(AbstractMaze *maze2){
 }
 
 Node *AbstractMaze::center_node(){
-  return nodes[AbstractMaze::MAZE_SIZE/2][AbstractMaze::MAZE_SIZE/2];
+  return nodes[AbstractMaze::CENTER][AbstractMaze::CENTER];
 }
 
 void AbstractMaze::mark_mouse_position_visited() {

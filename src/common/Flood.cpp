@@ -9,6 +9,7 @@
 Flood::Flood() : solved(false), solvable(true), done(false) {
 	no_wall_path = (char*)calloc(AbstractMaze::PATH_SIZE, sizeof(char));
 	all_wall_path = (char *)calloc(AbstractMaze::PATH_SIZE, sizeof(char));
+	final_solution= (char *)calloc(AbstractMaze::PATH_SIZE, sizeof(char));
 }
 
 //starts at 0, 0 and explores the whole maze
@@ -47,12 +48,6 @@ AbstractMaze Flood::stepOnce(){
     //diffs all squares and returns sorted list of nodes to visit
     //the row/col of this goal will be used by flood fill custom
     goal = no_wall_maze.maze_diff(&all_wall_maze);
-
-    //if there aren't any unvisted nodes left,  stop!
-    if (goal == NULL){
-      //exit out of the do loop
-      done = true;
-    }
   }
   else {
     //it doesn't matter which maze this is from
@@ -60,27 +55,35 @@ AbstractMaze Flood::stepOnce(){
     goal = no_wall_maze.center_node();
   }
 
-  //solve flood fill on the two mazes from mouse to goal
-  solvable = no_wall_maze.flood_fill_from_mouse(no_wall_path,goal->row(),goal->col());
-  all_wall_maze.flood_fill_from_mouse(all_wall_path,goal->row(),goal->col());
-  printf("no wall path: %s\n",no_wall_path);
+  //if there aren't any unvisted nodes left,  stop!
+  if (goal == NULL){
+    done = true;
+    no_wall_maze.flood_fill_from_origin(final_solution,
+        AbstractMaze::CENTER,
+        AbstractMaze::CENTER);
+  }
+  else {
+    //solve flood fill on the two mazes from mouse to goal
+    solvable = no_wall_maze.flood_fill_from_mouse(no_wall_path,goal->row(),goal->col());
+    all_wall_maze.flood_fill_from_mouse(all_wall_path,goal->row(),goal->col());
 
-  //solve from origin to center
-  //this is what tells us whether or not we need to keep searching
-  no_wall_maze.flood_fill_from_origin(no_wall_maze.fastest_route,goal->row(),
-      goal->col());
-  all_wall_maze.flood_fill_from_origin(all_wall_maze.fastest_route,goal->row(),goal->col());
+    //solve from origin to center
+    //this is what tells us whether or not we need to keep searching
+    no_wall_maze.flood_fill_from_origin(no_wall_maze.fastest_route,goal->row(),
+        goal->col());
+    all_wall_maze.flood_fill_from_origin(all_wall_maze.fastest_route,goal->row(),goal->col());
 
-  //follow the no_wall path towards the previously defined goal
-  //this will be the center if we haven't already found it,
-  //or some other node if we have found it
-  Mouse::turn_to_face(no_wall_path[0]);
-  Mouse::forward();
-  no_wall_maze.print_maze_mouse();
+    //follow the no_wall path towards the previously defined goal
+    //this will be the center if we haven't already found it,
+    //or some other node if we have found it
+    Mouse::turn_to_face(no_wall_path[0]);
+    Mouse::forward();
+    //no_wall_maze.print_maze_mouse();
 
-  //mark the nodes visted in both the mazes
-  no_wall_maze.mark_mouse_position_visited();
-  all_wall_maze.mark_mouse_position_visited();
+    //mark the nodes visted in both the mazes
+    no_wall_maze.mark_mouse_position_visited();
+    all_wall_maze.mark_mouse_position_visited();
+  }
 }
 
 char *Flood::solve(){
@@ -89,7 +92,7 @@ char *Flood::solve(){
     stepOnce();
   }
 
-  return all_wall_maze.fastest_route;
+  return final_solution;
 }
 
 bool Flood::isFinished(){
@@ -100,4 +103,5 @@ void Flood::teardown(){
 	//this is the final solution which represents how the mouse should travel from start to finish
 	free(no_wall_path);
 	free(all_wall_path);
+  free(final_solution);
 }

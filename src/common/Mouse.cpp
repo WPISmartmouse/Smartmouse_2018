@@ -18,7 +18,7 @@ Direction Mouse::getDir(){
 }
 
 bool Mouse::atCenter(){
-	return (row == AbstractMaze::MAZE_SIZE/2 || row == AbstractMaze::MAZE_SIZE/2-1) && (col == AbstractMaze::MAZE_SIZE/2 || col == AbstractMaze::MAZE_SIZE/2-1);
+	return (row == AbstractMaze::CENTER || row == AbstractMaze::CENTER-1) && (col == AbstractMaze::CENTER || col == AbstractMaze::CENTER-1);
 }
 
 #ifndef EMBED

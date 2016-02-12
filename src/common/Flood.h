@@ -34,6 +34,7 @@ class Flood : public Solver {
 
     char *no_wall_path;
     char *all_wall_path;
+    char *final_solution;
 
     bool solvable, solved, done;
 };
