@@ -1,6 +1,7 @@
 #ifndef EMBED
 
 #include "KnownMaze.h"
+#include "Flood.h"
 #include "WallFollow.h"
 #include <errno.h>
 #include  <fstream>
@@ -9,7 +10,7 @@ int main(int argc, char* argv[]){
 
   std::string maze_file;
   if (argc < 2) {
-    maze_file = "mazes/16x16.mz";
+    maze_file = "../mazes/16x16.mz";
   }
   else {
     maze_file = std::string(argv[1]);
@@ -20,7 +21,7 @@ int main(int argc, char* argv[]){
 
   if (fs.good()){
     KnownMaze maze(fs);
-    WallFollow solver;
+    Flood solver;
     solver.setup(maze);
     char *solution = solver.solve();
     solver.teardown();

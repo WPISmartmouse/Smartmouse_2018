@@ -54,6 +54,9 @@ int Mouse::forward(){
 }
 #endif
 
+void Mouse::turn_to_face(char c){
+  turn_to_face(char_to_dir(c));
+}
 void Mouse::turn_to_face(Direction d){
   if (d == Direction::INVALID){
     //again, this is a super serious error... you can't ever do this.

@@ -15,9 +15,9 @@ Flood::Flood() : solved(false), solvable(true), done(false) {
 //kmaze is the known maze,  and should only be used to call sense()
 void Flood::setup(KnownMaze kmaze){
 	//make all connections open in the no_wall_maze
+  this->kmaze = kmaze;
   kmaze.reset();
   no_wall_maze.connect_all_neighbors_in_maze();
-  stepOnce();
 }
 
 AbstractMaze Flood::stepOnce(){
@@ -63,6 +63,7 @@ AbstractMaze Flood::stepOnce(){
   //solve flood fill on the two mazes from mouse to goal
   solvable = no_wall_maze.flood_fill_from_mouse(no_wall_path,goal->row(),goal->col());
   all_wall_maze.flood_fill_from_mouse(all_wall_path,goal->row(),goal->col());
+  printf("no wall path: %s\n",no_wall_path);
 
   //solve from origin to center
   //this is what tells us whether or not we need to keep searching
@@ -73,8 +74,9 @@ AbstractMaze Flood::stepOnce(){
   //follow the no_wall path towards the previously defined goal
   //this will be the center if we haven't already found it,
   //or some other node if we have found it
-  //
-  //mouse->execute_command(*no_wall_path);
+  Mouse::turn_to_face(no_wall_path[0]);
+  Mouse::forward();
+  no_wall_maze.print_maze_mouse();
 
   //mark the nodes visted in both the mazes
   no_wall_maze.mark_mouse_position_visited();
@@ -91,7 +93,7 @@ char *Flood::solve(){
 }
 
 bool Flood::isFinished(){
-  return strcmp(no_wall_maze.fastest_route, all_wall_maze.fastest_route) != 0 && solvable && !done;
+  return strcmp(no_wall_maze.fastest_route, all_wall_maze.fastest_route) == 0 && solvable && done;
 }
 
 void Flood::teardown(){

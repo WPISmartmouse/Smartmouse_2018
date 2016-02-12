@@ -2,6 +2,7 @@
 
 #include "KnownMaze.h"
 #include "Flood.h"
+#include "WallFollow.h"
 #include <errno.h>
 #include  <fstream>
 #include <iostream>
@@ -10,7 +11,7 @@ int main(int argc, char* argv[]){
 
   std::string maze_file;
   if (argc < 2) {
-    maze_file = "mazes/16x16.mz";
+    maze_file = "../mazes/16x16.mz";
   }
   else {
     maze_file = std::string(argv[1]);
@@ -25,6 +26,7 @@ int main(int argc, char* argv[]){
     solver.setup(maze);
     while (!solver.isFinished()) {
       solver.stepOnce();
+      //maze.print_maze_mouse();
       std::cin.get();
     }
 

@@ -19,7 +19,7 @@ class AbstractMaze {
   public:
 
     const static int MAZE_SIZE = 16;
-    const static int PATH_SIZE = 100;
+    const static int PATH_SIZE = 256;
     bool solved; //boolean for if we know the fastest route
     char *fastest_route; //a char array like NSEWNENNSNE, which means North, South, East...
 

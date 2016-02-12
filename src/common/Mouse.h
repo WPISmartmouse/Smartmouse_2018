@@ -38,6 +38,7 @@ class Mouse {
 
     /** literally just sets mouse position. pretty useless, but eventually will cause physical mouse to turn */
     static void turn_to_face(Direction d);
+    static void turn_to_face(char c);
 
   private:
 
