@@ -21,6 +21,12 @@ bool Mouse::atCenter(){
 	return (row == AbstractMaze::CENTER || row == AbstractMaze::CENTER-1) && (col == AbstractMaze::CENTER || col == AbstractMaze::CENTER-1);
 }
 
+bool Mouse::inBounds(){
+  return row >= 0 && col >= 0
+    && row < AbstractMaze::MAZE_SIZE - 1
+    && col < AbstractMaze::MAZE_SIZE - 1;
+}
+
 #ifndef EMBED
 int Mouse::forward(){
   switch(dir){

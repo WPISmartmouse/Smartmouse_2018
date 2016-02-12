@@ -10,17 +10,16 @@ include_directories(src src/common)
 add_library(common_lib ${COM_SRC})
 target_compile_features(common_lib PRIVATE cxx_strong_enums)
 
-add_executable(solve src/Solve.cpp)
-target_link_libraries(solve common_lib)
-target_compile_features(solve PRIVATE cxx_strong_enums)
+SET(MAINS Solve
+  StepSolve
+  Animate
+  ReadAndPrint)
 
-add_executable(step_solve src/StepSolve.cpp)
-target_link_libraries(step_solve common_lib)
-target_compile_features(step_solve PRIVATE cxx_strong_enums)
-
-add_executable(read_and_print src/ReadAndPrint.cpp)
-target_link_libraries(read_and_print common_lib)
-target_compile_features(read_and_print PRIVATE cxx_strong_enums)
+foreach(MAIN ${MAINS})
+  add_executable(${MAIN} "src/${MAIN}.cpp")
+  target_link_libraries(${MAIN} common_lib)
+  target_compile_features(${MAIN} PRIVATE cxx_strong_enums)
+endforeach()
 
 add_custom_target(arduino COMMAND ano build -s=../src -f="-std=c++11 -g -DEMBED -I common")
 

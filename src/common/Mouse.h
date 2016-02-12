@@ -33,6 +33,9 @@ class Mouse {
     */
     static int forward();
 
+    /** check if we're in bounds */
+    static bool inBounds();
+
     /** \brief is the mouse at the center of the maze? */
     static bool atCenter();
 
