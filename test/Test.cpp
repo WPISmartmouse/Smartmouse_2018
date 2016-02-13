@@ -110,6 +110,25 @@ TEST(ConnectMazeTest, ConnectAllNeighbors) {
   }
 }
 
+TEST(ConnectMazeTest, RemoveNeighbors) {
+  AbstractMaze maze;
+  maze.connect_all_neighbors_in_maze();
+
+  Node *n;
+  int status = maze.get_node(&n, 0, 0);
+  ASSERT_EQ(status, 0);
+  ASSERT_NE(n, (Node *)NULL);
+
+  Node *nSouth;
+  status = maze.get_node_in_direction(&nSouth, 0, 0, Direction::S);
+  ASSERT_EQ(status, 0);
+  ASSERT_NE(n, (Node *)NULL);
+
+  maze.remove_neighbor(0,0,Direction::S);
+  ASSERT_EQ(n->neighbor(Direction::S), (Node *)NULL);
+  ASSERT_EQ(nSouth->neighbor(Direction::N), (Node *)NULL);
+}
+
 TEST(FloodFillTest, EmptyMaze){
   std::string maze_file = "../mazes/empty.mz";
   std::fstream fs;

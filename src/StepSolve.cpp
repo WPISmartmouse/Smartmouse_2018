@@ -26,7 +26,7 @@ int main(int argc, char* argv[]){
     solver.setup(maze);
     while (!solver.isFinished()) {
       solver.stepOnce();
-      //maze.print_maze_mouse();
+      maze.print_maze_mouse();
       std::cin.get();
     }
 
