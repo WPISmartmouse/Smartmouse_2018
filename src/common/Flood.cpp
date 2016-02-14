@@ -1,3 +1,6 @@
+#ifndef A_SOLVER
+#define A_SOLVER
+
 #include "Flood.h"
 #include <string.h>
 #ifndef EMBED
@@ -105,3 +108,4 @@ void Flood::teardown(){
 	free(all_wall_path);
   free(final_solution);
 }
+#endif

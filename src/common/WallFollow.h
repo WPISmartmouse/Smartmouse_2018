@@ -6,7 +6,6 @@
 
 #include "Solver.h"
 #include "KnownMaze.h"
-#include <stdbool.h>
 
 class WallFollow : public Solver {
 

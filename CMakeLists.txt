@@ -21,7 +21,7 @@ foreach(MAIN ${MAINS})
   target_compile_features(${MAIN} PRIVATE cxx_strong_enums)
 endforeach()
 
-add_custom_target(arduino COMMAND ano build -s=../src -f="-std=c++11 -g -DEMBED -I common")
+add_custom_target(arduino COMMAND ano build -s=../src -f="-std=c++11 -g -DEMBED -I ../src/common")
 
 ################################
 # Testing

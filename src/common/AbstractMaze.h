@@ -3,9 +3,7 @@
  */
 #pragma once
 
-#include <stdlib.h>
 #include <stdio.h>
-#include <stdbool.h>
 
 #include "SensorReading.h"
 #include "Node.h"

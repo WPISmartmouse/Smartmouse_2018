@@ -60,9 +60,11 @@ int Mouse::forward(){
 }
 #endif
 
+#ifndef EMBED
 void Mouse::turn_to_face(char c){
   turn_to_face(char_to_dir(c));
 }
+
 void Mouse::turn_to_face(Direction d){
   if (d == Direction::INVALID){
     //again, this is a super serious error... you can't ever do this.
@@ -73,3 +75,12 @@ void Mouse::turn_to_face(Direction d){
 	}
 	//in reality this will turn the physical mouse
 }
+#else
+void Mouse::turn_to_face(char c){
+  //#TODO ACTUAL MOUSE MOVE CODE HERE
+}
+
+void Mouse::turn_to_face(Direction d){
+  //#TODO ACTUAL MOUSE MOVE CODE HERE
+}
+#endif

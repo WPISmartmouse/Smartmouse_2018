@@ -1,3 +1,6 @@
+#ifndef A_SOLVER
+#define A_SOLVER
+
 #include "WallFollow.h"
 #include <string.h>
 #ifndef EMBED
@@ -53,3 +56,4 @@ AbstractMaze WallFollow::stepOnce(){
 
   return kmaze;
 }
+#endif

@@ -8,7 +8,6 @@
 #pragma once
 
 #include "KnownMaze.h"
-#include <stdbool.h>
 #include "Solver.h"
 
 class Flood : public Solver {
