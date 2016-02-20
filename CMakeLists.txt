@@ -1,14 +1,18 @@
 project(smartmouse)
 cmake_minimum_required(VERSION 3.1)
 
-file(GLOB_RECURSE COM_SRC src/common/*.cpp src/common/*.h)
+file(GLOB_RECURSE COM_SRC src/common/*.cpp)
+file(GLOB_RECURSE COM_HRDS src/common/*.h)
 
 set(CMAKE_CXX_FLAGS "-g")
 
 include_directories(src src/common)
 
-add_library(common_lib ${COM_SRC})
+add_library(common_lib SHARED ${COM_SRC})
 target_compile_features(common_lib PRIVATE cxx_strong_enums)
+
+install(TARGETS common_lib LIBRARY DESTINATION lib)
+install(FILES ${COM_HRDS} DESTINATION "include/smartmouse")
 
 SET(MAINS Solve
   StepSolve
