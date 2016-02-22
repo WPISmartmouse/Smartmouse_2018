@@ -10,4 +10,4 @@ before_script:
 script: make && make arduino && ./runUnitTests
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get install -y arduino
+  - sudo apt-get install -y arduino gazebo7 libgazebo7-dev
