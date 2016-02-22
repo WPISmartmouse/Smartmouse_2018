@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef SIM
+#include <gazebo/msgs/msgs.hh>
+#endif
+
 #include "Direction.h"
 #include <stdlib.h>
 
@@ -44,6 +48,11 @@ class Mouse {
     static void turn_to_face(char c);
 
   private:
+
+#ifdef SIM
+  public: static void pose_callback(ConstPosePtr &msg);
+  public: static void sense_callback(ConstLaserScanPtr &msg);
+#endif
 
     static int row, col;
     static Direction dir;

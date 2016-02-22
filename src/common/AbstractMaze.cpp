@@ -244,14 +244,6 @@ void AbstractMaze::mark_origin_known(){
   nodes[0][0]->known = true;
 }
 
-bool AbstractMaze::is_mouse_blocked(){
-  return is_mouse_blocked(Mouse::getDir());
-}
-
-bool AbstractMaze::is_mouse_blocked(Direction dir){
-  return nodes[Mouse::getRow()][Mouse::getCol()]->neighbor(dir) == NULL;
-}
-
 void AbstractMaze::print_maze_mouse(){
   int i,j;
   for (i=0;i<AbstractMaze::MAZE_SIZE;i++){

@@ -1,4 +1,5 @@
 #include "Mouse.h"
+#include <stdio.h>
 #include "AbstractMaze.h"
 
 int Mouse::row = 0;
@@ -27,7 +28,7 @@ bool Mouse::inBounds(){
     && col < AbstractMaze::MAZE_SIZE - 1;
 }
 
-#ifndef EMBED
+#ifdef CONSOLE
 int Mouse::forward(){
   switch(dir){
     case Direction::N:
@@ -49,18 +50,53 @@ int Mouse::forward(){
 	if (row >= AbstractMaze::MAZE_SIZE || row < 0 || col >= AbstractMaze::MAZE_SIZE || col < 0){
     //this is probably the most serious error possible
     //it means you've run into a wall. Just give up.
+    printf("RAN INTO A FUCKING WALL\n");
     exit(-1);
 	}
   return 0;
 }
-#else
+#endif
+#ifdef SIM
+  void Mouse::pose_callback(ConstPosePtr &msg){}
+
+  void Mouse::sense_callback(ConstLaserScanPtr &msg){}
+
+int Mouse::forward(){
+  switch(dir){
+    case Direction::N:
+      row--;
+      break;
+    case Direction::E:
+      col++;
+      break;
+    case Direction::S:
+      row++;
+      break;
+    case Direction::W:
+      col--;
+      break;
+    default:
+      return -2;
+  }
+
+	if (row >= AbstractMaze::MAZE_SIZE || row < 0 || col >= AbstractMaze::MAZE_SIZE || col < 0){
+    //this is probably the most serious error possible
+    //it means you've run into a wall. Just give up.
+    printf("RAN INTO A FUCKING WALL\n");
+    exit(-1);
+	}
+  return 0;
+  return 0;
+}
+#endif
+#ifdef EMBED
 int Mouse::forward(){
   //#TODO ACTUAL MOUSE MOVE CODE HERE
   return 0;
 }
 #endif
 
-#ifndef EMBED
+#ifdef CONSOLE
 void Mouse::turn_to_face(char c){
   turn_to_face(char_to_dir(c));
 }
@@ -68,6 +104,7 @@ void Mouse::turn_to_face(char c){
 void Mouse::turn_to_face(Direction d){
   if (d == Direction::INVALID){
     //again, this is a super serious error... you can't ever do this.
+    printf("YOU CAN'T TURNTHAT WAY\n");
     exit(-1);
   }
 	if (dir != d){
@@ -75,7 +112,17 @@ void Mouse::turn_to_face(Direction d){
 	}
 	//in reality this will turn the physical mouse
 }
-#else
+#endif
+#ifdef SIM
+void Mouse::turn_to_face(char c){
+  //#TODO ACTUAL MOUSE MOVE CODE HERE
+}
+
+void Mouse::turn_to_face(Direction d){
+  //#TODO ACTUAL MOUSE MOVE CODE HERE
+}
+#endif
+#ifdef EMBED
 void Mouse::turn_to_face(char c){
   //#TODO ACTUAL MOUSE MOVE CODE HERE
 }

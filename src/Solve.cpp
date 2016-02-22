@@ -1,4 +1,4 @@
-#ifndef EMBED
+#ifdef CONSOLE
 
 #include "KnownMaze.h"
 #include "Flood.h"

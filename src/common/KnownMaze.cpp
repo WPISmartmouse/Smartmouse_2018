@@ -1,7 +1,7 @@
 #include "KnownMaze.h"
 #include "Mouse.h"
 
-#ifndef EMBED
+#ifdef CONSOLE
 KnownMaze::KnownMaze(std::fstream& fs){
   fastest_route = (char *)malloc(PATH_SIZE*sizeof(char)); //assume really bad route--visits all squares.
   for (int i=0;i<MAZE_SIZE;i++){
@@ -35,7 +35,9 @@ KnownMaze::KnownMaze(std::fstream& fs){
   }
   printf("\n");
 }
+#endif
 
+#ifdef CONSOLE
 SensorReading KnownMaze::sense(){
   SensorReading sr(Mouse::getRow(), Mouse::getCol());
   bool *w = sr.walls;
@@ -47,11 +49,27 @@ SensorReading KnownMaze::sense(){
 
   return sr;
 }
-#else
+#endif
+#ifdef SIM
 SensorReading KnownMaze::sense(){
   //#TODO actual sensor code here
 }
 #endif
+#ifdef EMBED
+SensorReading KnownMaze::sense(){
+  //#TODO actual sensor code here
+}
+#endif
+
+bool KnownMaze::is_mouse_blocked(){
+  SensorReading sr = sense();
+  return sr.isWall(Mouse::getDir());
+}
+
+bool KnownMaze::is_mouse_blocked(Direction dir){
+  SensorReading sr = sense();
+  return sr.isWall(dir);
+}
 
 KnownMaze::KnownMaze(){
   fastest_route = (char *)malloc(PATH_SIZE*sizeof(char));

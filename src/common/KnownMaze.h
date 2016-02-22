@@ -4,12 +4,13 @@
   #include <fstream>
 #endif
 #include "Mouse.h"
+#include "Direction.h"
 #include "SensorReading.h"
 #include "AbstractMaze.h"
 
 class KnownMaze : public AbstractMaze {
   public:
-#ifndef EMBED
+#ifdef CONSOLE
     KnownMaze(std::fstream& fs);
 #endif
 
@@ -17,6 +18,9 @@ class KnownMaze : public AbstractMaze {
      * \return 0 normally, OUT_OF_BOUND
      */
     SensorReading sense();
+
+    bool is_mouse_blocked();
+    bool is_mouse_blocked(Direction dir);
 
     KnownMaze();
 

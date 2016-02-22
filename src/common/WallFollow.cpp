@@ -3,6 +3,7 @@
 
 #include "WallFollow.h"
 #include <string.h>
+#include <stdio.h>
 #ifndef EMBED
   #include <iostream>
 #endif
@@ -32,7 +33,6 @@ void WallFollow::teardown() {
 }
 
 AbstractMaze WallFollow::stepOnce(){
-
   Direction dir = left_of_dir(Mouse::getDir());
 
   if (!kmaze.is_mouse_blocked(dir)){
