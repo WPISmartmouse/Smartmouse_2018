@@ -59,7 +59,7 @@ int Mouse::forward(){
 #ifdef SIM
   void Mouse::pose_callback(ConstPosePtr &msg){}
 
-  void Mouse::sense_callback(ConstLaserScanPtr &msg){}
+  void Mouse::sense_callback(ConstGzStringPtr &msg){}
 
 int Mouse::forward(){
   switch(dir){

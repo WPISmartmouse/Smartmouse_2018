@@ -51,7 +51,7 @@ class Mouse {
 
 #ifdef SIM
   public: static void pose_callback(ConstPosePtr &msg);
-  public: static void sense_callback(ConstLaserScanPtr &msg);
+  public: static void sense_callback(ConstGzStringPtr &msg);
 #endif
 
     static int row, col;
