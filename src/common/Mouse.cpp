@@ -2,6 +2,10 @@
 #include <stdio.h>
 #include "AbstractMaze.h"
 
+#ifdef SIM
+gazebo::math::Pose Mouse::pose;
+#endif
+
 int Mouse::row = 0;
 int Mouse::col = 0;
 Direction Mouse::dir = Direction::S;
@@ -57,9 +61,20 @@ int Mouse::forward(){
 }
 #endif
 #ifdef SIM
-  void Mouse::pose_callback(ConstPosePtr &msg){}
+  void Mouse::pose_callback(ConstPosePtr &msg){
+    pose.pos.x = msg->position().x();
+    pose.pos.y = msg->position().y();
+    pose.pos.z = msg->position().z();
 
-  void Mouse::sense_callback(ConstGzStringPtr &msg){}
+    pose.rot.x = msg->orientation().x();
+    pose.rot.y = msg->orientation().y();
+    pose.rot.z = msg->orientation().z();
+    pose.rot.w = msg->orientation().w();
+
+  }
+
+  void Mouse::sense_callback(ConstGzStringPtr &msg){
+  }
 
 int Mouse::forward(){
   switch(dir){

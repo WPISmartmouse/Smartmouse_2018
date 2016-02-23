@@ -52,6 +52,7 @@ class Mouse {
 #ifdef SIM
   public: static void pose_callback(ConstPosePtr &msg);
   public: static void sense_callback(ConstGzStringPtr &msg);
+  public: static gazebo::math::Pose pose;
 #endif
 
     static int row, col;
