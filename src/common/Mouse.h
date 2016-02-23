@@ -1,7 +1,8 @@
 #pragma once
 
 #ifdef SIM
-#include <gazebo/msgs/msgs.hh>
+  #include <gazebo/msgs/msgs.hh>
+  #include <gazebo/transport/transport.hh>
 #endif
 
 #include "Direction.h"
@@ -52,7 +53,8 @@ class Mouse {
 #ifdef SIM
   public: static void pose_callback(ConstPosePtr &msg);
   public: static void sense_callback(ConstGzStringPtr &msg);
-  public: static gazebo::math::Pose pose;
+  public: static gazebo::transport::PublisherPtr control_pub;
+  private: static gazebo::math::Pose pose;
 #endif
 
     static int row, col;

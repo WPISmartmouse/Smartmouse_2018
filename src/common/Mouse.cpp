@@ -2,10 +2,6 @@
 #include <stdio.h>
 #include "AbstractMaze.h"
 
-#ifdef SIM
-gazebo::math::Pose Mouse::pose;
-#endif
-
 int Mouse::row = 0;
 int Mouse::col = 0;
 Direction Mouse::dir = Direction::S;
@@ -48,7 +44,7 @@ int Mouse::forward(){
       col--;
       break;
     default:
-      return -2;
+      return -1;
   }
 
 	if (row >= AbstractMaze::MAZE_SIZE || row < 0 || col >= AbstractMaze::MAZE_SIZE || col < 0){
@@ -59,59 +55,7 @@ int Mouse::forward(){
 	}
   return 0;
 }
-#endif
-#ifdef SIM
-  void Mouse::pose_callback(ConstPosePtr &msg){
-    pose.pos.x = msg->position().x();
-    pose.pos.y = msg->position().y();
-    pose.pos.z = msg->position().z();
 
-    pose.rot.x = msg->orientation().x();
-    pose.rot.y = msg->orientation().y();
-    pose.rot.z = msg->orientation().z();
-    pose.rot.w = msg->orientation().w();
-
-  }
-
-  void Mouse::sense_callback(ConstGzStringPtr &msg){
-  }
-
-int Mouse::forward(){
-  switch(dir){
-    case Direction::N:
-      row--;
-      break;
-    case Direction::E:
-      col++;
-      break;
-    case Direction::S:
-      row++;
-      break;
-    case Direction::W:
-      col--;
-      break;
-    default:
-      return -2;
-  }
-
-	if (row >= AbstractMaze::MAZE_SIZE || row < 0 || col >= AbstractMaze::MAZE_SIZE || col < 0){
-    //this is probably the most serious error possible
-    //it means you've run into a wall. Just give up.
-    printf("RAN INTO A FUCKING WALL\n");
-    exit(-1);
-	}
-  return 0;
-  return 0;
-}
-#endif
-#ifdef EMBED
-int Mouse::forward(){
-  //#TODO ACTUAL MOUSE MOVE CODE HERE
-  return 0;
-}
-#endif
-
-#ifdef CONSOLE
 void Mouse::turn_to_face(char c){
   turn_to_face(char_to_dir(c));
 }
@@ -129,17 +73,51 @@ void Mouse::turn_to_face(Direction d){
 }
 #endif
 #ifdef SIM
+gazebo::math::Pose Mouse::pose;
+gazebo::transport::PublisherPtr Mouse::control_pub;
+
+void Mouse::pose_callback(ConstPosePtr &msg){
+  pose.pos.x = msg->position().x();
+  pose.pos.y = msg->position().y();
+  pose.pos.z = msg->position().z();
+
+  pose.rot.x = msg->orientation().x();
+  pose.rot.y = msg->orientation().y();
+  pose.rot.z = msg->orientation().z();
+  pose.rot.w = msg->orientation().w();
+
+}
+
+void Mouse::sense_callback(ConstGzStringPtr &msg){
+}
+
+int Mouse::forward(){
+  gazebo::msgs::GzString msg;
+  msg.set_data("forward");
+  control_pub->Publish(msg);
+  return 0;
+}
+
 void Mouse::turn_to_face(char c){
-  //#TODO ACTUAL MOUSE MOVE CODE HERE
+  gazebo::msgs::GzString msg;
+  std::string command = "turn to face ";
+  command += c;
+  msg.set_data(command);
+  control_pub->Publish(msg);
 }
 
 void Mouse::turn_to_face(Direction d){
-  //#TODO ACTUAL MOUSE MOVE CODE HERE
+  turn_to_face(dir_to_char(d));
 }
 #endif
 #ifdef EMBED
-void Mouse::turn_to_face(char c){
+int Mouse::forward(){
   //#TODO ACTUAL MOUSE MOVE CODE HERE
+  return 0;
+}
+
+void Mouse::turn_to_face(char c){
+  turn_to_face(char_to_dir(c));
 }
 
 void Mouse::turn_to_face(Direction d){
