@@ -3,8 +3,6 @@ cmake_minimum_required(VERSION 3.1)
 
 find_package(gazebo REQUIRED)
 
-message("libs=${GAZEBO_LIBRARIES}")
-
 list(APPEND CMAKE_CXX_FLAGS "${GAZEBO_CXX_FLAGS}")
 file(GLOB_RECURSE COM_SRC src/common/*.cpp)
 file(GLOB_RECURSE COM_HRDS src/common/*.h)
@@ -47,6 +45,7 @@ if (test)
 	target_compile_features(runUnitTests PRIVATE cxx_strong_enums)
 
   target_link_libraries(runUnitTests gtest gtest_main)
+  set_target_properties(runUnitTests PROPERTIES COMPILE_FLAGS "-DCONSOLE")
 
   add_test(all-tests runUnitTests)
 endif()
