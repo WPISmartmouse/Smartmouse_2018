@@ -35,9 +35,7 @@ KnownMaze::KnownMaze(std::fstream& fs){
   }
   printf("\n");
 }
-#endif
 
-#ifdef CONSOLE
 SensorReading KnownMaze::sense(){
   SensorReading sr(Mouse::getRow(), Mouse::getCol());
   bool *w = sr.walls;
@@ -51,8 +49,27 @@ SensorReading KnownMaze::sense(){
 }
 #endif
 #ifdef SIM
+bool KnownMaze::walls[4];
+
+void KnownMaze::sense_callback(ConstGzStringPtr &msg){
+  std::string data = msg->data();
+  for (int i=0;i<4;i++){
+    if (data.at(i) == '1') {
+      walls[i] = true;
+    } else {
+      walls[i] = false;
+    }
+  }
+}
+
 SensorReading KnownMaze::sense(){
-  //#TODO actual sensor code here
+  SensorReading sr(Mouse::getRow(), Mouse::getCol());
+  bool *w = sr.walls;
+  for (int i=0;i<4;i++){
+    *(w++) = walls[i];
+  }
+
+  return sr;
 }
 #endif
 #ifdef EMBED

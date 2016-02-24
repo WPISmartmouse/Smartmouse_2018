@@ -9,19 +9,23 @@
 #include "AbstractMaze.h"
 
 class KnownMaze : public AbstractMaze {
-  public:
 #ifdef CONSOLE
-    KnownMaze(std::fstream& fs);
+  public: KnownMaze(std::fstream& fs);
 #endif
 
     /* \brief check the wall surrounding you
      * \return 0 normally, OUT_OF_BOUND
      */
-    SensorReading sense();
+  public: SensorReading sense();
 
-    bool is_mouse_blocked();
-    bool is_mouse_blocked(Direction dir);
+#ifdef SIM
+  public: static void sense_callback(ConstGzStringPtr &msg);
+  private: static bool walls[4];
+#endif
 
-    KnownMaze();
+  public: bool is_mouse_blocked();
+  public: bool is_mouse_blocked(Direction dir);
+
+  public: KnownMaze();
 
 };

@@ -73,28 +73,54 @@ void Mouse::turn_to_face(Direction d){
 }
 #endif
 #ifdef SIM
-gazebo::math::Pose Mouse::pose;
+ignition::math::Pose3d Mouse::pose;
 gazebo::transport::PublisherPtr Mouse::control_pub;
 
 void Mouse::pose_callback(ConstPosePtr &msg){
-  pose.pos.x = msg->position().x();
-  pose.pos.y = msg->position().y();
-  pose.pos.z = msg->position().z();
+  pose.Pos().X(msg->position().x());
+  pose.Pos().Y(msg->position().y());
+  pose.Pos().Z(msg->position().z());
 
-  pose.rot.x = msg->orientation().x();
-  pose.rot.y = msg->orientation().y();
-  pose.rot.z = msg->orientation().z();
-  pose.rot.w = msg->orientation().w();
-
+  pose.Rot().X(msg->orientation().x());
+  pose.Rot().Y(msg->orientation().y());
+  pose.Rot().Z(msg->orientation().z());
+  pose.Rot().W(msg->orientation().w());
 }
 
-void Mouse::sense_callback(ConstGzStringPtr &msg){
+double Mouse::forwardDisplacement(ignition::math::Pose3d p0, ignition::math::Pose3d p1){
+  ignition::math::Vector3d b = p1.Pos() - p0.Pos();
+  ignition::math::Vector3d a;
+
+  switch(getDir()){
+    case Direction::N:
+      a = ignition::math::Vector3d(0,1,0);
+      break;
+    case Direction::E:
+      a = ignition::math::Vector3d(1,0,0);
+      break;
+    case Direction::S:
+      a = ignition::math::Vector3d(0,-1,0);
+      break;
+    case Direction::W:
+      a = ignition::math::Vector3d(-1,0,0);
+      break;
+  }
+
+  //projection of b unto a
+  return a.Dot(b)/a.Length();
 }
 
 int Mouse::forward(){
   gazebo::msgs::GzString msg;
   msg.set_data("forward");
   control_pub->Publish(msg);
+
+  ignition::math::Pose3d start = pose;
+  while (forwardDisplacement(start, pose) < 0.168) {
+    //wait until we've reached our location
+  }
+  printf("finished moving\n");
+
   return 0;
 }
 
