@@ -1,6 +1,7 @@
 #include "Mouse.h"
 #include <stdio.h>
 #include "AbstractMaze.h"
+#include "Direction.h"
 
 int Mouse::row = 0;
 int Mouse::col = 0;
@@ -113,27 +114,55 @@ double Mouse::forwardDisplacement(ignition::math::Pose3d p0, ignition::math::Pos
 int Mouse::forward(){
   gazebo::msgs::GzString msg;
   msg.set_data("forward");
+  printf("go forward\n");
   control_pub->Publish(msg);
 
   ignition::math::Pose3d start = pose;
   while (forwardDisplacement(start, pose) < 0.168) {
     //wait until we've reached our location
   }
-  printf("finished moving\n");
+  gazebo::msgs::GzString stop_msg;
+  stop_msg.set_data("stop");
+  control_pub->Publish(stop_msg);
+  printf("Stop.\n");
 
   return 0;
 }
 
 void Mouse::turn_to_face(char c){
-  gazebo::msgs::GzString msg;
-  std::string command = "turn to face ";
-  command += c;
-  msg.set_data(command);
-  control_pub->Publish(msg);
+  turn_to_face(char_to_dir(c));
+}
+
+
+double Mouse::rotation(ignition::math::Pose3d p0,
+            ignition::math::Pose3d p1){
+  ignition::math::Quaterniond d = p1.Rot() - p0.Rot();
+  return d.Yaw();
 }
 
 void Mouse::turn_to_face(Direction d){
-  turn_to_face(dir_to_char(d));
+  gazebo::msgs::GzString turn_msg; double dYaw = 0;
+  if (getDir() == d) {
+    return;
+  }
+  else if (getDir() < d){
+    dYaw = yawDifference(getDir(), d);
+    turn_msg.set_data("turn ccw");
+    control_pub->Publish(turn_msg);
+  }
+  else if (getDir() > d){
+    dYaw = yawDifference(getDir(), d);
+    turn_msg.set_data("turn cw");
+    control_pub->Publish(turn_msg);
+  }
+  ignition::math::Pose3d start = pose;
+  while (rotation(start, pose) < dYaw) {
+    //wait until we've reached our rotation
+  }
+  gazebo::msgs::GzString stop_msg;
+  stop_msg.set_data("stop");
+  printf("Stop.\n");
+  control_pub->Publish(stop_msg);
 }
 #endif
 #ifdef EMBED

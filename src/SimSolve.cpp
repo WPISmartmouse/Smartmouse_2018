@@ -19,8 +19,11 @@ int main(int argc, char* argv[]){
   gazebo::transport::SubscriberPtr pose_sub =
     node->Subscribe("~/mouse/pose", &Mouse::pose_callback);
   gazebo::transport::SubscriberPtr sense_sub =
-    node->Subscribe("~/mouse/sense", &KnownMaze::sense_callback);
+    node->Subscribe("~/mouse/base/laser/scan", &KnownMaze::sense_callback);
   Mouse::control_pub = node->Advertise<gazebo::msgs::GzString>("~/mouse/control");
+
+
+  system("sleep 2");
 
   KnownMaze maze;
   WallFollow solver;

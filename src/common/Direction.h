@@ -1,17 +1,19 @@
 #pragma once
 
 enum class Direction {
-  N,
-  E,
-  S,
-  W,
-	Last,
-	First = N,
+  N, //0
+  E, //1
+  S, //2
+  W, //3
+	Last, //4
+	First = N, //0
   INVALID = -1
 };
 
 /** \brief returns the left of the given direction */
 Direction left_of_dir(Direction d);
+
+double yawDifference(Direction d1, Direction d2);
 
 char opposite_direction(char c);
 

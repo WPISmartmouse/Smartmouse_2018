@@ -19,7 +19,7 @@ class KnownMaze : public AbstractMaze {
   public: SensorReading sense();
 
 #ifdef SIM
-  public: static void sense_callback(ConstGzStringPtr &msg);
+  public: static void sense_callback(ConstLaserScanStampedPtr &msg);
   private: static bool walls[4];
 #endif
 

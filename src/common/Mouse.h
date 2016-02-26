@@ -3,7 +3,6 @@
 #ifdef SIM
   #include <gazebo/msgs/msgs.hh>
   #include <gazebo/transport/transport.hh>
-  #include <ignition/math/Pose3.hh>
   #include <ignition/math.hh>
 #endif
 
@@ -54,6 +53,8 @@ class Mouse {
 
 #ifdef SIM
 
+  public: static double rotation(ignition::math::Pose3d p0,
+              ignition::math::Pose3d p1);
   public: static double forwardDisplacement(ignition::math::Pose3d p0,
               ignition::math::Pose3d p1);
   public: static void pose_callback(ConstPosePtr &msg);

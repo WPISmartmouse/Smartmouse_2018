@@ -51,10 +51,10 @@ SensorReading KnownMaze::sense(){
 #ifdef SIM
 bool KnownMaze::walls[4];
 
-void KnownMaze::sense_callback(ConstGzStringPtr &msg){
-  std::string data = msg->data();
-  for (int i=0;i<4;i++){
-    if (data.at(i) == '1') {
+void KnownMaze::sense_callback(ConstLaserScanStampedPtr &msg){
+  int size = msg->scan().ranges_size();
+  for (int i=0;i<size;i++){
+    if (msg->scan().ranges(i) < 0.15) {
       walls[i] = true;
     } else {
       walls[i] = false;
