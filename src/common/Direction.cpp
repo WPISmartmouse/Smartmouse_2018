@@ -53,7 +53,7 @@ Direction operator++(Direction& dir, int) {
 
 //calculate the change in yaw (radians) between to Directions
 double yawDifference(Direction d1, Direction d2){
-  return M_PI/4 * static_cast<int>(d1) - static_cast<int>(d2);
+  return M_PI/2 * (static_cast<int>(d1) - static_cast<int>(d2));
 }
 
 Direction opposite_direction(Direction d){

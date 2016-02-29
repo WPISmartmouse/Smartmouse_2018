@@ -10,7 +10,11 @@
 
 int main(int argc, char* argv[]){
   // Load gazebo
-  gazebo::client::setup(argc, argv);
+  bool connected = gazebo::client::setup(argc, argv);
+  if (!connected){
+    printf("failed to connect to gazebo. Is it running?\n");
+    exit(0);
+  }
 
   // Create our node for communication
   gazebo::transport::NodePtr node(new gazebo::transport::Node());

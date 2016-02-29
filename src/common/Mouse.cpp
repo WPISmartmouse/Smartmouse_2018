@@ -1,5 +1,6 @@
 #include "Mouse.h"
 #include <stdio.h>
+#include <cstdlib>
 #include "AbstractMaze.h"
 #include "Direction.h"
 
@@ -108,7 +109,7 @@ double Mouse::forwardDisplacement(ignition::math::Pose3d p0, ignition::math::Pos
   }
 
   //projection of b unto a
-  return a.Dot(b)/a.Length();
+  return -a.Dot(b)/a.Length();
 }
 
 int Mouse::forward(){
@@ -118,9 +119,12 @@ int Mouse::forward(){
   control_pub->Publish(msg);
 
   ignition::math::Pose3d start = pose;
-  while (forwardDisplacement(start, pose) < 0.168) {
+  double disp;
+  do {
+    disp = forwardDisplacement(start,pose);
     //wait until we've reached our location
   }
+  while (disp < 0.168);
   gazebo::msgs::GzString stop_msg;
   stop_msg.set_data("stop");
   control_pub->Publish(stop_msg);
@@ -136,8 +140,8 @@ void Mouse::turn_to_face(char c){
 
 double Mouse::rotation(ignition::math::Pose3d p0,
             ignition::math::Pose3d p1){
-  ignition::math::Quaterniond d = p1.Rot() - p0.Rot();
-  return d.Yaw();
+  double yaw = p1.Rot().Yaw() - p0.Rot().Yaw();
+  return yaw;
 }
 
 void Mouse::turn_to_face(Direction d){
@@ -156,9 +160,13 @@ void Mouse::turn_to_face(Direction d){
     control_pub->Publish(turn_msg);
   }
   ignition::math::Pose3d start = pose;
-  while (rotation(start, pose) < dYaw) {
+  double rot;
+  do {
+    rot = rotation(start, pose);
     //wait until we've reached our rotation
   }
+  while (rot < dYaw);
+
   gazebo::msgs::GzString stop_msg;
   stop_msg.set_data("stop");
   printf("Stop.\n");
