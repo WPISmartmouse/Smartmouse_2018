@@ -55,20 +55,40 @@ std::mutex KnownMaze::sense_mutex;
 bool KnownMaze::walls[4];
 
 void KnownMaze::sense_callback(ConstLaserScanStampedPtr &msg){
-  //things are out of order because gazeobo's laser scan thing works
-  //differently from the N, E, S, W order we use in this code
+  //transform from Mouse frame to Cardinal frame;
   int size = msg->scan().ranges_size();
-  walls[0] = msg->scan().ranges(1) < WALL_DIST; //N
-  walls[1] = msg->scan().ranges(0) < WALL_DIST; //E
-  walls[2] = msg->scan().ranges(3) < WALL_DIST; //S
-  walls[3] = msg->scan().ranges(2) < WALL_DIST; //W
+  switch(Mouse::getDir()) {
+    case Direction::N:
+      walls[0] = msg->scan().ranges(1) < WALL_DIST;
+      walls[1] = msg->scan().ranges(0) < WALL_DIST;
+      walls[2] = msg->scan().ranges(3) < WALL_DIST;
+      walls[3] = msg->scan().ranges(2) < WALL_DIST;
+      break;
+    case Direction::E:
+      walls[0] = msg->scan().ranges(2) < WALL_DIST;
+      walls[1] = msg->scan().ranges(1) < WALL_DIST;
+      walls[2] = msg->scan().ranges(0) < WALL_DIST;
+      walls[3] = msg->scan().ranges(3) < WALL_DIST;
+      break;
+    case Direction::S:
+      walls[0] = msg->scan().ranges(3) < WALL_DIST;
+      walls[1] = msg->scan().ranges(2) < WALL_DIST;
+      walls[2] = msg->scan().ranges(1) < WALL_DIST;
+      walls[3] = msg->scan().ranges(0) < WALL_DIST;
+      break;
+    case Direction::W:
+      walls[0] = msg->scan().ranges(0) < WALL_DIST;
+      walls[1] = msg->scan().ranges(3) < WALL_DIST;
+      walls[2] = msg->scan().ranges(2) < WALL_DIST;
+      walls[3] = msg->scan().ranges(1) < WALL_DIST;
+      break;
+  }
   sense_cond.notify_all();
 }
 
 SensorReading KnownMaze::sense(){
   std::unique_lock<std::mutex> lk(sense_mutex);
   sense_cond.wait(lk);
-  printf("walls=%d%d%d%d\n", walls[0], walls[1], walls[2], walls[3]);
   SensorReading sr(Mouse::getRow(), Mouse::getCol());
   bool *w = sr.walls;
   for (int i=0;i<4;i++){

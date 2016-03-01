@@ -10,6 +10,11 @@ int Mouse::row = 0;
 int Mouse::col = 0;
 Direction Mouse::dir = Direction::S;
 
+#ifdef SIM
+std::mutex Mouse::pose_mutex;
+std::condition_variable Mouse::pose_cond;
+#endif
+
 int Mouse::getRow(){
   return Mouse::row;
 }
@@ -77,6 +82,17 @@ void Mouse::turn_to_face(Direction d){
 ignition::math::Pose3d Mouse::pose;
 gazebo::transport::PublisherPtr Mouse::control_pub;
 
+void Mouse::simInit(){
+  gazebo::msgs::GzString stop_msg;
+  stop_msg.set_data("stop");
+  printf("Stop.\n");
+  for (int i=0;i<10;i++) {
+    control_pub->Publish(stop_msg);
+    usleep(1000);
+  }
+  usleep(10000);
+}
+
 void Mouse::pose_callback(ConstPosePtr &msg){
   pose.Pos().X(msg->position().x());
   pose.Pos().Y(msg->position().y());
@@ -86,52 +102,52 @@ void Mouse::pose_callback(ConstPosePtr &msg){
   pose.Rot().Y(msg->orientation().y());
   pose.Rot().Z(msg->orientation().z());
   pose.Rot().W(msg->orientation().w());
+
+  pose_cond.notify_all();
 }
 
 float Mouse::forwardDisplacement(ignition::math::Pose3d p0, ignition::math::Pose3d p1){
-  ignition::math::Vector3d b = p1.Pos() - p0.Pos();
-  ignition::math::Vector3d a;
-
   switch(getDir()){
     case Direction::N:
-      a = ignition::math::Vector3d(0,-1,0);
+      return p1.Pos().Y() - p0.Pos().Y();
       break;
     case Direction::E:
-      a = ignition::math::Vector3d(-1,0,0);
+      return p1.Pos().X() - p0.Pos().X();
       break;
     case Direction::S:
-      a = ignition::math::Vector3d(0,1,0);
+      return p0.Pos().Y() - p1.Pos().Y();
       break;
     case Direction::W:
-      a = ignition::math::Vector3d(1,0,0);
+      return p0.Pos().X() - p1.Pos().X();
       break;
   }
-
-  //projection of b unto a
-  float disp = -a.Dot(b)/a.Length();
-  return disp;
 }
 
 int Mouse::forward(){
-  gazebo::msgs::GzString msg;
-  msg.set_data("forward");
   printf("go forward\n");
-  control_pub->Publish(msg);
+
+  std::unique_lock<std::mutex> lk(pose_mutex);
+  pose_cond.wait(lk);
 
   ignition::math::Pose3d start = pose;
   float disp;
   do {
+    pose_cond.wait(lk);
     disp = forwardDisplacement(start,pose);
+
+    gazebo::msgs::GzString msg;
+    msg.set_data("forward");
+    control_pub->Publish(msg);
+
     printf("disp=%f\n", disp);
-    usleep(100000); //wait a bit
   }
   while (disp < 0.168);
   internalForward();
 
+  printf("Stop.\n");
   gazebo::msgs::GzString stop_msg;
   stop_msg.set_data("stop");
   control_pub->Publish(stop_msg);
-  printf("Stop.\n");
 
   return 0;
 }
@@ -146,12 +162,8 @@ float Mouse::rotation(ignition::math::Pose3d p0,
   float y1 = p1.Rot().Yaw();
   float y0 = p0.Rot().Yaw();
 
-  printf("%f %f ->", y1, y0);
-
   if (y0 < 0.0) { y0 += 2*M_PI; }
   if (y1 < 0.0) { y1 += 2*M_PI; }
-
-  printf("%f %f\n", y1, y0);
 
   return y1 - y0;
 }
@@ -163,34 +175,35 @@ float Mouse::absYawDiff(float y1, float y2){
 }
 
 void Mouse::turn_to_face(Direction d){
-  gazebo::msgs::GzString turn_msg;
-  float goalYaw = toYaw(d);
   if (getDir() == d) {
     return;
   }
-  else {
-    turn_msg.set_data("turn cw");
-    control_pub->Publish(turn_msg);
-  }
+
+  std::unique_lock<std::mutex> lk(pose_mutex);
+  pose_cond.wait(lk);
+
   ignition::math::Pose3d start = pose;
+  float goalYaw = toYaw(d);
   float dYaw;
   int i=0;
   do {
+    pose_cond.wait(lk);
     float currentYaw = pose.Rot().Yaw();
     dYaw = absYawDiff(currentYaw, goalYaw);
+
+    gazebo::msgs::GzString turn_msg;
+    turn_msg.set_data("turn cw");
+    control_pub->Publish(turn_msg);
+
     printf("yaw=%f goal=%f dYaw=%f d=%c\n",
-        currentYaw,
-        goalYaw,
-        dYaw,
-       dir_to_char(d));
-    usleep(100000); //wait a bit
+        currentYaw, goalYaw, dYaw, dir_to_char(d));
   }
   while (dYaw > ROT_TOLERANCE);
   internalTurnToFace(d);
 
+  printf("Stop.\n");
   gazebo::msgs::GzString stop_msg;
   stop_msg.set_data("stop");
-  printf("Stop.\n");
   control_pub->Publish(stop_msg);
 }
 #endif

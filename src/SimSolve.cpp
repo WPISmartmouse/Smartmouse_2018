@@ -26,8 +26,7 @@ int main(int argc, char* argv[]){
     node->Subscribe("~/mouse/base/laser/scan", &KnownMaze::sense_callback);
   Mouse::control_pub = node->Advertise<gazebo::msgs::GzString>("~/mouse/control");
 
-
-  system("sleep 2");
+  Mouse::simInit();
 
   KnownMaze *maze = new KnownMaze();
   WallFollow solver;

@@ -4,6 +4,8 @@
   #include <gazebo/msgs/msgs.hh>
   #include <gazebo/transport/transport.hh>
   #include <ignition/math.hh>
+  #include <mutex>
+  #include <condition_variable>
 #endif
 
 #include "Direction.h"
@@ -63,7 +65,10 @@ class Mouse {
   private: static float absYawDiff(float y1, float y2);
   public: static void pose_callback(ConstPosePtr &msg);
   public: static gazebo::transport::PublisherPtr control_pub;
+  public: static void simInit();
   private: static ignition::math::Pose3d pose;
+  private: static std::mutex pose_mutex;
+  private: static std::condition_variable pose_cond;
 #endif
 
     static int row, col;

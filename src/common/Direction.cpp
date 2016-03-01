@@ -59,9 +59,9 @@ Direction operator-(const Direction &d1, const Direction &d2) {
 double toYaw(Direction d){
   switch(d){
     case Direction::N: return 0;
-    case Direction::E: return M_PI/2;
+    case Direction::E: return -M_PI/2;
     case Direction::S: return M_PI;
-    case Direction::W: return -M_PI/2;
+    case Direction::W: return M_PI/2;
     default: return -999;
   }
 }
