@@ -8,10 +8,10 @@
   #include <iostream>
 #endif
 
-void WallFollow::setup(KnownMaze kmaze) {
+void WallFollow::setup(KnownMaze *kmaze) {
   this->kmaze = kmaze;
-  kmaze.reset();
-  kmaze.mark_origin_known();
+  kmaze->reset();
+  kmaze->mark_origin_known();
 	step=0;
 }
 
@@ -21,7 +21,7 @@ char *WallFollow::solve(){
     stepOnce();
 	}
   teardown();
-  return kmaze.fastest_route;
+  return kmaze->fastest_route;
 }
 
 bool WallFollow::isFinished(){
@@ -29,19 +29,19 @@ bool WallFollow::isFinished(){
 }
 
 void WallFollow::teardown() {
-	kmaze.fastest_route[step]=0;
+	kmaze->fastest_route[step]=0;
 }
 
 AbstractMaze WallFollow::stepOnce(){
   Direction dir = left_of_dir(Mouse::getDir());
 
-  if (!kmaze.is_mouse_blocked(dir)){
+  if (!kmaze->is_mouse_blocked(dir)){
     printf("turning left\n");
     //if you can turn left you must
     Mouse::turn_to_face(dir);
   }
-  else if (kmaze.is_mouse_blocked(Mouse::getDir())) {
-    if (!kmaze.is_mouse_blocked(opposite_direction(dir))){
+  else if (kmaze->is_mouse_blocked(Mouse::getDir())) {
+    if (!kmaze->is_mouse_blocked(opposite_direction(dir))){
       //if you can't go left or forward try right
       Mouse::turn_to_face(opposite_direction(dir));
     printf("turning right\n");
@@ -54,9 +54,9 @@ AbstractMaze WallFollow::stepOnce(){
   }
 
   Mouse::forward();
-  kmaze.fastest_route[step++] = dir_to_char(Mouse::getDir());
-  kmaze.mark_mouse_position_visited();
+  kmaze->fastest_route[step++] = dir_to_char(Mouse::getDir());
+  kmaze->mark_mouse_position_visited();
 
-  return kmaze;
+  return *kmaze;
 }
 #endif

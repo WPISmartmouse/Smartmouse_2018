@@ -49,20 +49,26 @@ SensorReading KnownMaze::sense(){
 }
 #endif
 #ifdef SIM
+std::condition_variable KnownMaze::sense_cond;
+std::mutex KnownMaze::sense_mutex;
+
 bool KnownMaze::walls[4];
 
 void KnownMaze::sense_callback(ConstLaserScanStampedPtr &msg){
+  //things are out of order because gazeobo's laser scan thing works
+  //differently from the N, E, S, W order we use in this code
   int size = msg->scan().ranges_size();
-  for (int i=0;i<size;i++){
-    if (msg->scan().ranges(i) < 0.15) {
-      walls[i] = true;
-    } else {
-      walls[i] = false;
-    }
-  }
+  walls[0] = msg->scan().ranges(1) < WALL_DIST; //N
+  walls[1] = msg->scan().ranges(0) < WALL_DIST; //E
+  walls[2] = msg->scan().ranges(3) < WALL_DIST; //S
+  walls[3] = msg->scan().ranges(2) < WALL_DIST; //W
+  sense_cond.notify_all();
 }
 
 SensorReading KnownMaze::sense(){
+  std::unique_lock<std::mutex> lk(sense_mutex);
+  sense_cond.wait(lk);
+  printf("walls=%d%d%d%d\n", walls[0], walls[1], walls[2], walls[3]);
   SensorReading sr(Mouse::getRow(), Mouse::getCol());
   bool *w = sr.walls;
   for (int i=0;i<4;i++){

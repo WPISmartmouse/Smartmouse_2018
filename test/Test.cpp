@@ -211,7 +211,7 @@ TEST(SolveMazeTest, WallFollowSolve) {
 
   KnownMaze maze(fs);
   WallFollow solver;
-  solver.setup(maze);
+  solver.setup(&maze);
   char *solution = solver.solve();
   solver.teardown();
 
@@ -230,7 +230,7 @@ TEST(SolveMazeTest, FloodSolve) {
 
   KnownMaze maze(fs);
   Flood solver;
-  solver.setup(maze);
+  solver.setup(&maze);
   char *solution = solver.solve();
   solver.teardown();
 

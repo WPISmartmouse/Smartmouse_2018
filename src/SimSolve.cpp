@@ -29,7 +29,7 @@ int main(int argc, char* argv[]){
 
   system("sleep 2");
 
-  KnownMaze maze;
+  KnownMaze *maze = new KnownMaze();
   WallFollow solver;
   solver.setup(maze);
   while (!solver.isFinished()) {

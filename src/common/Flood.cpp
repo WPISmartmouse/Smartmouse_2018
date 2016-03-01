@@ -17,10 +17,10 @@ Flood::Flood() : solved(false), solvable(true), done(false) {
 
 //starts at 0, 0 and explores the whole maze
 //kmaze is the known maze,  and should only be used to call sense()
-void Flood::setup(KnownMaze kmaze){
+void Flood::setup(KnownMaze *kmaze){
 	//make all connections open in the no_wall_maze
   this->kmaze = kmaze;
-  kmaze.reset();
+  kmaze->reset();
   no_wall_maze.connect_all_neighbors_in_maze();
 }
 
@@ -30,7 +30,7 @@ AbstractMaze Flood::stepOnce(){
 
   //check left right back and front sides
   //eventually this will return values from sensors
-  SensorReading sr = kmaze.sense();
+  SensorReading sr = kmaze->sense();
 
   //update the mazes base on that reading
   no_wall_maze.update(sr);

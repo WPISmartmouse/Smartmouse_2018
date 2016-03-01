@@ -11,13 +11,13 @@ class WallFollow : public Solver {
 
   public:
 
-    void setup(KnownMaze kmaze);
+    void setup(KnownMaze *kmaze);
     AbstractMaze stepOnce();
     char *solve();
     void teardown();
     bool isFinished();
 
   private:
-    KnownMaze kmaze;
+    KnownMaze *kmaze;
     int step;
 };

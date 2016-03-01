@@ -94,16 +94,16 @@ float Mouse::forwardDisplacement(ignition::math::Pose3d p0, ignition::math::Pose
 
   switch(getDir()){
     case Direction::N:
-      a = ignition::math::Vector3d(0,1,0);
-      break;
-    case Direction::E:
-      a = ignition::math::Vector3d(1,0,0);
-      break;
-    case Direction::S:
       a = ignition::math::Vector3d(0,-1,0);
       break;
-    case Direction::W:
+    case Direction::E:
       a = ignition::math::Vector3d(-1,0,0);
+      break;
+    case Direction::S:
+      a = ignition::math::Vector3d(0,1,0);
+      break;
+    case Direction::W:
+      a = ignition::math::Vector3d(1,0,0);
       break;
   }
 
@@ -185,7 +185,7 @@ void Mouse::turn_to_face(Direction d){
        dir_to_char(d));
     usleep(100000); //wait a bit
   }
-  while ( dYaw > ROT_TOLERANCE);
+  while (dYaw > ROT_TOLERANCE);
   internalTurnToFace(d);
 
   gazebo::msgs::GzString stop_msg;

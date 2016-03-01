@@ -22,7 +22,7 @@ int main(int argc, char* argv[]){
   if (fs.good()){
     KnownMaze maze(fs);
     Flood solver;
-    solver.setup(maze);
+    solver.setup(&maze);
     char *solution = solver.solve();
     solver.teardown();
     maze.print_maze_mouse();

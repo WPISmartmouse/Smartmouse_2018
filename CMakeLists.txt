@@ -20,7 +20,7 @@ SET(MAINS Solve
 
 foreach(MAIN ${MAINS})
   add_executable(${MAIN} "src/${MAIN}.cpp" ${COM_SRC})
-  target_compile_features(${MAIN} PRIVATE cxx_strong_enums)
+  target_compile_features(${MAIN} PRIVATE cxx_strong_enums cxx_constexpr)
   set_target_properties(${MAIN} PROPERTIES COMPILE_FLAGS "-DCONSOLE")
 endforeach()
 
@@ -28,7 +28,7 @@ add_custom_target(arduino COMMAND ano build -s=../src -f="-std=c++11 -g -DEMBED 
 
 add_executable(SimStepSolve "src/SimSolve.cpp" ${COM_SRC})
 target_link_libraries(SimStepSolve ${GAZEBO_LIBRARIES} pthread)
-target_compile_features(SimStepSolve PRIVATE cxx_strong_enums)
+target_compile_features(SimStepSolve PRIVATE cxx_strong_enums cxx_constexpr)
 set_target_properties(SimStepSolve PROPERTIES COMPILE_FLAGS "-DSIM")
 
 ################################

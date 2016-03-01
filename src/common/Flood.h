@@ -16,14 +16,14 @@ class Flood : public Solver {
 
     Flood();
 
-    void setup(KnownMaze kmaze);
+    void setup(KnownMaze *kmaze);
     AbstractMaze stepOnce();
     char *solve();
     void teardown();
     bool isFinished();
 
   private:
-    KnownMaze kmaze;
+    KnownMaze *kmaze;
 
     /// \brief this maze is initially no walls,  and walls are filled out every time the mouse moves
     AbstractMaze no_wall_maze;
