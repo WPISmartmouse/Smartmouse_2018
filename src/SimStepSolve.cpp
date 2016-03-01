@@ -31,7 +31,11 @@ int main(int argc, char* argv[]){
   KnownMaze *maze = new KnownMaze();
   WallFollow solver;
   solver.setup(maze);
-  solver.solve();
+  while (!solver.isFinished()) {
+    solver.stepOnce();
+    std::cin.get();
+  }
+
   solver.teardown();
 }
 

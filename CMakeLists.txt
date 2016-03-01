@@ -26,7 +26,12 @@ endforeach()
 
 add_custom_target(arduino COMMAND ano build -s=../src -f="-std=c++11 -g -DEMBED -I ../src/common")
 
-add_executable(SimStepSolve "src/SimSolve.cpp" ${COM_SRC})
+add_executable(SimSolve "src/SimSolve.cpp" ${COM_SRC})
+target_link_libraries(SimSolve ${GAZEBO_LIBRARIES} pthread)
+target_compile_features(SimSolve PRIVATE cxx_strong_enums cxx_constexpr)
+set_target_properties(SimSolve PROPERTIES COMPILE_FLAGS "-DSIM")
+
+add_executable(SimStepSolve "src/SimStepSolve.cpp" ${COM_SRC})
 target_link_libraries(SimStepSolve ${GAZEBO_LIBRARIES} pthread)
 target_compile_features(SimStepSolve PRIVATE cxx_strong_enums cxx_constexpr)
 set_target_properties(SimStepSolve PROPERTIES COMPILE_FLAGS "-DSIM")
