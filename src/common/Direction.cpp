@@ -1,4 +1,5 @@
 #include "Direction.h"
+#include <stdio.h>
 #include <cmath>
 
 char opposite_direction(char c){
@@ -51,9 +52,18 @@ Direction operator++(Direction& dir, int) {
   return dir;
 }
 
-//calculate the change in yaw (radians) between to Directions
-double yawDifference(Direction d1, Direction d2){
-  return M_PI/2 * (static_cast<int>(d1) - static_cast<int>(d2));
+Direction operator-(const Direction &d1, const Direction &d2) {
+  return static_cast<Direction>(static_cast<int>(d1), static_cast<int>(d2));
+}
+
+double toYaw(Direction d){
+  switch(d){
+    case Direction::N: return M_PI;
+    case Direction::E: return M_PI/2;
+    case Direction::S: return 0;
+    case Direction::W: return -M_PI/2;
+    default: return -999;
+  }
 }
 
 Direction opposite_direction(Direction d){

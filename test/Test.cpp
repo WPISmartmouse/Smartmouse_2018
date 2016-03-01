@@ -1,4 +1,5 @@
 #include "AbstractMaze.h"
+#include "Direction.h"
 #include "KnownMaze.h"
 #include <fstream>
 #include "WallFollow.h"
@@ -237,6 +238,20 @@ TEST(SolveMazeTest, FloodSolve) {
   EXPECT_STREQ(FLOOD_SLN, solution);
 
   fs.close();
+}
+
+TEST(DirectionTest, DirectionLogic) {
+  EXPECT_TRUE(Direction::W > Direction::S);
+  EXPECT_TRUE(Direction::W > Direction::E);
+  EXPECT_TRUE(Direction::W > Direction::N);
+
+  EXPECT_TRUE(Direction::S > Direction::E);
+  EXPECT_TRUE(Direction::S > Direction::N);
+  EXPECT_TRUE(Direction::S < Direction::W);
+
+  EXPECT_TRUE(Direction::E > Direction::N);
+  EXPECT_TRUE(Direction::E < Direction::W);
+  EXPECT_TRUE(Direction::E < Direction::S);
 }
 
 int main(int argc, char **argv) {

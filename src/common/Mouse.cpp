@@ -1,5 +1,7 @@
 #include "Mouse.h"
+#include <unistd.h>
 #include <stdio.h>
+#include <math.h>
 #include <cstdlib>
 #include "AbstractMaze.h"
 #include "Direction.h"
@@ -30,25 +32,22 @@ bool Mouse::inBounds(){
     && col < AbstractMaze::MAZE_SIZE - 1;
 }
 
+void Mouse::internalTurnToFace(Direction dir) {
+  Mouse::dir = dir;
+}
+
+void Mouse::internalForward(){
+  switch(dir){
+    case Direction::N: row--; break;
+    case Direction::E: col++; break;
+    case Direction::S: row++; break;
+    case Direction::W: col--; break;
+  }
+}
+
 #ifdef CONSOLE
 int Mouse::forward(){
-  switch(dir){
-    case Direction::N:
-      row--;
-      break;
-    case Direction::E:
-      col++;
-      break;
-    case Direction::S:
-      row++;
-      break;
-    case Direction::W:
-      col--;
-      break;
-    default:
-      return -1;
-  }
-
+  internalForward();
 	if (row >= AbstractMaze::MAZE_SIZE || row < 0 || col >= AbstractMaze::MAZE_SIZE || col < 0){
     //this is probably the most serious error possible
     //it means you've run into a wall. Just give up.
@@ -65,11 +64,11 @@ void Mouse::turn_to_face(char c){
 void Mouse::turn_to_face(Direction d){
   if (d == Direction::INVALID){
     //again, this is a super serious error... you can't ever do this.
-    printf("YOU CAN'T TURNTHAT WAY\n");
+    printf("YOU CAN'T TURN THAT WAY\n");
     exit(-1);
   }
 	if (dir != d){
-		dir = d;
+    internalTurnToFace(d);
 	}
 	//in reality this will turn the physical mouse
 }
@@ -89,7 +88,7 @@ void Mouse::pose_callback(ConstPosePtr &msg){
   pose.Rot().W(msg->orientation().w());
 }
 
-double Mouse::forwardDisplacement(ignition::math::Pose3d p0, ignition::math::Pose3d p1){
+float Mouse::forwardDisplacement(ignition::math::Pose3d p0, ignition::math::Pose3d p1){
   ignition::math::Vector3d b = p1.Pos() - p0.Pos();
   ignition::math::Vector3d a;
 
@@ -109,7 +108,8 @@ double Mouse::forwardDisplacement(ignition::math::Pose3d p0, ignition::math::Pos
   }
 
   //projection of b unto a
-  return -a.Dot(b)/a.Length();
+  float disp = -a.Dot(b)/a.Length();
+  return disp;
 }
 
 int Mouse::forward(){
@@ -119,12 +119,15 @@ int Mouse::forward(){
   control_pub->Publish(msg);
 
   ignition::math::Pose3d start = pose;
-  double disp;
+  float disp;
   do {
     disp = forwardDisplacement(start,pose);
-    //wait until we've reached our location
+    printf("disp=%f\n", disp);
+    usleep(100000); //wait a bit
   }
   while (disp < 0.168);
+  internalForward();
+
   gazebo::msgs::GzString stop_msg;
   stop_msg.set_data("stop");
   control_pub->Publish(stop_msg);
@@ -138,34 +141,52 @@ void Mouse::turn_to_face(char c){
 }
 
 
-double Mouse::rotation(ignition::math::Pose3d p0,
+float Mouse::rotation(ignition::math::Pose3d p0,
             ignition::math::Pose3d p1){
-  double yaw = p1.Rot().Yaw() - p0.Rot().Yaw();
-  return yaw;
+  float y1 = p1.Rot().Yaw();
+  float y0 = p0.Rot().Yaw();
+
+  printf("%f %f ->", y1, y0);
+
+  if (y0 < 0.0) { y0 += 2*M_PI; }
+  if (y1 < 0.0) { y1 += 2*M_PI; }
+
+  printf("%f %f\n", y1, y0);
+
+  return y1 - y0;
+}
+
+float Mouse::absYawDiff(float y1, float y2){
+  if (y2 < 0 && y1 > 0) { return fabs(y1 + y2); };
+  if (y1 < 0 && y2 > 0) { return fabs(y1 + y2); };
+  return fabs(y2-y1);
 }
 
 void Mouse::turn_to_face(Direction d){
-  gazebo::msgs::GzString turn_msg; double dYaw = 0;
+  gazebo::msgs::GzString turn_msg;
+  float goalYaw = toYaw(d);
   if (getDir() == d) {
     return;
   }
-  else if (getDir() < d){
-    dYaw = yawDifference(getDir(), d);
-    turn_msg.set_data("turn ccw");
-    control_pub->Publish(turn_msg);
-  }
-  else if (getDir() > d){
-    dYaw = yawDifference(getDir(), d);
+  else {
     turn_msg.set_data("turn cw");
     control_pub->Publish(turn_msg);
   }
   ignition::math::Pose3d start = pose;
-  double rot;
+  float dYaw;
+  int i=0;
   do {
-    rot = rotation(start, pose);
-    //wait until we've reached our rotation
+    float currentYaw = pose.Rot().Yaw();
+    dYaw = absYawDiff(currentYaw, goalYaw);
+    printf("yaw=%f goal=%f dYaw=%f d=%c\n",
+        currentYaw,
+        goalYaw,
+        dYaw,
+       dir_to_char(d));
+    usleep(100000); //wait a bit
   }
-  while (rot < dYaw);
+  while ( dYaw > ROT_TOLERANCE);
+  internalTurnToFace(d);
 
   gazebo::msgs::GzString stop_msg;
   stop_msg.set_data("stop");

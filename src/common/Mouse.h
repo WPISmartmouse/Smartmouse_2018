@@ -51,12 +51,16 @@ class Mouse {
 
   private:
 
+    static void internalTurnToFace(Direction dir);
+    static void internalForward();
+
 #ifdef SIM
 
-  public: static double rotation(ignition::math::Pose3d p0,
+  private: static float rotation(ignition::math::Pose3d p0,
               ignition::math::Pose3d p1);
-  public: static double forwardDisplacement(ignition::math::Pose3d p0,
+  private: static float forwardDisplacement(ignition::math::Pose3d p0,
               ignition::math::Pose3d p1);
+  private: static float absYawDiff(float y1, float y2);
   public: static void pose_callback(ConstPosePtr &msg);
   public: static gazebo::transport::PublisherPtr control_pub;
   private: static ignition::math::Pose3d pose;
@@ -64,4 +68,5 @@ class Mouse {
 
     static int row, col;
     static Direction dir;
+    static constexpr float ROT_TOLERANCE = 0.04;
 };
