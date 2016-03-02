@@ -1,19 +1,11 @@
 #include "Mouse.h"
-#include <unistd.h>
-#include <stdio.h>
-#include <math.h>
-#include <cstdlib>
 #include "AbstractMaze.h"
 #include "Direction.h"
+
 
 int Mouse::row = 0;
 int Mouse::col = 0;
 Direction Mouse::dir = Direction::S;
-
-#ifdef SIM
-std::mutex Mouse::pose_mutex;
-std::condition_variable Mouse::pose_cond;
-#endif
 
 int Mouse::getRow(){
   return Mouse::row;
@@ -79,6 +71,12 @@ void Mouse::turn_to_face(Direction d){
 }
 #endif
 #ifdef SIM
+#include <unistd.h>
+#include <stdio.h>
+#include <math.h>
+#include <cstdlib>
+std::mutex Mouse::pose_mutex;
+std::condition_variable Mouse::pose_cond;
 ignition::math::Pose3d Mouse::pose;
 gazebo::transport::PublisherPtr Mouse::control_pub;
 

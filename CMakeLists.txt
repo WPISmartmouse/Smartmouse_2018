@@ -24,7 +24,7 @@ foreach(MAIN ${MAINS})
   set_target_properties(${MAIN} PROPERTIES COMPILE_FLAGS "-DCONSOLE")
 endforeach()
 
-add_custom_target(arduino COMMAND ano build -s=../src -f="-std=c++11 -g -DEMBED -I ../src/common")
+add_custom_target(arduino COMMAND ano build -m=mega2560 -s=../src -f="-std=c++11 -g -DEMBED -I ../src/common")
 
 add_executable(SimSolve "src/SimSolve.cpp" ${COM_SRC})
 target_link_libraries(SimSolve ${GAZEBO_LIBRARIES} pthread)
