@@ -169,9 +169,10 @@ float Mouse::rotation(ignition::math::Pose3d p0,
 }
 
 float Mouse::absYawDiff(float y1, float y2){
-  if (y2 < 0 && y1 > 0) { return fabs(y1 + y2); };
-  if (y1 < 0 && y2 > 0) { return fabs(y1 + y2); };
-  return fabs(y2-y1);
+  float diff = y2 - y1;
+  if (diff > 180) return fabs(diff - 360);
+  if (diff < -180) return fabs(diff + 360);
+  return fabs(diff);
 }
 
 void Mouse::turn_to_face(Direction d){

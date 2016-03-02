@@ -1,6 +1,9 @@
 #include "Direction.h"
 #include <stdio.h>
+
+#ifndef EMBED
 #include <cmath>
+#endif
 
 char opposite_direction(char c){
   switch(c){
