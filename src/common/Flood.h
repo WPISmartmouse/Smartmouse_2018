@@ -9,21 +9,20 @@
 
 #include "KnownMaze.h"
 #include "Solver.h"
+#include "Mouse.h"
 
 class Flood : public Solver {
 
   public:
 
-    Flood();
-
-    void setup(KnownMaze *kmaze);
-    AbstractMaze stepOnce();
-    char *solve();
-    void teardown();
-    bool isFinished();
+    Flood(KnownMaze *maze);
+    virtual void setup() override;
+    virtual AbstractMaze stepOnce() override;
+    virtual char *solve() override;
+    virtual void teardown() override;
+    virtual bool isFinished() override;
 
   private:
-    KnownMaze *kmaze;
 
     /// \brief this maze is initially no walls,  and walls are filled out every time the mouse moves
     AbstractMaze no_wall_maze;

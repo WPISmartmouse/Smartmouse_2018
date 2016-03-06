@@ -7,6 +7,7 @@
 
 #include "SensorReading.h"
 #include "Node.h"
+#include "Mouse.h"
 #include "Direction.h"
 
 /**
@@ -25,7 +26,7 @@ class AbstractMaze {
     /** \brief allocates and initializes a node
      * allocates a maze of the given size and sets all links in graph to be null. Naturally, it's column major.
      */
-    AbstractMaze();
+    AbstractMaze(Mouse *mouse);
 
     /** prints a maze
     * @param maze the maze
@@ -119,10 +120,11 @@ class AbstractMaze {
      */
     void remove_neighbor(int row, int col, const Direction dir);
 
+    Mouse *mouse;
+
   private:
 
     bool flood_fill(char *path, int r0, int c0, int r1,  int c1);
 
-  protected:
     Node *nodes[AbstractMaze::MAZE_SIZE][AbstractMaze::MAZE_SIZE]; // array of node pointers
 };

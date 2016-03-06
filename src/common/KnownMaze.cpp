@@ -2,14 +2,7 @@
 #include "Mouse.h"
 
 #ifdef CONSOLE
-KnownMaze::KnownMaze(std::fstream& fs){
-  fastest_route = (char *)malloc(PATH_SIZE*sizeof(char)); //assume really bad route--visits all squares.
-  for (int i=0;i<MAZE_SIZE;i++){
-    for (int j=0;j<MAZE_SIZE;j++){
-      nodes[i][j] = new Node(i,j);
-    }
-  }
-
+KnownMaze::KnownMaze(std::fstream& fs, Mouse *mouse) : AbstractMaze(mouse) {
   std::string line;
 
   //look West and North to connect any nodes
@@ -37,7 +30,7 @@ KnownMaze::KnownMaze(std::fstream& fs){
 }
 
 SensorReading KnownMaze::sense(){
-  SensorReading sr(Mouse::getRow(), Mouse::getCol());
+  SensorReading sr(mouse->getRow(), mouse->getCol());
   bool *w = sr.walls;
 	Node *n = get_mouse_node();
 
@@ -49,15 +42,10 @@ SensorReading KnownMaze::sense(){
 }
 #endif
 #ifdef SIM
-std::condition_variable KnownMaze::sense_cond;
-std::mutex KnownMaze::sense_mutex;
-
-bool KnownMaze::walls[4];
-
 void KnownMaze::sense_callback(ConstLaserScanStampedPtr &msg){
   //transform from Mouse frame to Cardinal frame;
   int size = msg->scan().ranges_size();
-  switch(Mouse::getDir()) {
+  switch(mouse->getDir()) {
     case Direction::N:
       walls[0] = msg->scan().ranges(1) < WALL_DIST;
       walls[1] = msg->scan().ranges(0) < WALL_DIST;
@@ -89,7 +77,7 @@ void KnownMaze::sense_callback(ConstLaserScanStampedPtr &msg){
 SensorReading KnownMaze::sense(){
   std::unique_lock<std::mutex> lk(sense_mutex);
   sense_cond.wait(lk);
-  SensorReading sr(Mouse::getRow(), Mouse::getCol());
+  SensorReading sr(mouse->getRow(), mouse->getCol());
   bool *w = sr.walls;
   for (int i=0;i<4;i++){
     *(w++) = walls[i];
@@ -99,6 +87,7 @@ SensorReading KnownMaze::sense(){
 }
 #endif
 #ifdef EMBED
+#include <Arduino.h>
 SensorReading KnownMaze::sense(){
   //#TODO actual sensor code here
 }
@@ -106,7 +95,7 @@ SensorReading KnownMaze::sense(){
 
 bool KnownMaze::is_mouse_blocked(){
   SensorReading sr = sense();
-  return sr.isWall(Mouse::getDir());
+  return sr.isWall(mouse->getDir());
 }
 
 bool KnownMaze::is_mouse_blocked(Direction dir){
@@ -114,12 +103,4 @@ bool KnownMaze::is_mouse_blocked(Direction dir){
   return sr.isWall(dir);
 }
 
-KnownMaze::KnownMaze(){
-  fastest_route = (char *)malloc(PATH_SIZE*sizeof(char));
-  int i,j;
-  for (i=0;i<AbstractMaze::MAZE_SIZE;i++){
-    for (j=0;j<AbstractMaze::MAZE_SIZE;j++){
-      nodes[i][j] = new Node(i,j);
-    }
-  }
-}
+KnownMaze::KnownMaze(Mouse *mouse) : AbstractMaze(mouse) {}

@@ -4,8 +4,13 @@
 #include "AbstractMaze.h"
 #include "Mouse.h"
 #include <string.h>
+#include <stdlib.h>
 
-AbstractMaze::AbstractMaze() : solved(false) {
+#ifdef EMBED
+#include <Arduino.h>
+#endif
+
+AbstractMaze::AbstractMaze(Mouse *mouse) : solved(false), mouse(mouse) {
   fastest_route = (char *)malloc(PATH_SIZE*sizeof(char));
   int i,j;
   for (i=0;i<AbstractMaze::MAZE_SIZE;i++){
@@ -112,15 +117,15 @@ Node *AbstractMaze::center_node(){
 }
 
 void AbstractMaze::mark_mouse_position_visited() {
-  nodes[Mouse::getRow()][Mouse::getCol()]->visited= true;
+  nodes[mouse->getRow()][mouse->getCol()]->visited= true;
 }
 
 Node *AbstractMaze::get_mouse_node(){
-  return nodes[Mouse::getRow()][Mouse::getCol()];
+  return nodes[mouse->getRow()][mouse->getCol()];
 }
 
 bool AbstractMaze::flood_fill_from_mouse(char *path, int r1,  int c1){
-  flood_fill(path, Mouse::getRow(), Mouse::getCol(), r1, c1);
+  flood_fill(path, mouse->getRow(), mouse->getCol(), r1, c1);
 }
 
 bool AbstractMaze::flood_fill_from_origin(char *path, int r1,  int c1){
@@ -259,7 +264,7 @@ void AbstractMaze::print_maze_mouse(){
         strcpy(s++,"_");
       }
 
-      if (Mouse::getRow()  == i && Mouse::getCol() == j){
+      if (mouse->getRow()  == i && mouse->getCol() == j){
         strcpy(s++,"o");
       }
       else if (n->neighbor(Direction::S) == NULL){

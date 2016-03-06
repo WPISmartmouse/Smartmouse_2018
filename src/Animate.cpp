@@ -2,7 +2,7 @@
 
 #include "KnownMaze.h"
 #include "Flood.h"
-#include "Mouse.h"
+#include "ConsoleMouse.h"
 #include "WallFollow.h"
 #include <errno.h>
 #include <fstream>
@@ -52,18 +52,19 @@ int main(int argc, char* argv[]){
 
   std::fstream fs;
   fs.open(maze_file, std::fstream::in);
+  ConsoleMouse mouse;
 
   if (fs.good()){
     std::cout << "maze file: " << maze_file << std::endl;
     std::cout << "path: " << path << std::endl;
     std::cout << "start pos: (" << row << "," << col << ")" << std::endl;
 
-    KnownMaze maze(fs);
+    KnownMaze maze(fs, &mouse);
 		int i = 0;
-    while (Mouse::inBounds() && i < path.length()){
+    while (mouse.inBounds() && i < path.length()){
 			maze.print_maze_mouse();
-			Mouse::turn_to_face(path.at(i++));
-			Mouse::forward();
+			mouse.turnToFace(path.at(i++));
+			mouse.forward();
       std::cin.get();
     }
 

@@ -4,14 +4,9 @@
 
 class RealMouse : public Mouse {
   public:
-    /** @interit_doc */
-    void forward();
 
-    /** @interit_doc */
-    void turn_to_face(Direction d);
-
-    /** @interit_doc */
-    void turn_to_face(char c);
+    virtual int forward() override;
+    virtual void turn_to_face(Direction d) override;
 
     /** runs setup things like pin initializes */
     void setup();

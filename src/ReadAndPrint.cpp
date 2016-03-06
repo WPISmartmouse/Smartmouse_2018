@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <string>
+#include "ConsoleMouse.h"
 
 #include "KnownMaze.h"
 
@@ -15,10 +16,11 @@ int main(int argc, char *argv[]){
   }
 
   std::fstream fs;
+  ConsoleMouse mouse;
   fs.open(maze_file, std::fstream::in);
 
   if (fs.good()){
-    KnownMaze maze(fs);
+    KnownMaze maze(fs, &mouse);
     maze.print_maze();
     fs.close();
     return EXIT_SUCCESS;

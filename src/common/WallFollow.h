@@ -6,18 +6,20 @@
 
 #include "Solver.h"
 #include "KnownMaze.h"
+#include "Mouse.h"
 
 class WallFollow : public Solver {
 
   public:
 
-    void setup(KnownMaze *kmaze);
-    AbstractMaze stepOnce();
-    char *solve();
-    void teardown();
-    bool isFinished();
+    WallFollow(KnownMaze *mouse);
+    virtual void setup() override;
+    virtual AbstractMaze stepOnce() override;
+    virtual char *solve() override;
+    virtual void teardown() override;
+    virtual bool isFinished() override;
 
   private:
-    KnownMaze *kmaze;
     int step;
+
 };

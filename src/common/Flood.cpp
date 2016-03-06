@@ -3,13 +3,19 @@
 
 #include "Flood.h"
 #include <string.h>
+
 #ifndef EMBED
-  #include <iostream>
+#include <iostream>
+#else
+#include <Arduino.h>
 #endif
 
-#define min(a,  b) ((a) < (b) ? (a) : (b))
-
-Flood::Flood() : solved(false), solvable(true), done(false) {
+Flood::Flood(KnownMaze *maze) : Solver(maze),
+                                solved(false),
+                                solvable(true),
+                                done(false),
+                                all_wall_maze(maze->mouse),
+                                no_wall_maze(maze->mouse) {
 	no_wall_path = (char*)calloc(AbstractMaze::PATH_SIZE, sizeof(char));
 	all_wall_path = (char *)calloc(AbstractMaze::PATH_SIZE, sizeof(char));
 	final_solution= (char *)calloc(AbstractMaze::PATH_SIZE, sizeof(char));
@@ -17,16 +23,14 @@ Flood::Flood() : solved(false), solvable(true), done(false) {
 
 //starts at 0, 0 and explores the whole maze
 //kmaze is the known maze,  and should only be used to call sense()
-void Flood::setup(KnownMaze *kmaze){
-	//make all connections open in the no_wall_maze
-  this->kmaze = kmaze;
+void Flood::setup(){
   kmaze->reset();
   no_wall_maze.connect_all_neighbors_in_maze();
 }
 
 AbstractMaze Flood::stepOnce(){
-  int r = Mouse::getRow();
-  int c = Mouse::getCol();
+  int r = kmaze->mouse->getRow();
+  int c = kmaze->mouse->getCol();
 
   //check left right back and front sides
   //eventually this will return values from sensors
@@ -38,7 +42,7 @@ AbstractMaze Flood::stepOnce(){
 
   //first priority is look for the goal, so follow the no_wall_path until the goal is found
   //when you're at the goal, the path will be empty.
-  if (Mouse::getRow() == 7 && Mouse::getCol() == 7){
+  if (kmaze->mouse->getRow() == 7 && kmaze->mouse->getCol() == 7){
     solved = true;
   }
 
@@ -79,8 +83,8 @@ AbstractMaze Flood::stepOnce(){
     //follow the no_wall path towards the previously defined goal
     //this will be the center if we haven't already found it,
     //or some other node if we have found it
-    Mouse::turn_to_face(no_wall_path[0]);
-    Mouse::forward();
+    kmaze->mouse->turnToFace(no_wall_path[0]);
+    kmaze->mouse->forward();
     //no_wall_maze.print_maze_mouse();
 
     //mark the nodes visted in both the mazes

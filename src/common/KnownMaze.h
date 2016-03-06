@@ -6,6 +6,7 @@
 #ifdef SIM
   #include <mutex>
   #include <condition_variable>
+  #include <gazebo/msgs/msgs.hh>
 #endif
 #include "Mouse.h"
 #include "Direction.h"
@@ -13,26 +14,36 @@
 #include "AbstractMaze.h"
 
 class KnownMaze : public AbstractMaze {
-#ifdef CONSOLE
-  public: KnownMaze(std::fstream& fs);
-#endif
+
+  public:
 
     /* \brief check the wall surrounding you
      * \return 0 normally, OUT_OF_BOUND
      */
-  public: SensorReading sense();
+    SensorReading sense();
 
-#ifdef SIM
-  private: static constexpr float WALL_DIST = 0.125;
-  public: static void sense_callback(ConstLaserScanStampedPtr &msg);
-  private: static bool walls[4];
-  private: static std::condition_variable sense_cond;
-  private: static std::mutex sense_mutex;
+    bool is_mouse_blocked();
+    bool is_mouse_blocked(Direction dir);
+
+    KnownMaze(Mouse *mouse);
+
+  private:
+    static constexpr float WALL_DIST = 0.125;
+
+#ifdef CONSOLE
+  public: KnownMaze(std::fstream& fs, Mouse *mouse);
 #endif
 
-  public: bool is_mouse_blocked();
-  public: bool is_mouse_blocked(Direction dir);
+#ifdef SIM
+  public:
 
-  public: KnownMaze();
+    void sense_callback(ConstLaserScanStampedPtr &msg);
+    std::condition_variable sense_cond;
+
+  private:
+
+    bool walls[4];
+    std::mutex sense_mutex;
+#endif
 
 };

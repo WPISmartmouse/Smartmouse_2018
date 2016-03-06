@@ -1,6 +1,7 @@
 #include "AbstractMaze.h"
 #include "Direction.h"
 #include "KnownMaze.h"
+#include "ConsoleMouse.h"
 #include <fstream>
 #include "WallFollow.h"
 #include "Flood.h"
@@ -12,7 +13,7 @@ const char *FLOOD_SLN = "SSSSSSSSSSSSSSSEEEEEEENNNNNNWSSSWWWWWNNNNNNESSEENNENESS
 const char *WALL_FOLLOW_SLN = "SSSSSSSSSSSSSSSEEEEEEENNNNNNWSSSSSWNSENNWWWWWSSEEENWWEESWWWNNNNNNNNENWEENWWENWNNSENSEENNWSNWWEEEEEEEEWSNWSSNNWSSSEENENSWSESSEEENWWEENNNWSSWNSENNWNSENSENEEESSSSSSSSSSNNNNNWSSWWWSWWNNWWNNSSENNSSESSENNEEENSWWWSSENEEENNNWENWENWNSESSSENNNNNWSNWWSSSSSWWWNNWWWSNNNNWSSNWSWWWSEESENESNWSWSEWSSNNWSSSEENNENESSE";
 
 TEST(NodeTest, OutOfBoundsGetNode) {
-  AbstractMaze maze;
+  AbstractMaze maze(NULL);
   Node *n;
   int status = maze.get_node(&n, -1, -1);
   EXPECT_EQ(status, Node::OUT_OF_BOUNDS);
@@ -22,14 +23,14 @@ TEST(NodeTest, OutOfBoundsGetNode) {
 }
 
 TEST(NodeTest, InBoundsGetNode) {
-  AbstractMaze maze;
+  AbstractMaze maze(NULL);
   Node *n;
   int status = maze.get_node(&n, 0, 0);
   EXPECT_EQ(status, 0);
 }
 
 TEST(NeighborTest, NeighborTest) {
-  AbstractMaze maze;
+  AbstractMaze maze(NULL);
   Node *n;
   int status = maze.get_node(&n, 0, 0);
   EXPECT_EQ(status, 0);
@@ -48,7 +49,7 @@ TEST(NeighborTest, NeighborTest) {
 }
 
 TEST(NeighborTest, NeighborOfNeighborIsMyself) {
-  AbstractMaze maze;
+  AbstractMaze maze(NULL);
   maze.connect_all_neighbors(0, 0);
   Node *myself;
   Node *neighbor;
@@ -68,7 +69,7 @@ TEST(NeighborTest, NeighborOfNeighborIsMyself) {
 }
 
 TEST(ConnectMazeTest, ConnectAllNeighbors) {
-  AbstractMaze maze;
+  AbstractMaze maze(NULL);
   maze.connect_all_neighbors_in_maze();
 
   for (int i=0;i<AbstractMaze::MAZE_SIZE;i++){
@@ -112,7 +113,7 @@ TEST(ConnectMazeTest, ConnectAllNeighbors) {
 }
 
 TEST(ConnectMazeTest, RemoveNeighbors) {
-  AbstractMaze maze;
+  AbstractMaze maze(NULL);
   maze.connect_all_neighbors_in_maze();
 
   Node *n;
@@ -137,7 +138,8 @@ TEST(FloodFillTest, EmptyMaze){
 
   ASSERT_TRUE(fs.good());
 
-  KnownMaze maze(fs);
+  ConsoleMouse mouse;
+  KnownMaze maze(fs, &mouse);
   Node *origin;
   Node *center;
 
@@ -173,7 +175,8 @@ TEST(FloodFillTest, StripedMaze){
 
   ASSERT_TRUE(fs.good());
 
-  KnownMaze maze(fs);
+  ConsoleMouse mouse;
+  KnownMaze maze(fs, &mouse);
   Node *origin;
   Node *center;
 
@@ -209,9 +212,10 @@ TEST(SolveMazeTest, WallFollowSolve) {
 
   ASSERT_TRUE(fs.good());
 
-  KnownMaze maze(fs);
-  WallFollow solver;
-  solver.setup(&maze);
+  ConsoleMouse mouse;
+  KnownMaze maze(fs, &mouse);
+  WallFollow solver(&maze);
+  solver.setup();
   char *solution = solver.solve();
   solver.teardown();
 
@@ -228,9 +232,10 @@ TEST(SolveMazeTest, FloodSolve) {
 
   ASSERT_TRUE(fs.good());
 
-  KnownMaze maze(fs);
-  Flood solver;
-  solver.setup(&maze);
+  ConsoleMouse mouse;
+  KnownMaze maze(fs, &mouse);
+  Flood solver(&maze);
+  solver.setup();
   char *solution = solver.solve();
   solver.teardown();
 
