@@ -17,10 +17,13 @@ class Flood : public Solver {
 
     Flood(KnownMaze *maze);
     virtual void setup() override;
-    virtual AbstractMaze stepOnce() override;
+    virtual Direction planNextStep() override;
     virtual char *solve() override;
     virtual void teardown() override;
     virtual bool isFinished() override;
+    void setupStep();
+
+    bool done;
 
   private:
 
@@ -34,5 +37,5 @@ class Flood : public Solver {
     char *all_wall_path;
     char *final_solution;
 
-    bool solvable, solved, done;
+    bool solvable, solved;
 };

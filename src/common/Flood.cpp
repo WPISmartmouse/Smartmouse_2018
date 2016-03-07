@@ -28,7 +28,11 @@ void Flood::setup(){
   no_wall_maze.connect_all_neighbors_in_maze();
 }
 
-AbstractMaze Flood::stepOnce(){
+Direction Flood::planNextStep(){
+  //mark the nodes visted in both the mazes
+  no_wall_maze.mark_mouse_position_visited();
+  all_wall_maze.mark_mouse_position_visited();
+
   int r = kmaze->mouse->getRow();
   int c = kmaze->mouse->getCol();
 
@@ -68,6 +72,7 @@ AbstractMaze Flood::stepOnce(){
     no_wall_maze.flood_fill_from_origin(final_solution,
         AbstractMaze::CENTER,
         AbstractMaze::CENTER);
+    return Direction::INVALID;
   }
   else {
     //solve flood fill on the two mazes from mouse to goal
@@ -80,23 +85,15 @@ AbstractMaze Flood::stepOnce(){
         goal->col());
     all_wall_maze.flood_fill_from_origin(all_wall_maze.fastest_route,goal->row(),goal->col());
 
-    //follow the no_wall path towards the previously defined goal
-    //this will be the center if we haven't already found it,
-    //or some other node if we have found it
-    kmaze->mouse->turnToFace(no_wall_path[0]);
-    kmaze->mouse->forward();
-    //no_wall_maze.print_maze_mouse();
-
-    //mark the nodes visted in both the mazes
-    no_wall_maze.mark_mouse_position_visited();
-    all_wall_maze.mark_mouse_position_visited();
+    return char_to_dir(no_wall_path[0]);
   }
 }
 
 char *Flood::solve(){
 	//mouse starts at 0, 0
 	while (!isFinished()){
-    stepOnce();
+    kmaze->mouse->turnToFace(planNextStep());
+    kmaze->mouse->forward();
   }
 
   return final_solution;

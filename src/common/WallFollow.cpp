@@ -16,7 +16,8 @@ void WallFollow::setup() {
 char *WallFollow::solve(){
 	//run till you find the goal
 	while (!isFinished()){
-    stepOnce();
+    kmaze->mouse->turnToFace(planNextStep());
+    kmaze->mouse->forward();
 	}
   teardown();
   return kmaze->fastest_route;
@@ -30,27 +31,27 @@ void WallFollow::teardown() {
 	kmaze->fastest_route[step]=0;
 }
 
-AbstractMaze WallFollow::stepOnce(){
+Direction WallFollow::planNextStep(){
   Direction dir = left_of_dir(kmaze->mouse->getDir());
+  Direction nextDir;
 
   if (!kmaze->is_mouse_blocked(dir)){
     //if you can turn left you must
-    kmaze->mouse->turnToFace(dir);
+    nextDir = dir;
   }
   else if (kmaze->is_mouse_blocked(kmaze->mouse->getDir())) {
     if (!kmaze->is_mouse_blocked(opposite_direction(dir))){
       //if you can't go left or forward try right
-      kmaze->mouse->turnToFace(opposite_direction(dir));
+      nextDir = dir;
     }
     else {
       //you must do a 180
-      kmaze->mouse->turnToFace(opposite_direction(kmaze->mouse->getDir()));
+      nextDir = opposite_direction(kmaze->mouse->getDir());
     }
   }
 
-  kmaze->mouse->forward();
   kmaze->fastest_route[step++] = dir_to_char(kmaze->mouse->getDir());
   kmaze->mark_mouse_position_visited();
 
-  return *kmaze;
+  return nextDir;
 }

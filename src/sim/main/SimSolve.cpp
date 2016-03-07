@@ -7,6 +7,8 @@
 
 #include "SimMaze.h"
 #include "SimMouse.h"
+#include "SimTimer.h"
+#include "SolveCommand.h"
 #include "WallFollow.h"
 #include <iostream>
 
@@ -19,23 +21,29 @@ int main(int argc, char* argv[]){
   }
 
   SimMouse mouse;
-  SimMaze *maze = new SimMaze(&mouse);
+  SimMaze maze(&mouse);
+  SimTimer timer;
+  Command::setTimerImplementation(&timer);
 
   // Create our node for communication
   gazebo::transport::NodePtr node(new gazebo::transport::Node());
   node->Init();
 
+  gazebo::transport::SubscriberPtr timeSub =
+    node->Subscribe("~/world_stats", &SimTimer::simTimeCallback);
+
   gazebo::transport::SubscriberPtr poseSub =
     node->Subscribe("~/mouse/pose", &SimMouse::poseCallback, &mouse);
-  gazebo::transport::SubscriberPtr senseSub = node->Subscribe("~/mouse/base/laser/scan", &SimMaze::senseCallback, maze);
+
+  gazebo::transport::SubscriberPtr senseSub = node->Subscribe("~/mouse/base/laser/scan", &SimMaze::senseCallback, &maze);
   mouse.controlPub = node->Advertise<gazebo::msgs::GzString>("~/mouse/control");
 
   mouse.simInit();
+  Scheduler scheduler(new SolveCommand(&maze));
 
-  WallFollow solver(maze);
-  solver.setup();
-  solver.solve();
-  solver.teardown();
+  while (true){
+    scheduler.run();
+  }
 }
 
 #endif

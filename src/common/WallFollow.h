@@ -14,7 +14,7 @@ class WallFollow : public Solver {
 
     WallFollow(KnownMaze *mouse);
     virtual void setup() override;
-    virtual AbstractMaze stepOnce() override;
+    virtual Direction planNextStep() override;
     virtual char *solve() override;
     virtual void teardown() override;
     virtual bool isFinished() override;

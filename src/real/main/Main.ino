@@ -7,13 +7,12 @@
 #include "RealMaze.h"
 #include "WallFollow.h"
 
-Scheduler scheduler(new SolveCommand());
-
 ArduinoTimer timer;
 
 RealMouse mouse;
 RealMaze maze(&mouse);
 WallFollow solver(&maze);
+Scheduler scheduler(new SolveCommand(&maze));
 
 void setup(){
   Serial.begin(9600);

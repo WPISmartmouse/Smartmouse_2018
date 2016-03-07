@@ -1,11 +1,15 @@
 #ifdef CONSOLE
 
-#include "ConsoleMaze.h"
-#include "Flood.h"
-#include "WallFollow.h"
 #include <fstream>
 #include <iostream>
+
+#include "CommanDuino.h"
+#include "SolveCommand.h"
+#include "ConsoleMaze.h"
+#include "ConsoleTimer.h"
 #include "ConsoleMouse.h"
+#include "Flood.h"
+#include "WallFollow.h"
 
 int main(int argc, char* argv[]){
 
@@ -24,15 +28,19 @@ int main(int argc, char* argv[]){
 
   if (fs.good()){
     ConsoleMaze maze(fs, &mouse);
-    Flood solver(&maze);
-    solver.setup();
-    while (!solver.isFinished()) {
-      solver.stepOnce();
-      maze.print_maze_mouse();
-      std::cin.get();
-    }
+    ConsoleTimer timer;
+    Command::setTimerImplementation(&timer);
+    Scheduler scheduler(new SolveCommand(&maze));
 
-    solver.teardown();
+    while (true) {
+      scheduler.run();
+    }
+    //while (!solver.isFinished()) {
+      //solver.stepOnce();
+      //maze.print_maze_mouse();
+      //std::cin.get();
+    //}
+
     fs.close();
     return EXIT_SUCCESS;
   }
