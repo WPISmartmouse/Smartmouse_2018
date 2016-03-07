@@ -6,12 +6,12 @@ find_package(gazebo REQUIRED)
 list(APPEND CMAKE_CXX_FLAGS "${GAZEBO_CXX_FLAGS}")
 set(CMAKE_CXX_FLAGS "-g")
 
-file(GLOB COM_SRC src/common/*.cpp)
+file(GLOB COM_SRC src/common/*.cpp src/commanduino/*.cpp)
 file(GLOB SIM_SRC src/sim/*.cpp)
 file(GLOB CONSOLE_SRC src/console/*.cpp)
 file(GLOB REAL_SRC src/real/*.cpp)
 
-include_directories(src src/common src/real src/console src/sim ${GAZEBO_INCLUDE_DIRS})
+include_directories(src src/commanduino src/common src/real src/console src/sim ${GAZEBO_INCLUDE_DIRS})
 link_directories(${GAZEBO_LIBRARY_DIRS})
 
 SET(SIMS SimSolve

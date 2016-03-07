@@ -1,35 +1,26 @@
 #ifdef EMBED
+#include <CommanDuino.h>
+#include "commands/SolveCommand.h"
 #include "RealMouse.h"
 #include "RealMaze.h"
 #include "WallFollow.h"
 
-const int startButtonPin = 0;
+Scheduler scheduler(new SolveCommand());
+
+ArduinoTimer timer;
+Command::setTimerImplementation(&timer);
 
 RealMouse mouse;
 RealMaze maze(&mouse);
 WallFollow solver(&maze);
-bool done = false;
 
 void setup(){
   Serial.begin(9600);
   mouse.setup();
 
-  pinMode(startButtonPin, INPUT_PULLUP);
-
-  Serial.println("Waiting for button press");
-  while (digitalRead(startButtonPin));
-
-  Serial.println("Beginning routine.");
-  solver.setup();
 }
 
 void loop(){
-  if (!solver.isFinished()) {
-    solver.stepOnce();
-  }
-  else {
-    if (!done) Serial.println("DONE.");
-    done = true;
-  }
+  scheduler.run();
 }
 #endif

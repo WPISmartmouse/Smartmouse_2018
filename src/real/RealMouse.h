@@ -13,6 +13,8 @@ class RealMouse : public Mouse {
     /** runs setup things like pin initializes */
     void setup();
 
+    const static int startButtonPin = 0;
+
   private:
     const static int FORWARD_PIN = 8;
     const static int TURN_PIN = 9;

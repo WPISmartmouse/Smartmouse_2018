@@ -1,5 +1,6 @@
 #ifdef SIM
 
+#include "CommanDuino.h"
 #include <gazebo/transport/transport.hh>
 #include <gazebo/msgs/msgs.hh>
 #include <gazebo/gazebo_client.hh>
