@@ -1,6 +1,5 @@
 #ifdef CONSOLE
-
-#include "KnownMaze.h"
+#include "ConsoleMaze.h"
 #include "Flood.h"
 #include "ConsoleMouse.h"
 #include "WallFollow.h"
@@ -59,7 +58,7 @@ int main(int argc, char* argv[]){
     std::cout << "path: " << path << std::endl;
     std::cout << "start pos: (" << row << "," << col << ")" << std::endl;
 
-    KnownMaze maze(fs, &mouse);
+    ConsoleMaze maze(fs, &mouse);
 		int i = 0;
     while (mouse.inBounds() && i < path.length()){
 			maze.print_maze_mouse();
@@ -78,5 +77,4 @@ int main(int argc, char* argv[]){
     return EXIT_FAILURE;
   }
 }
-
 #endif

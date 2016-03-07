@@ -1,6 +1,6 @@
 #include "AbstractMaze.h"
 #include "Direction.h"
-#include "KnownMaze.h"
+#include "ConsoleMaze.h"
 #include "ConsoleMouse.h"
 #include <fstream>
 #include "WallFollow.h"
@@ -139,7 +139,7 @@ TEST(FloodFillTest, EmptyMaze){
   ASSERT_TRUE(fs.good());
 
   ConsoleMouse mouse;
-  KnownMaze maze(fs, &mouse);
+  ConsoleMaze maze(fs, &mouse);
   Node *origin;
   Node *center;
 
@@ -176,7 +176,7 @@ TEST(FloodFillTest, StripedMaze){
   ASSERT_TRUE(fs.good());
 
   ConsoleMouse mouse;
-  KnownMaze maze(fs, &mouse);
+  ConsoleMaze maze(fs, &mouse);
   Node *origin;
   Node *center;
 
@@ -213,7 +213,7 @@ TEST(SolveMazeTest, WallFollowSolve) {
   ASSERT_TRUE(fs.good());
 
   ConsoleMouse mouse;
-  KnownMaze maze(fs, &mouse);
+  ConsoleMaze maze(fs, &mouse);
   WallFollow solver(&maze);
   solver.setup();
   char *solution = solver.solve();
@@ -233,7 +233,7 @@ TEST(SolveMazeTest, FloodSolve) {
   ASSERT_TRUE(fs.good());
 
   ConsoleMouse mouse;
-  KnownMaze maze(fs, &mouse);
+  ConsoleMaze maze(fs, &mouse);
   Flood solver(&maze);
   solver.setup();
   char *solution = solver.solve();

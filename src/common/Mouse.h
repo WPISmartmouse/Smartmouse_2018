@@ -4,13 +4,9 @@
 
 /** \brief depresents a mouse
  * don't ever change the row/col of a mouse directly. This prevents it from working on the real robot
- * use forward and turn_to_face to move the mouse around. Once those functions work on the real robot it will port over fluidly
+ * use forward and turnToFace to move the mouse around. Once those functions work on the real robot it will port over fluidly
  */
 class Mouse {
-
-  friend class ConsoleMouse;
-  friend class RealMouse;
-  friend class SimMouse;
 
   public:
 
@@ -47,9 +43,9 @@ class Mouse {
     */
     virtual int forward() = 0;
 
-    virtual void turn_to_face(Direction d) = 0;
+    virtual void turnToFace(Direction d) = 0;
 
-  private:
+  protected:
 
     Mouse *instance;
 

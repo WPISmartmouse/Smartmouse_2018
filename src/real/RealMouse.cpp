@@ -16,7 +16,7 @@ int RealMouse::forward(){
   return 0;
 }
 
-void RealMouse::turn_to_face(Direction d){
+void RealMouse::turnToFace(Direction d){
   Serial.println("turn to face");
 
 }

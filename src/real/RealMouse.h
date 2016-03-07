@@ -1,4 +1,6 @@
+#pragma once
 #ifdef EMBED
+
 #include <Arduino.h>
 #include "Mouse.h"
 
@@ -6,7 +8,7 @@ class RealMouse : public Mouse {
   public:
 
     virtual int forward() override;
-    virtual void turn_to_face(Direction d) override;
+    virtual void turnToFace(Direction d) override;
 
     /** runs setup things like pin initializes */
     void setup();

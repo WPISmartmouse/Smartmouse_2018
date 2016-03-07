@@ -1,11 +1,13 @@
+#ifdef EMBED
 #include "RealMouse.h"
+#include "RealMaze.h"
 #include "WallFollow.h"
 
 const int startButtonPin = 0;
 
 RealMouse mouse;
-KnownMaze kmaze(&mouse);
-WallFollow solver(&kmaze);
+RealMaze maze(&mouse);
+WallFollow solver(&maze);
 bool done = false;
 
 void setup(){
@@ -30,4 +32,4 @@ void loop(){
     done = true;
   }
 }
-
+#endif

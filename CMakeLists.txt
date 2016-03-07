@@ -4,37 +4,38 @@ cmake_minimum_required(VERSION 3.1)
 find_package(gazebo REQUIRED)
 
 list(APPEND CMAKE_CXX_FLAGS "${GAZEBO_CXX_FLAGS}")
-file(GLOB_RECURSE COM_SRC src/common/*.cpp)
-file(GLOB_RECURSE COM_HRDS src/common/*.h)
-
 set(CMAKE_CXX_FLAGS "-g")
 
-include_directories(src src/common)
-include_directories(${GAZEBO_INCLUDE_DIRS})
+file(GLOB COM_SRC src/common/*.cpp)
+file(GLOB SIM_SRC src/sim/*.cpp)
+file(GLOB CONSOLE_SRC src/console/*.cpp)
+file(GLOB REAL_SRC src/real/*.cpp)
+
+include_directories(src src/common src/real src/console src/sim ${GAZEBO_INCLUDE_DIRS})
 link_directories(${GAZEBO_LIBRARY_DIRS})
 
-SET(MAINS Solve
+SET(SIMS SimSolve
+  SimStepSolve)
+
+SET(CONSOLES Solve
   StepSolve
   Animate
   ReadAndPrint)
 
-foreach(MAIN ${MAINS})
-  add_executable(${MAIN} "src/${MAIN}.cpp" ${COM_SRC})
+foreach(MAIN ${CONSOLES})
+  add_executable(${MAIN} "src/console/main/${MAIN}.cpp" ${COM_SRC} ${CONSOLE_SRC})
   target_compile_features(${MAIN} PRIVATE cxx_strong_enums cxx_constexpr)
   set_target_properties(${MAIN} PROPERTIES COMPILE_FLAGS "-DCONSOLE")
 endforeach()
 
-add_custom_target(arduino COMMAND ano build -m=mega2560 -s=../src -f="-std=c++11 -g -DEMBED -I ../src/common")
+foreach(MAIN ${SIMS})
+  add_executable(${MAIN} "src/sim/main/${MAIN}.cpp" ${COM_SRC} ${SIM_SRC})
+  target_compile_features(${MAIN} PRIVATE cxx_strong_enums cxx_constexpr)
+  target_link_libraries(${MAIN} ${GAZEBO_LIBRARIES})
+  set_target_properties(${MAIN} PROPERTIES COMPILE_FLAGS "-DSIM")
+endforeach()
 
-add_executable(SimSolve "src/SimSolve.cpp" ${COM_SRC})
-target_link_libraries(SimSolve ${GAZEBO_LIBRARIES} pthread)
-target_compile_features(SimSolve PRIVATE cxx_strong_enums cxx_constexpr)
-set_target_properties(SimSolve PROPERTIES COMPILE_FLAGS "-DSIM")
-
-add_executable(SimStepSolve "src/SimStepSolve.cpp" ${COM_SRC})
-target_link_libraries(SimStepSolve ${GAZEBO_LIBRARIES} pthread)
-target_compile_features(SimStepSolve PRIVATE cxx_strong_enums cxx_constexpr)
-set_target_properties(SimStepSolve PROPERTIES COMPILE_FLAGS "-DSIM")
+add_custom_target(arduino COMMAND ano build -m=mega2560 -s=../src -f="-std=c++11 -g -DEMBED -I ../src/common -I ../src/real")
 
 ################################
 # Testing
@@ -46,11 +47,11 @@ if (test)
 
   include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
-  add_executable(runUnitTests test/Test.cpp ${COM_SRC})
-	target_compile_features(runUnitTests PRIVATE cxx_strong_enums)
+  add_executable(runConsoleTests test/Test.cpp ${COM_SRC} ${CONSOLE_SRC})
+	target_compile_features(runConsoleTests PRIVATE cxx_strong_enums)
 
-  target_link_libraries(runUnitTests gtest gtest_main)
-  set_target_properties(runUnitTests PROPERTIES COMPILE_FLAGS "-DCONSOLE")
+  target_link_libraries(runConsoleTests gtest gtest_main)
+  set_target_properties(runConsoleTests PROPERTIES COMPILE_FLAGS "-DCONSOLE")
 
-  add_test(all-tests runUnitTests)
+  add_test(all-tests runConsoleTests)
 endif()

@@ -40,5 +40,5 @@ void Mouse::internalForward(){
 }
 
 void Mouse::turnToFace(char c){
-  turn_to_face(char_to_dir(c));
+  turnToFace(char_to_dir(c));
 }

@@ -15,7 +15,7 @@ int ConsoleMouse::forward(){
   return 0;
 }
 
-void ConsoleMouse::turn_to_face(Direction d){
+void ConsoleMouse::turnToFace(Direction d){
   if (d == Direction::INVALID){
     //again, this is a super serious error... you can't ever do this.
     printf("YOU CAN'T TURN THAT WAY\n");

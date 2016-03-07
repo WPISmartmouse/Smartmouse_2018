@@ -11,13 +11,13 @@ void SimMouse::simInit(){
   stop_msg.set_y(0);
   printf("Stop.\n");
   for (int i=0;i<10;i++) {
-    control_pub->Publish(stop_msg);
+    controlPub->Publish(stop_msg);
     usleep(1000);
   }
   usleep(10000);
 }
 
-void SimMouse::pose_callback(ConstPosePtr &msg){
+void SimMouse::poseCallback(ConstPosePtr &msg){
   pose.Pos().X(msg->position().x());
   pose.Pos().Y(msg->position().y());
   pose.Pos().Z(msg->position().z());
@@ -27,7 +27,7 @@ void SimMouse::pose_callback(ConstPosePtr &msg){
   pose.Rot().Z(msg->orientation().z());
   pose.Rot().W(msg->orientation().w());
 
-  pose_cond.notify_all();
+  poseCond.notify_all();
 }
 
 float SimMouse::forwardDisplacement(ignition::math::Pose3d p0, ignition::math::Pose3d p1){
@@ -50,19 +50,19 @@ float SimMouse::forwardDisplacement(ignition::math::Pose3d p0, ignition::math::P
 int SimMouse::forward(){
   printf("go forward\n");
 
-  std::unique_lock<std::mutex> lk(pose_mutex);
-  pose_cond.wait(lk);
+  std::unique_lock<std::mutex> lk(poseMutex);
+  poseCond.wait(lk);
 
   ignition::math::Pose3d start = pose;
   float disp;
   do {
-    pose_cond.wait(lk);
+    poseCond.wait(lk);
     disp = forwardDisplacement(start,pose);
 
     gazebo::msgs::Vector2d msg;
     msg.set_x(0);
     msg.set_y(0);
-    control_pub->Publish(msg);
+    controlPub->Publish(msg);
 
     printf("disp=%f\n", disp);
   }
@@ -73,7 +73,7 @@ int SimMouse::forward(){
   gazebo::msgs::Vector2d stop_msg;
   stop_msg.set_x(0);
   stop_msg.set_y(0);
-  control_pub->Publish(stop_msg);
+  controlPub->Publish(stop_msg);
 
   return 0;
 }
@@ -96,27 +96,27 @@ float SimMouse::absYawDiff(float y1, float y2){
   return fabs(diff);
 }
 
-void SimMouse::turn_to_face(Direction d){
+void SimMouse::turnToFace(Direction d){
   if (getDir() == d) {
     return;
   }
 
-  std::unique_lock<std::mutex> lk(pose_mutex);
-  pose_cond.wait(lk);
+  std::unique_lock<std::mutex> lk(poseMutex);
+  poseCond.wait(lk);
 
   ignition::math::Pose3d start = pose;
   float goalYaw = toYaw(d);
   float dYaw;
   int i=0;
   do {
-    pose_cond.wait(lk);
+    poseCond.wait(lk);
     float currentYaw = pose.Rot().Yaw();
     dYaw = absYawDiff(currentYaw, goalYaw);
 
     gazebo::msgs::Vector2d turn_msg;
     turn_msg.set_x(0.01);
     turn_msg.set_y(0.01);
-    control_pub->Publish(turn_msg);
+    controlPub->Publish(turn_msg);
 
     printf("yaw=%f goal=%f dYaw=%f d=%c\n",
         currentYaw, goalYaw, dYaw, dir_to_char(d));
@@ -128,6 +128,6 @@ void SimMouse::turn_to_face(Direction d){
   gazebo::msgs::Vector2d stop_msg;
   stop_msg.set_x(0);
   stop_msg.set_y(0);
-  control_pub->Publish(stop_msg);
+  controlPub->Publish(stop_msg);
 }
 #endif

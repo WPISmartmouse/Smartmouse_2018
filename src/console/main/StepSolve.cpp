@@ -1,11 +1,12 @@
 #ifdef CONSOLE
 
-#include "KnownMaze.h"
-#include "ConsoleMouse.h"
+#include "ConsoleMaze.h"
 #include "Flood.h"
 #include "WallFollow.h"
 #include <errno.h>
 #include  <fstream>
+#include <iostream>
+#include "ConsoleMouse.h"
 
 int main(int argc, char* argv[]){
 
@@ -19,16 +20,20 @@ int main(int argc, char* argv[]){
 
   std::fstream fs;
   fs.open(maze_file, std::fstream::in);
+
   ConsoleMouse mouse;
 
   if (fs.good()){
-    KnownMaze maze(fs, &mouse);
+    ConsoleMaze maze(fs, &mouse);
     Flood solver(&maze);
     solver.setup();
-    char *solution = solver.solve();
+    while (!solver.isFinished()) {
+      solver.stepOnce();
+      maze.print_maze_mouse();
+      std::cin.get();
+    }
+
     solver.teardown();
-    maze.print_maze_mouse();
-    printf("SOLUTION: %s\n", solution);
     fs.close();
     return EXIT_SUCCESS;
   }
@@ -38,5 +43,4 @@ int main(int argc, char* argv[]){
     return EXIT_FAILURE;
   }
 }
-
 #endif

@@ -4,7 +4,7 @@
 #include <string>
 #include "ConsoleMouse.h"
 
-#include "KnownMaze.h"
+#include "ConsoleMaze.h"
 
 int main(int argc, char *argv[]){
   std::string maze_file;
@@ -20,7 +20,7 @@ int main(int argc, char *argv[]){
   fs.open(maze_file, std::fstream::in);
 
   if (fs.good()){
-    KnownMaze maze(fs, &mouse);
+    ConsoleMaze maze(fs, &mouse);
     maze.print_maze();
     fs.close();
     return EXIT_SUCCESS;
@@ -31,5 +31,4 @@ int main(int argc, char *argv[]){
     return EXIT_FAILURE;
   }
 }
-
 #endif

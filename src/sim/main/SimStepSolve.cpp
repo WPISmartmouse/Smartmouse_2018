@@ -5,7 +5,7 @@
 #include <gazebo/gazebo_client.hh>
 #include <iostream>
 
-#include "KnownMaze.h"
+#include "SimMaze.h"
 #include "WallFollow.h"
 #include "SimMouse.h"
 
@@ -18,17 +18,17 @@ int main(int argc, char* argv[]){
   }
 
   SimMouse mouse;
-  KnownMaze *maze = new KnownMaze(&mouse);
+  SimMaze *maze = new SimMaze(&mouse);
 
   // Create our node for communication
   gazebo::transport::NodePtr node(new gazebo::transport::Node());
   node->Init();
 
-  gazebo::transport::SubscriberPtr pose_sub =
-    node->Subscribe("~/mouse/pose", &SimMouse::pose_callback, &mouse);
-  gazebo::transport::SubscriberPtr sense_sub =
-    node->Subscribe("~/mouse/base/laser/scan", &KnownMaze::sense_callback, maze);
-  mouse.control_pub = node->Advertise<gazebo::msgs::GzString>("~/mouse/control");
+  gazebo::transport::SubscriberPtr poseSub =
+    node->Subscribe("~/mouse/pose", &SimMouse::poseCallback, &mouse);
+  gazebo::transport::SubscriberPtr senseSub =
+    node->Subscribe("~/mouse/base/laser/scan", &SimMaze::senseCallback, maze);
+  mouse.controlPub = node->Advertise<gazebo::msgs::GzString>("~/mouse/control");
 
   mouse.simInit();
 

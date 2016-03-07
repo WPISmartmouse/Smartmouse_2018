@@ -34,20 +34,17 @@ AbstractMaze WallFollow::stepOnce(){
   Direction dir = left_of_dir(kmaze->mouse->getDir());
 
   if (!kmaze->is_mouse_blocked(dir)){
-    printf("turning left\n");
     //if you can turn left you must
-    kmaze->mouse->turn_to_face(dir);
+    kmaze->mouse->turnToFace(dir);
   }
   else if (kmaze->is_mouse_blocked(kmaze->mouse->getDir())) {
     if (!kmaze->is_mouse_blocked(opposite_direction(dir))){
       //if you can't go left or forward try right
-      kmaze->mouse->turn_to_face(opposite_direction(dir));
-    printf("turning right\n");
+      kmaze->mouse->turnToFace(opposite_direction(dir));
     }
     else {
       //you must do a 180
-      kmaze->mouse->turn_to_face(opposite_direction(kmaze->mouse->getDir()));
-    printf("turning 180\n");
+      kmaze->mouse->turnToFace(opposite_direction(kmaze->mouse->getDir()));
     }
   }
 
