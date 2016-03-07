@@ -4,8 +4,8 @@
 const int startButtonPin = 0;
 
 RealMouse mouse;
-WallFollow solver;
 KnownMaze kmaze(&mouse);
+WallFollow solver(&kmaze);
 bool done = false;
 
 void setup(){
@@ -18,7 +18,7 @@ void setup(){
   while (digitalRead(startButtonPin));
 
   Serial.println("Beginning routine.");
-  solver.setup(&kmaze);
+  solver.setup();
 }
 
 void loop(){
