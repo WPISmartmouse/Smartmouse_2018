@@ -11,7 +11,7 @@ class Command {
 
   public:
 
-    static void SetTimerImplementation(TimerInterface *timer);
+    static void setTimerImplementation(TimerInterface *timer);
 
     Command();
     Command(const char *name);

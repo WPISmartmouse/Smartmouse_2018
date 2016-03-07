@@ -1,11 +1,18 @@
 #ifdef CONSOLE
 
+#include <errno.h>
+#include <fstream>
+#include "CommanDuino.h"
 #include "ConsoleMaze.h"
 #include "ConsoleMouse.h"
+#include "ConsoleTimer.h"
 #include "Flood.h"
 #include "WallFollow.h"
-#include <errno.h>
-#include  <fstream>
+#include "commands/SolveCommand.h"
+
+Scheduler scheduler(new SolveCommand());
+
+ConsoleTimer timer;
 
 int main(int argc, char* argv[]){
 
@@ -20,6 +27,7 @@ int main(int argc, char* argv[]){
   std::fstream fs;
   fs.open(maze_file, std::fstream::in);
   ConsoleMouse mouse;
+  Command::setTimerImplementation(&timer);
 
   if (fs.good()){
     ConsoleMaze maze(fs, &mouse);

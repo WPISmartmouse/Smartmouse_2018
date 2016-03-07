@@ -20,7 +20,7 @@ void CommandGroup::_initialize(){
 void CommandGroup::execute(){}
 void CommandGroup::_execute(){
 
-  Command *executingCommand = NULL;
+  Command *executingCommand = 0;
   bool done = false;
 
   currentCommandIndex = 0;

@@ -2,14 +2,17 @@
 
 #include "Scheduler.h"
 
-Command::SetTimerImplementation(TimerInterface *timer);
+TimerInterface *Command::timer;
 
-Command::Command(TimerInterface *timer) : initialized(false) {}
+void Command::setTimerImplementation(TimerInterface *timer){
+  Command::timer = timer;
+}
 
-Command::Command(const char *name, TimerInterface *timer) : initialized(false),
+Command::Command() : initialized(false) {}
+
+Command::Command(const char *name) : initialized(false),
   name(name),
-  timer(timer),
-  startTime(timer.programTimeMs()) {}
+  startTime(timer->programTimeMs()) {}
 
 bool Command::cycle() {
   bool finished = false;
@@ -38,7 +41,7 @@ void Command::setTimeout(unsigned long timeout) {
 }
 
 unsigned long Command::getTime() {
-  return timer.programTimeMs() - startTime;
+  return timer->programTimeMs() - startTime;
 }
 
 bool Command::isTimedOut() {
@@ -52,7 +55,7 @@ bool Command::isRunning() {
 void Command::initialize() {}
 void Command::_initialize() {
   running = true;
-  startTime = timer.programTimeMs();
+  startTime = timer->programTimeMs();
 }
 
 void Command::execute() {}

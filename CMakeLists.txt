@@ -6,12 +6,16 @@ find_package(gazebo REQUIRED)
 list(APPEND CMAKE_CXX_FLAGS "${GAZEBO_CXX_FLAGS}")
 set(CMAKE_CXX_FLAGS "-g")
 
-file(GLOB COM_SRC src/common/*.cpp src/commanduino/*.cpp)
-file(GLOB SIM_SRC src/sim/*.cpp)
-file(GLOB CONSOLE_SRC src/console/*.cpp)
-file(GLOB REAL_SRC src/real/*.cpp)
+file(GLOB_RECURSE COM_SRC src/common/*.cpp src/commanduino/*.cpp)
+file(GLOB SIM_SRC src/sim/*.cpp src/sim/commands/*.cpp)
+file(GLOB CONSOLE_SRC src/console/*.cpp src/console/commands/*.cpp)
+file(GLOB REAL_SRC src/real/*.cpp src/real/commands/*.cpp)
 
-include_directories(src src/commanduino src/common src/real src/console src/sim ${GAZEBO_INCLUDE_DIRS})
+include_directories(src
+  src/commanduino
+  src/common src/real src/console src/sim
+  src/common/commands src/real/commands src/sim/commands
+  ${GAZEBO_INCLUDE_DIRS})
 link_directories(${GAZEBO_LIBRARY_DIRS})
 
 SET(SIMS SimSolve
@@ -35,7 +39,8 @@ foreach(MAIN ${SIMS})
   set_target_properties(${MAIN} PROPERTIES COMPILE_FLAGS "-DSIM")
 endforeach()
 
-add_custom_target(arduino COMMAND ano build -m=mega2560 -s=../src -f="-std=c++11 -g -DEMBED -I ../src/common -I ../src/real")
+add_custom_target(arduino COMMAND ano build -m=mega2560 -s=../src
+  -f="-std=c++11 -g -DEMBED -I ../src/common -I ../src/commanduino -I ../src/real -I ../src/real/commands")
 
 ################################
 # Testing

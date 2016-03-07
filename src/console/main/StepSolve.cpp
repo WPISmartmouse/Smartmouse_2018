@@ -3,8 +3,7 @@
 #include "ConsoleMaze.h"
 #include "Flood.h"
 #include "WallFollow.h"
-#include <errno.h>
-#include  <fstream>
+#include <fstream>
 #include <iostream>
 #include "ConsoleMouse.h"
 

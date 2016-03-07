@@ -1,4 +1,5 @@
 #ifdef CONSOLE
+
 #include "ConsoleMaze.h"
 #include "Flood.h"
 #include "ConsoleMouse.h"
