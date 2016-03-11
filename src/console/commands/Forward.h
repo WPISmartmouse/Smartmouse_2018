@@ -1,12 +1,12 @@
 #pragma once
+#ifdef CONSOLE
 
 #include "CommanDuino.h"
 #include "Mouse.h"
-#include "Direction.h"
 
-class TurnToFace : public Command {
+class Forward : public Command {
   public:
-    TurnToFace(Mouse *mouse, Direction d);
+    Forward(Mouse *mouse);
     void initialize();
     void execute();
     bool isFinished();
@@ -16,3 +16,4 @@ class TurnToFace : public Command {
     Mouse *mouse;
 
 };
+#endif

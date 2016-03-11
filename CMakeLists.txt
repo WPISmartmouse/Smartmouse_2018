@@ -6,6 +6,8 @@ find_package(gazebo REQUIRED)
 list(APPEND CMAKE_CXX_FLAGS "${GAZEBO_CXX_FLAGS}")
 set(CMAKE_CXX_FLAGS "-g")
 
+option(BUILD_SIM "build gazebo simulations" OFF)
+
 file(GLOB_RECURSE COM_SRC src/common/*.cpp src/commanduino/*.cpp)
 file(GLOB SIM_SRC src/sim/*.cpp src/sim/commands/*.cpp)
 file(GLOB CONSOLE_SRC src/console/*.cpp src/console/commands/*.cpp)
@@ -14,7 +16,7 @@ file(GLOB REAL_SRC src/real/*.cpp src/real/commands/*.cpp)
 include_directories(src
   src/commanduino
   src/common src/real src/console src/sim
-  src/common/commands src/real/commands src/sim/commands
+  src/common/commands src/real/commands src/sim/commands src/console/commands
   ${GAZEBO_INCLUDE_DIRS})
 link_directories(${GAZEBO_LIBRARY_DIRS})
 
@@ -32,12 +34,14 @@ foreach(MAIN ${CONSOLES})
   set_target_properties(${MAIN} PROPERTIES COMPILE_FLAGS "-DCONSOLE")
 endforeach()
 
-foreach(MAIN ${SIMS})
-  add_executable(${MAIN} "src/sim/main/${MAIN}.cpp" ${COM_SRC} ${SIM_SRC})
-  target_compile_features(${MAIN} PRIVATE cxx_strong_enums cxx_constexpr)
-  target_link_libraries(${MAIN} ${GAZEBO_LIBRARIES})
-  set_target_properties(${MAIN} PROPERTIES COMPILE_FLAGS "-DSIM")
-endforeach()
+if (BUILD_SIM)
+  foreach(MAIN ${SIMS})
+    add_executable(${MAIN} "src/sim/main/${MAIN}.cpp" ${COM_SRC} ${SIM_SRC})
+    target_compile_features(${MAIN} PRIVATE cxx_strong_enums cxx_constexpr)
+    target_link_libraries(${MAIN} ${GAZEBO_LIBRARIES})
+    set_target_properties(${MAIN} PROPERTIES COMPILE_FLAGS "-DSIM")
+  endforeach()
+endif()
 
 add_custom_target(arduino COMMAND ano build -m=mega2560 -s=../src
   -f="-std=c++11 -g -DEMBED -I ../src/common -I ../src/commanduino -I ../src/real -I ../src/real/commands")

@@ -1,4 +1,6 @@
 #pragma once
+#ifdef CONSOLE
+
 #include "CommanDuino.h"
 
 class WaitForStart : public Command {
@@ -9,3 +11,4 @@ class WaitForStart : public Command {
     bool isFinished();
     void end();
 };
+#endif

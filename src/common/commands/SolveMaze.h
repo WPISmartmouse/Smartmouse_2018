@@ -1,17 +1,18 @@
 #pragma once
 
 #include "CommanDuino.h"
-#include "Flood.h"
+#include "Solver.h"
+#include "KnownMaze.h"
 
 class SolveMaze : public CommandGroup {
   public:
-    SolveMaze(KnownMaze *maze);
+    SolveMaze(Solver *solver);
     void initialize();
     bool isFinished();
     void end();
 
   private:
-    KnownMaze *maze;
-    Flood solver;
+    KnownMaze *kmaze;
+    Solver *solver;
 
 };

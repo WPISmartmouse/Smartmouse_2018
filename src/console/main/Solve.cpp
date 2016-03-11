@@ -4,7 +4,7 @@
 #include <fstream>
 #include "CommanDuino.h"
 #include "ConsoleMaze.h"
-#include "ConsoleMouse.h"
+#include "Mouse.h"
 #include "ConsoleTimer.h"
 #include "Flood.h"
 #include "WallFollow.h"
@@ -22,7 +22,7 @@ int main(int argc, char* argv[]){
 
   std::fstream fs;
   fs.open(maze_file, std::fstream::in);
-  ConsoleMouse mouse;
+  Mouse mouse;
 
   if (fs.good()){
     ConsoleMaze maze(fs, &mouse);

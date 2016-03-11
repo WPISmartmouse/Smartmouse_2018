@@ -1,10 +1,10 @@
 #ifdef CONSOLE
 #include "ConsoleMaze.h"
-#include "ConsoleMouse.h"
+#include "Mouse.h"
 
-ConsoleMaze::ConsoleMaze(ConsoleMouse *mouse) : KnownMaze(mouse) {}
+ConsoleMaze::ConsoleMaze(Mouse *mouse) : KnownMaze(mouse) {}
 
-ConsoleMaze::ConsoleMaze(std::fstream& fs, ConsoleMouse *mouse) : ConsoleMaze(mouse) {
+ConsoleMaze::ConsoleMaze(std::fstream& fs, Mouse *mouse) : ConsoleMaze(mouse) {
   std::string line;
 
   //look West and North to connect any nodes

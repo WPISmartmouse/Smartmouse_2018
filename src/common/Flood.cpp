@@ -92,8 +92,8 @@ Direction Flood::planNextStep(){
 char *Flood::solve(){
 	//mouse starts at 0, 0
 	while (!isFinished()){
-    kmaze->mouse->turnToFace(planNextStep());
-    kmaze->mouse->forward();
+    kmaze->mouse->internalTurnToFace(planNextStep());
+    kmaze->mouse->internalForward();
   }
 
   return final_solution;

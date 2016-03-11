@@ -7,9 +7,6 @@
 class RealMouse : public Mouse {
   public:
 
-    virtual int forward() override;
-    virtual void turnToFace(Direction d) override;
-
     /** runs setup things like pin initializes */
     void setup();
 

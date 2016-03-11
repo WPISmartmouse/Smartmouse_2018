@@ -25,7 +25,7 @@ void CommandGroup::_execute(){
 
   currentCommandIndex = 0;
 
-  while (!done && (currentCommandIndex <= commands.size() )){
+  while (!done && (currentCommandIndex < commands.size() )){
     executingCommand = commands.get(currentCommandIndex);
 
     bool isFinished = executingCommand->cycle();

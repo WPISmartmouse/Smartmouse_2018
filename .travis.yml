@@ -6,7 +6,7 @@ before_script:
   - ./configure
   - mkdir build
   - cd build
-  - cmake -Dtest=ON ..
+  - cmake -Dtest=ON -DMAKE_SIM=ON ..
 script: make && make arduino && ./runConsoleTests
 before_install:
   - sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'

@@ -37,23 +37,15 @@ class Mouse {
 
     void turnToFace(char c);
 
-    /** base functions the emulate mouse movement calls
-     * returns -1 if you ran into a wall
-     * returns -2 if the mouses's direction is messed up
-    */
-    virtual int forward() = 0;
+    void internalTurnToFace(Direction dir);
+    void internalForward();
 
-    virtual void turnToFace(Direction d) = 0;
+    static constexpr float ROT_TOLERANCE = 0.04;
 
   protected:
 
     Mouse *instance;
 
-    void internalTurnToFace(Direction dir);
-    void internalForward();
-
     int row, col;
     Direction dir;
-
-    static constexpr float ROT_TOLERANCE = 0.04;
 };

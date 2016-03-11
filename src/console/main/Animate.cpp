@@ -2,7 +2,7 @@
 
 #include "ConsoleMaze.h"
 #include "Flood.h"
-#include "ConsoleMouse.h"
+#include "Mouse.h"
 #include "WallFollow.h"
 #include <errno.h>
 #include <fstream>
@@ -52,7 +52,7 @@ int main(int argc, char* argv[]){
 
   std::fstream fs;
   fs.open(maze_file, std::fstream::in);
-  ConsoleMouse mouse;
+  Mouse mouse;
 
   if (fs.good()){
     std::cout << "maze file: " << maze_file << std::endl;
@@ -63,8 +63,8 @@ int main(int argc, char* argv[]){
 		int i = 0;
     while (mouse.inBounds() && i < path.length()){
 			maze.print_maze_mouse();
-			mouse.turnToFace(path.at(i++));
-			mouse.forward();
+			mouse.internalTurnToFace(char_to_dir(path.at(i++)));
+			mouse.internalForward();
       std::cin.get();
     }
 

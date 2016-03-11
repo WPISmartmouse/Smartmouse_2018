@@ -6,9 +6,11 @@
 
 class StepSolveMaze : public CommandGroup {
   public:
-    StepSolveMaze(KnownMaze *maze, Solver *solver);
+    StepSolveMaze(Solver *solver);
     void initialize();
+    void execute();
     bool isFinished();
+    void end();
 
   private:
     Solver *solver;

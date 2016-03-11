@@ -12,21 +12,14 @@
 class SimMouse : public Mouse {
   public:
 
-    virtual int forward() override;
-    virtual void turnToFace(Direction d) override;
-
     void simInit();
 
     gazebo::transport::PublisherPtr controlPub;
     void poseCallback(ConstPosePtr &msg);
 
-  private:
-    float rotation(ignition::math::Pose3d p0, ignition::math::Pose3d p1);
-    float forwardDisplacement(ignition::math::Pose3d p0, ignition::math::Pose3d p1);
-    float absYawDiff(float y1, float y2);
-
-    ignition::math::Pose3d pose;
     std::mutex poseMutex;
     std::condition_variable poseCond;
+    ignition::math::Pose3d pose;
+
 };
 #endif

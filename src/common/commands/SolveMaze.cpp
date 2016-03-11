@@ -1,25 +1,36 @@
 #include "SolveMaze.h"
-#include "StepSolveMaze.h"
+#include "Forward.h"
+#include "Turn.h"
+#include "WaitForStart.h"
 
-SolveMaze::SolveMaze(KnownMaze *maze) : CommandGroup("solve"), solver(maze) {
-  this->maze = maze;
+SolveMaze::SolveMaze(Solver *solver) : CommandGroup("solve"), solver(solver) {
+  this->kmaze = solver->kmaze;
 }
 
 void SolveMaze::initialize(){
-  solver.setup();
-  addSequential(new StepSolveMaze(maze, &solver));
+  solver->setup();
 }
 
 bool SolveMaze::isFinished(){
-  bool finished = solver.isFinished();
+  bool groupFinished = CommandGroup::isFinished();
 
-  if (!finished){
-    addSequential(new StepSolveMaze(maze, &solver));
+  if (groupFinished) {
+    bool mazeSolved = solver->isFinished();
+
+    if (!mazeSolved){
+      addSequential(new Turn(kmaze->mouse, solver->planNextStep()));
+      addSequential(new Forward(kmaze->mouse));
+    }
+    else {
+      return true;
+    }
+
+    return false;
   }
 
-  return finished;
+  return false;
 }
 
 void SolveMaze::end(){
-  solver.teardown();
+  solver->teardown();
 }

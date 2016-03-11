@@ -38,7 +38,3 @@ void Mouse::internalForward(){
     case Direction::W: col--; break;
   }
 }
-
-void Mouse::turnToFace(char c){
-  turnToFace(char_to_dir(c));
-}

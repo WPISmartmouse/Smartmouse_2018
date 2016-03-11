@@ -12,7 +12,5 @@ class Solver {
     virtual bool isFinished() = 0;
     virtual char *solve() = 0;
     virtual void teardown() = 0;
-
-  protected:
     KnownMaze *kmaze;
 };

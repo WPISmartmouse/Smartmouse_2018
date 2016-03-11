@@ -11,13 +11,4 @@ void RealMouse::setup(){
   pinMode(RealMouse::W_WALL_PIN, INPUT_PULLUP);
 }
 
-int RealMouse::forward(){
-  Serial.println("forward");
-  return 0;
-}
-
-void RealMouse::turnToFace(Direction d){
-  Serial.println("turn to face");
-
-}
 #endif

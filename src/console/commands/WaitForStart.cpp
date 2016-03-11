@@ -6,7 +6,9 @@
 
 WaitForStart::WaitForStart() : Command("wait") {}
 
-void WaitForStart::initialize(){}
+void WaitForStart::initialize(){
+  printf("Waiting. Press enter...\n");
+}
 
 void WaitForStart::execute(){}
 
@@ -15,6 +17,5 @@ bool WaitForStart::isFinished(){
 }
 
 void WaitForStart::end(){
-  printf("Starting routine...\n");
 }
 #endif

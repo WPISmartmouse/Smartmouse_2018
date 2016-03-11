@@ -252,7 +252,7 @@ void AbstractMaze::mark_origin_known(){
 void AbstractMaze::print_maze_mouse(){
   int i,j;
   for (i=0;i<AbstractMaze::MAZE_SIZE;i++){
-    char *str = (char *)malloc((AbstractMaze::MAZE_SIZE * 2 + 1) * sizeof(char));
+    char *str = (char *)malloc((AbstractMaze::MAZE_SIZE * 2 + 2) * sizeof(char));
 
     char *s=str;
     for (j=0;j<AbstractMaze::MAZE_SIZE;j++){
@@ -284,7 +284,7 @@ void AbstractMaze::print_maze_mouse(){
 void AbstractMaze::print_maze(){
   int i,j;
   for (i=0;i<AbstractMaze::MAZE_SIZE;i++){
-    char *str = (char *)malloc((AbstractMaze::MAZE_SIZE * 2 + 1) * sizeof(char));
+    char *str = (char *)malloc((AbstractMaze::MAZE_SIZE * 2 + 2) * sizeof(char));
 
     char *s=str;
     for (j=0;j<AbstractMaze::MAZE_SIZE;j++){
