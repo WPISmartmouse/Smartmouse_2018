@@ -3,11 +3,12 @@
 #include "SolveMaze.h"
 #include "WallFollow.h"
 #include "Flood.h"
+#include "Finish.h"
 
 SolveCommand::SolveCommand(KnownMaze *maze) : CommandGroup("Solve") {
   addSequential(new WaitForStart());
   addSequential(new SolveMaze(new WallFollow(maze)));
   //addSequential(new ReturnToStart());
   //addSequential(new SpeedRun());
-
+  addSequential(new Finish());
 }

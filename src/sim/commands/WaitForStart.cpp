@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include "WaitForStart.h"
-#include "RealMouse.h"
 
 WaitForStart::WaitForStart() : Command("wait") {}
 

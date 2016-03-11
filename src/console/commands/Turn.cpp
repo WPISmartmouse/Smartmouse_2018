@@ -5,7 +5,6 @@
 Turn::Turn(Mouse *mouse, Direction dir) : mouse(mouse), dir(dir) {}
 
 void Turn::initialize(){
-  printf("facing %c\n", dir_to_char(dir));
   mouse->internalTurnToFace(dir);
 	if (!mouse->inBounds()){
     //this is probably the most serious error possible

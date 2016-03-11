@@ -15,8 +15,8 @@ file(GLOB REAL_SRC src/real/*.cpp src/real/commands/*.cpp)
 
 include_directories(src
   src/commanduino
-  src/common src/real src/console src/sim
-  src/common/commands src/real/commands src/sim/commands src/console/commands
+  src/common
+  src/common/commands
   ${GAZEBO_INCLUDE_DIRS})
 link_directories(${GAZEBO_LIBRARY_DIRS})
 
@@ -32,6 +32,7 @@ foreach(MAIN ${CONSOLES})
   add_executable(${MAIN} "src/console/main/${MAIN}.cpp" ${COM_SRC} ${CONSOLE_SRC})
   target_compile_features(${MAIN} PRIVATE cxx_strong_enums cxx_constexpr)
   set_target_properties(${MAIN} PROPERTIES COMPILE_FLAGS "-DCONSOLE")
+  target_include_directories(${MAIN} PRIVATE src/console/ src/console/commands)
 endforeach()
 
 if (BUILD_SIM)
@@ -40,6 +41,7 @@ if (BUILD_SIM)
     target_compile_features(${MAIN} PRIVATE cxx_strong_enums cxx_constexpr)
     target_link_libraries(${MAIN} ${GAZEBO_LIBRARIES})
     set_target_properties(${MAIN} PROPERTIES COMPILE_FLAGS "-DSIM")
+    target_include_directories(${MAIN} PRIVATE src/sim/ src/sim/commands)
   endforeach()
 endif()
 
