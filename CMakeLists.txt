@@ -60,6 +60,7 @@ if (test)
 
   add_executable(runConsoleTests test/Test.cpp ${COM_SRC} ${CONSOLE_SRC})
 	target_compile_features(runConsoleTests PRIVATE cxx_strong_enums)
+  target_include_directories(runConsoleTests PRIVATE src/console/ src/console/commands)
 
   target_link_libraries(runConsoleTests gtest gtest_main)
   set_target_properties(runConsoleTests PROPERTIES COMPILE_FLAGS "-DCONSOLE")
