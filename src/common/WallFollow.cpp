@@ -53,7 +53,7 @@ Direction WallFollow::planNextStep(){
     nextDir = kmaze->mouse->getDir();
   }
 
-  kmaze->fastest_route[step++] = dir_to_char(kmaze->mouse->getDir());
+  kmaze->fastest_route[step++] = dir_to_char(nextDir);
   kmaze->mark_mouse_position_visited();
 
   return nextDir;

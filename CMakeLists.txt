@@ -45,7 +45,7 @@ if (BUILD_SIM)
   endforeach()
 endif()
 
-add_custom_target(arduino COMMAND ano build -m=mega2560 -s=../src
+add_custom_target(mega COMMAND ano build -m=mega -s=../src
   -f="-std=c++11 -g -DEMBED -I ../src/common -I ../src/commanduino -I ../src/real -I ../src/real/commands")
 
 ################################
