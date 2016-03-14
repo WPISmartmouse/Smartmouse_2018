@@ -18,6 +18,7 @@ class SimMaze : public KnownMaze {
   private:
 
     bool walls[4];
+    float rawDistances[6];
     std::mutex senseMutex;
 };
 #endif
