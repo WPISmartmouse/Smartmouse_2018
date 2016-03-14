@@ -8,7 +8,7 @@
 #include "SimMaze.h"
 #include "SimMouse.h"
 #include "SimTimer.h"
-#include "SolveCommand.h"
+#include "StepSolveCommand.h"
 
 int main(int argc, char* argv[]){
   // Load gazebo
@@ -36,10 +36,10 @@ int main(int argc, char* argv[]){
   gazebo::transport::SubscriberPtr senseSub =
     node->Subscribe("~/mouse/base/laser/scan", &SimMaze::senseCallback, &maze);
 
-  mouse.controlPub = node->Advertise<gazebo::msgs::GzString>("~/mouse/control");
+  mouse.controlPub = node->Advertise<gazebo::msgs::JointCmd>("~/mouse/joint_cmd");
 
   mouse.simInit();
-  Scheduler scheduler(new SolveCommand(&maze));
+  Scheduler scheduler(new StepSolveCommand(&maze));
 
   while (true){
     scheduler.run();

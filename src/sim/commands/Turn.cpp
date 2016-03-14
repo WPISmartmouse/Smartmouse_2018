@@ -4,43 +4,51 @@
 
 #include <gazebo/msgs/msgs.hh>
 
-Turn::Turn(Mouse *mouse, Direction dir) : mouse((SimMouse *)mouse), dir(dir) {}
+Turn::Turn(Mouse *mouse, Direction dir) : mouse((SimMouse *)mouse), dir(dir),
+    l(0), r(0) {}
 
 void Turn::initialize(){
   std::unique_lock<std::mutex> lk(mouse->poseMutex);
   mouse->poseCond.wait(lk);
-  ignition::math::Pose3d start = mouse->pose;
+  start = mouse->pose;
   goalYaw = toYaw(dir);
 }
 
-float Turn::absYawDiff(float y1, float y2){
+float Turn::yawDiff(float y1, float y2){
   float diff = y2 - y1;
   if (diff > 180) return fabs(diff - 360);
   if (diff < -180) return fabs(diff + 360);
-  return fabs(diff);
+  return diff;
 }
 
 void Turn::execute(){
-  std::unique_lock<std::mutex> lk(mouse->poseMutex);
-  mouse->poseCond.wait(lk);
-  float currentYaw = mouse->pose.Rot().Yaw();
-  dYaw = absYawDiff(currentYaw, goalYaw);
+  l = -dYaw * kP;
+  r = dYaw * kP;
 
-  gazebo::msgs::Vector2d turn_msg;
-  turn_msg.set_x(0.01);
-  turn_msg.set_y(0.01);
-  mouse->controlPub->Publish(turn_msg);
+  if (l < SimMouse::MIN_SPEED && l >= 0) l = SimMouse::MIN_SPEED;
+  if (r < SimMouse::MIN_SPEED && r >= 0) r = SimMouse::MIN_SPEED;
+  if (l > -SimMouse::MIN_SPEED && l <= 0) l = -SimMouse::MIN_SPEED;
+  if (r > -SimMouse::MIN_SPEED && r <= 0) r = -SimMouse::MIN_SPEED;
+  if (l > SimMouse::MAX_SPEED) l = SimMouse::MAX_SPEED;
+  if (r > SimMouse::MAX_SPEED) r = SimMouse::MAX_SPEED;
+  if (l < -SimMouse::MAX_SPEED) l = -SimMouse::MAX_SPEED;
+  if (r < -SimMouse::MAX_SPEED) r = -SimMouse::MAX_SPEED;
 
+  printf("%f,%f dyaw=%f\n", l, r, dYaw);
+
+  mouse->setSpeed(l,r);
 }
 
 bool Turn::isFinished(){
-  return (mouse->getDir() == dir) || (dYaw > Mouse::ROT_TOLERANCE);
+  std::unique_lock<std::mutex> lk(mouse->poseMutex);
+  mouse->poseCond.wait(lk);
+  float currentYaw = mouse->pose.Rot().Yaw();
+  dYaw = yawDiff(currentYaw, goalYaw);
+  return (mouse->getDir() == dir) || (fabs(dYaw) < Mouse::ROT_TOLERANCE);
 }
 
 void Turn::end(){
-  gazebo::msgs::Vector2d stop_msg;
-  stop_msg.set_x(0);
-  stop_msg.set_y(0);
-  mouse->controlPub->Publish(stop_msg);
+  mouse->internalTurnToFace(dir);
+  mouse->setSpeed(0,0);
 }
 #endif

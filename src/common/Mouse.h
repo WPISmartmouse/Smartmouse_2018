@@ -40,7 +40,7 @@ class Mouse {
     void internalTurnToFace(Direction dir);
     void internalForward();
 
-    static constexpr float ROT_TOLERANCE = 0.04;
+    static constexpr float ROT_TOLERANCE = 0.01;
 
   protected:
 

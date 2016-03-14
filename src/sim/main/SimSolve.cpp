@@ -9,7 +9,6 @@
 #include "SimMouse.h"
 #include "SimTimer.h"
 #include "SolveCommand.h"
-#include "WallFollow.h"
 #include <iostream>
 
 int main(int argc, char* argv[]){
@@ -36,7 +35,8 @@ int main(int argc, char* argv[]){
     node->Subscribe("~/mouse/pose", &SimMouse::poseCallback, &mouse);
 
   gazebo::transport::SubscriberPtr senseSub = node->Subscribe("~/mouse/base/laser/scan", &SimMaze::senseCallback, &maze);
-  mouse.controlPub = node->Advertise<gazebo::msgs::GzString>("~/mouse/control");
+
+  mouse.controlPub = node->Advertise<gazebo::msgs::JointCmd>("~/mouse/joint_cmd");
 
   mouse.simInit();
   Scheduler scheduler(new SolveCommand(&maze));
