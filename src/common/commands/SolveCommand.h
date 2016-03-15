@@ -1,8 +1,8 @@
 #pragma once
 #include "CommanDuino.h"
-#include "KnownMaze.h"
+#include "Solver.h"
 
 class SolveCommand : public CommandGroup {
   public:
-    SolveCommand(KnownMaze *maze);
+    SolveCommand(Solver *solver);
 };

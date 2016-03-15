@@ -25,16 +25,12 @@ float Forward::forwardDisplacement(ignition::math::Pose3d p0, ignition::math::Po
 
 
 void Forward::initialize(){
-  std::unique_lock<std::mutex> lk(mouse->poseMutex);
-  mouse->poseCond.wait(lk);
-  start = mouse->pose;
+  start = mouse->getPose();
   disp = 0.0f;
 }
 
 void Forward::execute(){
-  std::unique_lock<std::mutex> lk(mouse->poseMutex);
-  mouse->poseCond.wait(lk);
-  disp = forwardDisplacement(start,mouse->pose);
+  disp = forwardDisplacement(start,mouse->getPose());
 
   float error = AbstractMaze::UNIT_DIST - disp;
   l = error * kP;

@@ -6,6 +6,7 @@
 #include "CommanDuino.h"
 #include "StepSolveCommand.h"
 #include "ConsoleMaze.h"
+#include "ConsoleMouse.h"
 #include "ConsoleTimer.h"
 #include "Mouse.h"
 #include "Flood.h"
@@ -24,13 +25,12 @@ int main(int argc, char* argv[]){
   std::fstream fs;
   fs.open(maze_file, std::fstream::in);
 
-  Mouse mouse;
-
   if (fs.good()){
-    ConsoleMaze maze(fs, &mouse);
+    ConsoleMaze maze(fs);
+    ConsoleMouse mouse(&maze);
     ConsoleTimer timer;
     Command::setTimerImplementation(&timer);
-    Scheduler scheduler(new StepSolveCommand(&maze));
+    Scheduler scheduler(new StepSolveCommand(new WallFollow(&mouse)));
 
     while (true) {
       scheduler.run();

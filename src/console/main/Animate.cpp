@@ -1,5 +1,6 @@
 #ifdef CONSOLE
 
+#include "ConsoleMouse.h"
 #include "ConsoleMaze.h"
 #include "Flood.h"
 #include "Mouse.h"
@@ -47,28 +48,28 @@ int main(int argc, char* argv[]){
 
   std::string maze_file;
   std::string path;
-	maze_file = std::string(argv[1]);
-	path = std::string(argv[2]);
+	maze_file = std::string(argv[optind++]);
+	path = std::string(argv[optind]);
 
   std::fstream fs;
   fs.open(maze_file, std::fstream::in);
-  Mouse mouse;
 
   if (fs.good()){
     std::cout << "maze file: " << maze_file << std::endl;
     std::cout << "path: " << path << std::endl;
     std::cout << "start pos: (" << row << "," << col << ")" << std::endl;
 
-    ConsoleMaze maze(fs, &mouse);
+    ConsoleMaze maze(fs);
+    ConsoleMouse mouse(&maze, row, col);
 		int i = 0;
     while (mouse.inBounds() && i < path.length()){
-			maze.print_maze_mouse();
+			mouse.print_maze_mouse();
 			mouse.internalTurnToFace(char_to_dir(path.at(i++)));
 			mouse.internalForward();
       std::cin.get();
     }
 
-    maze.print_maze_mouse();
+    mouse.print_maze_mouse();
     fs.close();
     return EXIT_SUCCESS;
   }

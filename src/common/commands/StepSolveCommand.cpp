@@ -5,11 +5,11 @@
 #include "Flood.h"
 #include "Finish.h"
 
-StepSolveCommand::StepSolveCommand(KnownMaze *maze) : CommandGroup("Solve") {
+StepSolveCommand::StepSolveCommand(Solver *solver) : CommandGroup("Solve") {
   addSequential(new WaitForStart());
-  addSequential(new StepSolveMaze(new WallFollow(maze)));
+  addSequential(new StepSolveMaze(solver));
   //addSequential(new ReturnToStart());
   //addSequential(new SpeedRun());
-  addSequential(new Finish());
+  addSequential(new Finish(solver->mouse->maze));
 
 }

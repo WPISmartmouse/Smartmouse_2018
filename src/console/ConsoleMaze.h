@@ -3,12 +3,10 @@
 
 #include <fstream>
 #include "SensorReading.h"
-#include "KnownMaze.h"
+#include "AbstractMaze.h"
 
-class ConsoleMaze : public KnownMaze {
+class ConsoleMaze : public AbstractMaze {
   public:
-    ConsoleMaze(std::fstream& fs, Mouse *mouse);
-    ConsoleMaze(Mouse *mouse);
-    virtual SensorReading sense() override;
+    ConsoleMaze(std::fstream& fs);
 };
 #endif

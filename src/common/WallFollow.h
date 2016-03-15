@@ -5,14 +5,13 @@
 #pragma once
 
 #include "Solver.h"
-#include "KnownMaze.h"
 #include "Mouse.h"
 
 class WallFollow : public Solver {
 
   public:
 
-    WallFollow(KnownMaze *mouse);
+    WallFollow(Mouse *mouse);
     virtual void setup() override;
     virtual Direction planNextStep() override;
     virtual char *solve() override;

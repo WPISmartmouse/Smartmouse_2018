@@ -8,9 +8,7 @@ Turn::Turn(Mouse *mouse, Direction dir) : mouse((SimMouse *)mouse), dir(dir),
     l(0), r(0) {}
 
 void Turn::initialize(){
-  std::unique_lock<std::mutex> lk(mouse->poseMutex);
-  mouse->poseCond.wait(lk);
-  start = mouse->pose;
+  start = mouse->getPose();
   goalYaw = toYaw(dir);
 }
 
@@ -40,9 +38,7 @@ void Turn::execute(){
 }
 
 bool Turn::isFinished(){
-  std::unique_lock<std::mutex> lk(mouse->poseMutex);
-  mouse->poseCond.wait(lk);
-  float currentYaw = mouse->pose.Rot().Yaw();
+  float currentYaw = mouse->getPose().Rot().Yaw();
   dYaw = yawDiff(currentYaw, goalYaw);
   return (mouse->getDir() == dir) || (fabs(dYaw) < Mouse::ROT_TOLERANCE);
 }

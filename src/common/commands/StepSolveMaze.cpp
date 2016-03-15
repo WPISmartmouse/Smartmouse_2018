@@ -4,7 +4,7 @@
 #include "WaitForStart.h"
 
 StepSolveMaze::StepSolveMaze(Solver *solver) : CommandGroup("step_solve"), solver(solver) {
-  this->kmaze = solver->kmaze;
+  this->mouse = solver->mouse;
 }
 
 void StepSolveMaze::initialize(){
@@ -22,10 +22,10 @@ bool StepSolveMaze::isFinished(){
     bool mazeSolved = solver->isFinished();
 
     if (!mazeSolved){
-      addSequential(new Turn(kmaze->mouse, solver->planNextStep()));
-      addSequential(new Forward(kmaze->mouse));
+      addSequential(new Turn(mouse, solver->planNextStep()));
+      addSequential(new Forward(mouse));
       addSequential(new WaitForStart());
-      kmaze->print_maze_mouse();
+      mouse->print_maze_mouse();
     }
     else {
       return true;

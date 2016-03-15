@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Direction.h"
+#include "AbstractMaze.h"
 
 /** \brief depresents a mouse
  * don't ever change the row/col of a mouse directly. This prevents it from working on the real robot
@@ -10,7 +11,9 @@ class Mouse {
 
   public:
 
-    Mouse();
+    Mouse(AbstractMaze *maze);
+
+    Mouse(AbstractMaze *maze, int starting_row, int starting_col);
 
     /** \brief return the current column.
      * Guaranteed to be between 0 and MAZE_SIZE
@@ -37,14 +40,30 @@ class Mouse {
 
     void turnToFace(char c);
 
+    void mark_mouse_position_visited();
+
+    /** \brief get the node that the mouse is currently on
+     */
+    Node *get_mouse_node();
+
     void internalTurnToFace(Direction dir);
     void internalForward();
+
+    /** prints a maze with a mouse in it
+    * @param mouse the mouse
+    * @param maze the maze
+    */
+    void print_maze_mouse();
+
+    virtual SensorReading sense() = 0;
+    bool is_mouse_blocked();
+    bool is_mouse_blocked(Direction dir);
+
+    AbstractMaze *maze;
 
     static constexpr float ROT_TOLERANCE = 0.01;
 
   protected:
-
-    Mouse *instance;
 
     int row, col;
     Direction dir;

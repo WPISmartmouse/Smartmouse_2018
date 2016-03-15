@@ -7,7 +7,6 @@
 
 #include "SensorReading.h"
 #include "Node.h"
-#include "Mouse.h"
 #include "Direction.h"
 
 /**
@@ -15,6 +14,7 @@
  * don't forget to call free_maze(maze) after a maze is done being used
  */
 class AbstractMaze {
+  friend class Mouse;
   public:
 
     const static int MAZE_SIZE = 16;
@@ -27,44 +27,13 @@ class AbstractMaze {
     /** \brief allocates and initializes a node
      * allocates a maze of the given size and sets all links in graph to be null. Naturally, it's column major.
      */
-    AbstractMaze(Mouse *mouse);
-
-    /** prints a maze
-    * @param maze the maze
-    */
-    void print_maze();
-
-    /** prints a maze with a mouse in it
-    * @param mouse the mouse
-    * @param maze the maze
-    */
-    void print_maze_mouse();
-
-    /** duh*/
-    void print_pointer_maze();
-
-    /** prints each node as a list of booleans
-    EX)  0010 would mean on wall South
-         1011 would mean walls to the North, South, and West
-
-    */
-    void print_neighbor_maze();
-
-    /** duh*/
-    void print_weight_maze();
-
-    /** duh*/
-    void print_dist_maze();
-
-    /** \brief get the node that the mouse is currently on
-     */
-    Node *get_mouse_node();
+    AbstractMaze();
 
     Node *center_node();
 
     void mark_origin_known();
 
-    void mark_mouse_position_visited();
+    void mark_position_visited(int row, int col);
 
     /** \brief add the neighbor in the given direction
      * \param dir direction connect in
@@ -84,7 +53,7 @@ class AbstractMaze {
 
     //This method will take a maze and perform a traditional flood fill
     //the fill starts from r0, c0 and ends at r1, c1
-    bool flood_fill_from_mouse(char *path, int r1,  int c1);
+    bool flood_fill_from_point(char *path, int r0, int c0, int r1,  int c1);
     bool flood_fill_from_origin(char *path, int r1,  int c1);
 
     /** \brief connect all neighbors in the whole maze
@@ -121,7 +90,26 @@ class AbstractMaze {
      */
     void remove_neighbor(int row, int col, const Direction dir);
 
-    Mouse *mouse;
+    /** prints a maze
+    * @param maze the maze
+    */
+    void print_maze();
+
+    /** duh*/
+    void print_pointer_maze();
+
+    /** prints each node as a list of booleans
+    EX)  0010 would mean on wall South
+         1011 would mean walls to the North, South, and West
+
+    */
+    void print_neighbor_maze();
+
+    /** duh*/
+    void print_weight_maze();
+
+    /** duh*/
+    void print_dist_maze();
 
   private:
 

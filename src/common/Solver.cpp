@@ -1,3 +1,3 @@
 #include "Solver.h"
 
-Solver::Solver(KnownMaze *maze) : kmaze(maze) {}
+Solver::Solver(Mouse *mouse) : mouse(mouse) {}

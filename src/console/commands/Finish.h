@@ -2,11 +2,15 @@
 #ifdef CONSOLE
 
 #include "CommanDuino.h"
+#include "AbstractMaze.h"
 
 class Finish : public Command {
   public:
-    Finish();
+    Finish(AbstractMaze *maze);
     void initialize();
     bool isFinished();
+
+  private:
+    AbstractMaze *maze;
 };
 #endif

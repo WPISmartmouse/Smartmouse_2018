@@ -8,16 +8,33 @@
 #include <mutex>
 #include <condition_variable>
 #include "Mouse.h"
+#include "AbstractMaze.h"
 
 class SimMouse : public Mouse {
   public:
+
+    SimMouse(AbstractMaze *maze);
+
+    virtual SensorReading sense() override;
+
+    void senseCallback(ConstLaserScanStampedPtr &msg);
 
     void simInit();
 
     void setSpeed(float left, float right);
 
+    ignition::math::Pose3d getPose();
+
     gazebo::transport::PublisherPtr controlPub;
     void poseCallback(ConstPosePtr &msg);
+
+    static constexpr float MAX_SPEED = 12;
+    static constexpr float MIN_SPEED = 1;
+    static constexpr float WALL_DIST = 0.125;
+
+  private:
+
+    std::condition_variable senseCond;
 
     std::mutex poseMutex;
     std::condition_variable poseCond;
@@ -27,8 +44,10 @@ class SimMouse : public Mouse {
 		const float kI = 0.000;
 		const float kD = 0.000;
 
-    static constexpr float MAX_SPEED = 12;
-    static constexpr float MIN_SPEED = 1;
+    bool walls[3];
+    float rawDistances[5];
+    std::mutex senseMutex;
+
 
 };
 #endif

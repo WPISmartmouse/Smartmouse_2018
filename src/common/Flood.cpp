@@ -10,12 +10,10 @@
 #include <Arduino.h>
 #endif
 
-Flood::Flood(KnownMaze *maze) : Solver(maze),
+Flood::Flood(Mouse *mouse) : Solver(mouse),
                                 solved(false),
                                 solvable(true),
-                                done(false),
-                                all_wall_maze(maze->mouse),
-                                no_wall_maze(maze->mouse) {
+                                done(false) {
 	no_wall_path = (char*)calloc(AbstractMaze::PATH_SIZE, sizeof(char));
 	all_wall_path = (char *)calloc(AbstractMaze::PATH_SIZE, sizeof(char));
 	final_solution= (char *)calloc(AbstractMaze::PATH_SIZE, sizeof(char));
@@ -24,21 +22,21 @@ Flood::Flood(KnownMaze *maze) : Solver(maze),
 //starts at 0, 0 and explores the whole maze
 //kmaze is the known maze,  and should only be used to call sense()
 void Flood::setup(){
-  kmaze->reset();
+  mouse->maze->reset();
   no_wall_maze.connect_all_neighbors_in_maze();
 }
 
 Direction Flood::planNextStep(){
   //mark the nodes visted in both the mazes
-  no_wall_maze.mark_mouse_position_visited();
-  all_wall_maze.mark_mouse_position_visited();
+  no_wall_maze.mark_position_visited(mouse->getRow(), mouse->getCol());
+  all_wall_maze.mark_position_visited(mouse->getRow(), mouse->getCol());
 
-  int r = kmaze->mouse->getRow();
-  int c = kmaze->mouse->getCol();
+  int r = mouse->getRow();
+  int c = mouse->getCol();
 
   //check left right back and front sides
   //eventually this will return values from sensors
-  SensorReading sr = kmaze->sense();
+  SensorReading sr = mouse->sense();
 
   //update the mazes base on that reading
   no_wall_maze.update(sr);
@@ -46,7 +44,7 @@ Direction Flood::planNextStep(){
 
   //first priority is look for the goal, so follow the no_wall_path until the goal is found
   //when you're at the goal, the path will be empty.
-  if (kmaze->mouse->getRow() == 7 && kmaze->mouse->getCol() == 7){
+  if (mouse->getRow() == 7 && mouse->getCol() == 7){
     solved = true;
   }
 
@@ -76,8 +74,16 @@ Direction Flood::planNextStep(){
   }
   else {
     //solve flood fill on the two mazes from mouse to goal
-    solvable = no_wall_maze.flood_fill_from_mouse(no_wall_path,goal->row(),goal->col());
-    all_wall_maze.flood_fill_from_mouse(all_wall_path,goal->row(),goal->col());
+    solvable = no_wall_maze.flood_fill_from_point(no_wall_path,
+        mouse->getRow(),
+        mouse->getCol(),
+        goal->row(),
+        goal->col());
+    all_wall_maze.flood_fill_from_point(all_wall_path,
+        mouse->getRow(),
+        mouse->getCol(),
+        goal->row(),
+        goal->col());
 
     //solve from origin to center
     //this is what tells us whether or not we need to keep searching
@@ -92,8 +98,8 @@ Direction Flood::planNextStep(){
 char *Flood::solve(){
 	//mouse starts at 0, 0
 	while (!isFinished()){
-    kmaze->mouse->internalTurnToFace(planNextStep());
-    kmaze->mouse->internalForward();
+    mouse->internalTurnToFace(planNextStep());
+    mouse->internalForward();
   }
 
   return final_solution;

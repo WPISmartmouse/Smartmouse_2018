@@ -7,7 +7,6 @@
  */
 #pragma once
 
-#include "KnownMaze.h"
 #include "Solver.h"
 #include "Mouse.h"
 
@@ -15,7 +14,7 @@ class Flood : public Solver {
 
   public:
 
-    Flood(KnownMaze *maze);
+    Flood(Mouse *mouse);
     virtual void setup() override;
     virtual Direction planNextStep() override;
     virtual char *solve() override;

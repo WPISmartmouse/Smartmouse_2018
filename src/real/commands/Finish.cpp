@@ -2,10 +2,11 @@
 #include "Finish.h"
 #include <Arduino.h>
 
-Finish::Finish() : Command("end"){}
+Finish::Finish(AbstractMaze *maze) : Command("end"), maze(maze) {}
 
 void Finish::initialize() {
   Serial.println("end.");
+  Serial.println(maze->fastest_route);
 }
 
 bool Finish::isFinished() {

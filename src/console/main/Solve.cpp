@@ -6,6 +6,7 @@
 #include "ConsoleMaze.h"
 #include "Mouse.h"
 #include "ConsoleTimer.h"
+#include "ConsoleMouse.h"
 #include "Flood.h"
 #include "WallFollow.h"
 #include "commands/SolveCommand.h"
@@ -22,20 +23,18 @@ int main(int argc, char* argv[]){
 
   std::fstream fs;
   fs.open(maze_file, std::fstream::in);
-  Mouse mouse;
 
   if (fs.good()){
-    ConsoleMaze maze(fs, &mouse);
+    ConsoleMaze maze(fs);
     ConsoleTimer timer;
+    ConsoleMouse mouse(&maze);
     Command::setTimerImplementation(&timer);
-    Scheduler scheduler(new SolveCommand(&maze));
+    Scheduler scheduler(new SolveCommand(new WallFollow(&mouse)));
 
     while (true) {
       scheduler.run();
     }
 
-    //maze.print_maze_mouse();
-    //printf("SOLUTION: %s\n", solution);
     fs.close();
     return EXIT_SUCCESS;
   }

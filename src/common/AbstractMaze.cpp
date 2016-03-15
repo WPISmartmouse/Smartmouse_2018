@@ -10,7 +10,7 @@
 #include <Arduino.h>
 #endif
 
-AbstractMaze::AbstractMaze(Mouse *mouse) : solved(false), mouse(mouse) {
+AbstractMaze::AbstractMaze() : solved(false) {
   fastest_route = (char *)malloc(PATH_SIZE*sizeof(char));
   int i,j;
   for (i=0;i<AbstractMaze::MAZE_SIZE;i++){
@@ -116,16 +116,8 @@ Node *AbstractMaze::center_node(){
   return nodes[AbstractMaze::CENTER][AbstractMaze::CENTER];
 }
 
-void AbstractMaze::mark_mouse_position_visited() {
-  nodes[mouse->getRow()][mouse->getCol()]->visited= true;
-}
-
-Node *AbstractMaze::get_mouse_node(){
-  return nodes[mouse->getRow()][mouse->getCol()];
-}
-
-bool AbstractMaze::flood_fill_from_mouse(char *path, int r1,  int c1){
-  flood_fill(path, mouse->getRow(), mouse->getCol(), r1, c1);
+bool AbstractMaze::flood_fill_from_point(char *path, int r0, int c0, int r1,  int c1){
+  flood_fill(path, r0, c0, r1, c1);
 }
 
 bool AbstractMaze::flood_fill_from_origin(char *path, int r1,  int c1){
@@ -245,40 +237,12 @@ void AbstractMaze::connect_all_neighbors_in_maze() {
   }
 }
 
-void AbstractMaze::mark_origin_known(){
-  nodes[0][0]->known = true;
+void AbstractMaze::mark_position_visited(int row, int col){
+  nodes[row][col]->visited = true;
 }
 
-void AbstractMaze::print_maze_mouse(){
-  int i,j;
-  for (i=0;i<AbstractMaze::MAZE_SIZE;i++){
-    char *str = (char *)malloc((AbstractMaze::MAZE_SIZE * 2 + 2) * sizeof(char));
-
-    char *s=str;
-    for (j=0;j<AbstractMaze::MAZE_SIZE;j++){
-      Node *n = nodes[i][j];
-      if (n->neighbor(Direction::W) == NULL){
-        strcpy(s++,"|");
-      }
-      else {
-        strcpy(s++,"_");
-      }
-
-      if (mouse->getRow()  == i && mouse->getCol() == j){
-        strcpy(s++,"o");
-      }
-      else if (n->neighbor(Direction::S) == NULL){
-        strcpy(s++,"_");
-      }
-      else {
-        strcpy(s++," ");
-      }
-    }
-    *(s++) = '|';
-    *s = '\0';
-    printf("%s\n",str);
-    free(str);
-  }
+void AbstractMaze::mark_origin_known(){
+  nodes[0][0]->known = true;
 }
 
 void AbstractMaze::print_maze(){

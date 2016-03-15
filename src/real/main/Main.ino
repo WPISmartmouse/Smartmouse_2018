@@ -4,15 +4,14 @@
 #include "ArduinoTimer.h"
 #include "commands/SolveCommand.h"
 #include "RealMouse.h"
-#include "RealMaze.h"
 #include "WallFollow.h"
 
 ArduinoTimer timer;
 
-RealMouse mouse;
-RealMaze maze(&mouse);
-WallFollow solver(&maze);
-Scheduler scheduler(new SolveCommand(&maze));
+AbstractMaze maze;
+RealMouse mouse(&maze);
+WallFollow solver(&mouse);
+Scheduler scheduler(new SolveCommand(new WallFollow(&mouse)));
 
 void setup(){
   Serial.begin(9600);

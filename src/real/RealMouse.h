@@ -3,12 +3,17 @@
 
 #include <Arduino.h>
 #include "Mouse.h"
+#include "AbstractMaze.h"
 
 class RealMouse : public Mouse {
   public:
 
     /** runs setup things like pin initializes */
     void setup();
+
+    RealMouse(AbstractMaze *maze);
+
+    virtual SensorReading sense() override;
 
     const static int startButtonPin = 0;
 

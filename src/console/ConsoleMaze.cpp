@@ -1,10 +1,7 @@
 #ifdef CONSOLE
 #include "ConsoleMaze.h"
-#include "Mouse.h"
 
-ConsoleMaze::ConsoleMaze(Mouse *mouse) : KnownMaze(mouse) {}
-
-ConsoleMaze::ConsoleMaze(std::fstream& fs, Mouse *mouse) : ConsoleMaze(mouse) {
+ConsoleMaze::ConsoleMaze(std::fstream& fs) : AbstractMaze() {
   std::string line;
 
   //look West and North to connect any nodes
@@ -31,15 +28,4 @@ ConsoleMaze::ConsoleMaze(std::fstream& fs, Mouse *mouse) : ConsoleMaze(mouse) {
   printf("\n");
 }
 
-SensorReading ConsoleMaze::sense(){
-  SensorReading sr(mouse->getRow(), mouse->getCol());
-  bool *w = sr.walls;
-	Node *n = get_mouse_node();
-
-	for (int i=0;i<4;i++){
-		*(w++) = (n->neighbors[i] == NULL);
-	}
-
-  return sr;
-}
 #endif

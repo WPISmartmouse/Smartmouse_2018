@@ -5,8 +5,8 @@
 #include <gazebo/gazebo_client.hh>
 #include <iostream>
 
-#include "SimMaze.h"
 #include "SimMouse.h"
+#include "WallFollow.h"
 #include "SimTimer.h"
 #include "StepSolveCommand.h"
 
@@ -18,8 +18,8 @@ int main(int argc, char* argv[]){
     exit(0);
   }
 
-  SimMouse mouse;
-  SimMaze maze(&mouse);
+  AbstractMaze maze;
+  SimMouse mouse(&maze);
   SimTimer timer;
   Command::setTimerImplementation(&timer);
 
@@ -34,12 +34,12 @@ int main(int argc, char* argv[]){
     node->Subscribe("~/mouse/pose", &SimMouse::poseCallback, &mouse);
 
   gazebo::transport::SubscriberPtr senseSub =
-    node->Subscribe("~/mouse/base/laser/scan", &SimMaze::senseCallback, &maze);
+    node->Subscribe("~/mouse/base/laser/scan", &SimMouse::senseCallback, &mouse);
 
   mouse.controlPub = node->Advertise<gazebo::msgs::JointCmd>("~/mouse/joint_cmd");
 
   mouse.simInit();
-  Scheduler scheduler(new StepSolveCommand(&maze));
+  Scheduler scheduler(new StepSolveCommand(new WallFollow(&mouse)));
 
   while (true){
     scheduler.run();

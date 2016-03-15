@@ -2,7 +2,7 @@
 
 #include "CommanDuino.h"
 #include "Solver.h"
-#include "KnownMaze.h"
+#include "Mouse.h"
 
 class SolveMaze : public CommandGroup {
   public:
@@ -12,7 +12,7 @@ class SolveMaze : public CommandGroup {
     void end();
 
   private:
-    KnownMaze *kmaze;
+    Mouse *mouse;
     Solver *solver;
 
 };
