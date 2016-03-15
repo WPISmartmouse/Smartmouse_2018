@@ -1,5 +1,4 @@
 #pragma once
-#ifdef EMBED
 
 #include "CommanDuino.h"
 #include "AbstractMaze.h"
@@ -14,4 +13,3 @@ class Finish : public Command {
     AbstractMaze *maze;
 
 };
-#endif

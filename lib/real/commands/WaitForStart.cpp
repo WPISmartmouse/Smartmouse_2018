@@ -1,6 +1,5 @@
 #include "WaitForStart.h"
 #include "RealMouse.h"
-/*#include <Arduino.h>*/
 
 WaitForStart::WaitForStart() : Command("wait") {}
 

@@ -1,4 +1,5 @@
 build
+.pioenvs
 .build_ano
 html
 latex

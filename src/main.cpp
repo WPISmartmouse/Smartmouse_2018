@@ -1,6 +1,4 @@
-#ifdef EMBED
-
-#include "CommanDuino.h"
+#include <CommanDuino.h>
 #include "ArduinoTimer.h"
 #include "commands/SolveCommand.h"
 #include "RealMouse.h"
@@ -22,4 +20,3 @@ void setup(){
 void loop(){
   scheduler.run();
 }
-#endif

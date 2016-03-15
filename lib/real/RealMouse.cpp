@@ -1,5 +1,12 @@
-#ifdef EMBED
 #include "RealMouse.h"
+
+RealMouse::RealMouse(AbstractMaze *maze) : Mouse(maze) {}
+
+SensorReading RealMouse::sense() {
+  bool walls[4] = {false, false, false, false};
+  SensorReading sr(row, col, walls);
+  return sr;
+}
 
 void RealMouse::setup(){
   pinMode(RealMouse::FORWARD_PIN, OUTPUT);
@@ -10,5 +17,3 @@ void RealMouse::setup(){
   pinMode(RealMouse::E_WALL_PIN, INPUT_PULLUP);
   pinMode(RealMouse::W_WALL_PIN, INPUT_PULLUP);
 }
-
-#endif

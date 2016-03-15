@@ -1,5 +1,4 @@
 #pragma once
-#ifdef EMBED
 
 #include <Arduino.h>
 #include "Mouse.h"
@@ -25,4 +24,3 @@ class RealMouse : public Mouse {
     const static int S_WALL_PIN = 6;
     const static int W_WALL_PIN = 7;
 };
-#endif

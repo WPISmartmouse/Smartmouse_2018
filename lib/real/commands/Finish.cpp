@@ -1,4 +1,3 @@
-#ifdef EMBED
 #include "Finish.h"
 #include <Arduino.h>
 
@@ -12,4 +11,3 @@ void Finish::initialize() {
 bool Finish::isFinished() {
   return true;
 }
-#endif
