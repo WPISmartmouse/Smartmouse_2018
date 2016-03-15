@@ -1,3 +1,2 @@
-git clone https://github.com/scottdarch/Arturo
-cd Arturo
-sudo make install
+wget https://raw.githubusercontent.com/platformio/platformio/master/scripts/get-platformio.py
+python get-platformio.py
