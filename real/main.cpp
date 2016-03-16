@@ -1,6 +1,7 @@
 #include <CommanDuino.h>
 #include "ArduinoTimer.h"
 #include "commands/SolveCommand.h"
+#include "commands/WaitForStart.h"
 #include "RealMouse.h"
 #include "WallFollow.h"
 
@@ -9,10 +10,12 @@ ArduinoTimer timer;
 AbstractMaze maze;
 RealMouse mouse(&maze);
 WallFollow solver(&mouse);
-Scheduler scheduler(new SolveCommand(new WallFollow(&mouse)));
+Scheduler scheduler(new WaitForStart());
 
 void setup(){
-  Serial.begin(9600);
+  pinMode(13, OUTPUT);
+  digitalWrite(13, LOW);
+  Serial.begin(115200);
   Command::setTimerImplementation(&timer);
   mouse.setup();
 }
