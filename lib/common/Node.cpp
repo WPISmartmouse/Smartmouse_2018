@@ -14,14 +14,14 @@ Node *Node::neighbor(const Direction dir){
       return neighbors[2];
     case Direction::W:
       return neighbors[3];
-    default: return NULL;
+    default: return 0;
   }
 }
 
-Node::Node() : known(false), weight(32767), neighbors({NULL, NULL, NULL, NULL}) {
+Node::Node() : known(false), weight(32767), neighbors({0, 0, 0, 0}) {
 }
 
-Node::Node(int row, int col) : r(row), c(col), known(false), weight(-1), neighbors({NULL, NULL, NULL, NULL}) {
+Node::Node(int row, int col) : r(row), c(col), known(false), weight(-1), neighbors({0, 0, 0, 0}) {
 }
 
 int Node::row(){
@@ -50,7 +50,7 @@ void Node::assign_weights_to_neighbors(Node *goal,  int weight,  bool *success){
     //recursive call to explore each neighbors
     int i;
     for (i=0;i<4;i++){
-      if (this->neighbors[i] != NULL){
+      if (this->neighbors[i] != 0){
         this->neighbors[i]->assign_weights_to_neighbors(goal, weight+1, success);
       }
     }

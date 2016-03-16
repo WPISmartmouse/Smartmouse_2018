@@ -69,9 +69,9 @@ SensorReading SimMouse::sense(){
   std::unique_lock<std::mutex> lk(senseMutex);
   senseCond.wait(lk);
   SensorReading sr(row, col);
-  std::array<bool, 4> w;
-  for (int i=0;i<4;i++){
-    w[i] = walls[i];
+  std::array<bool, 4> *w = &sr.walls;
+  for (int i=0;i<w->size();i++){
+    (*w)[i] = walls[i];
   }
 
   return sr;

@@ -6,11 +6,11 @@ ConsoleMouse::ConsoleMouse(AbstractMaze *maze, int starting_row, int starting_co
 
 SensorReading ConsoleMouse::sense(){
   SensorReading sr(row, col);
-  std::array<bool ,4> w = sr.walls;
+  std::array<bool ,4> *w = &sr.walls;
 	Node *n = get_mouse_node();
 
-	for (int i=0;i<4;i++){
-		w[4] = (n->neighbors[i] == NULL);
+	for (int i=0;i<w->size();i++){
+		(*w)[i] = (n->neighbors[i] == 0x0);
 	}
 
   return sr;
