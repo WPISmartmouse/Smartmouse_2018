@@ -11,8 +11,10 @@
 #include <ctype.h>
 #include <stdlib.h>
 
-#ifdef UNIX
+#ifdef __linux__
 #include <unistd.h>
+#else
+#include "WinGetOpt.h"
 #endif
 
 int main(int argc, char* argv[]){
