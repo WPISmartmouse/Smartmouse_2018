@@ -8,7 +8,9 @@ void WaitForStart::initialize(){}
 void WaitForStart::execute(){}
 
 bool WaitForStart::isFinished(){
-  return !digitalRead(RealMouse::startButtonPin);
+  return !digitalRead(RealMouse::BUTTONGO);
 }
 
-void WaitForStart::end(){}
+void WaitForStart::end(){
+  Serial.println("starting.");
+}

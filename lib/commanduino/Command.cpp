@@ -11,8 +11,7 @@ void Command::setTimerImplementation(TimerInterface *timer){
 Command::Command() : initialized(false) {}
 
 Command::Command(const char *name) : initialized(false),
-  name(name),
-  startTime(timer->programTimeMs()) {}
+  name(name) {}
 
 bool Command::cycle() {
   bool finished = false;
