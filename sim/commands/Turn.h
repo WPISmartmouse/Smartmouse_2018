@@ -25,7 +25,7 @@ class Turn : public Command {
     Direction dir;
 
     float l,r;
-    const float kP = 8;
+    const float kP = 100;
 
 };
 #endif

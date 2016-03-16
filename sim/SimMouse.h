@@ -28,25 +28,26 @@ class SimMouse : public Mouse {
     gazebo::transport::PublisherPtr controlPub;
     void poseCallback(ConstPosePtr &msg);
 
-    static constexpr float MAX_SPEED = 12;
-    static constexpr float MIN_SPEED = 1;
+    static constexpr float MAX_SPEED = 100;
+    static constexpr float MIN_SPEED = 20;
     static constexpr float WALL_DIST = 0.125;
 
   private:
 
     std::condition_variable senseCond;
+    std::mutex senseMutex;
 
-    std::mutex poseMutex;
     std::condition_variable poseCond;
+    std::mutex poseMutex;
+
     ignition::math::Pose3d pose;
 
-		const float kP = 0.001;
+		const float kP = 0.0005;
 		const float kI = 0.000;
 		const float kD = 0.000;
 
     bool walls[3];
     float rawDistances[5];
-    std::mutex senseMutex;
 
 
 };
