@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include "Direction.h"
 
 /**
@@ -17,7 +18,7 @@ class Node {
     bool visited;
 
     //if you want to iterate over neighbors, just increment the pointer to north
-    Node *neighbors[4];
+    std::array<Node *, 4> neighbors;
 
     static const int OUT_OF_BOUNDS;
 
