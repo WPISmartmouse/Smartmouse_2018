@@ -1,12 +1,20 @@
 project(smartmouse)
 cmake_minimum_required(VERSION 3.1)
 
-find_package(gazebo REQUIRED)
-
-list(APPEND CMAKE_CXX_FLAGS "${GAZEBO_CXX_FLAGS}")
-set(CMAKE_CXX_FLAGS "-g")
 
 option(BUILD_SIM "build gazebo simulations" OFF)
+
+if (BUILD_SIM)
+  find_package(gazebo REQUIRED)
+endif()
+
+list(APPEND CMAKE_CXX_FLAGS "${GAZEBO_CXX_FLAGS}")
+
+if (MSVC)
+  set(CMAKE_CXX_FLAGS "/DEBUG /EHsc")
+else()
+  set(CMAKE_CXX_FLAGS "-g")
+endif()
 
 file(GLOB_RECURSE COM_SRC lib/common/*.cpp lib/commanduino/*.cpp)
 file(GLOB SIM_SRC sim/*.cpp sim/commands/*.cpp)
@@ -29,7 +37,7 @@ SET(CONSOLES Solve
 
 foreach(MAIN ${CONSOLES})
   add_executable(${MAIN} "console/main/${MAIN}.cpp" ${COM_SRC} ${CONSOLE_SRC})
-  target_compile_features(${MAIN} PRIVATE cxx_strong_enums cxx_constexpr)
+  target_compile_features(${MAIN} PRIVATE cxx_strong_enums)
   set_target_properties(${MAIN} PROPERTIES COMPILE_FLAGS "-DCONSOLE")
   target_include_directories(${MAIN} PRIVATE console/ console/commands)
 endforeach()
@@ -37,7 +45,7 @@ endforeach()
 if (BUILD_SIM)
   foreach(MAIN ${SIMS})
     add_executable(${MAIN} "sim/main/${MAIN}.cpp" ${COM_SRC} ${SIM_SRC})
-    target_compile_features(${MAIN} PRIVATE cxx_strong_enums cxx_constexpr)
+    target_compile_features(${MAIN} PRIVATE cxx_strong_enums)
     target_link_libraries(${MAIN} ${GAZEBO_LIBRARIES})
     set_target_properties(${MAIN} PROPERTIES COMPILE_FLAGS "-DSIM")
     target_include_directories(${MAIN} PRIVATE sim/ sim/commands)

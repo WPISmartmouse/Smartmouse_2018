@@ -36,7 +36,7 @@ class Command {
      * this will be overrided by individual commands
      * @return is the function finished
      */
-    virtual bool isFinished();
+    virtual bool isFinished() = 0;
 
     /** \brief called once at the end, once isFinished() returned true.
      * this will be overrided by individual commands.

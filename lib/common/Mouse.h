@@ -61,7 +61,7 @@ class Mouse {
 
     AbstractMaze *maze;
 
-    static constexpr float ROT_TOLERANCE = 0.01;
+    static const float ROT_TOLERANCE;
 
   protected:
 

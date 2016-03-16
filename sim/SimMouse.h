@@ -28,9 +28,9 @@ class SimMouse : public Mouse {
     gazebo::transport::PublisherPtr controlPub;
     void poseCallback(ConstPosePtr &msg);
 
-    static constexpr float MAX_SPEED = 100;
-    static constexpr float MIN_SPEED = 20;
-    static constexpr float WALL_DIST = 0.125;
+    static const float MAX_SPEED;
+    static const float MIN_SPEED;
+    static const float WALL_DIST;
 
   private:
 

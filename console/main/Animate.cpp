@@ -10,7 +10,10 @@
 #include <iostream>
 #include <ctype.h>
 #include <stdlib.h>
+
+#ifdef UNIX
 #include <unistd.h>
+#endif
 
 int main(int argc, char* argv[]){
 	int c,row=0,col=0;

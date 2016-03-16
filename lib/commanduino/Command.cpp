@@ -61,7 +61,6 @@ void Command::_initialize() {
 void Command::execute() {}
 void Command::_execute() {}
 
-bool Command::isFinished() {}
 
 void Command::end() {}
 void Command::_end() {
