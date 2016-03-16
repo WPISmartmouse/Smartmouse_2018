@@ -1,5 +1,11 @@
 #pragma once
 
+#ifdef _MSC_VER
+#pragma warning( push )
+#pragma warning( disable : 4700 )
+#endif
+
+
 /** \brief basic struct for data in list */
 template<class T>
 struct ListNode
@@ -333,3 +339,7 @@ void LinkedList<T>::clear(){
 	while(size() > 0)
 		shift();
 }
+
+#ifdef _MSC_VER
+#pragma warning( pop )
+#endif

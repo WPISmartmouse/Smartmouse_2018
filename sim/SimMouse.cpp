@@ -6,6 +6,10 @@
 #include <math.h>
 #include <cstdlib>
 
+const float SimMouse::MAX_SPEED = 100;
+const float SimMouse::MIN_SPEED = 20;
+const float SimMouse::WALL_DIST = 0.125;
+
 SimMouse::SimMouse(AbstractMaze *maze) : Mouse(maze) {}
 
 void SimMouse::poseCallback(ConstPosePtr &msg){

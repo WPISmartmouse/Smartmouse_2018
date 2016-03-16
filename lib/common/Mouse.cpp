@@ -2,6 +2,8 @@
 #include "AbstractMaze.h"
 #include "Direction.h"
 
+const float Mouse::ROT_TOLERANCE = 0.01;
+
 Mouse::Mouse(AbstractMaze *maze) : maze(maze), row(0), col(0), dir(Direction::S){}
 
 Mouse::Mouse(AbstractMaze *maze, int starting_row, int starting_col) :

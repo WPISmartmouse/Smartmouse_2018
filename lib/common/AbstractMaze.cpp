@@ -10,6 +10,8 @@
 #include <Arduino.h>
 #endif
 
+const float AbstractMaze::UNIT_DIST = 0.18;
+
 AbstractMaze::AbstractMaze() : solved(false) {
   fastest_route = (char *)malloc(PATH_SIZE*sizeof(char));
   int i,j;
@@ -117,11 +119,11 @@ Node *AbstractMaze::center_node(){
 }
 
 bool AbstractMaze::flood_fill_from_point(char *path, int r0, int c0, int r1,  int c1){
-  flood_fill(path, r0, c0, r1, c1);
+  return flood_fill(path, r0, c0, r1, c1);
 }
 
 bool AbstractMaze::flood_fill_from_origin(char *path, int r1,  int c1){
-  flood_fill(path, 0, 0, r1, c1);
+  return flood_fill(path, 0, 0, r1, c1);
 }
 
 bool AbstractMaze::flood_fill(char *path, int r0, int c0, int r1,  int c1){

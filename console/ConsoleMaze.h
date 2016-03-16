@@ -2,6 +2,7 @@
 #ifdef CONSOLE
 
 #include <fstream>
+#include <string>
 #include "SensorReading.h"
 #include "AbstractMaze.h"
 
