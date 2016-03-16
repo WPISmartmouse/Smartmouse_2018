@@ -8,6 +8,19 @@
 
 SimMouse::SimMouse(AbstractMaze *maze) : Mouse(maze) {}
 
+void SimMouse::poseCallback(ConstPosePtr &msg){
+  pose.Pos().X(msg->position().x());
+  pose.Pos().Y(msg->position().y());
+  pose.Pos().Z(msg->position().z());
+
+  pose.Rot().X(msg->orientation().x());
+  pose.Rot().Y(msg->orientation().y());
+  pose.Rot().Z(msg->orientation().z());
+  pose.Rot().W(msg->orientation().w());
+
+  poseCond.notify_all();
+}
+
 void SimMouse::senseCallback(ConstLaserScanStampedPtr &msg){
   //transform from Mouse frame to Cardinal frame;
   int size = msg->scan().ranges_size();
@@ -16,30 +29,33 @@ void SimMouse::senseCallback(ConstLaserScanStampedPtr &msg){
     rawDistances[i] = msg->scan().ranges(i);
   }
 
+  const int FRONT_INDEX = 3;
+  const int RIGHT_INDEX = 6;
+
   switch(dir) {
     case Direction::N:
-      walls[0] = msg->scan().ranges(2) < WALL_DIST;
+      walls[0] = msg->scan().ranges(FRONT_INDEX) < WALL_DIST;
       walls[1] = msg->scan().ranges(0) < WALL_DIST;
       walls[2] = false;
-      walls[3] = msg->scan().ranges(4) < WALL_DIST;
+      walls[3] = msg->scan().ranges(RIGHT_INDEX) < WALL_DIST;
       break;
     case Direction::E:
-      walls[0] = msg->scan().ranges(4) < WALL_DIST;
-      walls[1] = msg->scan().ranges(2) < WALL_DIST;
+      walls[0] = msg->scan().ranges(RIGHT_INDEX) < WALL_DIST;
+      walls[1] = msg->scan().ranges(FRONT_INDEX) < WALL_DIST;
       walls[2] = msg->scan().ranges(0) < WALL_DIST;
       walls[3] = false;
       break;
     case Direction::S:
       walls[0] = false;
-      walls[1] = msg->scan().ranges(4) < WALL_DIST;
-      walls[2] = msg->scan().ranges(2) < WALL_DIST;
+      walls[1] = msg->scan().ranges(RIGHT_INDEX) < WALL_DIST;
+      walls[2] = msg->scan().ranges(FRONT_INDEX) < WALL_DIST;
       walls[3] = msg->scan().ranges(0) < WALL_DIST;
       break;
     case Direction::W:
       walls[0] = msg->scan().ranges(0) < WALL_DIST;
       walls[1] = false;
-      walls[2] = msg->scan().ranges(4) < WALL_DIST;
-      walls[3] = msg->scan().ranges(2) < WALL_DIST;;
+      walls[2] = msg->scan().ranges(RIGHT_INDEX) < WALL_DIST;
+      walls[3] = msg->scan().ranges(FRONT_INDEX) < WALL_DIST;;
       break;
   }
   senseCond.notify_all();
@@ -61,6 +77,7 @@ void SimMouse::simInit(){
   setSpeed(0,0);
 }
 
+//lspeed and rspeed should be from -1 to 1
 void SimMouse::setSpeed(float lspeed, float rspeed){
   gazebo::msgs::JointCmd left;
 	left.set_name("mouse::left_wheel_joint");
@@ -77,19 +94,6 @@ void SimMouse::setSpeed(float lspeed, float rspeed){
 	right.mutable_velocity()->set_i_gain(kI);
 	right.mutable_velocity()->set_d_gain(kD);
 	controlPub->Publish(right);
-}
-
-void SimMouse::poseCallback(ConstPosePtr &msg){
-  pose.Pos().X(msg->position().x());
-  pose.Pos().Y(msg->position().y());
-  pose.Pos().Z(msg->position().z());
-
-  pose.Rot().X(msg->orientation().x());
-  pose.Rot().Y(msg->orientation().y());
-  pose.Rot().Z(msg->orientation().z());
-  pose.Rot().W(msg->orientation().w());
-
-  poseCond.notify_all();
 }
 
 ignition::math::Pose3d SimMouse::getPose(){

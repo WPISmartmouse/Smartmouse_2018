@@ -24,7 +24,7 @@ class Forward : public Command {
     SimMouse *mouse;
 
     float l,r;
-    const float kP = 300;
+    const float kP = 3000;
 
 };
 #endif
