@@ -119,7 +119,7 @@ template<typename T>
 LinkedList<T>::~LinkedList()
 {
 	ListNode<T>* tmp;
-	while(!root)
+	while(root != 0x0)
 	{
 		tmp=root;
 		root=root->next;
