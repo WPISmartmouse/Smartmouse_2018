@@ -8,7 +8,7 @@
 
 const float SimMouse::MAX_SPEED = 100;
 const float SimMouse::MIN_SPEED = 20;
-const float SimMouse::WALL_DIST = 0.125;
+const float SimMouse::WALL_DIST = 0.12;
 SimMouse *SimMouse::instance = nullptr;
 
 SimMouse *SimMouse::inst(){
@@ -40,8 +40,8 @@ void SimMouse::checkWallsCallback(ConstLaserScanStampedPtr &msg){
     rawDistances[i] = msg->scan().ranges(i);
   }
 
-  const int FRONT_INDEX = 3;
-  const int RIGHT_INDEX = 6;
+  const int FRONT_INDEX = 1;
+  const int RIGHT_INDEX = 2;
 
   switch(dir) {
     case Direction::N:
@@ -78,10 +78,16 @@ SensorReading SimMouse::checkWalls(){
   SensorReading sr(row, col);
   std::array<bool, 4> *w = &sr.walls;
   for (int i=0;i<w->size();i++){
-    (*w)[i] = walls[i];
+    (*w)[i] = suggestedWalls[i];
   }
 
   return sr;
+}
+
+void SimMouse::suggestWalls(bool *walls) {
+  for (int i=0;i<4;i++){
+    suggestedWalls[i] = walls[i];
+  }
 }
 
 void SimMouse::simInit(){
@@ -105,6 +111,13 @@ void SimMouse::setSpeed(float lspeed, float rspeed){
 	right.mutable_velocity()->set_i_gain(kI);
 	right.mutable_velocity()->set_d_gain(kD);
 	controlPub->Publish(right);
+}
+
+float *SimMouse::getRawDistances(){
+  //wait for the next message to occur
+  std::unique_lock<std::mutex> lk(checkWallsMutex);
+  checkWallsCond.wait(lk);
+  return rawDistances;
 }
 
 ignition::math::Pose3d SimMouse::getPose(){

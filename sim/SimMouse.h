@@ -25,6 +25,10 @@ class SimMouse : public Mouse {
 
     ignition::math::Pose3d getPose();
 
+    void suggestWalls(bool *walls);
+
+    float *getRawDistances();
+
     gazebo::transport::PublisherPtr controlPub;
     void poseCallback(ConstPosePtr &msg);
 
@@ -48,8 +52,9 @@ class SimMouse : public Mouse {
 		const float kI = 0.000;
 		const float kD = 0.000;
 
-    bool walls[3];
-    float rawDistances[5];
+    bool walls[4];
+    bool suggestedWalls[4];
+    float rawDistances[3];
 
 
 };

@@ -32,8 +32,6 @@ void Turn::execute(){
   if (l < -SimMouse::MAX_SPEED) l = -SimMouse::MAX_SPEED;
   if (r < -SimMouse::MAX_SPEED) r = -SimMouse::MAX_SPEED;
 
-  printf("%f,%f dyaw=%f\n", l, r, dYaw);
-
   mouse->setSpeed(l,r);
 }
 

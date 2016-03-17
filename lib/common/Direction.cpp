@@ -33,6 +33,43 @@ Direction left_of_dir(Direction dir) {
   }
 }
 
+Direction right_of_dir(Direction dir) {
+  switch(dir){
+    case Direction::N:
+      return Direction::E;
+    case Direction::E:
+      return Direction::S;
+    case Direction::S:
+      return Direction::W;
+    case Direction::W:
+      return Direction::N;
+    default:
+      return Direction::INVALID;
+  }
+}
+
+Direction operator--(Direction& dir, int) {
+  switch(dir){
+    case Direction::N:
+      dir = Direction::W;
+      break;
+    case Direction::E:
+      dir = Direction::N;
+      break;
+    case Direction::S:
+      dir = Direction::E;
+      break;
+    case Direction::W:
+      dir = Direction::S;
+      break;
+    case Direction::Last:
+      dir = Direction::W;
+    default:
+      dir = Direction::INVALID;
+  }
+  return dir;
+}
+
 Direction operator++(Direction& dir, int) {
   switch(dir){
     case Direction::N:

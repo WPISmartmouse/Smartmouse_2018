@@ -18,13 +18,19 @@ class Forward : public Command {
 
   private:
     float forwardDisplacement(ignition::math::Pose3d p0, ignition::math::Pose3d p1);
+    float yawDiff(float y1, float y2);
 
     ignition::math::Pose3d start;
     float disp;
     SimMouse *mouse;
 
     float l,r;
-    const float kP = 3000;
+    bool checkedWalls;
+    float *distances;
+    bool walls[4];
+    bool wallOnLeft, wallOnRight;
+    const float kPWall = 5000;
+    const float kPDisp= 3000;
 
 };
 #endif
