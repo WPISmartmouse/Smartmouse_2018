@@ -18,10 +18,10 @@ Node *Node::neighbor(const Direction dir){
   }
 }
 
-Node::Node() : known(false), weight(32767), neighbors({0, 0, 0, 0}) {
+Node::Node() : weight(32767), distance(0), known(false), visited(false), neighbors({0, 0, 0, 0}) {
 }
 
-Node::Node(int row, int col) : r(row), c(col), known(false), weight(-1), neighbors({0, 0, 0, 0}) {
+Node::Node(int row, int col) : weight(-1), distance(0), known(false), visited(false), neighbors({0, 0, 0, 0}), r(row), c(col) {
 }
 
 int Node::row(){

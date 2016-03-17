@@ -53,10 +53,6 @@ Direction operator++(Direction& dir, int) {
   return dir;
 }
 
-Direction operator-(const Direction &d1, const Direction &d2) {
-  return static_cast<Direction>(static_cast<int>(d1), static_cast<int>(d2));
-}
-
 double toYaw(Direction d){
   switch(d){
     case Direction::N: return 0;

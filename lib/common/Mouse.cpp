@@ -44,6 +44,7 @@ void Mouse::internalForward(){
     case Direction::E: col++; break;
     case Direction::S: row++; break;
     case Direction::W: col--; break;
+    default: break;
   }
 }
 

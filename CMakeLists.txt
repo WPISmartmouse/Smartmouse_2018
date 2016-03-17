@@ -52,7 +52,7 @@ if (BUILD_SIM)
   endforeach()
 endif()
 
-add_custom_target(due COMMAND cd ../ && platformio run)
+add_custom_target(due COMMAND cd ../ && platformio run -vv)
 
 ################################
 # Testing

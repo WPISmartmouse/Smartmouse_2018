@@ -15,6 +15,7 @@ class Command {
 
     Command();
     Command(const char *name);
+    virtual ~Command();
 
     void setTimeout(unsigned long timeout);
     unsigned long getTime();

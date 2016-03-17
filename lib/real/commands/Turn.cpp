@@ -8,7 +8,7 @@ void Turn::initialize(){}
 
 void Turn::execute(){}
 
-bool Turn::isFinished(){}
+bool Turn::isFinished(){return true;}
 
 void Turn::end(){}
 

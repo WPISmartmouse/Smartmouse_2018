@@ -18,16 +18,15 @@ void KinematicController::calibrate(uint16_t wheelDistance, uint16_t wheelDiamet
 }
 
 void KinematicController::setAcceleration(
-	unsigned int forwardAcceleration, unsigned int ccwAcceleration, 
+	unsigned int forwardAcceleration, unsigned int ccwAcceleration,
 	unsigned int forwardDeceleration, unsigned int ccwDeceleration){
-	
+
 	this->forwardAcceleration = mmToTick(forwardAcceleration);
 	this->ccwAcceleration = degToTick(ccwAcceleration);
 	this->forwardDeceleration = mmToTick(forwardDeceleration);
 	this->ccwDeceleration = degToTick(ccwDeceleration);
 
-	atomicForwardAcceleration = (long)forwardAcceleration * sampleTime / 1000;
-	atomicForwardDeceleration = (long)forwardDeceleration * sampleTime / 1000;
+	atomicForwardAcceleration = (long)forwardAcceleration * sampleTime / 1000; atomicForwardDeceleration = (long)forwardDeceleration * sampleTime / 1000;
 	atomicCCWAcceleration = (long)ccwAcceleration * sampleTime / 1000;
 	atomicCCWDeceleration = (long)ccwDeceleration * sampleTime / 1000;
 }
@@ -50,7 +49,7 @@ boolean KinematicController::run(){
 
 	if (state == KINEMATIC_VELOCITY){
 		if (lastForwardVelocity == targetForwardVelocity) {
-			forwardOutput = targetForwardVelocity;	
+			forwardOutput = targetForwardVelocity;
 		}
 		else {
 			forwardOutput = speedRamp(lastForwardVelocity, targetForwardVelocity, atomicForwardAcceleration, atomicForwardDeceleration);
@@ -71,7 +70,7 @@ boolean KinematicController::run(){
 		rightMotor->setSpeed(calculateRightWheelSpeed(forwardOutput, ccwOutput));
 		lastForwardVelocity = forwardOutput;
 		lastCCWVelocity = ccwOutput;
-	} else if (state = KINEMATIC_OFF) {
+	} else if (state == KINEMATIC_OFF) {
 		lastForwardVelocity = 0;
 		lastCCWVelocity = 0;
 	}

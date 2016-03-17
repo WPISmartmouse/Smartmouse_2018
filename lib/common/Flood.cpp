@@ -11,9 +11,9 @@
 #endif
 
 Flood::Flood(Mouse *mouse) : Solver(mouse),
-                                solved(false),
+                                done(false),
                                 solvable(true),
-                                done(false) {
+                                solved(false) {
 	no_wall_path = (char*)calloc(AbstractMaze::PATH_SIZE, sizeof(char));
 	all_wall_path = (char *)calloc(AbstractMaze::PATH_SIZE, sizeof(char));
 	final_solution= (char *)calloc(AbstractMaze::PATH_SIZE, sizeof(char));
@@ -30,9 +30,6 @@ Direction Flood::planNextStep(){
   //mark the nodes visted in both the mazes
   no_wall_maze.mark_position_visited(mouse->getRow(), mouse->getCol());
   all_wall_maze.mark_position_visited(mouse->getRow(), mouse->getCol());
-
-  int r = mouse->getRow();
-  int c = mouse->getCol();
 
   //check left right back and front sides
   //eventually this will return values from sensors

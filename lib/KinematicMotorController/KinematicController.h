@@ -21,7 +21,7 @@ public:
 	void calibrate(uint16_t wheelDistance, uint16_t wheelDiameter);
 	void goVelocity(int forwardVelocity, int ccwVelocity);
 	void goPosition(int forwardDistance, int ccwAngle, unsigned int forwardSpeed, unsigned int ccwSpeed);
-	
+
 	void brake();
 	void coast();
 
@@ -31,7 +31,7 @@ public:
 	long calculateCCWTick();
 
 	long getOdometryForward();
-	long getOdometryCCW();	
+	long getOdometryCCW();
 
 	void getGlobalPosition(long *x, long *y);
 	boolean isStandby();
@@ -45,9 +45,9 @@ private:
 	RegulatedMotor* rightMotor;
 
 	const int kp = 10;
-	int sampleTime = 50;
+	unsigned int sampleTime = 50;
 
-	int leftMotorDirection; 
+	int leftMotorDirection;
 	int rightMotorDirection;
 
 	float wheelDistance;

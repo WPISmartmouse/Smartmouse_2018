@@ -22,8 +22,6 @@ char opposite_direction(char c);
  */
 Direction operator++(Direction& dir, int);
 
-Direction operator-(const Direction &d1, const Direction &d2);
-
 /**
  * \brief returns the opposite direction of the input direction
  * \param d direction you want the opposite of

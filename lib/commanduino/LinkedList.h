@@ -323,8 +323,8 @@ T LinkedList<T>::get(int index){
 
 template<typename T>
 bool LinkedList<T>::contains(T _t){
-  ListNode<T> *tmp;
-  int i;
+  ListNode<T> *tmp = root;
+  int i = 0;
 
   while ((i < 10) && tmp && (tmp->data != _t)){
     tmp = tmp->next;
