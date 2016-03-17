@@ -10,7 +10,7 @@
 
 class Forward : public Command {
   public:
-    Forward(Mouse *mouse);
+    Forward();
     void initialize();
     void execute();
     bool isFinished();

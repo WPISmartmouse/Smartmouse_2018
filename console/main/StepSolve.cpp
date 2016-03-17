@@ -27,10 +27,10 @@ int main(int argc, char* argv[]){
 
   if (fs.good()){
     ConsoleMaze maze(fs);
-    ConsoleMouse mouse(&maze);
+    ConsoleMouse::inst()->seedMaze(&maze);
     ConsoleTimer timer;
     Command::setTimerImplementation(&timer);
-    Scheduler scheduler(new StepSolveCommand(new WallFollow(&mouse)));
+    Scheduler scheduler(new StepSolveCommand(new WallFollow(ConsoleMouse::inst())));
 
     while (true) {
       scheduler.run();

@@ -4,7 +4,7 @@
 
 #include <gazebo/msgs/msgs.hh>
 
-Turn::Turn(Mouse *mouse, Direction dir) : mouse((SimMouse *)mouse), dir(dir),
+Turn::Turn(Direction dir) : mouse(SimMouse::inst()), dir(dir),
     l(0), r(0) {}
 
 void Turn::initialize(){

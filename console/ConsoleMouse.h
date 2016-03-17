@@ -5,7 +5,17 @@
 
 class ConsoleMouse : public Mouse {
   public:
-    ConsoleMouse(AbstractMaze *maze);
-    ConsoleMouse(AbstractMaze *maze, int starting_row, int starting_col);
+
     virtual SensorReading sense() override;
+
+    static ConsoleMouse *inst();
+
+    void seedMaze(AbstractMaze *maze);
+
+  private:
+
+    static ConsoleMouse *instance;
+
+    ConsoleMouse();
+    ConsoleMouse(int starting_row, int starting_col);
 };

@@ -4,7 +4,7 @@
 #include "Direction.h"
 #include "AbstractMaze.h"
 
-Forward::Forward(Mouse *mouse) : mouse((SimMouse *)mouse), l(0), r(0) {}
+Forward::Forward() : mouse((SimMouse *)mouse), l(0), r(0) {}
 
 float Forward::forwardDisplacement(ignition::math::Pose3d p0, ignition::math::Pose3d p1){
   switch(mouse->getDir()){

@@ -1,8 +1,9 @@
 #ifdef CONSOLE
 #include "Forward.h"
+#include "ConsoleMouse.h"
 #include <stdio.h>
 
-Forward::Forward(Mouse *mouse) : mouse(mouse) {}
+Forward::Forward() : mouse(ConsoleMouse::inst()) {}
 
 void Forward::initialize(){
   mouse->internalForward();

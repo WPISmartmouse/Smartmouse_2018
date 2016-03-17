@@ -65,16 +65,17 @@ int main(int argc, char* argv[]){
     std::cout << "start pos: (" << row << "," << col << ")" << std::endl;
 
     ConsoleMaze maze(fs);
-    ConsoleMouse mouse(&maze, row, col);
+    ConsoleMouse::inst()->seedMaze(&maze);
+
 		int i = 0;
-    while (mouse.inBounds() && i < path.length()){
-			mouse.print_maze_mouse();
-			mouse.internalTurnToFace(char_to_dir(path.at(i++)));
-			mouse.internalForward();
+    while (ConsoleMouse::inst()->inBounds() && i < path.length()){
+			ConsoleMouse::inst()->print_maze_mouse();
+			ConsoleMouse::inst()->internalTurnToFace(char_to_dir(path.at(i++)));
+			ConsoleMouse::inst()->internalForward();
       std::cin.get();
     }
 
-    mouse.print_maze_mouse();
+    ConsoleMouse::inst()->print_maze_mouse();
     fs.close();
     return EXIT_SUCCESS;
   }

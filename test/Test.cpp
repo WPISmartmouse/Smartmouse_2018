@@ -212,8 +212,8 @@ TEST(SolveMazeTest, WallFollowSolve) {
   ASSERT_TRUE(fs.good());
 
   ConsoleMaze maze(fs);
-  ConsoleMouse mouse(&maze);
-  WallFollow solver(&mouse);
+  ConsoleMouse::inst()->seedMaze(&maze);
+  WallFollow solver(ConsoleMouse::inst());
   solver.setup();
   char *solution = solver.solve();
   solver.teardown();
@@ -232,8 +232,8 @@ TEST(SolveMazeTest, FloodSolve) {
   ASSERT_TRUE(fs.good());
 
   ConsoleMaze maze(fs);
-  ConsoleMouse mouse(&maze);
-  Flood solver(&mouse);
+  ConsoleMouse::inst()->seedMaze(&maze);
+  Flood solver(ConsoleMouse::inst());
   solver.setup();
   char *solution = solver.solve();
   solver.teardown();

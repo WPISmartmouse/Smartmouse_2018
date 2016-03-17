@@ -9,8 +9,15 @@
 const float SimMouse::MAX_SPEED = 100;
 const float SimMouse::MIN_SPEED = 20;
 const float SimMouse::WALL_DIST = 0.125;
+SimMouse *SimMouse::instance = nullptr;
 
-SimMouse::SimMouse(AbstractMaze *maze) : Mouse(maze) {}
+SimMouse *SimMouse::inst(){
+  if (instance == NULL){
+    instance = new SimMouse();
+  }
+
+  return instance;
+}
 
 void SimMouse::poseCallback(ConstPosePtr &msg){
   pose.Pos().X(msg->position().x());

@@ -27,9 +27,9 @@ int main(int argc, char* argv[]){
   if (fs.good()){
     ConsoleMaze maze(fs);
     ConsoleTimer timer;
-    ConsoleMouse mouse(&maze);
+    ConsoleMouse::inst()->seedMaze(&maze);
     Command::setTimerImplementation(&timer);
-    Scheduler scheduler(new SolveCommand(new WallFollow(&mouse)));
+    Scheduler scheduler(new SolveCommand(new WallFollow(ConsoleMouse::inst())));
 
     while (true) {
       scheduler.run();

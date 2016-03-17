@@ -14,5 +14,4 @@ class StepSolveMaze : public CommandGroup {
 
   private:
     Solver *solver;
-    Mouse *mouse;
 };

@@ -1,8 +1,9 @@
 #ifdef CONSOLE
 #include "Turn.h"
 #include <stdio.h>
+#include "ConsoleMouse.h"
 
-Turn::Turn(Mouse *mouse, Direction dir) : mouse(mouse), dir(dir) {}
+Turn::Turn(Direction dir) : mouse(ConsoleMouse::inst()), dir(dir) {}
 
 void Turn::initialize(){
   mouse->internalTurnToFace(dir);

@@ -3,9 +3,7 @@
 #include "Turn.h"
 #include "WaitForStart.h"
 
-SolveMaze::SolveMaze(Solver *solver) : CommandGroup("solve"), solver(solver) {
-  this->mouse = solver->mouse;
-}
+SolveMaze::SolveMaze(Solver *solver) : CommandGroup("solve"), solver(solver) { }
 
 void SolveMaze::initialize(){
   solver->setup();
@@ -18,8 +16,8 @@ bool SolveMaze::isFinished(){
     bool mazeSolved = solver->isFinished();
 
     if (!mazeSolved){
-      addSequential(new Turn(mouse, solver->planNextStep()));
-      addSequential(new Forward(mouse));
+      addSequential(new Turn(solver->planNextStep()));
+      addSequential(new Forward());
     }
     else {
       return true;

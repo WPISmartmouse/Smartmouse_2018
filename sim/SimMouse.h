@@ -13,7 +13,7 @@
 class SimMouse : public Mouse {
   public:
 
-    SimMouse(AbstractMaze *maze);
+    static SimMouse *inst();
 
     virtual SensorReading sense() override;
 
@@ -33,6 +33,8 @@ class SimMouse : public Mouse {
     static const float WALL_DIST;
 
   private:
+
+    static SimMouse *instance;
 
     std::condition_variable senseCond;
     std::mutex senseMutex;

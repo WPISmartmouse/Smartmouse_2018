@@ -19,8 +19,6 @@ int main(int argc, char* argv[]){
     exit(0);
   }
 
-  AbstractMaze maze;
-  SimMouse mouse(&maze);
   SimTimer timer;
   Command::setTimerImplementation(&timer);
 
@@ -32,14 +30,14 @@ int main(int argc, char* argv[]){
     node->Subscribe("~/world_stats", &SimTimer::simTimeCallback);
 
   gazebo::transport::SubscriberPtr poseSub =
-    node->Subscribe("~/mouse/pose", &SimMouse::poseCallback, &mouse);
+    node->Subscribe("~/mouse/pose", &SimMouse::poseCallback, SimMouse::inst());
 
-  gazebo::transport::SubscriberPtr senseSub = node->Subscribe("~/mouse/base/laser/scan", &SimMouse::senseCallback, &mouse);
+  gazebo::transport::SubscriberPtr senseSub = node->Subscribe("~/mouse/base/laser/scan", &SimMouse::senseCallback, SimMouse::inst());
 
-  mouse.controlPub = node->Advertise<gazebo::msgs::JointCmd>("~/mouse/joint_cmd");
+  SimMouse::inst()->controlPub = node->Advertise<gazebo::msgs::JointCmd>("~/mouse/joint_cmd");
 
-  mouse.simInit();
-  Scheduler scheduler(new SolveCommand(new WallFollow(&mouse)));
+  SimMouse::inst()->simInit();
+  Scheduler scheduler(new SolveCommand(new WallFollow(SimMouse::inst())));
 
   while (true){
     scheduler.run();

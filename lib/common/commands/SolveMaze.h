@@ -12,7 +12,6 @@ class SolveMaze : public CommandGroup {
     void end();
 
   private:
-    Mouse *mouse;
     Solver *solver;
 
 };

@@ -20,7 +20,7 @@ int main(int argc, char *argv[]){
 
   if (fs.good()){
     ConsoleMaze maze(fs);
-    ConsoleMouse mouse(&maze);
+    ConsoleMouse::inst()->seedMaze(&maze);
     maze.print_maze();
     fs.close();
     return EXIT_SUCCESS;
