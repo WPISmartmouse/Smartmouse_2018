@@ -55,7 +55,7 @@ public:
   */
   void print_maze_mouse();
 
-  virtual SensorReading sense() = 0;
+  virtual SensorReading checkWalls() = 0;
   bool is_mouse_blocked();
   bool is_mouse_blocked(Direction dir);
 

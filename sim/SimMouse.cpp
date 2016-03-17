@@ -32,7 +32,7 @@ void SimMouse::poseCallback(ConstPosePtr &msg){
   poseCond.notify_all();
 }
 
-void SimMouse::senseCallback(ConstLaserScanStampedPtr &msg){
+void SimMouse::checkWallsCallback(ConstLaserScanStampedPtr &msg){
   //transform from Mouse frame to Cardinal frame;
   int size = msg->scan().ranges_size();
 
@@ -69,12 +69,12 @@ void SimMouse::senseCallback(ConstLaserScanStampedPtr &msg){
       walls[3] = msg->scan().ranges(FRONT_INDEX) < WALL_DIST;;
       break;
   }
-  senseCond.notify_all();
+  checkWallsCond.notify_all();
 }
 
-SensorReading SimMouse::sense(){
-  std::unique_lock<std::mutex> lk(senseMutex);
-  senseCond.wait(lk);
+SensorReading SimMouse::checkWalls(){
+  std::unique_lock<std::mutex> lk(checkWallsMutex);
+  checkWallsCond.wait(lk);
   SensorReading sr(row, col);
   std::array<bool, 4> *w = &sr.walls;
   for (int i=0;i<w->size();i++){

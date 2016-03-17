@@ -6,7 +6,7 @@
 class ConsoleMouse : public Mouse {
   public:
 
-    virtual SensorReading sense() override;
+    virtual SensorReading checkWalls() override;
 
     static ConsoleMouse *inst();
 

@@ -20,7 +20,6 @@ Flood::Flood(Mouse *mouse) : Solver(mouse),
 }
 
 //starts at 0, 0 and explores the whole maze
-//kmaze is the known maze,  and should only be used to call sense()
 void Flood::setup(){
   mouse->maze->reset();
   no_wall_maze.connect_all_neighbors_in_maze();
@@ -33,7 +32,7 @@ Direction Flood::planNextStep(){
 
   //check left right back and front sides
   //eventually this will return values from sensors
-  SensorReading sr = mouse->sense();
+  SensorReading sr = mouse->checkWalls();
 
   //update the mazes base on that reading
   no_wall_maze.update(sr);

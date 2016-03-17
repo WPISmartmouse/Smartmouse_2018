@@ -16,7 +16,7 @@ RealMouse::RealMouse() : display(OLED_RESET), sensor(VL6180X_ADDRESS), motL(&enc
   //state = 0;
 }
 
-SensorReading RealMouse::sense() {
+SensorReading RealMouse::checkWalls() {
   bool walls[4] = {false, false, false, false};
   SensorReading sr(row, col, walls);
   return sr;

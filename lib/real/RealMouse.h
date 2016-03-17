@@ -26,7 +26,7 @@ public:
 
   static RealMouse *inst();
 
-  virtual SensorReading sense() override;
+  virtual SensorReading checkWalls() override;
 
 private:
   RealMouse();

@@ -32,7 +32,7 @@ int main(int argc, char* argv[]){
   gazebo::transport::SubscriberPtr poseSub =
     node->Subscribe("~/mouse/pose", &SimMouse::poseCallback, SimMouse::inst());
 
-  gazebo::transport::SubscriberPtr senseSub = node->Subscribe("~/mouse/base/laser/scan", &SimMouse::senseCallback, SimMouse::inst());
+  gazebo::transport::SubscriberPtr checkWallsSub = node->Subscribe("~/mouse/base/laser/scan", &SimMouse::checkWallsCallback, SimMouse::inst());
 
   SimMouse::inst()->controlPub = node->Advertise<gazebo::msgs::JointCmd>("~/mouse/joint_cmd");
 

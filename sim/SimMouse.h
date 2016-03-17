@@ -15,9 +15,9 @@ class SimMouse : public Mouse {
 
     static SimMouse *inst();
 
-    virtual SensorReading sense() override;
+    virtual SensorReading checkWalls() override;
 
-    void senseCallback(ConstLaserScanStampedPtr &msg);
+    void checkWallsCallback(ConstLaserScanStampedPtr &msg);
 
     void simInit();
 
@@ -36,8 +36,8 @@ class SimMouse : public Mouse {
 
     static SimMouse *instance;
 
-    std::condition_variable senseCond;
-    std::mutex senseMutex;
+    std::condition_variable checkWallsCond;
+    std::mutex checkWallsMutex;
 
     std::condition_variable poseCond;
     std::mutex poseMutex;

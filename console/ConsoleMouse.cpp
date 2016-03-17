@@ -17,7 +17,7 @@ ConsoleMouse::ConsoleMouse() {}
 ConsoleMouse::ConsoleMouse(int starting_row, int starting_col)
     : Mouse(starting_row, starting_col) {}
 
-SensorReading ConsoleMouse::sense() {
+SensorReading ConsoleMouse::checkWalls() {
   SensorReading sr(row, col);
   std::array<bool, 4> *w = &sr.walls;
   Node *n = get_mouse_node();

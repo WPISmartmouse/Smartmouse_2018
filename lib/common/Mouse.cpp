@@ -49,12 +49,12 @@ void Mouse::internalForward(){
 }
 
 bool Mouse::is_mouse_blocked(){
-  SensorReading sr = sense();
+  SensorReading sr = checkWalls();
   return sr.isWall(dir);
 }
 
 bool Mouse::is_mouse_blocked(Direction dir){
-  SensorReading sr = sense();
+  SensorReading sr = checkWalls();
   return sr.isWall(dir);
 }
 
