@@ -24,11 +24,15 @@ public:
 
   const static int BUTTONGO = 44;
 
-  RealMouse(AbstractMaze *maze);
+  static RealMouse *inst();
 
   virtual SensorReading sense() override;
 
 private:
+  RealMouse();
+
+  static RealMouse *instance;
+
   const static int OLED_RESET = 5;
   const static int VL6180X_ADDRESS = 0x29;
 

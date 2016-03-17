@@ -1,6 +1,16 @@
 #include "RealMouse.h"
 
-RealMouse::RealMouse(AbstractMaze *maze) : Mouse(maze), display(OLED_RESET), sensor(VL6180X_ADDRESS), motL(&encLCount, MOTOR1B, MOTOR1A), motR(&encRCount, MOTOR2B, MOTOR2A), kc(&motL,&motR,1,-1,78.3f,31.71f,(int)(12*75.81)) {
+RealMouse *RealMouse::instance = nullptr;
+
+RealMouse *RealMouse::inst() {
+  if (instance == NULL) {
+    instance = new RealMouse();
+  }
+
+  return instance;
+}
+
+RealMouse::RealMouse() : display(OLED_RESET), sensor(VL6180X_ADDRESS), motL(&encLCount, MOTOR1B, MOTOR1A), motR(&encRCount, MOTOR2B, MOTOR2A), kc(&motL,&motR,1,-1,78.3f,31.71f,(int)(12*75.81)) {
   encLCount = 0;
   encRCount = 0;
   //state = 0;

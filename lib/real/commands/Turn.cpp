@@ -1,7 +1,8 @@
 #include "Turn.h"
 #include <stdio.h>
+#include "RealMouse.h"
 
-Turn::Turn(Mouse *mouse, Direction dir) : mouse(mouse), dir(dir) {}
+Turn::Turn(Direction dir) : mouse(RealMouse::inst()), dir(dir) {}
 
 void Turn::initialize(){}
 

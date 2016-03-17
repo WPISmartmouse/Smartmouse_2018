@@ -6,7 +6,7 @@
 
 class Turn : public Command {
   public:
-    Turn(Mouse *mouse, Direction dir);
+    Turn(Direction dir);
     void initialize();
     void execute();
     bool isFinished();

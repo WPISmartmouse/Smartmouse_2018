@@ -8,8 +8,7 @@
 ArduinoTimer timer;
 
 AbstractMaze maze;
-RealMouse mouse(&maze);
-WallFollow solver(&mouse);
+WallFollow solver(RealMouse::inst());
 Scheduler scheduler(new WaitForStart());
 
 void setup(){
@@ -17,7 +16,7 @@ void setup(){
   digitalWrite(13, LOW);
   Serial.begin(115200);
   Command::setTimerImplementation(&timer);
-  mouse.setup();
+  RealMouse::inst()->setup();
 }
 
 void loop(){

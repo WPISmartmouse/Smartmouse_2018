@@ -1,6 +1,7 @@
 #include "Forward.h"
+#include "RealMouse.h"
 
-Forward::Forward(Mouse *mouse) : mouse(mouse) {}
+Forward::Forward() : mouse(RealMouse::inst()) {}
 
 void Forward::initialize(){}
 void Forward::execute(){}
