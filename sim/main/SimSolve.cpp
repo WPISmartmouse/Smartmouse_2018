@@ -8,6 +8,7 @@
 #include "SimMouse.h"
 #include "SimTimer.h"
 #include "SolveCommand.h"
+#include "Flood.h"
 #include "WallFollow.h"
 #include <iostream>
 
@@ -37,7 +38,7 @@ int main(int argc, char* argv[]){
   SimMouse::inst()->controlPub = node->Advertise<gazebo::msgs::JointCmd>("~/mouse/joint_cmd");
 
   SimMouse::inst()->simInit();
-  Scheduler scheduler(new SolveCommand(new WallFollow(SimMouse::inst())));
+  Scheduler scheduler(new SolveCommand(new Flood(SimMouse::inst())));
 
   while (true){
     scheduler.run();
