@@ -30,7 +30,7 @@ int main(int argc, char* argv[]){
     ConsoleMouse::inst()->seedMaze(&maze);
     ConsoleTimer timer;
     Command::setTimerImplementation(&timer);
-    Scheduler scheduler(new StepSolveCommand(new WallFollow(ConsoleMouse::inst())));
+    Scheduler scheduler(new StepSolveCommand(new Flood(ConsoleMouse::inst())));
 
     while (true) {
       scheduler.run();

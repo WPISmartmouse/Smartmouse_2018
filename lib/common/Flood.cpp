@@ -107,6 +107,7 @@ bool Flood::isFinished(){
 
 void Flood::teardown(){
 	//this is the final solution which represents how the mouse should travel from start to finish
+  mouse->maze->fastest_route = final_solution;
 	free(no_wall_path);
 	free(all_wall_path);
   free(final_solution);
