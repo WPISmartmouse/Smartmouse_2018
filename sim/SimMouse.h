@@ -40,6 +40,8 @@ class SimMouse : public Mouse {
 
     static SimMouse *instance;
 
+    SimMouse();
+
     std::condition_variable checkWallsCond;
     std::mutex checkWallsMutex;
 
@@ -54,6 +56,7 @@ class SimMouse : public Mouse {
 
     bool walls[4];
     bool suggestedWalls[4];
+    bool hasSuggestion;
     float rawDistances[3];
 
 

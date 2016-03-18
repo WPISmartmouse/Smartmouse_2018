@@ -58,7 +58,6 @@ void Forward::execute(){
 
   if (!checkedWalls && dispError < AbstractMaze::UNIT_DIST/2) {
     checkedWalls = true;
-    printf("R=%f L=%f\n", dToWallLeft, dToWallRight);
     walls[static_cast<int>(right_of_dir(mouse->getDir()))] =
       dToWallRight < SimMouse::WALL_DIST;
     walls[static_cast<int>(left_of_dir(mouse->getDir()))] =
@@ -67,34 +66,26 @@ void Forward::execute(){
 
   if (isinf(distances[0]) && wallOnRight){
     wallOnRight = false;
-    printf("lost right wall\n");
   }
   if (isinf(distances[2]) && wallOnLeft){
     wallOnLeft = false;
-    printf("lost left wall\n");
   }
 
+  float rightWallError = 0.084 - dToWallRight;
+  float leftWallError = 0.084 - dToWallLeft;
+
   if (wallOnRight) {
-    float wallError = 0.084 - dToWallRight;
-    float correction = wallError * kPWall * dispError;
+    float correction = rightWallError * kPWall * dispError;
     //printf("%f %f : ", wallError, correction);
     l -= correction;
   }
-  else if (wallOnLeft) {
-    float wallError = 0.084 - dToWallLeft;
-    float correction = wallError * kPWall * dispError;
+  if (wallOnLeft) {
+    float correction = leftWallError * kPWall * dispError;
     //printf("%f %f : ", wallError, correction);
     r -= correction;
   }
 
   //printf("(%f,%f)\n", l, r);
-
-  l = l > SimMouse::MAX_SPEED ? SimMouse::MAX_SPEED : l;
-  r = r > SimMouse::MAX_SPEED ? SimMouse::MAX_SPEED : r;
-
-  l = l < SimMouse::MIN_SPEED ? SimMouse::MIN_SPEED : l;
-  r = r < SimMouse::MIN_SPEED ? SimMouse::MIN_SPEED : r;
-
   mouse->setSpeed(l,r);
 }
 

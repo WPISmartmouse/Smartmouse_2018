@@ -11,6 +11,8 @@ const float SimMouse::MIN_SPEED = 20;
 const float SimMouse::WALL_DIST = 0.12;
 SimMouse *SimMouse::instance = nullptr;
 
+SimMouse::SimMouse() : hasSuggestion(false) {}
+
 SimMouse *SimMouse::inst(){
   if (instance == NULL){
     instance = new SimMouse();
@@ -77,14 +79,21 @@ SensorReading SimMouse::checkWalls(){
   checkWallsCond.wait(lk);
   SensorReading sr(row, col);
   std::array<bool, 4> *w = &sr.walls;
+
   for (int i=0;i<w->size();i++){
-    (*w)[i] = suggestedWalls[i];
+    if (hasSuggestion){
+      (*w)[i] = suggestedWalls[i];
+    }
+    else {
+      (*w)[i] = this->walls[i];
+    }
   }
 
   return sr;
 }
 
 void SimMouse::suggestWalls(bool *walls) {
+  hasSuggestion = true;
   for (int i=0;i<4;i++){
     suggestedWalls[i] = walls[i];
   }

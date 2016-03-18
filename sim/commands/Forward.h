@@ -29,7 +29,7 @@ class Forward : public Command {
     float *distances;
     bool walls[4];
     bool wallOnLeft, wallOnRight;
-    const float kPWall = 5000;
+    const float kPWall = 2000;
     const float kPDisp= 3000;
 
 };
