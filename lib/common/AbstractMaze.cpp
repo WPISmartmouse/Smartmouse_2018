@@ -126,6 +126,10 @@ bool AbstractMaze::flood_fill_from_origin(char *path, int r1,  int c1){
   return flood_fill(path, 0, 0, r1, c1);
 }
 
+bool AbstractMaze::flood_fill_from_origin_to_center(char *path){
+  return flood_fill(path, 0, 0, AbstractMaze::MAZE_SIZE/2, AbstractMaze::MAZE_SIZE/2);
+}
+
 bool AbstractMaze::flood_fill(char *path, int r0, int c0, int r1,  int c1){
   Node *n;
   Node *goal = nodes[r1][c1];

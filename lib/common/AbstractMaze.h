@@ -55,6 +55,7 @@ class AbstractMaze {
     //the fill starts from r0, c0 and ends at r1, c1
     bool flood_fill_from_point(char *path, int r0, int c0, int r1,  int c1);
     bool flood_fill_from_origin(char *path, int r1,  int c1);
+    bool flood_fill_from_origin_to_center(char *path);
 
     /** \brief connect all neighbors in the whole maze
      * \param i row

@@ -15,6 +15,8 @@ public:
   Mouse();
   Mouse(int starting_row, int starting_col);
 
+  void reset();
+
   /** \brief return the current column.
    * Guaranteed to be between 0 and MAZE_SIZE
    * \return current column

@@ -12,6 +12,12 @@ Mouse::Mouse(int starting_row, int starting_col) :
   col(starting_col),
   dir(Direction::S) {}
 
+void Mouse::reset() {
+  row = 0;
+  col = 0;
+  dir = Direction::S;
+}
+
 int Mouse::getRow(){
   return row;
 }
@@ -25,7 +31,7 @@ Direction Mouse::getDir(){
 }
 
 bool Mouse::atCenter(){
-	return (row == AbstractMaze::CENTER || row == AbstractMaze::CENTER-1) && (col == AbstractMaze::CENTER || col == AbstractMaze::CENTER-1);
+	return row == AbstractMaze::CENTER && col == AbstractMaze::CENTER;
 }
 
 bool Mouse::inBounds(){

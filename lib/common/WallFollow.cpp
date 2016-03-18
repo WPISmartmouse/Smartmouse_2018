@@ -8,6 +8,7 @@
 WallFollow::WallFollow(Mouse *mouse): Solver(mouse) {}
 
 void WallFollow::setup() {
+  mouse->reset();
   mouse->maze->reset();
   mouse->maze->mark_origin_known();
 	step=0;
