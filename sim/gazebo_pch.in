@@ -1,0 +1,6 @@
+#warning "you shouldn't see this unless you're building the pch"
+#include <ignition/math.hh>
+#include <gazebo/common/common.hh>
+#include <gazebo/gazebo_client.hh>
+#include <gazebo/msgs/msgs.hh>
+#include <gazebo/transport/transport.hh>

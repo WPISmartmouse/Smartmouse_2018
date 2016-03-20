@@ -13,7 +13,9 @@ class Mouse {
 
 public:
   Mouse();
+  Mouse(AbstractMaze *maze);
   Mouse(int starting_row, int starting_col);
+  Mouse(AbstractMaze *maze, int starting_row, int starting_col);
 
   void reset();
 

@@ -6,8 +6,6 @@
 #include "SimMouse.h"
 #include "Mouse.h"
 
-#include <ignition/math.hh>
-
 class Forward : public Command {
   public:
     Forward();

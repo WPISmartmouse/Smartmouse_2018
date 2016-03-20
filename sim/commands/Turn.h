@@ -5,8 +5,6 @@
 #include "SimMouse.h"
 #include "Direction.h"
 
-#include <ignition/math.hh>
-
 class Turn : public Command {
   public:
     Turn(Direction dir);

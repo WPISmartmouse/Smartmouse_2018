@@ -100,7 +100,22 @@ void Forward::end(){
   walls[static_cast<int>(mouse->getDir())] = distances[1] < SimMouse::WALL_DIST;
   walls[static_cast<int>(opposite_direction(mouse->getDir()))] = false;
 
-  printf("predicts=%d, %d, %d, %d\n", walls[0], walls[1], walls[2], walls[3]);
   mouse->suggestWalls(walls);
+
+  std::string path = mouse->maze->fastest_route;
+  int row = 0;
+  int col = 0;
+  mouse->resetIndicators();
+  for(char& c : path) {
+    switch(c){
+      case 'N': row--; break;
+      case 'E': col++; break;
+      case 'S': row++; break;
+      case 'W': col--; break;
+      default: break;
+    }
+    mouse->updateIndicator(row, col, SimMouse::green_color);
+  }
+  mouse->publishIndicators();
 }
 #endif

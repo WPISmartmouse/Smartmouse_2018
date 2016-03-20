@@ -1,8 +1,5 @@
 #ifdef SIM
-
 #include "Turn.h"
-
-#include <gazebo/msgs/msgs.hh>
 
 Turn::Turn(Direction dir) : mouse(SimMouse::inst()), dir(dir),
     l(0), r(0) {}
@@ -14,8 +11,12 @@ void Turn::initialize(){
 
 float Turn::yawDiff(float y1, float y2){
   float diff = y2 - y1;
-  if (diff > 180) return fabs(diff - 360);
-  if (diff < -180) return fabs(diff + 360);
+  if (diff > M_PI) {
+    return diff - 2*M_PI;
+  }
+  if (diff < -M_PI) {
+    return diff + 2*M_PI;
+  }
   return diff;
 }
 

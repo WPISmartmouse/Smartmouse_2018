@@ -1,9 +1,5 @@
 #ifdef SIM
-
 #include "CommanDuino.h"
-#include <gazebo/transport/transport.hh>
-#include <gazebo/msgs/msgs.hh>
-#include <gazebo/gazebo_client.hh>
 
 #include "SimMouse.h"
 #include "SimTimer.h"
@@ -33,9 +29,14 @@ int main(int argc, char* argv[]){
   gazebo::transport::SubscriberPtr poseSub =
     node->Subscribe("~/mouse/pose", &SimMouse::poseCallback, SimMouse::inst());
 
-  gazebo::transport::SubscriberPtr checkWallsSub = node->Subscribe("~/mouse/base/laser/scan", &SimMouse::checkWallsCallback, SimMouse::inst());
+  gazebo::transport::SubscriberPtr checkWallsSub = node->Subscribe("~/mouse/base/laser/scan",
+      &SimMouse::checkWallsCallback, SimMouse::inst());
 
   SimMouse::inst()->controlPub = node->Advertise<gazebo::msgs::JointCmd>("~/mouse/joint_cmd");
+  SimMouse::inst()->indicatorPub = node->Advertise<gazebo::msgs::Visual>("~/visual",
+      AbstractMaze::MAZE_SIZE * AbstractMaze::MAZE_SIZE);
+
+  usleep(10000);
 
   SimMouse::inst()->simInit();
   Scheduler scheduler(new SolveCommand(new Flood(SimMouse::inst())));

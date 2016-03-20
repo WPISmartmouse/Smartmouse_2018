@@ -12,6 +12,14 @@ Mouse::Mouse(int starting_row, int starting_col) :
   col(starting_col),
   dir(Direction::S) {}
 
+Mouse::Mouse(AbstractMaze *maze) : maze(maze), row(0), col(0), dir(Direction::S){}
+
+Mouse::Mouse(AbstractMaze *maze, int starting_row, int starting_col) :
+  maze(maze),
+  row(starting_row),
+  col(starting_col),
+  dir(Direction::S) {}
+
 void Mouse::reset() {
   row = 0;
   col = 0;

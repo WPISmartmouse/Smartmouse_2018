@@ -53,6 +53,10 @@ Direction Flood::planNextStep(){
   no_wall_maze.flood_fill_from_origin_to_center(no_wall_maze.fastest_route);
   all_wall_maze.flood_fill_from_origin_to_center(all_wall_maze.fastest_route);
 
+  //this way commands can see this
+  //used to visualize in gazebo
+  mouse->maze->fastest_route = no_wall_maze.fastest_route;
+
   return char_to_dir(no_wall_path[0]);
 }
 
