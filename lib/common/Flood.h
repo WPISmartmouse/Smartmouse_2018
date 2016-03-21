@@ -30,7 +30,7 @@ class Flood : public Solver {
     AbstractMaze no_wall_maze;
 
     /// \brief this maze is initially no walls,  and walls are removed every time the mouse moves
-    AbstractMaze all_wall_maze;
+    AbstractMaze *all_wall_maze;
 
     char *no_wall_path;
     char *all_wall_path;

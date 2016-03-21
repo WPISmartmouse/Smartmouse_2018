@@ -14,6 +14,8 @@ const float AbstractMaze::UNIT_DIST = 0.18;
 
 AbstractMaze::AbstractMaze() : solved(false) {
   fastest_route = (char *)malloc(PATH_SIZE*sizeof(char));
+  fastest_theoretical_route = (char *)malloc(PATH_SIZE*sizeof(char));
+  pathToNextGoal = (char *)malloc(PATH_SIZE*sizeof(char));
   int i,j;
   for (i=0;i<AbstractMaze::MAZE_SIZE;i++){
     for (j=0;j<AbstractMaze::MAZE_SIZE;j++){

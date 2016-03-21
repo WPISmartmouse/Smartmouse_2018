@@ -7,7 +7,7 @@
 
 const float SimMouse::MAX_SPEED = 100;
 const float SimMouse::MIN_SPEED = 20;
-const float SimMouse::WALL_DIST = 0.12;
+const float SimMouse::WALL_DIST = 0.115;
 SimMouse *SimMouse::instance = nullptr;
 
 const gazebo::common::Color SimMouse::red_color{1, 0, 0, 1};
@@ -52,10 +52,24 @@ void SimMouse::updateIndicator(int row, int col, gazebo::common::Color color) {
   gazebo::msgs::Set(visual->mutable_material()->mutable_diffuse(), color);
 }
 
-void SimMouse::resetIndicators() {
+void SimMouse::resetAllIndicators() {
   for (int i=0;i<AbstractMaze::MAZE_SIZE;i++){
     for (int j=0;j<AbstractMaze::MAZE_SIZE;j++){
       updateIndicator(i,j,grey_color);
+    }
+  }
+}
+
+void SimMouse::resetIndicators(gazebo::common::Color color) {
+  for (int i=0;i<AbstractMaze::MAZE_SIZE;i++){
+    for (int j=0;j<AbstractMaze::MAZE_SIZE;j++){
+      gazebo::msgs::Color c = indicators[i][j]->material().diffuse();
+      if (color.r == c.r()
+          &color.g == c.g()
+          &color.b == c.b()
+          &color.a == c.a()) {
+        updateIndicator(i,j,grey_color);
+      }
     }
   }
 }
@@ -66,6 +80,20 @@ void SimMouse::publishIndicators() {
       indicatorPub->Publish(*indicators[i][j]);
     }
   }
+}
+
+void SimMouse::indicatePath(int row, int col, std::string path, gazebo::common::Color color) {
+  for(char& c : path) {
+    switch(c){
+      case 'N': row--; break;
+      case 'E': col++; break;
+      case 'S': row++; break;
+      case 'W': col--; break;
+      default: break;
+    }
+    updateIndicator(row, col, color);
+  }
+  publishIndicators();
 }
 
 void SimMouse::poseCallback(ConstPosePtr &msg){
@@ -136,6 +164,10 @@ SensorReading SimMouse::checkWalls(){
     }
   }
 
+  if (!hasSuggestion){
+    (*w)[0] = true; // there will always be a wall North
+  }
+
   return sr;
 }
 
@@ -189,37 +221,4 @@ ignition::math::Pose3d SimMouse::getPose(){
   poseCond.wait(lk);
   return pose;
 }
-
-gazebo::msgs::Pose *SimMouse::createPose(int row, int col, float z) {
-  float zero_offset = (AbstractMaze::UNIT_DIST * (AbstractMaze::MAZE_SIZE - 1)/2);
-  float x = -zero_offset + col * AbstractMaze::UNIT_DIST;
-  float y = zero_offset - row * AbstractMaze::UNIT_DIST;
-
-  gazebo::msgs::Vector3d *position = new gazebo::msgs::Vector3d();
-  position->set_x(x);
-  position->set_y(y);
-  position->set_z(z);
-
-  gazebo::msgs::Quaternion *orientation = new gazebo::msgs::Quaternion();
-  orientation->set_z(0);
-  orientation->set_w(1);
-
-  gazebo::msgs::Pose *pose = new gazebo::msgs::Pose;
-  pose->set_allocated_orientation(orientation);
-  pose->set_allocated_position(position);
-}
-
-gazebo::msgs::Geometry *SimMouse::createCylinderGeometry(float r, float l)
-{
-  gazebo::msgs::CylinderGeom *cylinder = new gazebo::msgs::CylinderGeom();
-  cylinder->set_radius(r);
-  cylinder->set_length(l);
-
-  gazebo::msgs::Geometry *geo = new gazebo::msgs::Geometry();
-  geo->set_type(gazebo::msgs::Geometry_Type_CYLINDER);
-  geo->set_allocated_cylinder(cylinder);
-
-  return geo;
-}
-
 #endif

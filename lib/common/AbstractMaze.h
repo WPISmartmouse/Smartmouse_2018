@@ -23,6 +23,8 @@ class AbstractMaze {
     const static float UNIT_DIST;
     bool solved; //boolean for if we know the fastest route
     char *fastest_route; //a char array like NSEWNENNSNE, which means North, South, East...
+    char *fastest_theoretical_route;
+    char *pathToNextGoal;
 
     /** \brief allocates and initializes a node
      * allocates a maze of the given size and sets all links in graph to be null. Naturally, it's column major.

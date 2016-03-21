@@ -1,4 +1,5 @@
 #ifdef SIM
+#include "SimMouse.h"
 #include "Finish.h"
 #include <stdio.h>
 
@@ -9,6 +10,7 @@ void Finish::initialize() {
 }
 
 bool Finish::isFinished() {
+  SimMouse::inst()->setSpeed(0,0);
   return true;
 }
 #endif

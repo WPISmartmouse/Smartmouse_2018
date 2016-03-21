@@ -26,6 +26,8 @@ float Forward::forwardDisplacement(ignition::math::Pose3d p0, ignition::math::Po
 
 
 void Forward::initialize(){
+  mouse->resetIndicators(SimMouse::red_color);
+  mouse->indicatePath(mouse->getRow(), mouse->getCol(), mouse->maze->pathToNextGoal, SimMouse::red_color);
   start = mouse->getPose();
   disp = 0.0f;
 }
@@ -94,6 +96,9 @@ bool Forward::isFinished(){
 }
 
 void Forward::end(){
+  mouse->resetIndicators(SimMouse::blue_color);
+  mouse->indicatePath(0, 0, mouse->maze->fastest_theoretical_route, SimMouse::blue_color);
+
   mouse->internalForward();
   mouse->setSpeed(0,0);
 
@@ -101,21 +106,5 @@ void Forward::end(){
   walls[static_cast<int>(opposite_direction(mouse->getDir()))] = false;
 
   mouse->suggestWalls(walls);
-
-  std::string path = mouse->maze->fastest_route;
-  int row = 0;
-  int col = 0;
-  mouse->resetIndicators();
-  for(char& c : path) {
-    switch(c){
-      case 'N': row--; break;
-      case 'E': col++; break;
-      case 'S': row++; break;
-      case 'W': col--; break;
-      default: break;
-    }
-    mouse->updateIndicator(row, col, SimMouse::green_color);
-  }
-  mouse->publishIndicators();
 }
 #endif

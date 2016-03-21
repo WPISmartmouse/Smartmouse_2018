@@ -26,9 +26,12 @@ class SimMouse : public Mouse {
 
     float *getRawDistances();
 
+    void indicatePath(int starting_row, int starting_col,
+        std::string path, gazebo::common::Color);
     void updateIndicator(int row, int col, gazebo::common::Color);
     void publishIndicators();
-    void resetIndicators();
+    void resetAllIndicators();
+    void resetIndicators(gazebo::common::Color color);
 
     gazebo::transport::PublisherPtr controlPub;
     gazebo::transport::PublisherPtr indicatorPub;
@@ -49,10 +52,6 @@ class SimMouse : public Mouse {
     static SimMouse *instance;
 
     SimMouse();
-
-    gazebo::msgs::Pose *createPose(int row, int col, float z);
-
-    gazebo::msgs::Geometry *createCylinderGeometry(float r, float l);
 
     std::condition_variable checkWallsCond;
     std::mutex checkWallsMutex;
