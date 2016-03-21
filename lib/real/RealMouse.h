@@ -1,21 +1,23 @@
 #pragma once
 
 #include <Arduino.h>
-#include "Mouse.h"
-#include "AbstractMaze.h"
+#define M_PI 3.141592653589
 
+#include <math.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055.h>
 #include <utility/imumaths.h>
 #include <Wire.h>
 #include <Encoder.h>
 #include <RegulatedMotor.h>
-#include "KinematicController.h"
-#include <SparkFun_VL6180X.h>
-#include <math.h>
-
+#include <VL6180X.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
+
+#include "KinematicController.h"
+#include "Mouse.h"
+#include "AbstractMaze.h"
+#include "Pose.h"
 
 class RealMouse : public Mouse {
 public:
@@ -23,10 +25,21 @@ public:
   void setup();
 
   const static int BUTTONGO = 44;
+  constexpr static float WALL_DIST = 0.12;
+  constexpr static float MAX_SPEED = 2; //UNITS??
+  constexpr static float MIN_SPEED = 1; //UNITS??
 
   static RealMouse *inst();
 
   virtual SensorReading checkWalls() override;
+
+  Pose getPose();
+
+  void setSpeed(float lspeed, float rspeed);
+
+  void suggestWalls(bool *walls);
+
+  float *getRawDistances();
 
 private:
   RealMouse();
@@ -87,32 +100,16 @@ private:
 
   Adafruit_SSD1306 display;
 
-  /*
-      static const unsigned char PROGMEM logo16_glcd_bmp[]; =
-      { B00000000, B11000000,
-        B00000001, B11000000,
-        B00000001, B11000000,
-        B00000011, B11100000,
-        B11110011, B11100000,
-        B11111110, B11111000,
-        B01111110, B11111111,
-        B00110011, B10011111,
-        B00011111, B11111100,
-        B00001101, B01110000,
-        B00011011, B10100000,
-        B00111111, B11100000,
-        B00111111, B11110000,
-        B01111100, B11110000,
-        B01110000, B01110000,
-        B00000000, B00110000 };
-  */
-  VL6180xIdentification identification;
-  VL6180x sensor;
+  VL6180X left_rangefinder;
+  VL6180X right_rangefinder;
+  VL6180X middle_rangefinder;
 
   Adafruit_BNO055 bno;
 
   Encoder encL;
   Encoder encR;
+
+  Pose current_pose;
 
   long encLCount;
   long encRCount;
@@ -124,4 +121,9 @@ private:
 
   int fwdtarget;
   int ccwtarget;
+
+  bool walls[4];
+  bool suggestedWalls[4];
+  bool hasSuggestion;
+  float rawDistances[3];
 };

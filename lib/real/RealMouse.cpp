@@ -10,11 +10,32 @@ RealMouse *RealMouse::inst() {
   return instance;
 }
 
-RealMouse::RealMouse() : display(OLED_RESET), sensor(VL6180X_ADDRESS), motL(&encLCount, MOTOR1B, MOTOR1A), motR(&encRCount, MOTOR2B, MOTOR2A), kc(&motL,&motR,1,-1,78.3f,31.71f,(int)(12*75.81)) {
-  encLCount = 0;
-  encRCount = 0;
-  //state = 0;
+void RealMouse::setSpeed(float lspeed, float rspeed) {
+  //SET MOTORS HERE
 }
+
+Pose RealMouse::getPose(){
+  //GET CURRENT POSE HERE
+  return current_pose;
+}
+
+float *RealMouse::getRawDistances() {
+  rawDistances[0] = right_rangefinder.readRangeContinuous();
+  rawDistances[1] = middle_rangefinder.readRangeContinuous();
+  rawDistances[2] = left_rangefinder.readRangeContinuous();
+  return rawDistances;
+}
+
+RealMouse::RealMouse() :
+                      display(OLED_RESET),
+                      middle_rangefinder(VL6180EN1,0x41),
+                      left_rangefinder(VL6180EN2,0x42),
+                      right_rangefinder(VL6180EN2,0x43),
+                      motL(&encLCount, MOTOR1B, MOTOR1A),
+                      motR(&encRCount, MOTOR2B, MOTOR2A),
+                      kc(&motL,&motR,1,-1,78.3f,31.71f,(int)(12*75.81)),
+                      encLCount(0),
+                      encRCount(0){ }
 
 SensorReading RealMouse::checkWalls() {
   bool walls[4] = {false, false, false, false};
@@ -25,7 +46,6 @@ SensorReading RealMouse::checkWalls() {
 void RealMouse::setup(){
   analogReadResolution(12);
 
-  // previously dumbMouse.init()
   digitalWrite(LEDR,LOW);
   digitalWrite(LEDG,LOW);
   digitalWrite(LEDB,LOW);
@@ -134,10 +154,15 @@ void RealMouse::setup(){
   encL.init(ENCODER1A, ENCODER1B);
   encR.init(ENCODER2A, ENCODER2B);
 
-  Wire.begin(); //Start I2C library
+  //Start I2C library
+  Wire.begin();
   Wire1.begin();
-  delay(100); // delay .1s
-  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);  // initialize with the I2C addr 0x3D (for the 128x64)
+
+  // delay .1s
+  delay(100);
+
+  // initialize with the I2C addr 0x3D (for the 128x64)
+  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
   display.display();
   delay(200);
 
@@ -159,4 +184,11 @@ void RealMouse::setup(){
   motL.setSampleTime(10000);
   motR.setSampleTime(10000);
   kc.setAcceleration(2000,2000,2000,2000);
+}
+
+void RealMouse::suggestWalls(bool *walls) {
+  hasSuggestion = true;
+  for (int i=0;i<4;i++){
+    suggestedWalls[i] = walls[i];
+  }
 }
