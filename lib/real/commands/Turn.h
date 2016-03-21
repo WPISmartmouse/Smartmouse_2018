@@ -2,6 +2,8 @@
 
 #include "CommanDuino.h"
 #include "Mouse.h"
+#include "RealMouse.h"
+#include "Pose.h"
 #include "Direction.h"
 
 class Turn : public Command {
@@ -13,7 +15,15 @@ class Turn : public Command {
     void end();
 
   private:
-    Mouse *mouse;
+    float yawDiff(float y1, float y2);
+
+    Pose start;
+    float goalYaw;
+    float dYaw;
+    RealMouse *mouse;
     Direction dir;
+
+    float l,r;
+    const float kP = 100;
 
 };
