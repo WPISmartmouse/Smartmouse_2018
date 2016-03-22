@@ -8,4 +8,8 @@ class WaitForStart : public Command {
     void execute();
     bool isFinished();
     void end();
+
+  private:
+    int down;
+    int up;
 };
