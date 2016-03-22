@@ -6,7 +6,6 @@ WaitForStart::WaitForStart() : Command("wait"), down(1), up(0) {}
 void WaitForStart::initialize(){}
 
 void WaitForStart::execute(){
-  Serial.println(digitalRead(RealMouse::BUTTONGO));
   if (down <=5 && !digitalRead(RealMouse::BUTTONGO)){
     down++;
   }
