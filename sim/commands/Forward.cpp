@@ -34,8 +34,8 @@ void Forward::initialize(){
 
 float Forward::yawDiff(float y1, float y2){
   float diff = y2 - y1;
-  if (diff > 180) return diff - 360;
-  if (diff < -180) return diff + 360;
+  if (diff > M_PI) return diff - M_PI*2;
+  if (diff < -M_PI) return diff + M_PI*2;
   return diff;
 }
 
