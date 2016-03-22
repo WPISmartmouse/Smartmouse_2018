@@ -53,6 +53,8 @@ if (BUILD_SIM)
   endforeach()
 endif()
 
+add_custom_target(upload COMMAND cd ../ && platformio run -v --target upload)
+
 add_custom_target(due COMMAND cd ../ && platformio run -v)
 
 ################################
