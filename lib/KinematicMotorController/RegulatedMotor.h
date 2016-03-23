@@ -11,7 +11,6 @@
 class RegulatedMotor
 {
 public:
-	RegulatedMotor(long* encoder, int fwdPin, int revPin, int pwmPin);
 	RegulatedMotor(long* encoder, int fwdPin, int revPin);
 	bool run();
 	void setSpeed(int speed);
@@ -34,7 +33,7 @@ private:
 	int outputValue;
 
 	int speedScale;
-	
+
 	float kp;
 	float ki;
 	float kd;
@@ -52,7 +51,7 @@ private:
 	int fwdPin;
 	int revPin;
 	int pwmPin;
-	
+
 	int error;
 	//int getPWM(int speed);
 

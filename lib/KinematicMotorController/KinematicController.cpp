@@ -68,6 +68,10 @@ boolean KinematicController::run(){
 
 		leftMotor->setSpeed(calculateLeftWheelSpeed(forwardOutput, ccwOutput));
 		rightMotor->setSpeed(calculateRightWheelSpeed(forwardOutput, ccwOutput));
+
+    leftMotor->run();
+    rightMotor->run();
+
 		lastForwardVelocity = forwardOutput;
 		lastCCWVelocity = ccwOutput;
 	} else if (state == KINEMATIC_OFF) {
