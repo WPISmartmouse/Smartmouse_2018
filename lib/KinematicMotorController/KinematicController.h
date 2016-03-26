@@ -1,6 +1,7 @@
 #pragma once
 
 #include "RegulatedMotor.h"
+#include "Pose.h"
 #include <Arduino.h>
 
 #define round(x) ((x)>=0?(long)((x)+0.5):(long)((x)-0.5))
@@ -39,10 +40,12 @@ class KinematicController{
     long calculateCCWTick();
 
     long getOdometryForward();
-    long getOdometryCCW();
+    float getOdometryCCW();
 
-    void getGlobalPosition(long *x, long *y);
+    Pose getPose();
     boolean isStandby();
+
+    void updateGlobalYaw(float yaw); //radians
 
     void setSampleTime(unsigned long sampleTime);
 
@@ -94,11 +97,13 @@ class KinematicController{
 
     unsigned long lastRunTime;
 
-    long lastLocalX = 0;
-    long lastLocalTheta = 0;
+    long lastLocalPoseX = 0;
+    long lastLocalPoseY = 0;
+    long lastLocalPoseYaw = 0;
 
     float globalX = 0;
     float globalY = 0;
+    float globalYaw = 0;
 
     void _travel(int forwardDistance, float ccwAngle, unsigned int forwardSpeed, float ccwSpeed);
 

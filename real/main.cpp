@@ -2,6 +2,7 @@
 #include "ArduinoTimer.h"
 #include "commands/SolveCommand.h"
 #include "commands/WaitForStart.h"
+#include "commands/WaitThenDrive.h"
 #include "RealMouse.h"
 #include "WallFollow.h"
 
@@ -9,7 +10,7 @@ ArduinoTimer timer;
 
 AbstractMaze maze;
 WallFollow solver(RealMouse::inst());
-Scheduler scheduler(new WaitForStart());
+Scheduler scheduler(new WaitThenDrive());
 
 void setup(){
   pinMode(13, OUTPUT);

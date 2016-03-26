@@ -1,5 +1,8 @@
 #include "KinematicController.h"
-#include <math.h>
+
+#ifdef EMBED
+#define M_PI 3.14159265358979
+#endif
 
 KinematicController::KinematicController(RegulatedMotor* leftMotor,
     RegulatedMotor* rightMotor,
@@ -95,13 +98,17 @@ boolean KinematicController::run(){
       lastCCWVelocity = 0;
     }
 
-    long localX = this->getOdometryForward();
-    long localTheta = this->getOdometryCCW();
-    globalX += (float)(localX-lastLocalX)*cos(localTheta*M_PI/180);
-    globalY += (float)(localX-lastLocalX)*sin(localTheta*M_PI/180);
+    long localPoseX = this->getOdometryForward();
+    float localPoseYaw = this->getOdometryCCW();
+
+    globalYaw += (localPoseYaw - lastLocalPoseYaw);
+
+    globalX += (localPoseX - lastLocalPoseX) * cos(globalYaw);
+    globalY += (localPoseX - lastLocalPoseX) * sin(globalYaw);
+
     lastRunTime = currentTime;
-    lastLocalX = localX;
-    lastLocalTheta = localTheta;
+    lastLocalPoseX = localPoseX;
+    lastLocalPoseYaw = localPoseYaw;
 
     return true;
   }
@@ -109,9 +116,12 @@ boolean KinematicController::run(){
   return false;
 }
 
-void KinematicController::getGlobalPosition(long *x, long *y){
-  *x = round(globalX);
-  *y = round(globalY);
+Pose KinematicController::getPose(){
+  return Pose(globalX/1000.0, globalY/1000.0, globalYaw);
+}
+
+void KinematicController::updateGlobalYaw(float yaw){
+  this->globalYaw = yaw;
 }
 
 void KinematicController::setVelocity(int forwardVelocity, float ccwVelocity){
@@ -148,6 +158,13 @@ void KinematicController::_travel(int forwardDistance, float ccwAngle, unsigned 
   positionCCWVelocity = ccwSpeed;
 }
 
+long KinematicController::getOdometryForward(){
+  return calculateForwardTick() * wheelDiameter/2.0;
+}
+
+float KinematicController::getOdometryCCW(){
+  return (calculateCCWTick() * wheelDiameter/2.0) / trackWidth;
+}
 
 long KinematicController::mmToTick(long mm){
   return (mm*encoderCPR)/(M_PI*wheelDiameter);
@@ -172,7 +189,7 @@ long KinematicController::calculateForwardTick(){
 }
 
 long KinematicController::calculateCCWTick(){
-  return (-leftMotor->getEncoder()*leftMotorDirection + rightMotor->getEncoder()*rightMotorDirection);
+  return (leftMotor->getEncoder()*leftMotorDirection - rightMotor->getEncoder()*rightMotorDirection);
 }
 
 long KinematicController::speedRamp(long last, long target,long up, long down){
@@ -199,12 +216,4 @@ long KinematicController::speedRamp(long last, long target,long up, long down){
 
 boolean KinematicController::isStandby(){
   return standby;
-}
-
-long KinematicController::getOdometryForward(){
-  return calculateForwardTick()* (M_PI*wheelDiameter) / encoderCPR;
-}
-
-long KinematicController::getOdometryCCW(){
-  return (calculateCCWTick() * (M_PI*wheelDiameter) / encoderCPR)/(trackWidth*M_PI/180);
 }

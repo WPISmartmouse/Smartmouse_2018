@@ -15,17 +15,8 @@ class Forward : public Command {
   private:
     RealMouse *mouse;
     float forwardDisplacement(Pose p0, Pose p1);
-    float yawDiff(float y1, float y2);
 
     Pose start;
     float disp;
-
-    float l,r;
-    bool checkedWalls;
-    float *distances;
-    bool walls[4];
-    bool wallOnLeft, wallOnRight;
-    const float kPWall = 2000;
-    const float kPDisp= 3000;
 
 };

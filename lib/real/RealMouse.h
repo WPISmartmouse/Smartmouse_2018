@@ -35,9 +35,13 @@ public:
 
   Pose getPose();
 
-  void setSpeed(float lspeed, float rspeed);
+  void updateGlobalYaw();
+
+  void setSpeed(int forwardVelocity, float ccwVelocity);
 
   void suggestWalls(bool *walls);
+
+  void run();
 
   float *getRawDistances();
 

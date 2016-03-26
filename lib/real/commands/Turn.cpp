@@ -44,5 +44,6 @@ bool Turn::isFinished(){
 void Turn::end(){
   mouse->internalTurnToFace(dir);
   mouse->setSpeed(0,0);
+  mouse->updateGlobalYaw();
 }
 
