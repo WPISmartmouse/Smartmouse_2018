@@ -1,103 +1,115 @@
-#ifndef KinematicController_h
-#define KinematicController_h
+#pragma once
+
 #include "RegulatedMotor.h"
-#include "Arduino.h"
-#define KINEMATIC_OFF	0
-#define KINEMATIC_VELOCITY	1
-#define KINEMATIC_POSITION 2
-#define STANDBY_TOLERANCE 4
-#define STANDBY_DELAY 500
+#include <Arduino.h>
+
 #define round(x) ((x)>=0?(long)((x)+0.5):(long)((x)-0.5))
 
-#define MAXIMUM_DISTANCE 10000
-
 class KinematicController{
-public:
-	KinematicController(RegulatedMotor* leftMotor, RegulatedMotor* rightMotor,
-		int leftMotorDirection, int rightMotorDirection,
-		float wheelDistance, float wheelDiameter, unsigned int encoderCPR);
+  public:
 
-	void setAcceleration(unsigned int forwardAcceleration, unsigned int ccwAcceleration, unsigned int forwardDeceleration, unsigned int ccwDeceleration);
-	void calibrate(uint16_t wheelDistance, uint16_t wheelDiameter);
-	void goVelocity(int forwardVelocity, int ccwVelocity);
-	void goPosition(int forwardDistance, int ccwAngle, unsigned int forwardSpeed, unsigned int ccwSpeed);
+    // \brief units for everything is in millimeters and radians
+    KinematicController(RegulatedMotor* leftMotor, RegulatedMotor* rightMotor,
+        int leftMotorDirection, int rightMotorDirection,
+        float trackWidth, float wheelDiameter, float encoderCPR);
 
-	void brake();
-	void coast();
+    // \brief you have to call this in setup
+    void setup();
 
-	boolean run();
+    // \brief units in mm/s^2 rad/s^2
+    void setAcceleration(unsigned int forwardAcceleration, float ccwAcceleration,
+        unsigned int forwardDeceleration, float ccwDeceleration);
 
-	long calculateForwardTick();
-	long calculateCCWTick();
+    // \brief units in mm
+    void setDriveBaseProperties(uint16_t trackWidth, uint16_t wheelDiameter);
 
-	long getOdometryForward();
-	long getOdometryCCW();
+    // \brief units in mm/s an radians/s
+    void setVelocity(int forwardVelocity, float ccwVelocity);
 
-	void getGlobalPosition(long *x, long *y);
-	boolean isStandby();
+    // \brief units in mm, radians, mm/s an radians/s
+    void travel(int forwardDistance, float ccwAngle, unsigned int forwardSpeed,
+        float ccwSpeed);
 
+    void brake();
+    void coast();
 
-private:
-	boolean standby = true;
-	unsigned long lastRamp;
+    boolean run();
 
-	RegulatedMotor* leftMotor;
-	RegulatedMotor* rightMotor;
+    long calculateForwardTick();
+    long calculateCCWTick();
 
-	const int kp = 10;
-	unsigned int sampleTime = 50;
+    long getOdometryForward();
+    long getOdometryCCW();
 
-	int leftMotorDirection;
-	int rightMotorDirection;
+    void getGlobalPosition(long *x, long *y);
+    boolean isStandby();
 
-	float wheelDistance;
-	float wheelDiameter;
-	unsigned int encoderCPR;
+    void setSampleTime(unsigned long sampleTime);
 
-	unsigned long forwardAcceleration;	//tick*s^-2
-	unsigned long ccwAcceleration;	//tick*s^-2
-	unsigned long forwardDeceleration;	//tick*s^-2
-	unsigned long ccwDeceleration;	//tick*s^-2
+  private:
 
-	unsigned long atomicForwardAcceleration;
-	unsigned long atomicCCWAcceleration;
-	unsigned long atomicForwardDeceleration;
-	unsigned long atomicCCWDeceleration;
+    enum class ControllerState {COAST, OFF, POSITION, VELOCITY};
 
-	int state;
+    boolean standby = true;
+    unsigned long lastRamp;
 
+    RegulatedMotor* leftMotor;
+    RegulatedMotor* rightMotor;
 
-	long targetForwardVelocity;	//tick/s
-	long targetCCWVelocity;	//tick/s
-	long lastForwardVelocity = 0;	//tick/s
-	long lastCCWVelocity = 0;	//tick/s
+    const int kp = 10;
+    unsigned long sampleTime; //milliseconds
 
-	long targetForwardTick;
-	long targetCCWTick;
-	long positionForwardVelocity;
-	long positionCCWVelocity;
+    int leftMotorDirection;
+    int rightMotorDirection;
 
-	unsigned long originTime;
-	long originForwardTick;
-	long originCCWTick;
+    float trackWidth;
+    float wheelDiameter;
+    float encoderCPR;
 
-	unsigned long lastRunTime;
+    unsigned long forwardAcceleration;	//tick*s^-2
+    unsigned long ccwAcceleration;	//rad*s^-2
+    unsigned long forwardDeceleration;	//tick*s^-2
+    unsigned long ccwDeceleration;	//rad*s^-2
 
-	long lastLocalX = 0;
-	long lastLocalTheta = 0;
+    unsigned long forwardAccelerationStep;
+    float ccwAccelerationStep;
+    unsigned long forwardDecelerationStep;
+    float ccwDecelerationStep;
 
-	float globalX = 0;
-	float globalY = 0;
+    ControllerState state;
 
-	void _goPosition(int forwardDistance, int ccwAngle, unsigned int forwardSpeed, unsigned int ccwSpeed);
+    long targetForwardVelocity;	//tick/s
+    long targetCCWVelocity;	//tick/s
+    long lastForwardVelocity = 0;	//tick/s
+    long lastCCWVelocity = 0;	//tick/s
 
-	long calculateLeftWheelSpeed(long forwardVelocity, long ccwVelocity);
-	long calculateRightWheelSpeed(long forwardVelocity, long ccwVelocity);
+    long targetForwardTick;
+    long targetCCWTick;
+    long positionForwardVelocity;
+    long positionCCWVelocity;
 
-	long mmToTick(long mm);
-	long degToTick(long deg);
+    unsigned long originTime;
+    long originForwardTick;
+    long originCCWTick;
 
-	long speedRamp(long last, long target,long up, long down);
+    unsigned long lastRunTime;
+
+    long lastLocalX = 0;
+    long lastLocalTheta = 0;
+
+    float globalX = 0;
+    float globalY = 0;
+
+    void _travel(int forwardDistance, float ccwAngle, unsigned int forwardSpeed, float ccwSpeed);
+
+    long calculateLeftWheelSpeed(long forwardVelocity, long ccwVelocity);
+    long calculateRightWheelSpeed(long forwardVelocity, long ccwVelocity);
+
+    long mmToTick(long mm);
+    long radToTick(float rad);
+
+    long speedRamp(long last, long target,long up, long down);
+
+    static const int STANDBY_DELAY = 500;
+    static const int STANDBY_TOLERANCE = 4;
 };
-
-#endif

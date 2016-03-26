@@ -1,188 +1,210 @@
 #include "KinematicController.h"
+#include <math.h>
 
-KinematicController::KinematicController(RegulatedMotor* leftMotor, RegulatedMotor* rightMotor,
-		int leftMotorDirection, int rightMotorDirection,
-		float wheelDistance, float wheelDiameter, unsigned int encoderCPR){
-	this->leftMotor = leftMotor;
-	this->rightMotor = rightMotor;
-	this->leftMotorDirection = leftMotorDirection;
-	this->rightMotorDirection = rightMotorDirection;
-	this->wheelDistance = wheelDistance;
-	this->wheelDiameter = wheelDiameter;
-	this->encoderCPR = encoderCPR;
+KinematicController::KinematicController(RegulatedMotor* leftMotor,
+    RegulatedMotor* rightMotor,
+    int leftMotorDirection, int rightMotorDirection,
+    float trackWidth, float wheelDiameter, float encoderCPR)
+  : leftMotor(leftMotor),
+  rightMotor(rightMotor),
+  leftMotorDirection(leftMotorDirection),
+  rightMotorDirection(rightMotorDirection),
+  wheelDiameter(wheelDiameter),
+  trackWidth(trackWidth),
+  encoderCPR(encoderCPR),
+  sampleTime(5) {
+    setSampleTime(sampleTime);
+  }
+
+void KinematicController::setup(){
+  leftMotor->setup();
+  rightMotor->setup();
 }
 
-void KinematicController::calibrate(uint16_t wheelDistance, uint16_t wheelDiameter){
-	this->wheelDistance = wheelDistance;
-	this->wheelDiameter = wheelDiameter;
+void KinematicController::setDriveBaseProperties(uint16_t trackWidth, uint16_t wheelDiameter){
+  this->trackWidth = trackWidth;
+  this->wheelDiameter = wheelDiameter;
 }
 
-void KinematicController::setAcceleration(
-	unsigned int forwardAcceleration, unsigned int ccwAcceleration,
-	unsigned int forwardDeceleration, unsigned int ccwDeceleration){
+void KinematicController::setSampleTime(unsigned long sampleTime){
+  leftMotor->setSampleTime(sampleTime);
+  rightMotor->setSampleTime(sampleTime);
+}
 
-	this->forwardAcceleration = mmToTick(forwardAcceleration);
-	this->ccwAcceleration = degToTick(ccwAcceleration);
-	this->forwardDeceleration = mmToTick(forwardDeceleration);
-	this->ccwDeceleration = degToTick(ccwDeceleration);
+void KinematicController::setAcceleration(unsigned int forwardAcceleration,
+    float ccwAcceleration, unsigned int forwardDeceleration,
+    float ccwDeceleration){
 
-	atomicForwardAcceleration = (long)forwardAcceleration * sampleTime / 1000; atomicForwardDeceleration = (long)forwardDeceleration * sampleTime / 1000;
-	atomicCCWAcceleration = (long)ccwAcceleration * sampleTime / 1000;
-	atomicCCWDeceleration = (long)ccwDeceleration * sampleTime / 1000;
+  this->forwardAcceleration = mmToTick(forwardAcceleration);
+  this->ccwAcceleration = radToTick(ccwAcceleration);
+  this->forwardDeceleration = mmToTick(forwardDeceleration);
+  this->ccwDeceleration = radToTick(ccwDeceleration);
+
+  forwardAccelerationStep = forwardAcceleration * sampleTime / 1000;
+  forwardDecelerationStep = forwardDeceleration * sampleTime / 1000;
+  ccwAccelerationStep = ccwAcceleration * sampleTime;
+  ccwDecelerationStep = ccwDeceleration * sampleTime;
+
+  Serial.println(forwardAcceleration);
+  Serial.println(forwardAccelerationStep);
 }
 
 
 boolean KinematicController::run(){
-	unsigned long currentTime = millis();
-	if (currentTime - lastRunTime < sampleTime){
-		return false;
-	}
-	standby = true;
-	if (currentTime - lastRamp < STANDBY_DELAY) standby = false;
-/*
-	if (leftMotor->getError() > STANDBY_TOLERANCE) standby = false;
-	if (rightMotor->getError() > STANDBY_TOLERANCE) standby = false;
-*/
+  unsigned long currentTime = millis();
+  unsigned long deltaTime = currentTime - lastRunTime;
 
-	long forwardOutput = 0;
-	long ccwOutput = 0;
+  if (deltaTime >= sampleTime){
 
-	if (state == KINEMATIC_VELOCITY){
-		if (lastForwardVelocity == targetForwardVelocity) {
-			forwardOutput = targetForwardVelocity;
-		}
-		else {
-			forwardOutput = speedRamp(lastForwardVelocity, targetForwardVelocity, atomicForwardAcceleration, atomicForwardDeceleration);
-			standby = false;
-			lastRamp = currentTime;
-		}
+    standby = true;
 
-		if (lastCCWVelocity == targetCCWVelocity) {
-			ccwOutput = targetCCWVelocity;
-		}
-		else {
-			ccwOutput = speedRamp(lastCCWVelocity, targetCCWVelocity, atomicCCWAcceleration, atomicCCWDeceleration);
-			standby = false;
-			lastRamp = currentTime;
-		}
+    if (currentTime - lastRamp < STANDBY_DELAY) standby = false;
 
-		leftMotor->setSpeed(calculateLeftWheelSpeed(forwardOutput, ccwOutput));
-		rightMotor->setSpeed(calculateRightWheelSpeed(forwardOutput, ccwOutput));
+    long forwardOutput = 0;
+    long ccwOutput = 0;
 
-    leftMotor->run();
-    rightMotor->run();
+    if (state == ControllerState::VELOCITY){
+      if (lastForwardVelocity == targetForwardVelocity) {
+        forwardOutput = targetForwardVelocity;
+      }
+      else {
+        forwardOutput = speedRamp(lastForwardVelocity, targetForwardVelocity, forwardAccelerationStep, forwardDecelerationStep);
+        standby = false;
+        lastRamp = currentTime;
+      }
 
-		lastForwardVelocity = forwardOutput;
-		lastCCWVelocity = ccwOutput;
-	} else if (state == KINEMATIC_OFF) {
-		lastForwardVelocity = 0;
-		lastCCWVelocity = 0;
-	}
+      if (lastCCWVelocity == targetCCWVelocity) {
+        ccwOutput = targetCCWVelocity;
+      }
+      else {
+        ccwOutput = speedRamp(lastCCWVelocity, targetCCWVelocity, ccwAccelerationStep, ccwDecelerationStep);
+        standby = false;
+        lastRamp = currentTime;
+      }
 
-	long localX = this->getOdometryForward();
-	long localTheta = this->getOdometryCCW();
-	globalX += (float)(localX-lastLocalX)*cos(localTheta*3.14/180);
-	globalY += (float)(localX-lastLocalX)*sin(localTheta*3.14/180);
-	lastRunTime = currentTime;
-	lastLocalX = localX;
-	lastLocalTheta = localTheta;
-	return true;
+      leftMotor->setSpeed(calculateLeftWheelSpeed(forwardOutput, ccwOutput));
+      rightMotor->setSpeed(calculateRightWheelSpeed(forwardOutput, ccwOutput));
+
+      leftMotor->runNow(deltaTime);
+      rightMotor->runNow(deltaTime);
+
+      lastForwardVelocity = forwardOutput;
+      lastCCWVelocity = ccwOutput;
+    } else if (state == ControllerState::OFF) {
+      lastForwardVelocity = 0;
+      lastCCWVelocity = 0;
+    }
+
+    long localX = this->getOdometryForward();
+    long localTheta = this->getOdometryCCW();
+    globalX += (float)(localX-lastLocalX)*cos(localTheta*M_PI/180);
+    globalY += (float)(localX-lastLocalX)*sin(localTheta*M_PI/180);
+    lastRunTime = currentTime;
+    lastLocalX = localX;
+    lastLocalTheta = localTheta;
+
+    return true;
+  }
+
+  return false;
 }
 
 void KinematicController::getGlobalPosition(long *x, long *y){
-	*x = round(globalX);
-	*y = round(globalY);
+  *x = round(globalX);
+  *y = round(globalY);
 }
 
-void KinematicController::goVelocity(int forwardVelocity, int ccwVelocity){
-	state = KINEMATIC_VELOCITY;
-	standby = false;
-	targetForwardVelocity = mmToTick(forwardVelocity);
-	targetCCWVelocity = degToTick(ccwVelocity);
+void KinematicController::setVelocity(int forwardVelocity, float ccwVelocity){
+  state = ControllerState::VELOCITY;
+  standby = false;
+  targetForwardVelocity = mmToTick(forwardVelocity);
+  targetCCWVelocity = radToTick(ccwVelocity);
 }
 
-void KinematicController::goPosition(int forwardDistance, int ccwAngle, unsigned int forwardSpeed, unsigned int ccwSpeed){
-	state = KINEMATIC_POSITION;
-	_goPosition(forwardDistance, ccwAngle, forwardSpeed, ccwSpeed);
+void KinematicController::travel(int forwardDistance, float ccwAngle, unsigned int forwardSpeed, float ccwSpeed){
+  state = ControllerState::POSITION;
+  _travel(forwardDistance, ccwAngle, forwardSpeed, ccwSpeed);
 }
 
 void KinematicController::brake(){
-	state = KINEMATIC_OFF;
-	leftMotor->setState(MOTORSTATE_BRAKE);
-	rightMotor->setState(MOTORSTATE_BRAKE);
+  state = ControllerState::OFF;
+  leftMotor->setState(RegulatedMotor::MotorState::BRAKE);
+  rightMotor->setState(RegulatedMotor::MotorState::BRAKE);
 }
 
 void KinematicController::coast(){
-	state = KINEMATIC_OFF;
-	leftMotor->setState(MOTORSTATE_COAST);
-	rightMotor->setState(MOTORSTATE_COAST);
+  state = ControllerState::OFF;
+  leftMotor->setState(RegulatedMotor::MotorState::COAST);
+  rightMotor->setState(RegulatedMotor::MotorState::COAST);
 }
 
-void KinematicController::_goPosition(int forwardDistance, int ccwAngle, unsigned int forwardSpeed, unsigned int ccwSpeed){
-	originTime = millis();
-	originForwardTick = calculateForwardTick();
-	originCCWTick = calculateCCWTick();
-	targetForwardTick = mmToTick(forwardDistance);
-	targetCCWTick = degToTick(ccwAngle);
-	positionForwardVelocity = forwardSpeed;
-	positionCCWVelocity = ccwSpeed;
+void KinematicController::_travel(int forwardDistance, float ccwAngle, unsigned int forwardSpeed, float ccwSpeed){
+  originTime = millis();
+  originForwardTick = calculateForwardTick();
+  originCCWTick = calculateCCWTick();
+  targetForwardTick = mmToTick(forwardDistance);
+  targetCCWTick = radToTick(ccwAngle);
+  positionForwardVelocity = forwardSpeed;
+  positionCCWVelocity = ccwSpeed;
 }
 
 
 long KinematicController::mmToTick(long mm){
-	return (mm*encoderCPR)/(3.142*wheelDiameter);
+  return (mm*encoderCPR)/(M_PI*wheelDiameter);
 }
 
-long KinematicController::degToTick(long deg){
-	return mmToTick(deg*wheelDistance*3.142/180)/2;
+long KinematicController::radToTick(float rad){
+  return mmToTick(rad*trackWidth);
 }
 
 long KinematicController::calculateLeftWheelSpeed(long forwardVelocity, long ccwVelocity){
-	return (forwardVelocity - ccwVelocity)*leftMotorDirection;
+  long s = (forwardVelocity - ccwVelocity)*leftMotorDirection;
+  return s;
 }
 
 long KinematicController::calculateRightWheelSpeed(long forwardVelocity, long ccwVelocity){
-	return (forwardVelocity + ccwVelocity)*rightMotorDirection;
+  long s = (forwardVelocity + ccwVelocity)*rightMotorDirection;
+  return s;
 }
 
 long KinematicController::calculateForwardTick(){
-	return (leftMotor->getEncoder()*leftMotorDirection + rightMotor->getEncoder()*rightMotorDirection)/2;
+  return (leftMotor->getEncoder()*leftMotorDirection + rightMotor->getEncoder()*rightMotorDirection)/2;
 }
 
 long KinematicController::calculateCCWTick(){
-	return (-leftMotor->getEncoder()*leftMotorDirection + rightMotor->getEncoder()*rightMotorDirection);
+  return (-leftMotor->getEncoder()*leftMotorDirection + rightMotor->getEncoder()*rightMotorDirection);
 }
 
 long KinematicController::speedRamp(long last, long target,long up, long down){
-	long ret;
-    if (last >= 0){
-        if (target > last){
-            ret = last + up;
-            if (ret > target) ret = target;
-        } else {
-            ret = last - down;
-            if (ret < target) ret = target;
-        }
-    } else { // last < 0
-        if (target > last){
-            ret = last + down;
-            if (ret > target) ret = target;
-        } else {
-            ret = last - up;
-            if (ret < target) ret = target;
-        }
+  long ret;
+  if (last >= 0){
+    if (target > last){
+      ret = last + up;
+      if (ret > target) ret = target;
+    } else {
+      ret = last - down;
+      if (ret < target) ret = target;
     }
-    return ret;
+  } else { // last < 0
+    if (target > last){
+      ret = last + down;
+      if (ret > target) ret = target;
+    } else {
+      ret = last - up;
+      if (ret < target) ret = target;
+    }
+  }
+  return ret;
 }
 
 boolean KinematicController::isStandby(){
-	return standby;
+  return standby;
 }
 
 long KinematicController::getOdometryForward(){
-	return calculateForwardTick()* (3.142*wheelDiameter) / encoderCPR;
+  return calculateForwardTick()* (M_PI*wheelDiameter) / encoderCPR;
 }
 
 long KinematicController::getOdometryCCW(){
-	return (calculateCCWTick() * (3.142*wheelDiameter) / encoderCPR)/(wheelDistance*3.142/180);
+  return (calculateCCWTick() * (M_PI*wheelDiameter) / encoderCPR)/(trackWidth*M_PI/180);
 }

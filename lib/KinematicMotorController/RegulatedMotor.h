@@ -1,59 +1,60 @@
-#ifndef RegulatedMotor_h
-#define RegulatedMotor_h
+#pragma once
+
 #define LIBRARY_VERSION	2.0.0
-#include "../Encoder/Encoder.h"
 
-#define MOTORSTATE_PWM	0
-#define MOTORSTATE_SPEED	1
-#define MOTORSTATE_BRAKE	3
-#define MOTORSTATE_COAST	4
+#include <Encoder.h>
 
-class RegulatedMotor
-{
-public:
-	RegulatedMotor(long* encoder, int fwdPin, int revPin);
-	bool run();
-	void setSpeed(int speed);
-	void setState(int state);
-	void setPID(float kp, float ki, float kd, float kvff);
-	void setSampleTime(unsigned long sampleTime);
-	void goPWM(int pwm);
-	long getEncoder();
-	int getError();
-private:
-	long* encoder;
+class RegulatedMotor {
+  public:
 
-	long thisPosition;
-	long lastPosition;
+    RegulatedMotor(int encoderPinA, int encoderPinB, int fwdPin, int revPin);
 
-	int calculatedSpeed;
-	int lastCalculatedSpeed;
-	int targetSpeed;
+    enum class MotorState {COAST, RAW_PWM, BRAKE, VELOCITY};
 
-	int outputValue;
+    void setup();
+    bool run();
+    void runNow(unsigned long deltaTime);
+    void setSpeed(int speed);
+    void setState(MotorState state);
+    void setPID(float kp, float ki, float kd, float kvff);
+    void setSampleTime(unsigned long sampleTime);
+    void goPWM(int pwm);
+    long getEncoder();
 
-	int speedScale;
+  private:
 
-	float kp;
-	float ki;
-	float kd;
-	float kvff;
+    Encoder encoder;
 
-	int iTerm;
+    int encoderPinA;
+    int encoderPinB;
 
-	unsigned long lastTime;
+    long thisPosition;
+    long lastPosition;
 
-	unsigned long sampleTime;
+    int calculatedSpeed;
+    int lastCalculatedSpeed;
+    int targetSpeed;
 
-	int state;
-	int lastState;
+    int outputValue;
 
-	int fwdPin;
-	int revPin;
-	int pwmPin;
+    float kp;
+    float ki;
+    float kd;
+    float kvff;
 
-	int error;
-	//int getPWM(int speed);
+    int iTerm;
+
+    unsigned long lastTime;
+    int lastOutput;
+
+    unsigned long sampleTime; //MILLISECONDS
+
+    MotorState state;
+    MotorState lastState;
+
+    int fwdPin;
+    int revPin;
+
+    int error;
 
 };
-#endif
