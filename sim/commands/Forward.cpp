@@ -78,16 +78,13 @@ void Forward::execute(){
 
   if (wallOnRight) {
     float correction = rightWallError * kPWall * dispError;
-    //printf("%f %f : ", wallError, correction);
-    l -= correction;
+    l += correction;
   }
   if (wallOnLeft) {
     float correction = leftWallError * kPWall * dispError;
-    //printf("%f %f : ", wallError, correction);
-    r -= correction;
+    r += correction;
   }
 
-  //printf("(%f,%f)\n", l, r);
   mouse->setSpeed(l,r);
 }
 

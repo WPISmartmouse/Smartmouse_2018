@@ -21,8 +21,8 @@ float Turn::yawDiff(float y1, float y2){
 }
 
 void Turn::execute(){
-  l = -dYaw * kP;
-  r = dYaw * kP;
+  l = dYaw * kP;
+  r = -dYaw * kP;
 
   if (l < SimMouse::MIN_SPEED && l >= 0) l = SimMouse::MIN_SPEED;
   if (r < SimMouse::MIN_SPEED && r >= 0) r = SimMouse::MIN_SPEED;
