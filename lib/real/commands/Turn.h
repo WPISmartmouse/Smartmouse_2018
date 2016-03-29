@@ -23,7 +23,6 @@ class Turn : public Command {
     RealMouse *mouse;
     Direction dir;
 
-    float l,r;
-    const float kP = 100;
+    const float kP = 1;
 
 };

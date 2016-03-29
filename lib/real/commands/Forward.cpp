@@ -36,7 +36,6 @@ void Forward::execute(){
   speed = speed < RealMouse::MIN_SPEED ? RealMouse::MIN_SPEED : speed;
 
   mouse->setSpeed(speed, 0);
-  Serial.println(speed);
 }
 
 bool Forward::isFinished(){

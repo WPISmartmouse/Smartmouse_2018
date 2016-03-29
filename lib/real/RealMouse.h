@@ -36,7 +36,9 @@ public:
 
   constexpr static float WALL_DIST = 0.12;
   constexpr static float MAX_SPEED = 500; //mm/s
+  constexpr static float MAX_ROT_SPEED = M_PI/2; //rad/s
   constexpr static float MIN_SPEED = 30; //mm/s
+  constexpr static float MIN_ROT_SPEED = M_PI/12; //rad/s
 
   static RealMouse *inst();
 
