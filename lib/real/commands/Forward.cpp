@@ -5,7 +5,6 @@ Forward::Forward() : mouse(RealMouse::inst()) {}
 void Forward::initialize(){
   start = mouse->getPose();
   disp = 0.0f;
-  mouse->setSpeed(200, 0);
 }
 
 float Forward::forwardDisplacement(Pose p0, Pose p1){
@@ -28,10 +27,20 @@ float Forward::forwardDisplacement(Pose p0, Pose p1){
 void Forward::execute(){
   Pose currentPose = mouse->getPose();
   disp = forwardDisplacement(start,currentPose) / 1000.0;
+
+  float dispError = AbstractMaze::UNIT_DIST - disp;
+
+  float speed = dispError * kPDisp;
+
+  speed = speed > RealMouse::MAX_SPEED ? RealMouse::MAX_SPEED : speed;
+  speed = speed < RealMouse::MIN_SPEED ? RealMouse::MIN_SPEED : speed;
+
+  mouse->setSpeed(speed, 0);
+  Serial.println(speed);
 }
 
 bool Forward::isFinished(){
-  return disp > AbstractMaze::UNIT_DIST;
+  return disp >= AbstractMaze::UNIT_DIST;
 }
 
 void Forward::end(){

@@ -35,8 +35,8 @@ public:
   const static int BUTTONGO = 44;
 
   constexpr static float WALL_DIST = 0.12;
-  constexpr static float MAX_SPEED = 2; //UNITS??
-  constexpr static float MIN_SPEED = 1; //UNITS??
+  constexpr static float MAX_SPEED = 500; //mm/s
+  constexpr static float MIN_SPEED = 30; //mm/s
 
   static RealMouse *inst();
 
