@@ -21,5 +21,6 @@ void setup(){
 }
 
 void loop(){
+  RealMouse::inst()->run();
   scheduler.run();
 }

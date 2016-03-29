@@ -174,8 +174,10 @@ void RealMouse::setup(){
   Wire.begin();
   Wire1.begin();
 
-  // delay .1s
-  delay(100);
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(WHITE);
+  display.setCursor(0, 0);
 
   // initialize with the I2C addr 0x3D (for the 128x64)
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
@@ -188,10 +190,22 @@ void RealMouse::setup(){
     /* There was a problem detecting the BNO055 ... check your connections */
     display.print("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
     display.display();
-    while(1);
+    exit(0);
   }
 
-  delay(200);
+  float voltage = analogRead(BATTERYSENSE) * (3.3 / 4095) * (49 / 10.0) / 3.0;
+
+  if (voltage < 3.6){
+    display.clearDisplay();
+    display.setCursor(0, 0);
+    display.print("Voltage is too low!");
+    display.println(voltage);
+    display.display();
+    exit(0);
+  }
+
+  Serial.print("voltage :");
+  Serial.println(voltage);
 
   bno.setExtCrystalUse(true);
 
@@ -202,4 +216,3 @@ void RealMouse::setup(){
 
   kc.setup();
 }
-

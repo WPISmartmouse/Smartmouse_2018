@@ -92,10 +92,10 @@ Direction operator++(Direction& dir, int) {
 
 double toYaw(Direction d){
   switch(d){
-    case Direction::N: return 0;
-    case Direction::E: return -M_PI/2;
-    case Direction::S: return M_PI;
-    case Direction::W: return M_PI/2;
+    case Direction::N: return M_PI/2;
+    case Direction::E: return 0;
+    case Direction::S: return -M_PI/2;
+    case Direction::W: return M_PI;
     default: return -999;
   }
 }

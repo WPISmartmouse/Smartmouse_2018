@@ -39,7 +39,7 @@ class KinematicController{
     long calculateForwardTick();
     long calculateCCWTick();
 
-    long getOdometryForward();
+    float getOdometryForward();
     float getOdometryCCW();
 
     Pose getPose();
@@ -50,6 +50,21 @@ class KinematicController{
     void setSampleTime(unsigned long sampleTime);
 
   private:
+
+    void _travel(int forwardDistance, float ccwAngle, unsigned int forwardSpeed, float ccwSpeed);
+
+    long calculateLeftWheelSpeed(long forwardVelocity, long ccwVelocity);
+    long calculateRightWheelSpeed(long forwardVelocity, long ccwVelocity);
+
+    long mmToTick(long mm);
+    long radToTick(float rad);
+    float tickToRad(long ticks);
+    float tickToMM(long ticks);
+
+    //constrains globalYaw to 0 <= yaw <= M_PI*2
+    void constrainGlobalYaw();
+
+    long speedRamp(long last, long target,long up, long down);
 
     enum class ControllerState {COAST, OFF, POSITION, VELOCITY};
 
@@ -97,23 +112,12 @@ class KinematicController{
 
     unsigned long lastRunTime;
 
-    long lastLocalPoseX = 0;
-    long lastLocalPoseY = 0;
-    long lastLocalPoseYaw = 0;
+    long lastLocalPoseY;
+    float lastLocalPoseYaw;
 
-    float globalX = 0;
-    float globalY = 0;
-    float globalYaw = 0;
-
-    void _travel(int forwardDistance, float ccwAngle, unsigned int forwardSpeed, float ccwSpeed);
-
-    long calculateLeftWheelSpeed(long forwardVelocity, long ccwVelocity);
-    long calculateRightWheelSpeed(long forwardVelocity, long ccwVelocity);
-
-    long mmToTick(long mm);
-    long radToTick(float rad);
-
-    long speedRamp(long last, long target,long up, long down);
+    long globalX; //millimeters
+    long globalY; //millimeters
+    float globalYaw; //radians
 
     static const int STANDBY_DELAY = 500;
     static const int STANDBY_TOLERANCE = 4;

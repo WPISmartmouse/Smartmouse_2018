@@ -5,7 +5,7 @@ Forward::Forward() : mouse(RealMouse::inst()) {}
 void Forward::initialize(){
   start = mouse->getPose();
   disp = 0.0f;
-  mouse->setSpeed(100, 0);
+  mouse->setSpeed(200, 0);
 }
 
 float Forward::forwardDisplacement(Pose p0, Pose p1){
@@ -26,8 +26,8 @@ float Forward::forwardDisplacement(Pose p0, Pose p1){
 }
 
 void Forward::execute(){
-  disp = forwardDisplacement(start,mouse->getPose());
-  mouse->run();
+  Pose currentPose = mouse->getPose();
+  disp = forwardDisplacement(start,currentPose) / 1000.0;
 }
 
 bool Forward::isFinished(){

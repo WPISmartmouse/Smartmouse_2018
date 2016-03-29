@@ -7,6 +7,7 @@ RegulatedMotor::RegulatedMotor(int encoderPinA, int encoderPinB, int fwdPin, int
   calculatedSpeed(0),
   lastCalculatedSpeed(0),
   lastOutput(0),
+  iTerm(0),
   encoder(encoder),
   fwdPin(fwdPin),
   revPin(revPin),

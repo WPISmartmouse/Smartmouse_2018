@@ -15,6 +15,11 @@ KinematicController::KinematicController(RegulatedMotor* leftMotor,
   wheelDiameter(wheelDiameter),
   trackWidth(trackWidth),
   encoderCPR(encoderCPR),
+  globalX(0),
+  globalY(0),
+  globalYaw(0), //the robot starts facing SOUTH, which is -Y axis
+  lastLocalPoseY(0),
+  lastLocalPoseYaw(0),
   sampleTime(5) {
     setSampleTime(sampleTime);
   }
@@ -47,9 +52,6 @@ void KinematicController::setAcceleration(unsigned int forwardAcceleration,
   forwardDecelerationStep = forwardDeceleration * sampleTime / 1000;
   ccwAccelerationStep = ccwAcceleration * sampleTime;
   ccwDecelerationStep = ccwDeceleration * sampleTime;
-
-  Serial.println(forwardAcceleration);
-  Serial.println(forwardAccelerationStep);
 }
 
 
@@ -85,8 +87,11 @@ boolean KinematicController::run(){
         lastRamp = currentTime;
       }
 
-      leftMotor->setSpeed(calculateLeftWheelSpeed(forwardOutput, ccwOutput));
-      rightMotor->setSpeed(calculateRightWheelSpeed(forwardOutput, ccwOutput));
+      int leftSpeed = calculateLeftWheelSpeed(forwardOutput, ccwOutput);
+      int rightSpeed = calculateRightWheelSpeed(forwardOutput, ccwOutput);
+
+      leftMotor->setSpeed(leftSpeed);
+      rightMotor->setSpeed(rightSpeed);
 
       leftMotor->runNow(deltaTime);
       rightMotor->runNow(deltaTime);
@@ -98,16 +103,17 @@ boolean KinematicController::run(){
       lastCCWVelocity = 0;
     }
 
-    long localPoseX = this->getOdometryForward();
+    float localPoseY = this->getOdometryForward();
     float localPoseYaw = this->getOdometryCCW();
-
     globalYaw += (localPoseYaw - lastLocalPoseYaw);
+    constrainGlobalYaw();
 
-    globalX += (localPoseX - lastLocalPoseX) * cos(globalYaw);
-    globalY += (localPoseX - lastLocalPoseX) * sin(globalYaw);
+    //Y axis is perpendicular to axel, X is along axel
+    globalX += (localPoseY - lastLocalPoseY) * cos(globalYaw);
+    globalY += (localPoseY - lastLocalPoseY) * sin(globalYaw);
 
     lastRunTime = currentTime;
-    lastLocalPoseX = localPoseX;
+    lastLocalPoseY = localPoseY;
     lastLocalPoseYaw = localPoseYaw;
 
     return true;
@@ -117,11 +123,45 @@ boolean KinematicController::run(){
 }
 
 Pose KinematicController::getPose(){
-  return Pose(globalX/1000.0, globalY/1000.0, globalYaw);
+  //Serial.print("x=");
+  //Serial.print(globalX);
+  //Serial.print(" y=");
+  //Serial.print(globalY);
+  //Serial.print(" yaw=");
+  //Serial.println(globalYaw);
+  return Pose(globalX, globalY, globalYaw);
+}
+
+void KinematicController::constrainGlobalYaw(){
+  if (globalYaw > M_PI*2){
+    globalYaw = 0;
+  }
+  else if (globalYaw < 0){
+    globalYaw = M_PI*2;
+  }
 }
 
 void KinematicController::updateGlobalYaw(float yaw){
   this->globalYaw = yaw;
+  this->lastLocalPoseYaw = yaw;
+}
+
+//average forward of wheels in millimeters
+float KinematicController::getOdometryForward(){
+  return (tickToMM(leftMotor->getEncoder() * leftMotorDirection) +
+    tickToMM(rightMotor->getEncoder() * rightMotorDirection)) / 2.0;
+}
+
+float KinematicController::getOdometryCCW(){
+  return tickToMM(calculateCCWTick()) / trackWidth;
+}
+
+long KinematicController::calculateForwardTick(){
+  return (leftMotor->getEncoder()*leftMotorDirection + rightMotor->getEncoder()*rightMotorDirection)/2;
+}
+
+long KinematicController::calculateCCWTick(){
+  return (rightMotor->getEncoder()*rightMotorDirection - leftMotor->getEncoder()*leftMotorDirection);
 }
 
 void KinematicController::setVelocity(int forwardVelocity, float ccwVelocity){
@@ -148,6 +188,7 @@ void KinematicController::coast(){
   rightMotor->setState(RegulatedMotor::MotorState::COAST);
 }
 
+//NOT USED AND NOT WORKING
 void KinematicController::_travel(int forwardDistance, float ccwAngle, unsigned int forwardSpeed, float ccwSpeed){
   originTime = millis();
   originForwardTick = calculateForwardTick();
@@ -158,20 +199,20 @@ void KinematicController::_travel(int forwardDistance, float ccwAngle, unsigned 
   positionCCWVelocity = ccwSpeed;
 }
 
-long KinematicController::getOdometryForward(){
-  return calculateForwardTick() * wheelDiameter/2.0;
-}
-
-float KinematicController::getOdometryCCW(){
-  return (calculateCCWTick() * wheelDiameter/2.0) / trackWidth;
-}
-
 long KinematicController::mmToTick(long mm){
   return (mm*encoderCPR)/(M_PI*wheelDiameter);
 }
 
+float KinematicController::tickToMM(long ticks){
+  return ticks * (M_PI*wheelDiameter) / encoderCPR;
+}
+
 long KinematicController::radToTick(float rad){
   return mmToTick(rad*trackWidth);
+}
+
+float KinematicController::tickToRad(long ticks){
+  return tickToMM(ticks) / trackWidth;
 }
 
 long KinematicController::calculateLeftWheelSpeed(long forwardVelocity, long ccwVelocity){
@@ -182,14 +223,6 @@ long KinematicController::calculateLeftWheelSpeed(long forwardVelocity, long ccw
 long KinematicController::calculateRightWheelSpeed(long forwardVelocity, long ccwVelocity){
   long s = (forwardVelocity + ccwVelocity)*rightMotorDirection;
   return s;
-}
-
-long KinematicController::calculateForwardTick(){
-  return (leftMotor->getEncoder()*leftMotorDirection + rightMotor->getEncoder()*rightMotorDirection)/2;
-}
-
-long KinematicController::calculateCCWTick(){
-  return (leftMotor->getEncoder()*leftMotorDirection - rightMotor->getEncoder()*rightMotorDirection);
 }
 
 long KinematicController::speedRamp(long last, long target,long up, long down){
