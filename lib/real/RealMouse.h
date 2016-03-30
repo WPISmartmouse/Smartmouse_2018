@@ -31,10 +31,6 @@ public:
   const static int LEDB = 51;
   const static int BUZZER = 46;
 
-  const static int BUTTON1 = 48;
-  const static int BUTTON2 = 50;
-  const static int BUTTONGO = 44;
-
   constexpr static float WALL_DIST = 0.12;
   constexpr static float MAX_SPEED = 500; //mm/s
   constexpr static float MAX_ROT_SPEED = M_PI/2; //rad/s
@@ -111,6 +107,10 @@ private:
 
   const static int SDCS = 4;
   const static int SDCARDDETECT = 42;
+
+  const static int BUTTON1 = 48;
+  const static int BUTTON2 = 50;
+  const static int BUTTONGO = 44;
 
   VL6180X left_rangefinder;
   VL6180X right_rangefinder;
