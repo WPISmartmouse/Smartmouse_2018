@@ -3,7 +3,9 @@
 
 WaitForStart::WaitForStart() : Command("wait"), down(1), up(0) {}
 
-void WaitForStart::initialize(){}
+void WaitForStart::initialize(){
+  digitalWrite(RealMouse::LEDGO,1);
+}
 
 void WaitForStart::execute(){
   if (down <=5 && !digitalRead(RealMouse::BUTTONGO)){
@@ -21,5 +23,6 @@ bool WaitForStart::isFinished(){
 }
 
 void WaitForStart::end(){
+  digitalWrite(RealMouse::LEDGO,0);
   Serial.println("starting.");
 }

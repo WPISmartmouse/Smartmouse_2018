@@ -24,7 +24,16 @@ public:
   /** runs setup things like pin initializes */
   void setup();
 
+  const static int LEDGO = 13;
+  const static int LEDR = 52;
+  const static int LEDG = 41;
+  const static int LEDB = 51;
+  const static int BUZZER = 46;
+
+  const static int BUTTON1 = 48;
+  const static int BUTTON2 = 50;
   const static int BUTTONGO = 44;
+
   constexpr static float WALL_DIST = 0.12;
   constexpr static float MAX_SPEED = 2; //UNITS??
   constexpr static float MIN_SPEED = 1; //UNITS??
@@ -92,15 +101,6 @@ private:
 
   const static int MOTORDIR1 = 30;
   const static int MOTORDIR2 = 31;
-
-  const static int LEDGO = 13;
-  const static int LEDR = 52;
-  const static int LEDG = 41;
-  const static int LEDB = 51;
-  const static int BUZZER = 46;
-
-  const static int BUTTON1 = 48;
-  const static int BUTTON2 = 50;
 
   const static int SDCS = 4;
   const static int SDCARDDETECT = 42;
