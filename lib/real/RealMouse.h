@@ -31,6 +31,9 @@ public:
 
   static RealMouse *inst();
 
+  Adafruit_BNO055 imu;
+  Adafruit_SSD1306 display;
+
   virtual SensorReading checkWalls() override;
 
   Pose getPose();
@@ -102,13 +105,9 @@ private:
   const static int SDCS = 4;
   const static int SDCARDDETECT = 42;
 
-  Adafruit_SSD1306 display;
-
   VL6180X left_rangefinder;
   VL6180X right_rangefinder;
   VL6180X middle_rangefinder;
-
-  Adafruit_BNO055 bno;
 
   Encoder encL;
   Encoder encR;
