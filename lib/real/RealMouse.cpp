@@ -29,7 +29,7 @@ RealMouse::RealMouse() :
   display(OLED_RESET),
   middle_rangefinder(VL6180EN1,0x41),
   left_rangefinder(VL6180EN2,0x42),
-  right_rangefinder(VL6180EN2,0x43),
+  right_rangefinder(VL6180EN3,0x43),
   motL(ENCODER1A, ENCODER1B, MOTOR1B, MOTOR1A),
   motR(ENCODER2A, ENCODER2B, MOTOR2B, MOTOR2A),
   kc(&motL, &motR, 1, -1, 78.3f, 31.71f, 12 * (1537480.0f/20280)) { }
@@ -46,10 +46,10 @@ void RealMouse::run(){
 
 void RealMouse::updateGlobalYaw(){
   uint8_t system = 0, gyro = 0, accel = 0, mag = 0;
-  bno.getCalibration(&system, &gyro, &accel, &mag);
+  imu.getCalibration(&system, &gyro, &accel, &mag);
 
   if (system != 0 ){
-    imu::Vector<3> euler = bno.getVector(Adafruit_BNO055::VECTOR_EULER);
+    imu::Vector<3> euler = imu.getVector(Adafruit_BNO055::VECTOR_EULER);
 
     kc.updateGlobalYaw(euler.x());
   }
@@ -185,13 +185,31 @@ void RealMouse::setup(){
   delay(200);
 
   /* Initialise the sensor */
-  if(!bno.begin())
+  if(!imu.begin())
   {
     /* There was a problem detecting the BNO055 ... check your connections */
     display.print("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
     display.display();
     exit(0);
   }
+
+  int left_rangefinder_init_status = left_rangefinder.initMouse();
+  int middle_rangefinder_init_status = middle_rangefinder.initMouse();
+  int right_rangefinder_init_status = right_rangefinder.initMouse();
+  if(left_rangefinder_init_status != 0 || middle_rangefinder_init_status != 0 || right_rangefinder_init_status != 0 ){
+    display.println("Ooops, rangefinder broken");
+    display.print(left_rangefinder_init_status);
+    display.print(middle_rangefinder_init_status);
+    display.print(right_rangefinder_init_status);
+    display.display();
+    exit(0);
+  }
+
+  int range_interval = 50;
+
+  left_rangefinder.startRangeContinuous(range_interval);
+  middle_rangefinder.startRangeContinuous(range_interval);
+  right_rangefinder.startRangeContinuous(range_interval);
 
   float voltage = analogRead(BATTERYSENSE) * (3.3 / 4095) * (49 / 10.0) / 3.0;
 
@@ -207,7 +225,7 @@ void RealMouse::setup(){
   Serial.print("voltage :");
   Serial.println(voltage);
 
-  bno.setExtCrystalUse(true);
+  imu.setExtCrystalUse(true);
 
   motL.setPID(0.09,0.01,0.01,0);
   motR.setPID(0.09,0.01,0.01,0);
