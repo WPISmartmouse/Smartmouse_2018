@@ -13,6 +13,4 @@ class Calibration : public Command {
 
   private:
     RealMouse *mouse;
-    int down;
-    int up;
 };

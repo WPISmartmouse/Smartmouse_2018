@@ -1,6 +1,6 @@
 #include "Calibration.h"
 
-Calibration::Calibration() :  Command("calibrate"), down(1), up(0), mouse(RealMouse::inst()) {}
+Calibration::Calibration() :  Command("calibrate"), mouse(RealMouse::inst()) {}
 
 void Calibration::initialize(){
   mouse->display.setTextSize(1);
@@ -26,19 +26,10 @@ void Calibration::execute(){
 
   mouse->display.setCursor(0, 0);
   mouse->display.display();
-
-  if (down <=5 && !digitalRead(RealMouse::BUTTONGO)){
-    down++;
-  }
-  if (down > 5){
-    if (digitalRead(RealMouse::BUTTONGO)){
-      up++;
-    }
-  }
 }
 
 bool Calibration::isFinished(){
-  return down > 5 && up > 5;
+  return mouse->goButton.fell();
 }
 
 void Calibration::end(){

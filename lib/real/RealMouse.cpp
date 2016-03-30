@@ -42,6 +42,9 @@ RealMouse::RealMouse() :
 
 void RealMouse::run(){
   kc.run();
+  goButton.update();
+  aButton.update();
+  bButton.update();
 }
 
 void RealMouse::updateGlobalYaw(){
@@ -169,6 +172,15 @@ void RealMouse::setup(){
   digitalWrite(MOTOR2B,LOW);
   digitalWrite(MOTORDIR1,LOW);
   digitalWrite(MOTORDIR2,LOW);
+
+  goButton.attach(BUTTONGO);
+  goButton.interval(100);
+
+  aButton.attach(BUTTON1);
+  aButton.interval(200);
+
+  bButton.attach(BUTTON2);
+  bButton.interval(200);
 
   //Start I2C library
   Wire.begin();

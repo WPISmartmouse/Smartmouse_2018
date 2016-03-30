@@ -18,6 +18,7 @@
 #include "Mouse.h"
 #include "AbstractMaze.h"
 #include "Pose.h"
+#include "Bounce2.h"
 
 class RealMouse : public Mouse {
 public:
@@ -39,6 +40,10 @@ public:
   constexpr static float MAX_ROT_SPEED = M_PI/2; //rad/s
   constexpr static float MIN_SPEED = 30; //mm/s
   constexpr static float MIN_ROT_SPEED = M_PI/12; //rad/s
+
+  Bounce goButton;
+  Bounce aButton;
+  Bounce bButton;
 
   static RealMouse *inst();
 
