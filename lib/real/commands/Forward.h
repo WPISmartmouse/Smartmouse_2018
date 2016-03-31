@@ -10,13 +10,18 @@ class Forward : public Command {
     void initialize();
     void execute();
     bool isFinished();
+    float yawDiff(float y1, float y2);
     void end();
 
   private:
-    RealMouse *mouse;
+    bool outOfRange(float range);
     float forwardDisplacement(Pose p0, Pose p1);
 
+    RealMouse *mouse;
     Pose start;
     float disp;
-    const float kPDisp = 3000;
+    float *distances;
+    bool wallOnLeft, wallOnRight;
+    const float kPDisp = 1000;
+    const float kPWall = 65;
 };

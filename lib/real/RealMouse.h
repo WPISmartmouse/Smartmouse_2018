@@ -24,6 +24,10 @@ public:
   /** runs setup things like pin initializes */
   void setup();
 
+  constexpr static float CENTER_TO_SENSOR = 0.025; //meters
+  constexpr static float HALF_SQUARE = 0.084; //meters
+  constexpr static float WALL_DIST_SETPOINT = HALF_SQUARE - CENTER_TO_SENSOR;
+
   const static int LEDGO = 13;
   const static int LEDR = 52;
   const static int LEDG = 41;
@@ -47,8 +51,10 @@ public:
 
   virtual SensorReading checkWalls() override;
 
+  // \brief get pose (x, y, yaw) in (meters, meters, radians 0-2pi)
   Pose getPose();
 
+  // \brief read IMU and inject current angle into kinematic controller
   void updateGlobalYaw();
 
   void setSpeed(int forwardVelocity, float ccwVelocity);
@@ -57,6 +63,7 @@ public:
 
   void run();
 
+  // \brief return array of 3 distances in meters
   float *getRawDistances();
 
 private:

@@ -19,16 +19,16 @@ Pose RealMouse::getPose(){
 }
 
 float *RealMouse::getRawDistances() {
-  rawDistances[0] = right_rangefinder.readRangeContinuous();
-  rawDistances[1] = middle_rangefinder.readRangeContinuous();
-  rawDistances[2] = left_rangefinder.readRangeContinuous();
+  rawDistances[0] = right_rangefinder.readRangeContinuous()/1000.0;
+  rawDistances[1] = middle_rangefinder.readRangeContinuous()/1000.0;
+  rawDistances[2] = left_rangefinder.readRangeContinuous()/1000.0;
   return rawDistances;
 }
 
 RealMouse::RealMouse() :
   display(OLED_RESET),
-  middle_rangefinder(VL6180EN1,0x41),
-  left_rangefinder(VL6180EN2,0x42),
+  middle_rangefinder(VL6180EN2,0x41),
+  left_rangefinder(VL6180EN1,0x42),
   right_rangefinder(VL6180EN3,0x43),
   motL(ENCODER1A, ENCODER1B, MOTOR1B, MOTOR1A),
   motR(ENCODER2A, ENCODER2B, MOTOR2B, MOTOR2A),

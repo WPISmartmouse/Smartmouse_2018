@@ -39,6 +39,10 @@ float Forward::yawDiff(float y1, float y2){
   return diff;
 }
 
+bool Forward::outOfRange(float range){
+ return isinf(range);
+}
+
 void Forward::execute(){
   distances = mouse->getRawDistances();
   disp = forwardDisplacement(start,mouse->getPose());
@@ -66,10 +70,10 @@ void Forward::execute(){
       dToWallLeft < SimMouse::WALL_DIST;
   }
 
-  if (isinf(distances[0]) && wallOnRight){
+  if (outOfRange(distances[0]) && wallOnRight){
     wallOnRight = false;
   }
-  if (isinf(distances[2]) && wallOnLeft){
+  if (outOfRange(distances[2]) && wallOnLeft){
     wallOnLeft = false;
   }
 
