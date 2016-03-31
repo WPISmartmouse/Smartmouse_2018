@@ -13,4 +13,5 @@ class Calibration : public Command {
 
   private:
     RealMouse *mouse;
+    uint32_t lastDisplayUpdate;
 };
