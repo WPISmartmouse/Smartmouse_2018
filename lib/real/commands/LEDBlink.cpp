@@ -1,13 +1,10 @@
 #include "LEDBlink.h"
 
-LEDBlink::LEDBlink(const int led_pin, unsigned long blink_time) :  Command("blink"), mouse(RealMouse::inst()), led_pin(led_pin), blink_time(blink_time) {}
+LEDBlink::LEDBlink(const int led_pin, unsigned long blink_time) :  Command("blink"), led_pin(led_pin), blink_time(blink_time) {}
 
 void LEDBlink::initialize(){
   digitalWrite(led_pin,1);
   blink_end = millis()+blink_time;
-}
-
-void LEDBlink::execute(){
 }
 
 bool LEDBlink::isFinished(){

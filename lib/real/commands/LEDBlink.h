@@ -13,7 +13,6 @@ class LEDBlink : public Command {
 
     LEDBlink(const int led_pin, unsigned long blink_time);
     void initialize();
-    void execute();
     bool isFinished();
     void end();
 
@@ -21,5 +20,4 @@ class LEDBlink : public Command {
     const int led_pin;
     unsigned long blink_time;
     unsigned long blink_end;
-    RealMouse *mouse;
 };
