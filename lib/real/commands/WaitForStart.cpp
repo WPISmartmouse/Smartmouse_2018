@@ -1,25 +1,17 @@
 #include "WaitForStart.h"
 #include "RealMouse.h"
 
-WaitForStart::WaitForStart() : Command("wait"), down(1), up(0) {}
+WaitForStart::WaitForStart() : Command("wait"), mouse(RealMouse::inst()) {}
 
 void WaitForStart::initialize(){
   digitalWrite(RealMouse::LEDGO,1);
 }
 
 void WaitForStart::execute(){
-  if (down <=5 && !digitalRead(RealMouse::BUTTONGO)){
-    down++;
-  }
-  if (down > 5){
-    if (digitalRead(RealMouse::BUTTONGO)){
-      up++;
-    }
-  }
 }
 
 bool WaitForStart::isFinished(){
-  return down > 5 && up > 5;
+  return mouse->goButton.fell();
 }
 
 void WaitForStart::end(){
