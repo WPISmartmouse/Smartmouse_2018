@@ -7,8 +7,11 @@
 WaitThenDrive::WaitThenDrive() : CommandGroup("wait then drive") {
   addSequential(new Calibration());
   addSequential(new WaitForStart());
-  //mouse starts facing East
+  addSequential(new Forward());
+  addSequential(new Forward());
   addSequential(new Forward());
   addSequential(new Turn(Direction::W));
+  addSequential(new Forward());
+  addSequential(new Forward());
   addSequential(new Forward());
 }

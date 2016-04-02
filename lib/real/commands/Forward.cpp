@@ -1,6 +1,6 @@
 #include "Forward.h"
 
-Forward::Forward() : mouse(RealMouse::inst()) {}
+Forward::Forward() : mouse(RealMouse::inst()), wallOnLeft(true), wallOnRight(true){}
 
 void Forward::initialize(){
   start = mouse->getPose();
@@ -32,9 +32,10 @@ float Forward::yawDiff(float y1, float y2){
 }
 
 bool Forward::outOfRange(float range){
-  return (range == 255);
+  return (range >= 0.254);
 }
 
+int i=0;
 void Forward::execute(){
   distances = mouse->getRawDistances();
   //TODO FIX UNITS
@@ -57,9 +58,11 @@ void Forward::execute(){
 
   if (outOfRange(distances[0]) && wallOnRight){
     wallOnRight = false;
+    Serial.println("lost wall on right");
   }
   if (outOfRange(distances[2]) && wallOnLeft){
     wallOnLeft = false;
+    Serial.println("lost wall on left");
   }
 
   float correction = 0.0;
@@ -67,7 +70,7 @@ void Forward::execute(){
     correction = -leftWallError * kPWall * dispError;
   }
   else if (wallOnRight) {
-    correction = -rightWallError * kPWall * dispError;
+    correction = rightWallError * kPWall * dispError;
   }
 
   else if (correction > RealMouse::MAX_ROT_SPEED) {
@@ -77,12 +80,17 @@ void Forward::execute(){
     correction = -RealMouse::MAX_ROT_SPEED;
   }
 
-  Serial.print(" leftWallError:");
-  Serial.print(leftWallError);
-  Serial.print(" dispError:");
-  Serial.print(dispError);
-  Serial.print(" correction");
-  Serial.println(correction);
+  if ((i++)==500) {
+    Serial1.print(" leftWallError:");
+    Serial1.print(leftWallError);
+    Serial1.print(" rightWallError:");
+    Serial1.print(rightWallError);
+    Serial1.print(" dispError:");
+    Serial1.print(dispError);
+    Serial1.print(" correction");
+    Serial1.println(correction);
+    i = 0;
+  }
 
   mouse->setSpeed(speed, correction);
 
