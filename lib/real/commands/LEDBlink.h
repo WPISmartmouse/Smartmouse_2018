@@ -6,10 +6,10 @@
 class LEDBlink : public Command {
   public:
 
-    const static int BLUE = RealMouse::LEDB;
-    const static int RED = RealMouse::LEDR;
-    const static int GREEN = RealMouse::LEDG;
-    const static int WHITE = RealMouse::LEDGO;
+    const static int B = RealMouse::LEDB;
+    const static int R = RealMouse::LEDR;
+    const static int G = RealMouse::LEDG;
+    const static int W = RealMouse::LEDGO;
 
     LEDBlink(const int led_pin, unsigned long blink_time);
     void initialize();
