@@ -12,7 +12,7 @@ class Calibration : public Command {
     void end();
 
   private:
+    const unsigned long REFRESH_TIME = 200;
     RealMouse *mouse;
-    int down;
-    int up;
+    uint32_t lastDisplayUpdate;
 };

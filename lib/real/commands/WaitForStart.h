@@ -1,5 +1,6 @@
 #pragma once
 #include "CommanDuino.h"
+#include "RealMouse.h"
 
 class WaitForStart : public Command {
   public:
@@ -10,6 +11,5 @@ class WaitForStart : public Command {
     void end();
 
   private:
-    int down;
-    int up;
+    RealMouse *mouse;
 };

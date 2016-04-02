@@ -1,6 +1,6 @@
 #include "Calibration.h"
 
-Calibration::Calibration() :  Command("calibrate"), down(1), up(0), mouse(RealMouse::inst()) {}
+Calibration::Calibration() :  Command("calibrate"), mouse(RealMouse::inst()), lastDisplayUpdate(0) {}
 
 void Calibration::initialize(){
   mouse->display.setTextSize(1);
@@ -8,37 +8,45 @@ void Calibration::initialize(){
 }
 
 void Calibration::execute(){
-  mouse->display.clearDisplay();
-
   uint8_t system = 0, gyro = 0, accel = 0, mag = 0;
   mouse->imu.getCalibration(&system, &gyro, &accel, &mag);
   digitalWrite(RealMouse::LEDG, (system == 3));
   digitalWrite(RealMouse::LEDB, (mag == 3));
-  mouse->display.println("IMU Calibration");
-  mouse->display.print("Sys ");
-  mouse->display.println(system);
-  mouse->display.print("Gyro ");
-  mouse->display.println(gyro);
-  mouse->display.print("Accel ");
-  mouse->display.println(accel);
-  mouse->display.print("Mag ");
-  mouse->display.println(mag);
 
-  mouse->display.setCursor(0, 0);
-  mouse->display.display();
+  uint32_t now = millis();
+  if (now - lastDisplayUpdate > REFRESH_TIME){
+    lastDisplayUpdate = now;
 
-  if (down <=5 && !digitalRead(RealMouse::BUTTONGO)){
-    down++;
-  }
-  if (down > 5){
-    if (digitalRead(RealMouse::BUTTONGO)){
-      up++;
-    }
+    imu::Vector<3> euler = mouse->imu.getVector(Adafruit_BNO055::VECTOR_EULER);
+
+    float* dist=mouse->getRawDistances();
+
+    mouse->display.clearDisplay();
+    mouse->display.setCursor(0, 0);
+    mouse->display.println("S G A M");
+    mouse->display.print(system);
+    mouse->display.print(" ");
+    mouse->display.print(gyro);
+    mouse->display.print(" ");
+    mouse->display.print(accel);
+    mouse->display.print(" ");
+    mouse->display.println(mag);
+    mouse->display.println("-");
+    mouse->display.print("Yaw ");
+    mouse->display.println(euler.x());
+    mouse->display.println("-");
+    mouse->display.println("Dist L F R");
+    mouse->display.print(dist[0]);
+    mouse->display.print(" ");
+    mouse->display.print(dist[1]);
+    mouse->display.print(" ");
+    mouse->display.print(dist[2]);
+    mouse->display.display();
   }
 }
 
 bool Calibration::isFinished(){
-  return down > 5 && up > 5;
+  return mouse->goButton.fell();
 }
 
 void Calibration::end(){
