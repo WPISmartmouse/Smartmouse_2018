@@ -112,11 +112,11 @@ class KinematicController{
 
     unsigned long lastRunTime;
 
-    long lastLocalPoseY;
+    float lastLocalPoseX;
     float lastLocalPoseYaw;
 
-    long globalX; //millimeters
-    long globalY; //millimeters
+    float globalX; //millimeters
+    float globalY; //millimeters
     float globalYaw; //radians
 
     static const int STANDBY_DELAY = 500;

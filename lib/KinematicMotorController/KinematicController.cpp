@@ -18,7 +18,7 @@ KinematicController::KinematicController(RegulatedMotor* leftMotor,
   globalX(0),
   globalY(0),
   globalYaw(0), //the robot starts facing SOUTH, which is -Y axis
-  lastLocalPoseY(0),
+  lastLocalPoseX(0),
   lastLocalPoseYaw(0),
   sampleTime(5) {
     setSampleTime(sampleTime);
@@ -103,17 +103,17 @@ boolean KinematicController::run(){
       lastCCWVelocity = 0;
     }
 
-    float localPoseY = this->getOdometryForward();
+    float localPoseX = this->getOdometryForward();
     float localPoseYaw = this->getOdometryCCW();
     globalYaw += (localPoseYaw - lastLocalPoseYaw);
     constrainGlobalYaw();
 
     //Y axis is perpendicular to axel, X is along axel
-    globalX += (localPoseY - lastLocalPoseY) * cos(globalYaw);
-    globalY += (localPoseY - lastLocalPoseY) * sin(globalYaw);
+    globalX += (localPoseX - lastLocalPoseX) * cos(globalYaw);
+    globalY += (localPoseX - lastLocalPoseX) * sin(globalYaw);
 
     lastRunTime = currentTime;
-    lastLocalPoseY = localPoseY;
+    lastLocalPoseX = localPoseX;
     lastLocalPoseYaw = localPoseYaw;
 
     return true;
@@ -122,13 +122,17 @@ boolean KinematicController::run(){
   return false;
 }
 
+int asdf=0;
 Pose KinematicController::getPose(){
-  //Serial.print("x=");
-  //Serial.print(globalX);
-  //Serial.print(" y=");
-  //Serial.print(globalY);
-  //Serial.print(" yaw=");
-  //Serial.println(globalYaw);
+  if (asdf++ == 500) {
+    Serial.print("x=");
+    Serial.print(globalX);
+    Serial.print(" y=");
+    Serial.print(globalY);
+    Serial.print(" yaw=");
+    Serial.println(globalYaw);
+    asdf = 0;
+  }
   return Pose(globalX, globalY, globalYaw);
 }
 
