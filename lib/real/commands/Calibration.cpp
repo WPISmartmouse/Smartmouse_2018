@@ -14,7 +14,7 @@ void Calibration::execute(){
   digitalWrite(RealMouse::LEDB, (mag == 3));
 
   uint32_t now = millis();
-  if (now - lastDisplayUpdate > 100){
+  if (now - lastDisplayUpdate > REFRESH_TIME){
     lastDisplayUpdate = now;
 
     imu::Vector<3> euler = mouse->imu.getVector(Adafruit_BNO055::VECTOR_EULER);
@@ -23,7 +23,6 @@ void Calibration::execute(){
 
     mouse->display.clearDisplay();
     mouse->display.setCursor(0, 0);
-    mouse->display.println("IMU Calibration");
     mouse->display.println("S G A M");
     mouse->display.print(system);
     mouse->display.print(" ");
@@ -33,7 +32,7 @@ void Calibration::execute(){
     mouse->display.print(" ");
     mouse->display.println(mag);
     mouse->display.println("-");
-    mouse->display.println("Yaw");
+    mouse->display.print("Yaw ");
     mouse->display.println(euler.x());
     mouse->display.println("-");
     mouse->display.println("Dist L F R");

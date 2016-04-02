@@ -174,7 +174,7 @@ void RealMouse::setup(){
   digitalWrite(MOTORDIR2,LOW);
 
   goButton.attach(BUTTONGO);
-  goButton.interval(100);
+  goButton.interval(10);
 
   aButton.attach(BUTTON1);
   aButton.interval(200);
