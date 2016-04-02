@@ -1,3 +1,8 @@
+build
+html
+latex
 .pioenvs
+.build_ano
 .clang_complete
 .gcc-flags.json
+*.swp
