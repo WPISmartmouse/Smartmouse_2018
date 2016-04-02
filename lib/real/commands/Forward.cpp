@@ -1,6 +1,6 @@
 #include "Forward.h"
 
-Forward::Forward() : mouse(RealMouse::inst()), wallOnLeft(true), wallOnRight(true){}
+Forward::Forward() : mouse(RealMouse::inst()), checkedWalls(false), wallOnLeft(true), wallOnRight(true){}
 
 void Forward::initialize(){
   start = mouse->getPose();
@@ -77,10 +77,13 @@ void Forward::execute(){
     correction = -RealMouse::MAX_ROT_SPEED;
   }
 
-  Serial.print(" speed:");
-  Serial.print(speed);
-  Serial.print(" corr:");
-  Serial.println(correction);
+  if (!checkedWalls && dispError < AbstractMaze::UNIT_DIST/2) {
+    checkedWalls = true;
+    walls[static_cast<int>(right_of_dir(mouse->getDir()))] =
+      dToWallRight < RealMouse::WALL_DIST;
+    walls[static_cast<int>(left_of_dir(mouse->getDir()))] =
+      dToWallLeft < RealMouse::WALL_DIST;
+  }
 
   mouse->setSpeed(speed, correction);
 
@@ -93,5 +96,10 @@ bool Forward::isFinished(){
 void Forward::end(){
   mouse->internalForward();
   mouse->setSpeed(0,0);
+
+  walls[static_cast<int>(mouse->getDir())] = distances[1] < RealMouse::WALL_DIST;
+  walls[static_cast<int>(opposite_direction(mouse->getDir()))] = false;
+
+  mouse->suggestWalls(walls);
 }
 

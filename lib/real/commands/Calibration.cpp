@@ -31,16 +31,20 @@ void Calibration::execute(){
     mouse->display.print(accel);
     mouse->display.print(" ");
     mouse->display.println(mag);
+
     mouse->display.println("-");
     mouse->display.print("Yaw ");
     mouse->display.println(euler.x());
-    mouse->display.println("-");
+
+    mouse->display.print("Voltage ");
+    mouse->display.println(mouse->getVoltage());
+
     mouse->display.println("Dist L F R");
-    mouse->display.print(dist[0]);
+    mouse->display.print(dist[2]);
     mouse->display.print(" ");
     mouse->display.print(dist[1]);
     mouse->display.print(" ");
-    mouse->display.print(dist[2]);
+    mouse->display.print(dist[0]);
     mouse->display.display();
   }
 }

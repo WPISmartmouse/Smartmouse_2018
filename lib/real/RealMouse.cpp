@@ -10,6 +10,16 @@ RealMouse *RealMouse::inst() {
   return instance;
 }
 
+RealMouse::RealMouse() :
+  display(OLED_RESET),
+  middle_rangefinder(VL6180EN2,0x41),
+  left_rangefinder(VL6180EN1,0x42),
+  right_rangefinder(VL6180EN3,0x43),
+  motL(ENCODER1A, ENCODER1B, MOTOR1B, MOTOR1A),
+  motR(ENCODER2A, ENCODER2B, MOTOR2B, MOTOR2A),
+  hasSuggestion(false),
+  kc(&motL, &motR, 1, -1, 78.3f, 31.71f, 12 * (1537480.0f/20280)) { }
+
 void RealMouse::setSpeed(int forwardVelocity, float ccwVelocity) {
   kc.setVelocity(forwardVelocity, ccwVelocity);
 }
@@ -25,20 +35,27 @@ float *RealMouse::getRawDistances() {
   return rawDistances;
 }
 
-RealMouse::RealMouse() :
-  display(OLED_RESET),
-  middle_rangefinder(VL6180EN2,0x41),
-  left_rangefinder(VL6180EN1,0x42),
-  right_rangefinder(VL6180EN3,0x43),
-  motL(ENCODER1A, ENCODER1B, MOTOR1B, MOTOR1A),
-  motR(ENCODER2A, ENCODER2B, MOTOR2B, MOTOR2A),
-  kc(&motL, &motR, 1, -1, 78.3f, 31.71f, 12 * (1537480.0f/20280)) { }
+SensorReading RealMouse::checkWalls() {
+  SensorReading sr(row, col);
+  std::array<bool, 4> *walls = &sr.walls;
 
-  SensorReading RealMouse::checkWalls() {
-    bool walls[4] = {false, false, false, false};
-    SensorReading sr(row, col, walls);
-    return sr;
+  //if nothing was suggested yet, then do a raw sensor read
+  if (hasSuggestion){
+    (*walls)[0] = suggestedWalls[0];
+    (*walls)[1] = suggestedWalls[1];
+    (*walls)[2] = suggestedWalls[2];
+    (*walls)[3] = suggestedWalls[3];
+
   }
+  else {
+    (*walls)[0] = true;
+    (*walls)[1] = false;
+    (*walls)[2] = true;
+    (*walls)[3] = true;
+  }
+
+  return sr;
+}
 
 void RealMouse::run(){
   kc.run();
@@ -56,6 +73,10 @@ void RealMouse::updateGlobalYaw(){
 
     kc.updateGlobalYaw(euler.x());
   }
+}
+
+float RealMouse::getVoltage(){
+  return analogRead(BATTERYSENSE) * (3.3 / 4095) * (49 / 10.0) / 3.0;
 }
 
 void RealMouse::suggestWalls(bool *walls) {

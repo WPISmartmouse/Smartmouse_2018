@@ -9,8 +9,7 @@
 ArduinoTimer timer;
 
 AbstractMaze maze;
-WallFollow solver(RealMouse::inst());
-Scheduler scheduler(new WaitThenDrive());
+Scheduler scheduler(new SolveCommand(new WallFollow(RealMouse::inst())));
 
 void setup(){
   pinMode(13, OUTPUT);

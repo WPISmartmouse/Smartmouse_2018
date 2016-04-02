@@ -81,7 +81,39 @@ Node *Mouse::get_mouse_node(){
 }
 
 #ifdef EMBED
-void Mouse::print_maze_mouse(){}
+#include <Arduino.h>
+
+void Mouse::print_maze_mouse(){
+  int i,j;
+  for (i=0;i<AbstractMaze::MAZE_SIZE;i++){
+    char *str = (char *)malloc((AbstractMaze::MAZE_SIZE * 2 + 2) * sizeof(char));
+
+    char *s=str;
+    for (j=0;j<AbstractMaze::MAZE_SIZE;j++){
+      Node *n = maze->nodes[i][j];
+      if (n->neighbor(Direction::W) == NULL){
+        strcpy(s++,"|");
+      }
+      else {
+        strcpy(s++,"_");
+      }
+
+      if (row  == i && col == j){
+        strcpy(s++,"o");
+      }
+      else if (n->neighbor(Direction::S) == NULL){
+        strcpy(s++,"_");
+      }
+      else {
+        strcpy(s++," ");
+      }
+    }
+    *(s++) = '|';
+    *s = '\0';
+    Serial1.println(str);
+    free(str);
+  }
+}
 #else
 #include <stdlib.h>
 #include <string.h>

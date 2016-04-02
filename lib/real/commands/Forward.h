@@ -21,7 +21,9 @@ class Forward : public Command {
     Pose start;
     float disp;
     float *distances;
+    bool checkedWalls;
     bool wallOnLeft, wallOnRight;
+    bool walls[4];
     const float kPDisp = 1000;
     const float kPWall = 65;
 };
