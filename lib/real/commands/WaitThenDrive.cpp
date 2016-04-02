@@ -2,10 +2,10 @@
 #include "Forward.h"
 #include "WaitForStart.h"
 #include "Turn.h"
-#include "Calibration.h"
+#include "Calibrate.h"
 
 WaitThenDrive::WaitThenDrive() : CommandGroup("wait then drive") {
-  addSequential(new Calibration());
+  addSequential(new Calibrate());
   addSequential(new WaitForStart());
   addSequential(new Forward());
   addSequential(new Forward());

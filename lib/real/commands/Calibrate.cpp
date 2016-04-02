@@ -1,13 +1,13 @@
-#include "Calibration.h"
+#include "Calibrate.h"
 
-Calibration::Calibration() :  Command("calibrate"), mouse(RealMouse::inst()), lastDisplayUpdate(0) {}
+Calibrate::Calibrate() :  Command("calibrate"), mouse(RealMouse::inst()), lastDisplayUpdate(0) {}
 
-void Calibration::initialize(){
+void Calibrate::initialize(){
   mouse->display.setTextSize(1);
   mouse->display.setTextColor(WHITE);
 }
 
-void Calibration::execute(){
+void Calibrate::execute(){
   uint8_t system = 0, gyro = 0, accel = 0, mag = 0;
   mouse->imu.getCalibration(&system, &gyro, &accel, &mag);
   digitalWrite(RealMouse::LEDG, (system == 3));
@@ -49,11 +49,11 @@ void Calibration::execute(){
   }
 }
 
-bool Calibration::isFinished(){
+bool Calibrate::isFinished(){
   return mouse->goButton.fell();
 }
 
-void Calibration::end(){
+void Calibrate::end(){
   digitalWrite(RealMouse::LEDG, 0);
   digitalWrite(RealMouse::LEDB, 0);
 }

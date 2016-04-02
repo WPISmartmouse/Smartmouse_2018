@@ -3,9 +3,9 @@
 #include "CommanDuino.h"
 #include "RealMouse.h"
 
-class Calibration : public Command {
+class Calibrate : public Command {
   public:
-    Calibration();
+    Calibrate();
     void initialize();
     void execute();
     bool isFinished();
