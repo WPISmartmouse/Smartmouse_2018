@@ -1,4 +1,5 @@
 #include "RealMouse.h"
+#include "KinematicController.h"
 
 RealMouse *RealMouse::instance = nullptr;
 
@@ -19,7 +20,8 @@ RealMouse::RealMouse() :
   motR(ENCODER2A, ENCODER2B, MOTOR2B, MOTOR2A),
   hasSuggestion(false),
   kc(&motL, &motR, 1, -1, 78.3f, 31.71f, 12 * (1537480.0f/20280)),
-  eastYaw(0) { }
+  eastYaw(0),
+  lastDisplayUpdate(0) { }
 
 void RealMouse::setSpeed(int forwardVelocity, float ccwVelocity) {
   kc.setVelocity(forwardVelocity, ccwVelocity);
@@ -87,11 +89,12 @@ uint8_t RealMouse::getIMUCalibration(){
 float RealMouse::getRawIMUYaw(){
   imu::Vector<3> euler = imu.getVector(Adafruit_BNO055::VECTOR_EULER);
   float degreeYaw = euler.x();
-  return - (degreeYaw * M_PI / 180.0);
+  float radYaw = - (degreeYaw * M_PI / 180.0);
+  return KinematicController::constrainAngle(radYaw);
 }
 
 float RealMouse::getIMUYaw(){
-  return getRawIMUYaw() - eastYaw;
+  return KinematicController::constrainAngle(getRawIMUYaw() - eastYaw);
 }
 
 void RealMouse::suggestWalls(bool *walls) {
@@ -283,6 +286,21 @@ void RealMouse::setup(){
   kc.setup();
 }
 
-void RealMouse::setEastYaw(float yaw){
+void RealMouse::setEastYaw(float yaw) {
   eastYaw = yaw;
+}
+
+void RealMouse::clearDisplay() {
+  display.setTextSize(1);
+  display.setTextColor(WHITE);
+  display.clearDisplay();
+  display.setCursor(0, 0);
+}
+
+void RealMouse::updateDisplay() {
+  unsigned long now = millis();
+  if (now - lastDisplayUpdate > displayUpdateInterval){
+    lastDisplayUpdate = now;
+    display.display();
+  }
 }

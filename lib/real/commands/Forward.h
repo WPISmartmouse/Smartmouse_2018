@@ -24,6 +24,11 @@ class Forward : public Command {
     bool checkedWalls;
     bool wallOnLeft, wallOnRight;
     bool walls[4];
-    const float kPDisp = 1000;
+    float goalYaw;
+    const float kPDisp = 2000;
+    const float minimalSpeed = 0.005;
     const float kPWall = 65;
+    const float kYaw = 0.5;
+    const float ignore_wall_region_L = 0.03;
+    const float ignore_wall_region_H = 0.06;
 };

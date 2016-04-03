@@ -43,12 +43,12 @@ bool Turn::isFinished(){
     currentYaw = currentPose.yaw;
   }
   dYaw = yawDiff(currentYaw, goalYaw);
-  Serial1.print(" currentYaw");
-  Serial1.print(currentYaw);
-  Serial1.print(" goalYaw");
-  Serial1.print(goalYaw);
-  Serial1.print(" dYaw");
-  Serial1.println(dYaw);
+  // Serial1.print(" currentYaw");
+  // Serial1.print(currentYaw);
+  // Serial1.print(" goalYaw");
+  // Serial1.print(goalYaw);
+  // Serial1.print(" dYaw");
+  // Serial1.println(dYaw);
   return (mouse->getDir() == dir) || (fabs(dYaw) < Mouse::ROT_TOLERANCE);
 }
 

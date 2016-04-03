@@ -79,6 +79,9 @@ public:
 
   void setEastYaw(float yaw);
 
+  void clearDisplay();
+  void updateDisplay();
+
 private:
   RealMouse();
 
@@ -157,4 +160,6 @@ private:
   float rawDistances[3];
 
   float eastYaw;
+  unsigned long lastDisplayUpdate;
+  const static long displayUpdateInterval = 200;
 };
