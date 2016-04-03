@@ -106,27 +106,7 @@ void Forward::execute(){
   correction = 0;
   float sumCorrection = correction + dYaw * kYaw;
 
-  Serial.print(" leftWallError:");
-  Serial.print(leftWallError);
-  Serial.print(" dispError:");
-  Serial.print(dispError);
-  Serial.print(" correction");
-  Serial.println(correction);
-  Serial1.print(" currentYaw");
-  Serial1.print(currentYaw);
-  Serial1.print(" goalYaw");
-  Serial1.print(goalYaw);
-  Serial1.print(" dYaw");
-  Serial1.println(dYaw);
-
   mouse->setSpeed(speed, sumCorrection);
-
-  Pose currentPose = mouse->getPose();
-  mouse->clearDisplay();
-  mouse->display.println(currentPose.x);
-  mouse->display.println(currentPose.y);
-  mouse->display.println(currentPose.yaw);
-  mouse->updateDisplay();
 }
 
 bool Forward::isFinished(){

@@ -12,8 +12,6 @@ WaitThenDrive::WaitThenDrive() : CommandGroup("wait then drive") {
   addSequential(new Forward());
   addSequential(new Forward());
   addSequential(new Forward());
-  addSequential(new Forward());
-  addSequential(new Forward());
   addSequential(new Turn(Direction::W));
   addSequential(new Forward());
   addSequential(new Forward());

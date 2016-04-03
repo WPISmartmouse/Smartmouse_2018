@@ -14,7 +14,7 @@ class MeasureMazeOrientation : public Command {
   private:
     const int MAX_SAMPLE_COUNT;
     float data;
-    int readyToExit;
+    bool readyToExit;
     RealMouse *mouse;
     uint32_t lastDisplayUpdate;
 };

@@ -1,6 +1,6 @@
 #include "MeasureMazeOrientation.h"
 
-MeasureMazeOrientation::MeasureMazeOrientation() :  Command("MeasureMazeOrientation"), mouse(RealMouse::inst()), MAX_SAMPLE_COUNT(20), data(0), readyToExit(0) {}
+MeasureMazeOrientation::MeasureMazeOrientation() :  Command("MeasureMazeOrientation"), mouse(RealMouse::inst()), MAX_SAMPLE_COUNT(20), data(0), readyToExit(false) {}
 
 void MeasureMazeOrientation::initialize(){
   mouse->display.setTextSize(1);
@@ -25,7 +25,7 @@ void MeasureMazeOrientation::execute(){
     mouse->setEastYaw(eastYaw);
     mouse->display.println(eastYaw);
     mouse->display.display();
-    readyToExit = 1;
+    readyToExit = true;
   }
 }
 
