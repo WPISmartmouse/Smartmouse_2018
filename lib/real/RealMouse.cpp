@@ -18,7 +18,8 @@ RealMouse::RealMouse() :
   motL(ENCODER1A, ENCODER1B, MOTOR1B, MOTOR1A),
   motR(ENCODER2A, ENCODER2B, MOTOR2B, MOTOR2A),
   hasSuggestion(false),
-  kc(&motL, &motR, 1, -1, 78.3f, 31.71f, 12 * (1537480.0f/20280)) { }
+  kc(&motL, &motR, 1, -1, 78.3f, 31.71f, 12 * (1537480.0f/20280)),
+  eastYaw(0) { }
 
 void RealMouse::setSpeed(int forwardVelocity, float ccwVelocity) {
   kc.setVelocity(forwardVelocity, ccwVelocity);
@@ -69,14 +70,28 @@ void RealMouse::updateGlobalYaw(){
   imu.getCalibration(&system, &gyro, &accel, &mag);
 
   if (system != 0 ){
-    imu::Vector<3> euler = imu.getVector(Adafruit_BNO055::VECTOR_EULER);
-
-    kc.updateGlobalYaw(euler.x());
+    kc.updateGlobalYaw(getIMUYaw());
   }
 }
 
 float RealMouse::getVoltage(){
   return analogRead(BATTERYSENSE) * (3.3 / 4095) * (49 / 10.0) / 3.0;
+}
+
+uint8_t RealMouse::getIMUCalibration(){
+  uint8_t system = 0, gyro = 0, accel = 0, mag = 0;
+  imu.getCalibration(&system, &gyro, &accel, &mag);
+  return system;
+}
+
+float RealMouse::getRawIMUYaw(){
+  imu::Vector<3> euler = imu.getVector(Adafruit_BNO055::VECTOR_EULER);
+  float degreeYaw = euler.x();
+  return - (degreeYaw * M_PI / 180.0);
+}
+
+float RealMouse::getIMUYaw(){
+  return getRawIMUYaw() - eastYaw;
 }
 
 void RealMouse::suggestWalls(bool *walls) {
@@ -266,4 +281,8 @@ void RealMouse::setup(){
   kc.setAcceleration(4000,M_PI,4000,M_PI);
 
   kc.setup();
+}
+
+void RealMouse::setEastYaw(float yaw){
+  eastYaw = yaw;
 }
