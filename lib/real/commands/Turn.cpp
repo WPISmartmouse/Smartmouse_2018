@@ -55,7 +55,8 @@ bool Turn::isFinished(){
 void Turn::end(){
   mouse->internalTurnToFace(dir);
   mouse->setSpeed(0,0);
-  if (mouse->getIMUCalibration() == 3) {
+  if (useIMU) {
     mouse->updateGlobalYaw();
+    // trust the IMU anyways
   }
 }

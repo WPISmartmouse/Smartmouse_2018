@@ -68,12 +68,7 @@ void RealMouse::run(){
 }
 
 void RealMouse::updateGlobalYaw(){
-  uint8_t system = 0, gyro = 0, accel = 0, mag = 0;
-  imu.getCalibration(&system, &gyro, &accel, &mag);
-
-  if (system != 0 ){
-    kc.updateGlobalYaw(getIMUYaw());
-  }
+  kc.updateGlobalYaw(getIMUYaw());
 }
 
 float RealMouse::getVoltage(){
