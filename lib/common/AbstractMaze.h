@@ -17,7 +17,7 @@ class AbstractMaze {
   friend class Mouse;
   public:
 
-    const static int MAZE_SIZE = 4;
+    const static int MAZE_SIZE = 16;
     const static int PATH_SIZE = 256;
     const static int CENTER = MAZE_SIZE/2;
     const static float UNIT_DIST;
