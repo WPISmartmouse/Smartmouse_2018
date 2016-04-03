@@ -34,7 +34,7 @@ float Forward::yawDiff(float y1, float y2){
 }
 
 bool Forward::outOfRange(float range){
-  return (range >= 0.254);
+  return (range >= 0.11);
 }
 
 void Forward::execute(){
@@ -103,7 +103,7 @@ void Forward::execute(){
     disp < ignore_wall_region_H) {
       correction = 0;
   }
-  correction = 0;
+
   float sumCorrection = correction + dYaw * kYaw;
 
   mouse->setSpeed(speed, sumCorrection);

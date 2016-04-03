@@ -24,7 +24,7 @@ void Turn::initialize(){
 }
 
 void Turn::execute(){
-  float speed = dYaw * kP + copysignf(1.0, dYaw) * minimalSpeed;
+  float speed = dYaw * kP;
 
   if (speed < RealMouse::MIN_ROT_SPEED && speed >= 0) speed = RealMouse::MIN_ROT_SPEED;
   if (speed > -RealMouse::MIN_ROT_SPEED && speed <= 0) speed = -RealMouse::MIN_ROT_SPEED;
