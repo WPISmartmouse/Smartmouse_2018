@@ -49,6 +49,9 @@ class KinematicController{
 
     void setSampleTime(unsigned long sampleTime);
 
+    //constrains globalYaw to 0 <= yaw <= M_PI*2
+    static float constrainAngle(float angle);
+
   private:
 
     void _travel(int forwardDistance, float ccwAngle, unsigned int forwardSpeed, float ccwSpeed);
@@ -61,8 +64,6 @@ class KinematicController{
     float tickToRad(long ticks);
     float tickToMM(long ticks);
 
-    //constrains globalYaw to 0 <= yaw <= M_PI*2
-    void constrainGlobalYaw();
 
     long speedRamp(long last, long target,long up, long down);
 

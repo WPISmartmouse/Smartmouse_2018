@@ -1,10 +1,12 @@
 #include "Forward.h"
+#include <math.h>
 
 Forward::Forward() : mouse(RealMouse::inst()), checkedWalls(false), wallOnLeft(true), wallOnRight(true){}
 
 void Forward::initialize(){
   start = mouse->getPose();
   disp = 0.0f;
+  goalYaw = toYaw(mouse->getDir());
 }
 
 float Forward::forwardDisplacement(Pose p0, Pose p1){
@@ -36,18 +38,30 @@ bool Forward::outOfRange(float range){
 }
 
 void Forward::execute(){
+  float currentYaw = -999;
+  float dYaw = -999;
+  int imu_in_calib = (mouse->getIMUCalibration() == 3);
+  if (imu_in_calib) {
+    currentYaw = mouse->getIMUYaw();
+    mouse->updateGlobalYaw();
+    // TODO: not query imu calib inside updateGlobalYaw
+  } else {
+    currentYaw = mouse->getPose().yaw;
+  }
+
+  dYaw = yawDiff(currentYaw, goalYaw);
+  float angleError = -dYaw;
+
   distances = mouse->getRawDistances();
   //TODO FIX UNITS
   disp = forwardDisplacement(start, mouse->getPose()) / 1000.0;
 
   float dispError = AbstractMaze::UNIT_DIST - disp;
 
-  float currentYaw = mouse->getPose().yaw;
-  float angleError = yawDiff(toYaw(mouse->getDir()), currentYaw);
   float dToWallRight = distances[0] * cos(M_PI/6 + angleError);
   float dToWallLeft = distances[2] * cos(M_PI/6 - angleError);
 
-  float speed = dispError * kPDisp;
+  float speed = dispError * kPDisp + copysignf(1.0, dispError) * minimalSpeed;
 
   float rightWallError = RealMouse::WALL_DIST_SETPOINT - dToWallRight;
   float leftWallError = RealMouse::WALL_DIST_SETPOINT - dToWallLeft;
@@ -85,8 +99,14 @@ void Forward::execute(){
       dToWallLeft < RealMouse::WALL_DIST;
   }
 
-  mouse->setSpeed(speed, correction);
+  if (disp > ignore_wall_region_L &&
+    disp < ignore_wall_region_H) {
+      correction = 0;
+  }
+  correction = 0;
+  float sumCorrection = correction + dYaw * kYaw;
 
+  mouse->setSpeed(speed, sumCorrection);
 }
 
 bool Forward::isFinished(){
@@ -102,4 +122,3 @@ void Forward::end(){
 
   mouse->suggestWalls(walls);
 }
-
