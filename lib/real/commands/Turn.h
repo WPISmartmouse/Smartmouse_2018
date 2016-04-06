@@ -23,8 +23,5 @@ class Turn : public Command {
     RealMouse *mouse;
     Direction dir;
 
-    const float kP = 1;
-
-    int useIMU;
-
+    const float kP = 1.5;
 };

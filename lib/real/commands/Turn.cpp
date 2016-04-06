@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <math.h>
 
-Turn::Turn(Direction dir) : mouse(RealMouse::inst()), dir(dir), useIMU(1) {}
+Turn::Turn(Direction dir) : mouse(RealMouse::inst()), dir(dir) {}
 
 float Turn::yawDiff(float y1, float y2){
   float diff = y2 - y1;
@@ -18,9 +18,6 @@ float Turn::yawDiff(float y1, float y2){
 void Turn::initialize(){
   start = mouse->getPose();
   goalYaw = toYaw(dir);
-  if (mouse->getIMUCalibration() < 3) {
-    useIMU = 0;
-  }
 }
 
 void Turn::execute(){
@@ -36,12 +33,7 @@ void Turn::execute(){
 
 bool Turn::isFinished(){
   float currentYaw = -1;
-  if (useIMU) {
-    currentYaw = mouse->getIMUYaw();
-  } else {
-    Pose currentPose = mouse->getPose();
-    currentYaw = currentPose.yaw;
-  }
+  currentYaw = mouse->getIMUYaw();
   dYaw = yawDiff(currentYaw, goalYaw);
   // Serial1.print(" currentYaw");
   // Serial1.print(currentYaw);
@@ -55,8 +47,9 @@ bool Turn::isFinished(){
 void Turn::end(){
   mouse->internalTurnToFace(dir);
   mouse->setSpeed(0,0);
-  if (useIMU) {
-    mouse->updateGlobalYaw();
-    // trust the IMU anyways
-  }
+  mouse->updateGlobalYaw();
+  // mouse->clearDisplay();
+  // mouse->display.setTextSize(4);
+  // mouse->display.println(mouse->getPose().yaw * 180/M_PI);
+  // mouse->updateDisplay();
 }
