@@ -24,7 +24,4 @@ class Turn : public Command {
     Direction dir;
 
     const float kP = 1;
-
-    int useIMU;
-
 };
