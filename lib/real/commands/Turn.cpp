@@ -48,4 +48,8 @@ void Turn::end(){
   mouse->internalTurnToFace(dir);
   mouse->setSpeed(0,0);
   mouse->updateGlobalYaw();
+  // mouse->clearDisplay();
+  // mouse->display.setTextSize(4);
+  // mouse->display.println(mouse->getPose().yaw * 180/M_PI);
+  // mouse->updateDisplay();
 }
