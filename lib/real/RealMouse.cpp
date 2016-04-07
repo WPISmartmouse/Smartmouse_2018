@@ -67,6 +67,10 @@ void RealMouse::run(){
   bButton.update();
 }
 
+void RealMouse::brake(){
+  kc.brake();
+}
+
 void RealMouse::updateGlobalYaw(){
   kc.updateGlobalYaw(getIMUYaw());
 }

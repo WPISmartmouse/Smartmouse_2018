@@ -35,21 +35,16 @@ bool Turn::isFinished(){
   float currentYaw = -1;
   currentYaw = mouse->getIMUYaw();
   dYaw = yawDiff(currentYaw, goalYaw);
-  // Serial1.print(" currentYaw");
-  // Serial1.print(currentYaw);
-  // Serial1.print(" goalYaw");
-  // Serial1.print(goalYaw);
-  // Serial1.print(" dYaw");
-  // Serial1.println(dYaw);
   return (mouse->getDir() == dir) || (fabs(dYaw) < Mouse::ROT_TOLERANCE);
 }
 
 void Turn::end(){
   mouse->internalTurnToFace(dir);
-  mouse->setSpeed(0,0);
+  mouse->brake();
   mouse->updateGlobalYaw();
-  // mouse->clearDisplay();
-  // mouse->display.setTextSize(4);
-  // mouse->display.println(mouse->getPose().yaw * 180/M_PI);
-  // mouse->updateDisplay();
+  mouse->clearDisplay();
+  mouse->display.setTextSize(3);
+  float diff = yawDiff(mouse->getPose().yaw, goalYaw) * 180 / M_PI;
+  mouse->display.println(diff);
+  mouse->updateDisplay();
 }

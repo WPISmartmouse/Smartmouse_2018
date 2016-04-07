@@ -37,9 +37,9 @@ public:
   const static int BUZZER = 46;
 
   constexpr static float WALL_DIST = 0.12;
-  constexpr static float MAX_SPEED = 500; //mm/s
-  constexpr static float MAX_ROT_SPEED = M_PI; //rad/s
-  constexpr static float MIN_SPEED = 30; //mm/s
+  constexpr static float MAX_SPEED = 300; //mm/s
+  constexpr static float MAX_ROT_SPEED = M_PI/2; //rad/s
+  constexpr static float MIN_SPEED = 20; //mm/s
   constexpr static float MIN_ROT_SPEED = M_PI/12; //rad/s
 
   Bounce goButton;
@@ -55,6 +55,9 @@ public:
 
   // \brief get pose (x, y, yaw) in (meters, meters, radians 0-2pi)
   Pose getPose();
+
+  // \brief hard stop of the motors
+  void brake();
 
   // \brief read IMU and inject current angle into kinematic controller
   void updateGlobalYaw();

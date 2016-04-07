@@ -40,26 +40,8 @@ void RegulatedMotor::setSpeed(int speed){
 }
 
 bool RegulatedMotor::run(){
-  if (state == MotorState::RAW_PWM){
-    return true;
-  }
-
-  if (state == MotorState::COAST){
-    goPWM(0);
-    lastState = MotorState::COAST;
-    return true;
-  }
-
-  if (state == MotorState::BRAKE) {
-    digitalWrite(fwdPin,255);
-    digitalWrite(revPin,255);
-    lastState = MotorState::BRAKE;
-    return true;
-  }
-
   unsigned long thisTime = millis();
   unsigned long deltaTime = thisTime - lastTime;
-
 
   if(deltaTime>=sampleTime){
     runNow(deltaTime);
@@ -76,33 +58,47 @@ void RegulatedMotor::runNow(unsigned long deltaTime){
 
   thisPosition = encoder.read();
 
-  if (lastState == MotorState::COAST || lastState == MotorState::BRAKE){
-    calculatedSpeed = 0;
-    iTerm = 0;
-  } else {
-    calculatedSpeed = ((thisPosition - lastPosition) * 1000L) / ((long) deltaTime);
+  if (state == MotorState::RAW_PWM){
+  }
+  else if (state == MotorState::COAST){
+    goPWM(0);
+    lastState = MotorState::COAST;
+  }
+  else if (state == MotorState::BRAKE) {
+    analogWrite(fwdPin,255);
+    analogWrite(revPin,255);
+    lastState = MotorState::BRAKE;
+  }
+  else if (state == MotorState::VELOCITY) {
+
+    if (lastState == MotorState::COAST || lastState == MotorState::BRAKE){
+      calculatedSpeed = 0;
+      iTerm = 0;
+    } else {
+      calculatedSpeed = ((thisPosition - lastPosition) * 1000L) / ((long) deltaTime);
+    }
+
+    error = targetSpeed - calculatedSpeed;
+    iTerm += (ki * error);
+
+    if (iTerm > outMax) {
+      iTerm = outMax;
+    }
+    else if (iTerm < outMin) {
+      iTerm = outMin;
+    }
+
+    int dTerm = (kd *(calculatedSpeed - lastCalculatedSpeed)) / ((long) deltaTime);
+
+    int output = constrain(kp * error + iTerm - dTerm + kvff * targetSpeed,outMin,outMax);
+    goPWM(output);
+
+    lastCalculatedSpeed = calculatedSpeed;
+    lastOutput = output;
+    lastPosition = thisPosition;
+    lastState = MotorState::VELOCITY;
   }
 
-  error = targetSpeed - calculatedSpeed;
-  iTerm += (ki * error);
-
-  if (iTerm > outMax) {
-    iTerm = outMax;
-  }
-  else if (iTerm < outMin) {
-    iTerm = outMin;
-  }
-
-  int dTerm = (kd *(calculatedSpeed - lastCalculatedSpeed)) / ((long) deltaTime);
-
-  int output = constrain(kp * error + iTerm - dTerm + kvff * targetSpeed,outMin,outMax);
-
-  goPWM(output);
-
-  lastCalculatedSpeed = calculatedSpeed;
-  lastOutput = output;
-  lastPosition = thisPosition;
-  lastState = MotorState::VELOCITY;
 }
 
 void RegulatedMotor::goPWM(int pwm){

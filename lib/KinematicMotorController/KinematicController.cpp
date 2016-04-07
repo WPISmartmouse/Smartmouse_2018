@@ -101,6 +101,9 @@ boolean KinematicController::run(){
     } else if (state == ControllerState::OFF) {
       lastForwardVelocity = 0;
       lastCCWVelocity = 0;
+
+      leftMotor->runNow(deltaTime);
+      rightMotor->runNow(deltaTime);
     }
 
     float localPoseX = this->getOdometryForward();
