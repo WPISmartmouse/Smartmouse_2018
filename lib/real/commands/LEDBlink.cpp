@@ -4,11 +4,11 @@ LEDBlink::LEDBlink(const int led_pin, unsigned long blink_time) :  Command("blin
 
 void LEDBlink::initialize(){
   digitalWrite(led_pin,1);
-  blink_end = millis()+blink_time;
+  setTimeout(blink_time);
 }
 
 bool LEDBlink::isFinished(){
-  return (millis() - blink_end > 0);
+  return isTimedOut();
 }
 
 void LEDBlink::end(){

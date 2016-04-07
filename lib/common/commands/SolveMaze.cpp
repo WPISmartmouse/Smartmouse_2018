@@ -16,7 +16,8 @@ bool SolveMaze::isFinished(){
     bool mazeSolved = solver->isFinished();
 
     if (!mazeSolved){
-      addSequential(new Turn(solver->planNextStep()));
+      Direction nextDirection = solver->planNextStep();
+      addSequential(new Turn(nextDirection));
       addSequential(new Forward());
     }
     else {

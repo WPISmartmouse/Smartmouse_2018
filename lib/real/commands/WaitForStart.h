@@ -2,14 +2,7 @@
 #include "CommanDuino.h"
 #include "RealMouse.h"
 
-class WaitForStart : public Command {
+class WaitForStart : public CommandGroup {
   public:
     WaitForStart();
-    void initialize();
-    void execute();
-    bool isFinished();
-    void end();
-
-  private:
-    RealMouse *mouse;
 };

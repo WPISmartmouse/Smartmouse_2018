@@ -4,7 +4,7 @@
 #include "RealMouse.h"
 #include "Pose.h"
 
-class Forward : public Command {
+class Forward : public CommandGroup {
   public:
     Forward();
     void initialize();
@@ -14,6 +14,8 @@ class Forward : public Command {
     void end();
 
   private:
+    enum class FwdState { GO_UNTIL_CHECK, CHECK, STOP_AT_WALL, STOP_AT_DIST};
+    FwdState state;
     bool outOfRange(float range);
     float forwardDisplacement(Pose p0, Pose p1);
 
@@ -23,11 +25,18 @@ class Forward : public Command {
     float *distances;
     bool checkedWalls;
     bool wallOnLeft, wallOnRight;
+    float dispError;
     bool walls[4];
     float goalYaw;
+
+    // \brief This is the distance from the front distance
+    // sensor to the wall if the mouse is in the center of the square
+    const float distFromSensorToWallFromCenter = 0.04;
+    const float minFrontDist = 0.08;
+    const float maxFrontDist = 0.18;
     const float kPDisp = 2000;
     const float minimalSpeed = 0.005;
-    const float kPWall = 65;
+    const float kPWall = 125;
     const float kYaw = 0.4;
     const float ignore_wall_region_L = 0.03;
     const float ignore_wall_region_H = 0.06;

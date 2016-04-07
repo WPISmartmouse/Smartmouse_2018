@@ -1,7 +1,11 @@
 #include "Forward.h"
+#include "LEDBlink.h"
 #include <math.h>
+#include <cfloat>
 
-Forward::Forward() : mouse(RealMouse::inst()), checkedWalls(false), wallOnLeft(true), wallOnRight(true){}
+Forward::Forward() : mouse(RealMouse::inst()), checkedWalls(false),
+  wallOnLeft(true), wallOnRight(true), state(FwdState::GO_UNTIL_CHECK),
+  dispError(FLT_MAX) {}
 
 void Forward::initialize(){
   start = mouse->getPose();
@@ -56,24 +60,54 @@ void Forward::execute(){
   //TODO FIX UNITS
   disp = forwardDisplacement(start, mouse->getPose()) / 1000.0;
 
-  float dispError = AbstractMaze::UNIT_DIST - disp;
-
   float dToWallRight = distances[0] * cos(M_PI/6 + angleError);
   float dToWallLeft = distances[2] * cos(M_PI/6 - angleError);
 
-  float speed = dispError * kPDisp + copysignf(1.0, dispError) * minimalSpeed;
 
   float rightWallError = RealMouse::WALL_DIST_SETPOINT - dToWallRight;
   float leftWallError = RealMouse::WALL_DIST_SETPOINT - dToWallLeft;
-
-  speed = speed > RealMouse::MAX_SPEED ? RealMouse::MAX_SPEED : speed;
-  speed = speed < RealMouse::MIN_SPEED ? RealMouse::MIN_SPEED : speed;
 
   if (outOfRange(distances[0]) && wallOnRight){
     wallOnRight = false;
   }
   if (outOfRange(distances[2]) && wallOnLeft){
     wallOnLeft = false;
+  }
+
+  dispError = 0;
+  switch(state) {
+    case FwdState::GO_UNTIL_CHECK:
+      if (disp >= AbstractMaze::UNIT_DIST/2) {
+        state = FwdState::CHECK;
+      }
+      dispError = AbstractMaze::UNIT_DIST - disp;
+      break;
+
+    case FwdState::CHECK: {
+
+      Direction right = right_of_dir(mouse->getDir());
+      Direction left = left_of_dir(mouse->getDir());
+      walls[static_cast<int>(right)] = dToWallRight < RealMouse::WALL_DIST;
+      walls[static_cast<int>(left)] = dToWallLeft < RealMouse::WALL_DIST;
+
+      if (distances[1] > minFrontDist && distances[1] < maxFrontDist) {
+        addParallel(new LEDBlink(LEDBlink::B, 1000));
+        state = FwdState::STOP_AT_WALL;
+      }
+      else {
+        state = FwdState::STOP_AT_DIST;
+      }
+      dispError = AbstractMaze::UNIT_DIST - disp;
+      break;
+    }
+
+    case FwdState::STOP_AT_WALL:
+      dispError = distances[1] - distFromSensorToWallFromCenter;
+      break;
+
+    case FwdState::STOP_AT_DIST:
+      dispError = AbstractMaze::UNIT_DIST - disp;
+      break;
   }
 
   float correction = 0.0;
@@ -84,33 +118,33 @@ void Forward::execute(){
     correction = rightWallError * kPWall * dispError;
   }
 
-  else if (correction > RealMouse::MAX_ROT_SPEED) {
-    correction = RealMouse::MAX_ROT_SPEED;
-  }
-  else if (correction < -RealMouse::MAX_ROT_SPEED) {
-    correction = -RealMouse::MAX_ROT_SPEED;
-  }
-
-  if (!checkedWalls && dispError < AbstractMaze::UNIT_DIST/2) {
-    checkedWalls = true;
-    walls[static_cast<int>(right_of_dir(mouse->getDir()))] =
-      dToWallRight < RealMouse::WALL_DIST;
-    walls[static_cast<int>(left_of_dir(mouse->getDir()))] =
-      dToWallLeft < RealMouse::WALL_DIST;
-  }
-
   if (disp > ignore_wall_region_L &&
     disp < ignore_wall_region_H) {
       correction = 0;
   }
 
   float sumCorrection = correction + dYaw * kYaw;
+  float speed = dispError * kPDisp;
+
+  if (sumCorrection > RealMouse::MAX_ROT_SPEED) {
+    sumCorrection = RealMouse::MAX_ROT_SPEED;
+  }
+  else if (sumCorrection < -RealMouse::MAX_ROT_SPEED) {
+    sumCorrection = -RealMouse::MAX_ROT_SPEED;
+  }
+
+  speed = speed > RealMouse::MAX_SPEED ? RealMouse::MAX_SPEED : speed;
+  speed = speed < RealMouse::MIN_SPEED ? RealMouse::MIN_SPEED : speed;
 
   mouse->setSpeed(speed, sumCorrection);
 }
 
 bool Forward::isFinished(){
-  return disp >= AbstractMaze::UNIT_DIST;
+  if (dispError <= 0) {
+    return true;
+  }
+  return false;
+
 }
 
 void Forward::end(){
