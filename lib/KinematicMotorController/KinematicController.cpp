@@ -108,8 +108,9 @@ boolean KinematicController::run(){
 
     float localPoseX = this->getOdometryForward();
     float localPoseYaw = this->getOdometryCCW();
-    globalYaw += (localPoseYaw - lastLocalPoseYaw);
-    globalYaw = constrainAngle(globalYaw);
+    //globalYaw += (localPoseYaw - lastLocalPoseYaw);
+    //globalYaw = constrainAngle(globalYaw);
+    //globalYaw = constrainAngle(IMUHERE);
 
     //Y axis is perpendicular to axel, X is along axel
     globalX += (localPoseX - lastLocalPoseX) * cos(globalYaw);

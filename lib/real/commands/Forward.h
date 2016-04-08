@@ -31,13 +31,10 @@ class Forward : public CommandGroup {
 
     // \brief This is the distance from the front distance
     // sensor to the wall if the mouse is in the center of the square
-    const float distFromSensorToWallFromCenter = 0.04;
+    const float distFromSensorToWallFromCenter = 0.044;
     const float minFrontDist = 0.08;
     const float maxFrontDist = 0.18;
-    const float kPDisp = 2000;
-    const float minimalSpeed = 0.005;
-    const float kPWall = 125;
+    const float kPDisp = 3000;
+    const float kPWall = 115;
     const float kYaw = 0.4;
-    const float ignore_wall_region_L = 0.03;
-    const float ignore_wall_region_H = 0.06;
 };
