@@ -290,7 +290,7 @@ void RealMouse::setup(){
   motL.setPID(0.09,0.01,0.01,0);
   motR.setPID(0.09,0.01,0.01,0);
   kc.setSampleTime(20);
-  kc.setAcceleration(4000,2*M_PI,4000,10*M_PI);
+  kc.setAcceleration(6000,2*M_PI,6000,10*M_PI);
 
   kc.setup();
 }
