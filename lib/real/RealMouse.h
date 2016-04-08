@@ -90,6 +90,9 @@ private:
 
   static RealMouse *instance;
 
+  unsigned long lastRunTime = 0;
+  unsigned long sampleTime = 5;
+
   const static int OLED_RESET = 5;
   const static int VL6180X_ADDRESS = 0x29;
 

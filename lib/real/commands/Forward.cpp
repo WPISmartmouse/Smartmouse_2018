@@ -38,7 +38,7 @@ float Forward::yawDiff(float y1, float y2){
 }
 
 bool Forward::outOfRange(float range){
-  return (range >= 0.12);
+  return (range >= 0.12); //dist at which it will consider a wall
 }
 
 void Forward::execute(){
@@ -84,7 +84,7 @@ void Forward::execute(){
       walls[static_cast<int>(left)] = dToWallLeft < RealMouse::WALL_DIST;
 
       if (distances[1] > minFrontDist && distances[1] < maxFrontDist) {
-        addParallel(new LEDBlink(LEDBlink::B, 1000));
+        addParallel(new LEDBlink(LEDBlink::B, 300));
         state = FwdState::STOP_AT_WALL;
       }
       else {
@@ -118,11 +118,6 @@ void Forward::execute(){
     digitalWrite(RealMouse::LEDR, 0);
     digitalWrite(RealMouse::LEDG, 0);
   }
-
-  //if (disp > ignore_wall_region_L &&
-    //disp < ignore_wall_region_H) {
-      //correction = 0;
-  //}
 
   float sumCorrection = correction + dYaw * kYaw;
   float speed = dispError * kPDisp;
