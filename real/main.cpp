@@ -5,12 +5,13 @@
 #include "commands/WaitThenDrive.h"
 #include "RealMouse.h"
 #include "WallFollow.h"
+#include "Flood.h"
 
 ArduinoTimer timer;
 
 AbstractMaze maze;
-//Scheduler scheduler(new SolveCommand(new WallFollow(RealMouse::inst())));
-Scheduler scheduler(new WaitThenDrive());
+Scheduler scheduler(new SolveCommand(new Flood(RealMouse::inst())));
+//Scheduler scheduler(new WaitThenDrive());
 
 void setup(){
   pinMode(13, OUTPUT);

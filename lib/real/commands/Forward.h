@@ -34,7 +34,7 @@ class Forward : public CommandGroup {
     const float distFromSensorToWallFromCenter = 0.04;
     const float minFrontDist = 0.08;
     const float maxFrontDist = 0.18;
-    const float kPDisp = 2000;
+    const float kPDisp = 3000;
     const float minimalSpeed = 0.005;
     const float kPWall = 125;
     const float kYaw = 0.4;

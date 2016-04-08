@@ -38,13 +38,13 @@ float Forward::yawDiff(float y1, float y2){
 }
 
 bool Forward::outOfRange(float range){
-  return (range >= 0.11);
+  return (range >= 0.12);
 }
 
 void Forward::execute(){
   float currentYaw = -999;
   float dYaw = -999;
-  int imu_in_calib = (mouse->getIMUCalibration() == 3);
+  int imu_in_calib = (mouse->getIMUCalibration() > 0);
   if (imu_in_calib) {
     currentYaw = mouse->getIMUYaw();
     mouse->updateGlobalYaw();
@@ -66,13 +66,6 @@ void Forward::execute(){
 
   float rightWallError = RealMouse::WALL_DIST_SETPOINT - dToWallRight;
   float leftWallError = RealMouse::WALL_DIST_SETPOINT - dToWallLeft;
-
-  if (outOfRange(distances[0]) && wallOnRight){
-    wallOnRight = false;
-  }
-  if (outOfRange(distances[2]) && wallOnLeft){
-    wallOnLeft = false;
-  }
 
   dispError = 0;
   switch(state) {
@@ -111,17 +104,25 @@ void Forward::execute(){
   }
 
   float correction = 0.0;
-  if (wallOnLeft) {
+  if (!outOfRange(distances[2])) {
+    digitalWrite(RealMouse::LEDG, 1);
+    digitalWrite(RealMouse::LEDR, 0);
     correction = -leftWallError * kPWall * dispError;
   }
-  else if (wallOnRight) {
+  else if (!outOfRange(distances[0])) {
+    digitalWrite(RealMouse::LEDG, 0);
+    digitalWrite(RealMouse::LEDR, 1);
     correction = rightWallError * kPWall * dispError;
   }
-
-  if (disp > ignore_wall_region_L &&
-    disp < ignore_wall_region_H) {
-      correction = 0;
+  else {
+    digitalWrite(RealMouse::LEDR, 0);
+    digitalWrite(RealMouse::LEDG, 0);
   }
+
+  //if (disp > ignore_wall_region_L &&
+    //disp < ignore_wall_region_H) {
+      //correction = 0;
+  //}
 
   float sumCorrection = correction + dYaw * kYaw;
   float speed = dispError * kPDisp;
