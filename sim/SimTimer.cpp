@@ -8,6 +8,6 @@ unsigned long long SimTimer::programTimeMs() {
 }
 
 void SimTimer::simTimeCallback(ConstWorldStatisticsPtr &msg) {
-  simTimeMs = 0;
+  simTimeMs = (msg->sim_time().sec()/1000.0) + (msg->sim_time().nsec() * 1000);
 }
 #endif
