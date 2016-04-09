@@ -124,7 +124,7 @@ void KinematicController::runNow(unsigned long deltaTime, unsigned long currentT
 }
 
 Pose KinematicController::getPose(){
-  return Pose(globalX, globalY, globalYaw);
+  return Pose(globalX/1000.0, globalY/1000.0, globalYaw);
 }
 
 float KinematicController::constrainAngle(float angle){

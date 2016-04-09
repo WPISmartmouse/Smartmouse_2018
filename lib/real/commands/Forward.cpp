@@ -30,39 +30,36 @@ float Forward::forwardDisplacement(Pose p0, Pose p1){
   }
 }
 
-float Forward::yawDiff(float y1, float y2){
-  float diff = y2 - y1;
+float Forward::yawDiff(){
+  float currentYaw;
+
+  int imu_in_calib = (mouse->getIMUCalibration() > 0);
+  if (imu_in_calib) {
+    currentYaw = mouse->getIMUYaw();
+    mouse->updateGlobalYaw();
+  } else {
+    currentYaw = mouse->getPose().yaw;
+  }
+
+  float diff = currentYaw - goalYaw;
   if (diff > M_PI) return diff - M_PI*2;
   if (diff < -M_PI) return diff + M_PI*2;
   return diff;
 }
 
 bool Forward::outOfRange(float range){
-  return (range >= 0.12); //dist at which it will consider a wall
+  return (range >= WALL_OUT_OF_RANGE_DIST);
 }
 
 void Forward::execute(){
-  float currentYaw = -999;
-  float dYaw = -999;
-  int imu_in_calib = (mouse->getIMUCalibration() > 0);
-  if (imu_in_calib) {
-    currentYaw = mouse->getIMUYaw();
-    mouse->updateGlobalYaw();
-    // TODO: not query imu calib inside updateGlobalYaw
-  } else {
-    currentYaw = mouse->getPose().yaw;
-  }
-
-  dYaw = yawDiff(currentYaw, goalYaw);
+  float dYaw = yawDiff();
   float angleError = -dYaw;
 
   distances = mouse->getRawDistances();
-  //TODO FIX UNITS
-  disp = forwardDisplacement(start, mouse->getPose()) / 1000.0;
+  disp = forwardDisplacement(start, mouse->getPose());
 
   float dToWallRight = distances[0] * cos(M_PI/6 + angleError);
   float dToWallLeft = distances[2] * cos(M_PI/6 - angleError);
-
 
   float rightWallError = RealMouse::WALL_DIST_SETPOINT - dToWallRight;
   float leftWallError = RealMouse::WALL_DIST_SETPOINT - dToWallLeft;
