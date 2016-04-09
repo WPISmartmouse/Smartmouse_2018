@@ -61,17 +61,16 @@ SensorReading RealMouse::checkWalls() {
 }
 
 void RealMouse::run(){
-  kc.run();
 
   unsigned long currentTime = millis();
   unsigned long deltaTime = currentTime - lastRunTime;
 
   if (deltaTime >= sampleTime){
     kc.updateGlobalYaw(getIMUYaw());
+    kc.runNow(deltaTime, currentTime);
     lastRunTime = currentTime;
-
-
   }
+
   goButton.update();
   aButton.update();
   bButton.update();

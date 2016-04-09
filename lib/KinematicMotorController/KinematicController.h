@@ -34,7 +34,8 @@ class KinematicController{
     void brake();
     void coast();
 
-    boolean run();
+    void run();
+    void runNow(unsigned long deltaTime, unsigned long currentTime);
 
     long calculateForwardTick();
     long calculateCCWTick();

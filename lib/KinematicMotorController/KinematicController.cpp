@@ -55,88 +55,75 @@ void KinematicController::setAcceleration(unsigned int forwardAcceleration,
 }
 
 
-boolean KinematicController::run(){
+void KinematicController::run(){
   unsigned long currentTime = millis();
   unsigned long deltaTime = currentTime - lastRunTime;
 
   if (deltaTime >= sampleTime){
-
-    standby = true;
-
-    if (currentTime - lastRamp < STANDBY_DELAY) standby = false;
-
-    long forwardOutput = 0;
-    long ccwOutput = 0;
-
-    if (state == ControllerState::VELOCITY){
-      if (lastForwardVelocity == targetForwardVelocity) {
-        forwardOutput = targetForwardVelocity;
-      }
-      else {
-        forwardOutput = speedRamp(lastForwardVelocity, targetForwardVelocity, forwardAccelerationStep, forwardDecelerationStep);
-        standby = false;
-        lastRamp = currentTime;
-      }
-
-      if (lastCCWVelocity == targetCCWVelocity) {
-        ccwOutput = targetCCWVelocity;
-      }
-      else {
-        ccwOutput = speedRamp(lastCCWVelocity, targetCCWVelocity, ccwAccelerationStep, ccwDecelerationStep);
-        standby = false;
-        lastRamp = currentTime;
-      }
-
-      int leftSpeed = calculateLeftWheelSpeed(forwardOutput, ccwOutput);
-      int rightSpeed = calculateRightWheelSpeed(forwardOutput, ccwOutput);
-
-      leftMotor->setSpeed(leftSpeed);
-      rightMotor->setSpeed(rightSpeed);
-
-      leftMotor->runNow(deltaTime);
-      rightMotor->runNow(deltaTime);
-
-      lastForwardVelocity = forwardOutput;
-      lastCCWVelocity = ccwOutput;
-    } else if (state == ControllerState::OFF) {
-      lastForwardVelocity = 0;
-      lastCCWVelocity = 0;
-
-      leftMotor->runNow(deltaTime);
-      rightMotor->runNow(deltaTime);
-    }
-
-    float localPoseX = this->getOdometryForward();
-    float localPoseYaw = this->getOdometryCCW();
-    //globalYaw += (localPoseYaw - lastLocalPoseYaw);
-    //globalYaw = constrainAngle(globalYaw);
-    //globalYaw = constrainAngle(IMUHERE);
-
-    //Y axis is perpendicular to axel, X is along axel
-    globalX += (localPoseX - lastLocalPoseX) * cos(globalYaw);
-    globalY += (localPoseX - lastLocalPoseX) * sin(globalYaw);
-
+    runNow(deltaTime, currentTime);
     lastRunTime = currentTime;
-    lastLocalPoseX = localPoseX;
-    lastLocalPoseYaw = localPoseYaw;
-
-    return true;
   }
-
-  return false;
 }
 
-int asdf=0;
-Pose KinematicController::getPose(){
-  if (asdf++ == 500) {
-    Serial.print("x=");
-    Serial.print(globalX);
-    Serial.print(" y=");
-    Serial.print(globalY);
-    Serial.print(" yaw=");
-    Serial.println(globalYaw);
-    asdf = 0;
+void KinematicController::runNow(unsigned long deltaTime, unsigned long currentTime){
+  standby = true;
+
+  if (currentTime - lastRamp < STANDBY_DELAY) standby = false;
+
+  long forwardOutput = 0;
+  long ccwOutput = 0;
+
+  if (state == ControllerState::VELOCITY){
+    if (lastForwardVelocity == targetForwardVelocity) {
+      forwardOutput = targetForwardVelocity;
+    }
+    else {
+      forwardOutput = speedRamp(lastForwardVelocity, targetForwardVelocity, forwardAccelerationStep, forwardDecelerationStep);
+      standby = false;
+      lastRamp = currentTime;
+    }
+
+    if (lastCCWVelocity == targetCCWVelocity) {
+      ccwOutput = targetCCWVelocity;
+    }
+    else {
+      ccwOutput = speedRamp(lastCCWVelocity, targetCCWVelocity, ccwAccelerationStep, ccwDecelerationStep);
+      standby = false;
+      lastRamp = currentTime;
+    }
+
+    int leftSpeed = calculateLeftWheelSpeed(forwardOutput, ccwOutput);
+    int rightSpeed = calculateRightWheelSpeed(forwardOutput, ccwOutput);
+
+    leftMotor->setSpeed(leftSpeed);
+    rightMotor->setSpeed(rightSpeed);
+
+    lastForwardVelocity = forwardOutput;
+    lastCCWVelocity = ccwOutput;
+  } else if (state == ControllerState::OFF) {
+    lastForwardVelocity = 0;
+    lastCCWVelocity = 0;
+
   }
+
+  leftMotor->runNow(deltaTime);
+  rightMotor->runNow(deltaTime);
+
+  float localPoseX = this->getOdometryForward();
+  float localPoseYaw = this->getOdometryCCW();
+  //globalYaw += (localPoseYaw - lastLocalPoseYaw);
+  //globalYaw = constrainAngle(globalYaw);
+  //globalYaw = constrainAngle(IMUHERE);
+
+  //Y axis is perpendicular to axel, X is along axel
+  globalX += (localPoseX - lastLocalPoseX) * cos(globalYaw);
+  globalY += (localPoseX - lastLocalPoseX) * sin(globalYaw);
+
+  lastLocalPoseX = localPoseX;
+  lastLocalPoseYaw = localPoseYaw;
+}
+
+Pose KinematicController::getPose(){
   return Pose(globalX, globalY, globalYaw);
 }
 
