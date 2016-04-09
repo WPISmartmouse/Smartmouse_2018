@@ -24,5 +24,5 @@ class Turn : public Command {
     Direction dir;
 
     constexpr static float MIN_ROT_SPEED = M_PI/12; //rad/s
-    const float kP = 1.5;
+    const float kP = 0.75;
 };
