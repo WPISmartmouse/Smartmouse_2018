@@ -54,7 +54,7 @@ float Forward::yawDiff(){
 float Forward::calculateRemainingDistance(float dToWallLeft, float dToWallRight, float rawFrontWallDist){
   switch(this->state) {
     case FwdState::GO_UNTIL_CHECK:
-      if (distanceSoFar >= AbstractMaze::UNIT_DIST/2) {
+      if (distanceSoFar >= 0.12) {
         this->state = FwdState::CHECK;
       }
       return AbstractMaze::UNIT_DIST - this->distanceSoFar;
