@@ -29,6 +29,7 @@ public:
   constexpr static float CENTER_TO_SENSOR = 0.025; //meters
   constexpr static float HALF_SQUARE = 0.084; //meters
   constexpr static float WALL_DIST_SETPOINT = HALF_SQUARE - CENTER_TO_SENSOR;
+  constexpr static float SENSOR_ANGLE = M_PI/6;
 
   const static int LEDGO = 13;
   const static int LEDR = 52;

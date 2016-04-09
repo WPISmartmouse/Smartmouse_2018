@@ -33,7 +33,7 @@ void Turn::execute(){
 
 bool Turn::isFinished(){
   float currentYaw = -1;
-  currentYaw = mouse->getIMUYaw();
+  currentYaw = mouse->getPose().yaw;
   dYaw = yawDiff(currentYaw, goalYaw);
   return (mouse->getDir() == dir) || (fabs(dYaw) < Mouse::ROT_TOLERANCE);
 }

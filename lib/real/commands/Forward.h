@@ -38,5 +38,4 @@ class Forward : public CommandGroup {
     const float maxFrontDist = 0.18; //meters
     const float kPDisp = 3000;
     const float kPWall = 115;
-    const float kYaw = 0.4;
 };

@@ -58,8 +58,8 @@ void Forward::execute(){
   distances = mouse->getRawDistances();
   disp = forwardDisplacement(start, mouse->getPose());
 
-  float dToWallRight = distances[0] * cos(M_PI/6 + angleError);
-  float dToWallLeft = distances[2] * cos(M_PI/6 - angleError);
+  float dToWallRight = distances[0] * cos(SENSOR_ANGLE + angleError);
+  float dToWallLeft = distances[2] * cos(SENSOR_ANGLE - angleError);
 
   float rightWallError = RealMouse::WALL_DIST_SETPOINT - dToWallRight;
   float leftWallError = RealMouse::WALL_DIST_SETPOINT - dToWallLeft;
@@ -116,7 +116,7 @@ void Forward::execute(){
     digitalWrite(RealMouse::LEDG, 0);
   }
 
-  float sumCorrection = correction + dYaw * kYaw;
+  float sumCorrection = correction;
   float speed = dispError * kPDisp;
 
   if (sumCorrection > RealMouse::MAX_ROT_SPEED) {
