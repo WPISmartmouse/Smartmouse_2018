@@ -24,6 +24,11 @@ RealMouse::RealMouse() :
   lastDisplayUpdate(0) { }
 
 void RealMouse::setSpeed(int forwardVelocity, float ccwVelocity) {
+  if (ccwVelocity > RealMouse::MAX_ROT_SPEED) ccwVelocity = RealMouse::MAX_ROT_SPEED;
+  if (ccwVelocity < -RealMouse::MAX_ROT_SPEED) ccwVelocity = -RealMouse::MAX_ROT_SPEED;
+  if (forwardVelocity > MAX_SPEED) forwardVelocity = MAX_SPEED;
+  if (forwardVelocity < -MAX_SPEED) forwardVelocity = -MAX_SPEED;
+
   kc.setVelocity(forwardVelocity, ccwVelocity);
 }
 

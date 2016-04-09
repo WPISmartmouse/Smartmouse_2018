@@ -99,26 +99,24 @@ void Forward::execute(){
   this->distances = mouse->getRawDistances();
   this->distanceSoFar = forwardDisplacement(start, mouse->getPose());
 
-  Serial.println(distanceSoFar);
-
   float dToWallRight = distances[0] * cos(RealMouse::SENSOR_ANGLE + angleError);
   float dToWallLeft = distances[2] * cos(RealMouse::SENSOR_ANGLE - angleError);
 
+  this->remainingDistance = calculateRemainingDistance(dToWallLeft, dToWallRight);
+
   float rightWallError = RealMouse::WALL_DIST_SETPOINT - dToWallRight;
   float leftWallError = RealMouse::WALL_DIST_SETPOINT - dToWallLeft;
-
-  this->remainingDistance = calculateRemainingDistance(dToWallLeft, dToWallRight);
 
   float correction = 0.0;
   if (!outOfRange(distances[2])) {
     digitalWrite(RealMouse::LEDG, 1);
     digitalWrite(RealMouse::LEDR, 0);
-    correction = -leftWallError * kPWall * remainingDistance;
+    correction = -leftWallError * kPWall * this->remainingDistance;
   }
   else if (!outOfRange(distances[0])) {
     digitalWrite(RealMouse::LEDG, 0);
     digitalWrite(RealMouse::LEDR, 1);
-    correction = rightWallError * kPWall * remainingDistance;
+    correction = rightWallError * kPWall * this->remainingDistance;
   }
   else {
     digitalWrite(RealMouse::LEDR, 0);
@@ -126,17 +124,10 @@ void Forward::execute(){
   }
 
   float sumCorrection = correction;
-  float speed = remainingDistance * kPDisp;
+  float speed = this->remainingDistance * kPDisp;
 
-  if (sumCorrection > RealMouse::MAX_ROT_SPEED) {
-    sumCorrection = RealMouse::MAX_ROT_SPEED;
-  }
-  else if (sumCorrection < -RealMouse::MAX_ROT_SPEED) {
-    sumCorrection = -RealMouse::MAX_ROT_SPEED;
-  }
-
-  speed = speed > RealMouse::MAX_SPEED ? RealMouse::MAX_SPEED : speed;
-  speed = speed < RealMouse::MIN_SPEED ? RealMouse::MIN_SPEED : speed;
+  //don't allow the fwd command to set forward speed to zero
+  if (speed < MIN_SPEED) speed = MIN_SPEED;
 
   mouse->setSpeed(speed, sumCorrection);
 }

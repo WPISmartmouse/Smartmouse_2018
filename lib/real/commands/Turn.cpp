@@ -23,10 +23,9 @@ void Turn::initialize(){
 void Turn::execute(){
   float speed = dYaw * kP;
 
-  if (speed < RealMouse::MIN_ROT_SPEED && speed >= 0) speed = RealMouse::MIN_ROT_SPEED;
-  if (speed > -RealMouse::MIN_ROT_SPEED && speed <= 0) speed = -RealMouse::MIN_ROT_SPEED;
-  if (speed > RealMouse::MAX_ROT_SPEED) speed = RealMouse::MAX_ROT_SPEED;
-  if (speed < -RealMouse::MAX_ROT_SPEED) speed = -RealMouse::MAX_ROT_SPEED;
+  //don't allow turn command to set turn speed to zero
+  if (speed < MIN_ROT_SPEED && speed >= 0) speed = MIN_ROT_SPEED;
+  if (speed > -MIN_ROT_SPEED && speed <= 0) speed = -MIN_ROT_SPEED;
 
   mouse->setSpeed(0,speed);
 }

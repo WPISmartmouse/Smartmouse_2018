@@ -23,5 +23,6 @@ class Turn : public Command {
     RealMouse *mouse;
     Direction dir;
 
+    constexpr static float MIN_ROT_SPEED = M_PI/12; //rad/s
     const float kP = 1.5;
 };
