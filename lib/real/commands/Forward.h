@@ -17,7 +17,7 @@ class Forward : public CommandGroup {
     float yawDiff();
     bool outOfRange(float range);
     float forwardDisplacement(Pose p0, Pose p1);
-    float calculateRemainingDistance(float dToWallOnLeft, float dToWallRight);
+    float calculateRemainingDistance(float dToWallOnLeft, float dToWallRight, float rawFrontWallDist);
 
     enum class FwdState { GO_UNTIL_CHECK, CHECK, STOP_AT_WALL, STOP_AT_DIST};
     FwdState state;
