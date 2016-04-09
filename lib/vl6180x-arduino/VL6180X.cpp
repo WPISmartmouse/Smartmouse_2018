@@ -68,25 +68,25 @@ int VL6180X::initMouse(){
   delay(1);
 
   // Check if the address is already changed
-  Wire.beginTransmission(address); 
+  Wire.beginTransmission(address);
   int e = Wire.endTransmission();
-  
+
   if (e != 0) { // No device found on this address
-    int tempAddress = address;    
+    int tempAddress = address;
     address = 0x29; // temporarily set to default address
 
-    Wire.beginTransmission(address); 
+    Wire.beginTransmission(address);
     int e2 = Wire.endTransmission();
 
     if (e2 != 0) return -1; // I CANT FIND IT
 
     setAddress(tempAddress);
 
-    Wire.beginTransmission(address); 
+    Wire.beginTransmission(address);
     int e3 = Wire.endTransmission();
 
     if (e3 != 0) return -2; // I CANT FIND IT AFTER SETTING THE ADDRESS
-  } 
+  }
 
   init();
 
@@ -112,7 +112,7 @@ int VL6180X::initMouse(){
   // "Optional: Public registers"
 
   // sysrange__intermeasurement_period = 9 (100 ms)
-  writeReg(SYSRANGE__INTERMEASUREMENT_PERIOD, 0x05);
+  writeReg(SYSRANGE__INTERMEASUREMENT_PERIOD, 0x01);
 
   // sysals__intermeasurement_period = 49 (500 ms)
   writeReg(SYSALS__INTERMEASUREMENT_PERIOD, 0x31);

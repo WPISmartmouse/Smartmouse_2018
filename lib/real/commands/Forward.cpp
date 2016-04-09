@@ -127,9 +127,9 @@ void Forward::execute(){
     digitalWrite(RealMouse::LEDG, 0);
   }
 
-  Serial.print(rawLeftWallDist);
+  Serial.print(rawLeftWallDist, 3);
   Serial.print(" ");
-  Serial.print(rawRightWallDist);
+  Serial.println(rawRightWallDist, 3);
 
   float sumCorrection = correction;
   float speed = this->remainingDistance * kPDisp;
@@ -149,6 +149,7 @@ bool Forward::isFinished(){
 }
 
 void Forward::end(){
+  Serial.println("DONE");
   mouse->internalForward();
   mouse->setSpeed(0,0);
 
