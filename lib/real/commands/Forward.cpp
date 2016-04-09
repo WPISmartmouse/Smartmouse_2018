@@ -54,7 +54,7 @@ float Forward::yawDiff(){
 float Forward::calculateRemainingDistance(float dToWallLeft, float dToWallRight, float rawFrontWallDist){
   switch(this->state) {
     case FwdState::GO_UNTIL_CHECK:
-      if (distanceSoFar >= 0.12) {
+      if (distanceSoFar >= CHECK_DIST) {
         this->state = FwdState::CHECK;
       }
       return AbstractMaze::UNIT_DIST - this->distanceSoFar;
@@ -67,8 +67,8 @@ float Forward::calculateRemainingDistance(float dToWallLeft, float dToWallRight,
       this->walls[static_cast<int>(right)] = dToWallRight < RealMouse::WALL_DIST;
       this->walls[static_cast<int>(left)] = dToWallLeft < RealMouse::WALL_DIST;
 
-      if (rawFrontWallDist > minFrontDist && rawFrontWallDist < maxFrontDist) {
-        addParallel(new LEDBlink(LEDBlink::B, 300));
+      if (rawFrontWallDist < maxFrontDist) {
+        digitalWrite(RealMouse::LEDGO, 1);
         this->state = FwdState::STOP_AT_WALL;
       }
       else {
@@ -127,10 +127,6 @@ void Forward::execute(){
     digitalWrite(RealMouse::LEDG, 0);
   }
 
-  Serial.print(rawLeftWallDist, 3);
-  Serial.print(" ");
-  Serial.println(rawRightWallDist, 3);
-
   float sumCorrection = correction;
   float speed = this->remainingDistance * kPDisp;
 
@@ -149,7 +145,7 @@ bool Forward::isFinished(){
 }
 
 void Forward::end(){
-  Serial.println("DONE");
+  digitalWrite(RealMouse::LEDGO, 0);
   mouse->internalForward();
   mouse->setSpeed(0,0);
 
