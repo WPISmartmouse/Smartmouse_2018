@@ -22,10 +22,12 @@ void MeasureMazeOrientation::execute(){
       data += mouse->getRawIMUYaw();
     }
     float eastYaw = data / MAX_SAMPLE_COUNT;
+    digitalWrite(RealMouse::LEDR, 0);
     mouse->setEastYaw(eastYaw);
     mouse->display.println(eastYaw);
     mouse->display.display();
     readyToExit = true;
+    digitalWrite(RealMouse::LEDGO, 1);
   }
 }
 
@@ -36,4 +38,6 @@ bool MeasureMazeOrientation::isFinished(){
 void MeasureMazeOrientation::end(){
   digitalWrite(RealMouse::LEDG, 0);
   digitalWrite(RealMouse::LEDR, 0);
+  digitalWrite(RealMouse::LEDGO, 0);
+
 }
