@@ -124,7 +124,7 @@ int VL6180X::initMouse(){
   // Reset other settings to power-on defaults
 
   // sysrange__max_convergence_time = 49 (49 ms)
-  writeReg(VL6180X::SYSRANGE__MAX_CONVERGENCE_TIME, 15);
+  writeReg(VL6180X::SYSRANGE__MAX_CONVERGENCE_TIME, 13);
 
   // disable interleaved mode
   writeReg(INTERLEAVED_MODE__ENABLE, 0);
