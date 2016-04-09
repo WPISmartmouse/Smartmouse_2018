@@ -40,11 +40,11 @@ void Calibrate::execute(){
     mouse->display.println(mouse->getVoltage());
 
     mouse->display.println("Dist L F R");
-    mouse->display.print(dist[2]);
+    mouse->display.print(dist[2],3);
     mouse->display.print(" ");
-    mouse->display.print(dist[1]);
+    mouse->display.print(dist[1],3);
     mouse->display.print(" ");
-    mouse->display.print(dist[0]);
+    mouse->display.print(dist[0],3);
     mouse->display.display();
   }
 }

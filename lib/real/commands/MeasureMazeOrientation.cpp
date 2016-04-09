@@ -30,7 +30,7 @@ void MeasureMazeOrientation::execute(){
 }
 
 bool MeasureMazeOrientation::isFinished(){
-  return readyToExit;
+  return readyToExit && mouse->goButton.fell();
 }
 
 void MeasureMazeOrientation::end(){

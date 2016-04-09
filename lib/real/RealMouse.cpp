@@ -269,7 +269,7 @@ void RealMouse::setup(){
     exit(0);
   }
 
-  int range_interval = 20;
+  int range_interval = 25;
 
   left_rangefinder.startRangeContinuous(range_interval);
   middle_rangefinder.startRangeContinuous(range_interval);
