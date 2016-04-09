@@ -10,8 +10,8 @@
 SolveCommand::SolveCommand(Solver *solver) : CommandGroup("Solve") {
   addSequential(new WaitForStart());
   addSequential(new SolveMaze(solver));
-  //addSequential(new ReturnToStart(solver->mouse));
-  //addSequential(new SpeedRun(solver->mouse));
-  //addSequential(new ReturnToStart(solver->mouse));
+  addSequential(new ReturnToStart(solver->mouse));
+  addSequential(new SpeedRun(solver->mouse));
+  addSequential(new ReturnToStart(solver->mouse));
   //addSequential(new Finish(solver->mouse->maze));
 }

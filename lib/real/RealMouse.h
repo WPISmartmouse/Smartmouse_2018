@@ -38,7 +38,7 @@ public:
   const static int BUZZER = 46;
 
   constexpr static float WALL_DIST = 0.12;
-  constexpr static float MAX_SPEED = 300; //mm/s
+  constexpr static float MAX_SPEED = 250; //mm/s
   constexpr static float MAX_ROT_SPEED = M_PI/2; //rad/s
 
   Bounce goButton;
