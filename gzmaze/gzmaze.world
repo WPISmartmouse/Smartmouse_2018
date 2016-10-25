@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<sdf version="1.6">
+  <world name="default">
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+    <include>
+      <uri>model://sun</uri>
+    </include>
+
+    <include>
+      <pose>-1.344 1.344 0.025 0 0 0</pose>
+      <uri>model://mouse</uri>
+    </include>
+
+    <gui>
+      <plugin name="sample" filename="libregenerate_widget.so"/>
+    </gui>
+
+    <plugin name="maze" filename="libmaze_plugin.so"/>
+
+		<physics type="ode">
+			<!--go as fast as possible!-->
+      <real_time_update_rate>0.0</real_time_update_rate>
+    </physics>
+  </world>
+</sdf>
