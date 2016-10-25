@@ -44,12 +44,30 @@ foreach(MAIN ${CONSOLES})
 endforeach()
 
 if (BUILD_SIM)
+  # create the precompiled header for faster builds/links
+  set(pch_out ${CMAKE_CURRENT_BINARY_DIR}/gazebo_pch.hh.gch)
+  set(pch_in ${CMAKE_CURRENT_SOURCE_DIR}/sim/gazebo_pch.in)
+  set(FLAGS -g -Winvalid-pch -DSIM -std=c++11 -std=gnu++11 -x c++-header)
+  foreach(GZ_INCLUDE ${GAZEBO_INCLUDE_DIRS})
+    message(${GZ_INCLUDE})
+    list(APPEND GZ_INCLUDE_FLAGS "-I${GZ_INCLUDE}")
+  endforeach()
+
+  add_custom_command(OUTPUT ${pch_out}
+    COMMAND ${CMAKE_CXX_COMPILER} ${GZ_INCLUDE_FLAGS} ${FLAGS} ${pch_in} -o ${pch_out}
+    DEPENDS ${pch_in}
+    COMMENT "Generating precompiled header: ${pch_out}"
+    VERBATIM)
+
+  add_custom_target(gazebo_pch DEPENDS ${pch_out})
+
   foreach(MAIN ${SIMS})
     add_executable(${MAIN} "sim/main/${MAIN}.cpp" ${COM_SRC} ${SIM_SRC})
     target_compile_features(${MAIN} PRIVATE cxx_strong_enums)
     target_link_libraries(${MAIN} ${GAZEBO_LIBRARIES})
     set_target_properties(${MAIN} PROPERTIES COMPILE_FLAGS "-DSIM -include gazebo_pch.hh")
     target_include_directories(${MAIN} PRIVATE sim/ sim/commands)
+    add_dependencies(${MAIN} gazebo_pch)
   endforeach()
 endif()
 
