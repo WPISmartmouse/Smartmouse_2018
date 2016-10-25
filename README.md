@@ -17,3 +17,17 @@ WPI CollabLab Smartmouse Team code for exploring and solving the maze.
     mkdir build
     cmake .. -DBUILD_SIM=ON
     make
+
+## Running the simulator
+
+Assuming you've installed gazebo correctly and built with simuation...
+
+    source sim/setup.sh
+    gazebo --verbose gzmaze/gzmaze.world
+
+
+If you see errors, fix them before moving on. Then in another terminal...
+
+    ./build/SimSolve
+
+Press enter. Watch the mouse go!

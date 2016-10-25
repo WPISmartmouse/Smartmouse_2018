@@ -1,7 +1,6 @@
 project(smartmouse)
 cmake_minimum_required(VERSION 3.1)
 
-
 option(BUILD_SIM "build gazebo simulations" OFF)
 
 if (BUILD_SIM)
@@ -49,7 +48,6 @@ if (BUILD_SIM)
   set(pch_in ${CMAKE_CURRENT_SOURCE_DIR}/sim/gazebo_pch.in)
   set(FLAGS -g -Winvalid-pch -DSIM -std=c++11 -std=gnu++11 -x c++-header)
   foreach(GZ_INCLUDE ${GAZEBO_INCLUDE_DIRS})
-    message(${GZ_INCLUDE})
     list(APPEND GZ_INCLUDE_FLAGS "-I${GZ_INCLUDE}")
   endforeach()
 
@@ -69,6 +67,8 @@ if (BUILD_SIM)
     target_include_directories(${MAIN} PRIVATE sim/ sim/commands)
     add_dependencies(${MAIN} gazebo_pch)
   endforeach()
+
+  add_subdirectory(gzmaze)
 endif()
 
 

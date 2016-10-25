@@ -10,10 +10,10 @@ include (${QT_USE_FILE})
 add_definitions(${QT_DEFINITIONS})
 include_directories(${GAZEBO_INCLUDE_DIRS})
 link_directories(${GAZEBO_LIBRARY_DIRS})
-list(APPEND CMAKE_CXX_FLAGS "${GAZEBO_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GAZEBO_CXX_FLAGS}")
 
-add_library(MousePlugin SHARED src/MousePlugin.cc)
-target_link_libraries(MousePlugin	 ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
+add_library(mouse_plugin SHARED src/MousePlugin.cc)
+target_link_libraries(mouse_plugin ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 
 add_library(maze_plugin SHARED src/MazeFactory.cc)
 target_link_libraries(maze_plugin ${GAZEBO_LIBRARIES})
