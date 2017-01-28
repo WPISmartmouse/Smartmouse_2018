@@ -18,7 +18,18 @@ WPI CollabLab Smartmouse Team code for exploring and solving the maze.
     cmake .. -DBUILD_SIM=ON
     make
 
-## Running the simulator
+## The simulator
+
+### Installing
+
+go to [http://gazebosim.org/tutorials?tut=install_ubuntu&cat=install](http://gazebosim.org/tutorials?tut=install_ubuntu&cat=install) and follow the installation tutorials. You will need to install both gazebo8 and libgazebo8-dev
+
+    sudo apt-get install gazebo8 libgazebo8-dev cmake
+    
+Test by running `gazebo --verbose`, it should open gazebo
+
+Clone this repo, which contains the gazebo models and plugins.
+
 
 Assuming you've installed gazebo correctly and built with simuation...
 
