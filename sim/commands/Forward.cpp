@@ -40,7 +40,7 @@ float Forward::yawDiff(float y1, float y2){
 }
 
 bool Forward::outOfRange(float range){
- return isinf(range);
+ return std::isinf(range);
 }
 
 void Forward::execute(){
