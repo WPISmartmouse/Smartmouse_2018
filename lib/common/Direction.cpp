@@ -1,7 +1,6 @@
 #include "Direction.h"
 #include <stdio.h>
-
-#define M_PI 3.14159265358979
+#include <math.h>
 
 char opposite_direction(char c){
   switch(c){
