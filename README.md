@@ -20,7 +20,7 @@ WPI CollabLab Smartmouse Team code for exploring and solving the maze.
 
 ## The simulator
 
-### Installing
+### Installing (On ubuntu 16.04+)
 
 go to [http://gazebosim.org/tutorials?tut=install_ubuntu&cat=install](http://gazebosim.org/tutorials?tut=install_ubuntu&cat=install) and follow the installation tutorials. You will need to install both gazebo8 and libgazebo8-dev
 
