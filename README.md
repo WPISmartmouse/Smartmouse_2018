@@ -5,7 +5,11 @@
 WPI CollabLab Smartmouse Team code for exploring and solving the maze.
 
 
-## Building instructions
+## Programming the robot
+
+Our build system is platformio. Install it first. To install platform IO. simply use `pip install platformio`. You may need to prepend `sudo -H` if you're on linux.
+
+### Building Instructions
 
     mkdir build
     cmake ..
@@ -25,7 +29,7 @@ WPI CollabLab Smartmouse Team code for exploring and solving the maze.
 go to [http://gazebosim.org/tutorials?tut=install_ubuntu&cat=install](http://gazebosim.org/tutorials?tut=install_ubuntu&cat=install) and follow the installation tutorials. You will need to install both gazebo8 and libgazebo8-dev
 
     sudo apt-get install gazebo8 libgazebo8-dev cmake
-    
+
 Test by running `gazebo --verbose`, it should open gazebo
 
 Clone this repo, which contains the gazebo models and plugins.

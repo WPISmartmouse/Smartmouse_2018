@@ -10,10 +10,11 @@ endif()
 list(APPEND CMAKE_CXX_FLAGS "${GAZEBO_CXX_FLAGS}")
 
 if (MSVC)
-  set(CMAKE_CXX_FLAGS "/DEBUG /EHsc")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DEBUG /EHsc")
 else()
-  set(CMAKE_CXX_FLAGS "-g -Winvalid-pch")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Winvalid-pch")
 endif()
+message(${CMAKE_CXX_FLAGS})
 
 file(GLOB_RECURSE COM_SRC lib/common/*.cpp lib/commanduino/*.cpp)
 file(GLOB SIM_SRC sim/*.cpp sim/commands/*.cpp)
@@ -59,16 +60,31 @@ if (BUILD_SIM)
 
   add_custom_target(gazebo_pch DEPENDS ${pch_out})
 
+  add_library(sim ${COM_SRC} ${SIM_SRC})
+  target_compile_features(sim PRIVATE cxx_strong_enums)
+  target_link_libraries(sim ${GAZEBO_LIBRARIES})
+  set_target_properties(sim PROPERTIES COMPILE_FLAGS "-DSIM -std=gnu++11 -include gazebo_pch.hh")
+  target_include_directories(sim PRIVATE sim/ sim/commands)
+  add_dependencies(sim gazebo_pch)
+
+  # main simulation robot executables
   foreach(MAIN ${SIMS})
-    add_executable(${MAIN} "sim/main/${MAIN}.cpp" ${COM_SRC} ${SIM_SRC})
+    add_executable(${MAIN} "sim/main/${MAIN}.cpp")
     target_compile_features(${MAIN} PRIVATE cxx_strong_enums)
-    target_link_libraries(${MAIN} ${GAZEBO_LIBRARIES})
-    set_target_properties(${MAIN} PROPERTIES COMPILE_FLAGS "-DSIM -include gazebo_pch.hh")
+    target_link_libraries(${MAIN} sim ${GAZEBO_LIBRARIES})
+    set_target_properties(${MAIN} PROPERTIES COMPILE_FLAGS "-DSIM -std=gnu++11 -include gazebo_pch.hh")
     target_include_directories(${MAIN} PRIVATE sim/ sim/commands)
     add_dependencies(${MAIN} gazebo_pch)
   endforeach()
 
   add_subdirectory(gzmaze)
+
+  # command line tools!
+  add_executable(teleop sim/tools/keyboard_teleop.cpp)
+  target_link_libraries(teleop sim ${GAZEBO_LIBRARIES} ncurses)
+  set_target_properties(teleop PROPERTIES COMPILE_FLAGS "-DSIM -std=gnu++11 -include gazebo_pch.hh")
+  target_include_directories(teleop PRIVATE sim/ sim/tools)
+  add_dependencies(teleop gazebo_pch)
 endif()
 
 

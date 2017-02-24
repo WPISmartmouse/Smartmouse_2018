@@ -2,6 +2,10 @@
 #include <stdio.h>
 #include <math.h>
 
+#if !defined M_PI
+  #define M_PI 3.14159265358979
+#endif
+
 char opposite_direction(char c){
   switch(c){
     case 'N':
