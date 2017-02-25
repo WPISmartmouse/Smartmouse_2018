@@ -1,5 +1,5 @@
 #include "MousePlugin.hh"
-#include "msgs/msgs.hh"
+#include "msgs/msgs.h"
 
 GZ_REGISTER_MODEL_PLUGIN(MousePlugin)
 

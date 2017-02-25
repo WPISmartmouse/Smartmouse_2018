@@ -3,10 +3,17 @@
 #include <ncurses.h>
 
 #include "SimTimer.h"
+#include "msgs/msgs.h"
+
+typedef const boost::shared_ptr<const gzmaze::msgs::RobotState> RobotStatePtr;
+
+void stateCallback(RobotStatePtr &msg) {
+  printf("%f %f\r\n", msg->left_wheel(), msg->right_wheel());
+}
 
 int main(int argc, char **argv) {
   // Load gazebo
-  printf("Waiting for gazebo...\n");
+  printf("Waiting for gazebo...\r\n");
   bool connected = gazebo::client::setup(argc, argv);
   if (!connected){
     printf("failed to connect to gazebo. Is it running?\n");
@@ -23,6 +30,9 @@ int main(int argc, char **argv) {
   gazebo::transport::SubscriberPtr timeSub =
     node->Subscribe("~/world_stats", &SimTimer::simTimeCallback);
 
+  gazebo::transport::SubscriberPtr stateSub =
+    node->Subscribe("~/mouse/state", &stateCallback);
+
   gazebo::transport::PublisherPtr controlPub;
   controlPub = node->Advertise<gazebo::msgs::JointCmd>("~/mouse/joint_cmd");
 
@@ -30,32 +40,36 @@ int main(int argc, char **argv) {
   cbreak();
   noecho();
 
-  float kP = 0.01;
-  float kI = 0;
+  float kP = 0.04;
+  float kI = 0.01;
   float kD = 0;
 
 	bool keepGoing = true;
 	char key;
+  float lspeed = 0;
+  float rspeed = 0;
 	while (keepGoing){
     key = getch();
 
-    float lspeed = 0;
-    float rspeed = 0;
     if (key == 'w') {
-      lspeed = .01;
-      rspeed = .01;
+      lspeed += 1;
+      rspeed += 1;
 		}
     else if (key == 'a') {
-      lspeed = -.01;
-      rspeed = .01;
+      lspeed += 1;
+      rspeed -= 1;
     }
     else if (key == 's') {
-      lspeed = -.01;
-      rspeed = -.01;
+      lspeed -= 1;
+      rspeed -= 1;
     }
     else if (key == 'd') {
-      lspeed = -.01;
-      rspeed = .01;
+      lspeed -= 1;
+      rspeed += 1;
+    }
+    else if (key == 'q') {
+      lspeed = 0;
+      rspeed = 0;
     }
 
     printf("%f, %f\r\n", lspeed, rspeed);
