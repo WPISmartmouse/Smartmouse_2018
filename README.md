@@ -12,10 +12,10 @@ WPI CollabLab Smartmouse Team code for exploring and solving the maze.
     make
 
 
-#### If you want simultaion, use this
+#### If you want simulation, use this
 
     mkdir build
-    cmake .. -DBUILD_SIM=ON
+    cmake -DBUILD_SIM=ON ..
     make
 
 ## The simulator
