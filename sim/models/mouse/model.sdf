@@ -308,11 +308,11 @@
         </ode>
       </physics>
     </joint>
-		<!--<plugin name="mouse_plugin" filename="libmouse_plugin.so">-->
-      <!--<left_wheel_joint>left_wheel_joint</left_wheel_joint>-->
-      <!--<right_wheel_joint>right_wheel_joint</right_wheel_joint>-->
-      <!--<body>base</body>-->
-		<!--</plugin>-->
+    <plugin name="mouse_plugin" filename="libmouse_plugin.so">
+      <left_wheel_joint>left_wheel_joint</left_wheel_joint>
+      <right_wheel_joint>right_wheel_joint</right_wheel_joint>
+      <body>base</body>
+    </plugin>
   </model>
 </sdf>
 <!--

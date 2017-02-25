@@ -12,7 +12,7 @@ void MousePlugin::Load(physics::ModelPtr model, sdf::ElementPtr sdf) {
 
   node = transport::NodePtr(new transport::Node());
   node->Init();
-  state_pub = node->Advertise<msgs::Pose>("~/mouse/state");
+  state_pub = node->Advertise<gzmaze::msgs::RobotState>("~/mouse/state");
 
   // Connect to the world update event.
   // This will trigger the Update function every Gazebo iteration
@@ -38,14 +38,17 @@ void MousePlugin::PublishInfo(){
   rot->set_z(realtivePose.rot.z);
   rot->set_w(realtivePose.rot.w);
 
-  msgs::Pose pose;
-  pose.set_allocated_position(pos);
-  pose.set_allocated_orientation(rot);
+  msgs::Pose *pose = new msgs::Pose();
+  pose->set_allocated_position(pos);
+  pose->set_allocated_orientation(rot);
 
   double left_vel = this->left_wheel->GetVelocity(0);
   double right_vel = this->right_wheel->GetVelocity(0);
 
   gzmaze::msgs::RobotState state;
+  state.set_allocated_position(pose);
+  state.set_left_wheel(left_vel);
+  state.set_right_wheel(right_vel);
   state_pub->Publish(state);
 
 }

@@ -56,7 +56,7 @@ add_custom_target(gazebo_pch DEPENDS ${pch_out})
 # build the gazebo plugins
 ##################################
 add_library(mouse_plugin SHARED MousePlugin.cc)
-target_link_libraries(mouse_plugin ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(mouse_plugin gzmaze_msgs ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 set_target_properties(mouse_plugin PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh")
 add_dependencies(mouse_plugin gazebo_pch)
 
@@ -82,7 +82,7 @@ file(GLOB SIM_SRC *.cpp commands/*.cpp)
 add_library(sim ${COM_SRC} ${SIM_SRC})
 set_target_properties(sim PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh")
 target_include_directories(sim PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} commands)
-target_link_libraries(sim ${GAZEBO_LIBRARIES})
+target_link_libraries(sim gzmaze_msgs ${GAZEBO_LIBRARIES})
 add_dependencies(sim gazebo_pch)
 
 #################################
