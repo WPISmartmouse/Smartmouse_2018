@@ -1,6 +1,5 @@
 #include <sstream>
 #include <boost/algorithm/string/replace.hpp>
-#include <gazebo/msgs/msgs.hh>
 #include "RegenerateWidget.hh"
 
 using namespace gazebo;

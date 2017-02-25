@@ -1,9 +1,5 @@
 #pragma once
 
-#include <gazebo/physics/physics.hh>
-#include <gazebo/transport/transport.hh>
-#include <gazebo/gazebo.hh>
-
 using namespace gazebo;
 
 class MousePlugin: public ModelPlugin {
@@ -21,7 +17,9 @@ class MousePlugin: public ModelPlugin {
 
     physics::ModelPtr model;
     physics::LinkPtr body;
+    physics::JointPtr right_wheel;
+    physics::JointPtr left_wheel;
     event::ConnectionPtr updateConn;
     transport::NodePtr node;
-    transport::PublisherPtr pose_pub;
+    transport::PublisherPtr state_pub;
 };

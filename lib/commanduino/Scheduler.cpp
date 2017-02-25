@@ -8,7 +8,7 @@ void Scheduler::addCommand(Command *command) {
   commands.add(command);
 }
 
-void Scheduler::run() {
+bool Scheduler::run() {
   //loop through commands and either init, execute, or end
   for (int i = 0; i < commands.size(); i++) {
     Command *command = commands.get(i);
@@ -18,4 +18,10 @@ void Scheduler::run() {
      delete removed;
     }
   }
+
+  if (commands.size() == 0) {
+    return true;
+  }
+
+  return false;
 }

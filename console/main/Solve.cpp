@@ -1,24 +1,41 @@
 #ifdef CONSOLE
 
-#include <errno.h>
 #include <fstream>
+#include <iostream>
+#include <string.h>
+
 #include "CommanDuino.h"
+#include "StepSolveCommand.h"
+#include "SolveCommand.h"
 #include "ConsoleMaze.h"
-#include "Mouse.h"
-#include "ConsoleTimer.h"
 #include "ConsoleMouse.h"
+#include "ConsoleTimer.h"
+#include "Mouse.h"
 #include "Flood.h"
 #include "WallFollow.h"
-#include "commands/SolveCommand.h"
 
 int main(int argc, char* argv[]){
 
   std::string maze_file;
-  if (argc < 2) {
+  bool step = false;
+  if (argc <= 1) {
     maze_file = "../mazes/16x16.mz";
+    printf("Using default maze ../mazes/16x16.mz\n");
   }
-  else {
+  if (argc == 2) {
+    if (strncmp("--step", argv[1], 6) == 0) {
+      step = true;
+      maze_file = "../mazes/16x16.mz";
+    }
+    else {
+      maze_file = std::string(argv[1]);
+    }
+  }
+  else if (argc == 3) {
     maze_file = std::string(argv[1]);
+    if (strncmp("--step", argv[2], 6) == 0) {
+      step = true;
+    }
   }
 
   std::fstream fs;
@@ -26,14 +43,19 @@ int main(int argc, char* argv[]){
 
   if (fs.good()){
     ConsoleMaze maze(fs);
-    ConsoleTimer timer;
     ConsoleMouse::inst()->seedMaze(&maze);
+    ConsoleTimer timer;
     Command::setTimerImplementation(&timer);
-    Scheduler scheduler(new SolveCommand(new Flood(ConsoleMouse::inst())));
 
-    while (true) {
-      scheduler.run();
+    Scheduler *scheduler;
+    if (step) {
+      scheduler = new Scheduler(new StepSolveCommand(new Flood(ConsoleMouse::inst())));
     }
+    else {
+      scheduler = new Scheduler(new SolveCommand(new Flood(ConsoleMouse::inst())));
+    }
+
+    while (!scheduler->run());
 
     fs.close();
     return EXIT_SUCCESS;

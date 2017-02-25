@@ -1,4 +1,5 @@
 #include "MousePlugin.hh"
+#include "msgs/msgs.hh"
 
 GZ_REGISTER_MODEL_PLUGIN(MousePlugin)
 
@@ -6,10 +7,12 @@ void MousePlugin::Load(physics::ModelPtr model, sdf::ElementPtr sdf) {
   this->model = model;
 
   body = model->GetLink(sdf->Get<std::string>("body"));
+  right_wheel = this->model->GetJoint("right_wheel_joint");
+  left_wheel = this->model->GetJoint("left_wheel_joint");
 
   node = transport::NodePtr(new transport::Node());
   node->Init();
-  pose_pub = node->Advertise<msgs::Pose>("~/mouse/pose");
+  state_pub = node->Advertise<msgs::Pose>("~/mouse/state");
 
   // Connect to the world update event.
   // This will trigger the Update function every Gazebo iteration
@@ -39,5 +42,10 @@ void MousePlugin::PublishInfo(){
   pose.set_allocated_position(pos);
   pose.set_allocated_orientation(rot);
 
-  pose_pub->Publish(pose);
+  double left_vel = this->left_wheel->GetVelocity(0);
+  double right_vel = this->right_wheel->GetVelocity(0);
+
+  gzmaze::msgs::RobotState state;
+  state_pub->Publish(state);
+
 }

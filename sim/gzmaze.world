@@ -15,7 +15,7 @@
     </include>
 
     <gui>
-      <plugin name="sample" filename="libregenerate_widget.so"/>
+      <plugin name="regenerate_widget" filename="libregenerate_widget.so"/>
     </gui>
 
     <plugin name="maze" filename="libmaze_plugin.so"/>

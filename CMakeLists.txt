@@ -3,98 +3,61 @@ cmake_minimum_required(VERSION 3.1)
 
 option(BUILD_SIM "build gazebo simulations" OFF)
 
-if (BUILD_SIM)
-  find_package(gazebo REQUIRED)
-endif()
-
-list(APPEND CMAKE_CXX_FLAGS "${GAZEBO_CXX_FLAGS}")
-
 if (MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DEBUG /EHsc")
 else()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Winvalid-pch")
 endif()
-message(${CMAKE_CXX_FLAGS})
 
 file(GLOB_RECURSE COM_SRC lib/common/*.cpp lib/commanduino/*.cpp)
-file(GLOB SIM_SRC sim/*.cpp sim/commands/*.cpp)
 file(GLOB CONSOLE_SRC console/*.cpp console/commands/*.cpp)
 file(GLOB REAL_SRC lib/real/*.cpp lib/real/commands/*.cpp)
 
 include_directories(build
   lib/commanduino
   lib/common
-  lib/common/commands
-  ${GAZEBO_INCLUDE_DIRS})
-link_directories(${GAZEBO_LIBRARY_DIRS})
+  lib/common/commands)
 
-SET(SIMS SimSolve
-  SimStepSolve)
+################################
+# library for console programs
+################################
+add_library(console ${COM_SRC} ${CONSOLE_SRC})
+target_compile_features(console PRIVATE cxx_strong_enums)
+set_target_properties(console PROPERTIES COMPILE_FLAGS "-DCONSOLE")
+target_include_directories(console PRIVATE console/ console/commands)
 
-SET(CONSOLES Solve
-  StepSolve
+################################
+# text-only console programs
+################################
+set(CONSOLES Solve
   Animate
   ReadAndPrint)
 
 foreach(MAIN ${CONSOLES})
-  add_executable(${MAIN} "console/main/${MAIN}.cpp" ${COM_SRC} ${CONSOLE_SRC})
+  add_executable(${MAIN} "console/main/${MAIN}.cpp")
+  target_link_libraries(${MAIN} console)
   target_compile_features(${MAIN} PRIVATE cxx_strong_enums)
   set_target_properties(${MAIN} PROPERTIES COMPILE_FLAGS "-DCONSOLE")
   target_include_directories(${MAIN} PRIVATE console/ console/commands)
 endforeach()
 
-if (BUILD_SIM)
-  # create the precompiled header for faster builds/links
-  set(pch_out ${CMAKE_CURRENT_BINARY_DIR}/gazebo_pch.hh.gch)
-  set(pch_in ${CMAKE_CURRENT_SOURCE_DIR}/sim/gazebo_pch.in)
-  set(FLAGS -g -Winvalid-pch -DSIM -std=c++11 -std=gnu++11 -x c++-header)
-  foreach(GZ_INCLUDE ${GAZEBO_INCLUDE_DIRS})
-    list(APPEND GZ_INCLUDE_FLAGS "-I${GZ_INCLUDE}")
-  endforeach()
-
-  add_custom_command(OUTPUT ${pch_out}
-    COMMAND ${CMAKE_CXX_COMPILER} ${GZ_INCLUDE_FLAGS} ${FLAGS} ${pch_in} -o ${pch_out}
-    DEPENDS ${pch_in}
-    COMMENT "Generating precompiled header: ${pch_out}"
-    VERBATIM)
-
-  add_custom_target(gazebo_pch DEPENDS ${pch_out})
-
-  add_library(sim ${COM_SRC} ${SIM_SRC})
-  target_compile_features(sim PRIVATE cxx_strong_enums)
-  target_link_libraries(sim ${GAZEBO_LIBRARIES})
-  set_target_properties(sim PROPERTIES COMPILE_FLAGS "-DSIM -std=gnu++11 -include gazebo_pch.hh")
-  target_include_directories(sim PRIVATE sim/ sim/commands)
-  add_dependencies(sim gazebo_pch)
-
-  # main simulation robot executables
-  foreach(MAIN ${SIMS})
-    add_executable(${MAIN} "sim/main/${MAIN}.cpp")
-    target_compile_features(${MAIN} PRIVATE cxx_strong_enums)
-    target_link_libraries(${MAIN} sim ${GAZEBO_LIBRARIES})
-    set_target_properties(${MAIN} PROPERTIES COMPILE_FLAGS "-DSIM -std=gnu++11 -include gazebo_pch.hh")
-    target_include_directories(${MAIN} PRIVATE sim/ sim/commands)
-    add_dependencies(${MAIN} gazebo_pch)
-  endforeach()
-
-  add_subdirectory(gzmaze)
-
-  # command line tools!
-  add_executable(teleop sim/tools/keyboard_teleop.cpp)
-  target_link_libraries(teleop sim ${GAZEBO_LIBRARIES} ncurses)
-  set_target_properties(teleop PROPERTIES COMPILE_FLAGS "-DSIM -std=gnu++11 -include gazebo_pch.hh")
-  target_include_directories(teleop PRIVATE sim/ sim/tools)
-  add_dependencies(teleop gazebo_pch)
-endif()
-
-
+################################
+# actual real robot programs
+################################
 add_custom_target(serial COMMAND cd ../ && platformio serialports monitor -b 115200)
 add_custom_target(upload COMMAND cd ../ && platformio run -v --target upload)
 
 add_custom_target(due COMMAND cd ../ && platformio run -v)
 
 ################################
-# Testing
+# all simulation stuff
+################################
+if (BUILD_SIM)
+  add_subdirectory(sim)
+endif()
+
+################################
+# testing
 ################################
 if (test)
   add_subdirectory(gtest)

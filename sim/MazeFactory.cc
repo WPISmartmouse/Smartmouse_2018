@@ -1,6 +1,5 @@
 #include "MazeFactory.hh"
 
-#include <ignition/math/Pose3.hh>
 #include <sstream>
 #include <fstream>
 #include <cstdlib>

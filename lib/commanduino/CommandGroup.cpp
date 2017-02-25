@@ -15,6 +15,7 @@ void CommandGroup::addParallel(Command *command){
 void CommandGroup::initialize(){}
 void CommandGroup::_initialize(){
   currentCommandIndex = -1;
+  Command::_initialize();
 }
 
 void CommandGroup::execute(){}

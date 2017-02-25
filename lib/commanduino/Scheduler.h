@@ -23,8 +23,9 @@ class Scheduler {
     /** \brief runs all the commands.
      * Iterates through the list of commands and runs them.
      * If they are done, it removes them from the list of commands.
+     * \return returns true if there are no commands left
      */
-    void run();
+    bool run();
 
   private:
 

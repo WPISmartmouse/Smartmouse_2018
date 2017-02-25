@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
   cbreak();
   noecho();
 
-  float kP = 0;
+  float kP = 0.01;
   float kI = 0;
   float kD = 0;
 
