@@ -1,4 +1,4 @@
-# SmartMouse2015_Maze
+# SmartMouse2017
 [![Build Status](https://travis-ci.org/WPISmartmouse/2016_Solvers.svg?branch=master)](https://travis-ci.org/WPISmartmouse/2016_Solvers)
 
 
