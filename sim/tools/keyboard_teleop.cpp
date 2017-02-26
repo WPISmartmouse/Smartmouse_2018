@@ -1,4 +1,5 @@
 #include <iostream>
+#include <math.h>
 #include <cstdio>
 #include <termios.h>
 #include <unistd.h>
@@ -78,24 +79,24 @@ int main(int argc, char **argv) {
     key = std::cin.get();
 
     if (key == 'w') {
-      lspeed += 0.05;
-      rspeed += 0.05;
+      lspeed += 0.1;
+      rspeed += 0.1;
 		}
     else if (key == 'a') {
-      lspeed += 0.05;
-      rspeed -= 0.05;
+      lspeed += 0.1;
+      rspeed -= 0.1;
     }
     else if (key == 's') {
       lspeed = 0;
       rspeed = 0;
     }
     else if (key == 'd') {
-      lspeed -= 0.05;
-      rspeed += 0.05;
+      lspeed -= 0.1;
+      rspeed += 0.1;
     }
     else if (key == 'x') {
-      lspeed -= 0.05;
-      rspeed -= 0.05;
+      lspeed -= 0.1;
+      rspeed -= 0.1;
     }
     else if (key == 'q') {
       keepGoing = false;
@@ -104,6 +105,7 @@ int main(int argc, char **argv) {
 
     double lrps = lspeed * (2 * M_PI) / WHEEL_CIRC;
     double rrps = rspeed * (2 * M_PI) / WHEEL_CIRC;
+
     printf("%f, %f\r\n", lrps, rrps);
 
     gazebo::msgs::JointCmd left;
