@@ -1,17 +1,45 @@
 #include <iostream>
 #include <cstdio>
-#include <ncurses.h>
+#include <termios.h>
+#include <unistd.h>
 
 #include "SimTimer.h"
 #include "msgs/msgs.h"
 
 typedef const boost::shared_ptr<const gzmaze::msgs::RobotState> RobotStatePtr;
+constexpr double WHEEL_RAD = 0.015;
+constexpr double WHEEL_CIRC = 2 * WHEEL_RAD * M_PI;
+int filter_prints = 0;
 
 void stateCallback(RobotStatePtr &msg) {
-  printf("%f %f\r\n", msg->left_wheel(), msg->right_wheel());
+  // radians/sec
+  double l = msg->left_wheel();
+  double r = msg->right_wheel();
+  double lmps = l / (2 * M_PI) * WHEEL_CIRC;
+  double rmps = r / (2 * M_PI) * WHEEL_CIRC;
+
+  double x = msg->position().position().x();
+  double y = msg->position().position().y();
+  ignition::math::Quaterniond q = gazebo::msgs::ConvertIgn(msg->position().orientation());
+  const double yaw = q.Yaw();
+
+	filter_prints += 1;
+
+  if (filter_prints % 100 == 0) {
+    printf("l:%f, r:%f, x:%f, y:%f, yaw:%f\r\n", lmps, rmps, x, y, yaw);
+  }
 }
 
 int main(int argc, char **argv) {
+
+	struct termios original_settings;
+	tcgetattr(STDIN_FILENO, &original_settings);
+
+	struct termios tty;
+	tcgetattr(STDIN_FILENO, &tty);
+	tty.c_lflag &= ~ECHO;
+	tcsetattr(STDIN_FILENO, TCSANOW, &tty);
+
   // Load gazebo
   printf("Waiting for gazebo...\r\n");
   bool connected = gazebo::client::setup(argc, argv);
@@ -36,47 +64,51 @@ int main(int argc, char **argv) {
   gazebo::transport::PublisherPtr controlPub;
   controlPub = node->Advertise<gazebo::msgs::JointCmd>("~/mouse/joint_cmd");
 
-  initscr();
-  cbreak();
-  noecho();
-
-  float kP = 0.04;
-  float kI = 0.01;
-  float kD = 0;
+  double kP = 0.04;
+  double kI = 0.01;
+  double kD = 0;
 
 	bool keepGoing = true;
 	char key;
-  float lspeed = 0;
-  float rspeed = 0;
+
+  // meter's per second
+  double lspeed = 0;
+  double rspeed = 0;
 	while (keepGoing){
-    key = getch();
+    key = std::cin.get();
 
     if (key == 'w') {
-      lspeed += 1;
-      rspeed += 1;
+      lspeed += 0.05;
+      rspeed += 0.05;
 		}
     else if (key == 'a') {
-      lspeed += 1;
-      rspeed -= 1;
+      lspeed += 0.05;
+      rspeed -= 0.05;
     }
     else if (key == 's') {
-      lspeed -= 1;
-      rspeed -= 1;
-    }
-    else if (key == 'd') {
-      lspeed -= 1;
-      rspeed += 1;
-    }
-    else if (key == 'q') {
       lspeed = 0;
       rspeed = 0;
     }
+    else if (key == 'd') {
+      lspeed -= 0.05;
+      rspeed += 0.05;
+    }
+    else if (key == 'x') {
+      lspeed -= 0.05;
+      rspeed -= 0.05;
+    }
+    else if (key == 'q') {
+      keepGoing = false;
+    }
 
-    printf("%f, %f\r\n", lspeed, rspeed);
+
+    double lrps = lspeed * (2 * M_PI) / WHEEL_CIRC;
+    double rrps = rspeed * (2 * M_PI) / WHEEL_CIRC;
+    printf("%f, %f\r\n", lrps, rrps);
 
     gazebo::msgs::JointCmd left;
     left.set_name("mouse::left_wheel_joint");
-    left.mutable_velocity()->set_target(lspeed);
+    left.mutable_velocity()->set_target(lrps);
     left.mutable_velocity()->set_p_gain(kP);
     left.mutable_velocity()->set_i_gain(kI);
     left.mutable_velocity()->set_d_gain(kD);
@@ -84,10 +116,12 @@ int main(int argc, char **argv) {
 
     gazebo::msgs::JointCmd right;
     right.set_name("mouse::right_wheel_joint");
-    right.mutable_velocity()->set_target(rspeed);
+    right.mutable_velocity()->set_target(rrps);
     right.mutable_velocity()->set_p_gain(kP);
     right.mutable_velocity()->set_i_gain(kI);
     right.mutable_velocity()->set_d_gain(kD);
     controlPub->Publish(right);
 	}
+
+	tcsetattr(STDIN_FILENO, TCSANOW, &original_settings);
 }
