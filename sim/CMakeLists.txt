@@ -1,5 +1,6 @@
 find_package(gazebo REQUIRED)
-find_package (Qt4)
+find_package (Qt5 REQUIRED COMPONENTS Core Gui)
+find_package (Qt5Test REQUIRED)
 find_package(Protobuf REQUIRED)
 find_package(gazebo REQUIRED)
 
@@ -13,9 +14,8 @@ foreach(ITR ${GAZEBO_INCLUDE_DIRS})
   endif()
 endforeach()
 
-include(${QT_USE_FILE})
 add_definitions(${QT_DEFINITIONS})
-include_directories(${GAZEBO_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR} ${PROTOBUF_INCLUDE_DIRS})
+include_directories(${GAZEBO_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR} ${PROTOBUF_INCLUDE_DIRS} ${Qt5Test_INCLUDE_DIRS})
 link_directories(${GAZEBO_LIBRARY_DIRS})
 set(CMAKE_CXX_FLAGS "${GAZEBO_CXX_FLAGS} ${CMAKE_CXX_FLAGS} -fPIC -DSIM -fext-numeric-literals")
 
@@ -40,12 +40,9 @@ foreach(GZ_INCLUDE ${GAZEBO_INCLUDE_DIRS})
   list(APPEND GZ_INCLUDE_FLAGS "-I${GZ_INCLUDE}")
 endforeach()
 
-list(APPEND QT_DEFS -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NO_DEBUG)
-list(APPEND GZ_INCLUDE_FLAGS "-I/usr/include/qt4/")
-list(APPEND GZ_INCLUDE_FLAGS "-I/usr/include/qt4/QtCore")
-list(APPEND GZ_INCLUDE_FLAGS "-I/usr/include/qt4/QtGui")
+list(APPEND GZ_INCLUDE_FLAGS "-I/usr/include/x86_64-linux-gnu/qt5/")
 add_custom_command(OUTPUT ${pch_out}
-  COMMAND ${CMAKE_CXX_COMPILER} ${GZ_INCLUDE_FLAGS} ${QT_DEFS} ${FLAGS} ${pch_in} -o ${pch_out}
+  COMMAND ${CMAKE_CXX_COMPILER} ${GZ_INCLUDE_FLAGS} ${FLAGS} ${pch_in} -o ${pch_out}
   DEPENDS ${pch_in}
   COMMENT "Generating precompiled header: ${pch_out}"
   VERBATIM)
@@ -65,7 +62,7 @@ target_link_libraries(maze_plugin ${GAZEBO_LIBRARIES})
 set_target_properties(maze_plugin PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh")
 add_dependencies(maze_plugin gazebo_pch)
 
-QT4_WRAP_CPP(headers_MOC RegenerateWidget.hh)
+QT5_WRAP_CPP(headers_MOC RegenerateWidget.hh)
 add_library(regenerate_widget SHARED ${headers_MOC} RegenerateWidget.cc)
 set_target_properties(regenerate_widget PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh")
 target_link_libraries(regenerate_widget
