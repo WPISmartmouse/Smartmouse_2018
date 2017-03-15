@@ -25,19 +25,21 @@ RegenerateWidget::RegenerateWidget()
   QVBoxLayout *frameLayout = new QVBoxLayout();
 
   QPushButton *browse_button = new QPushButton(tr("Browse For Maze File"));
+  browse_button->setStyleSheet("padding: 0px;");
   connect(browse_button, SIGNAL(clicked()), this, SLOT(OnBrowseFile()));
 
   QPushButton *button = new QPushButton(tr("Regenerate From File"));
+  button->setStyleSheet("padding: 0px;");
   connect(button, SIGNAL(clicked()), this, SLOT(OnButton()));
 
   QPushButton *randomButton = new QPushButton(tr("Regenerate Randomly"));
+  randomButton->setStyleSheet("padding: 0px;");
   connect(randomButton, SIGNAL(clicked()), this, SLOT(OnRandomButton()));
 
-  textEdit = new QTextEdit(tr("~/Projects/smartmouse/gzmaze/simple.mz"));
+  textEdit = new QTextEdit(tr("~/Projects/Smartmouse_2017/mazes/16x16.mz"));
   textEdit->setContentsMargins(1, 1, 1, 1);
   textEdit->setAlignment(Qt::AlignBottom | Qt::AlignLeft);
   textEdit->setObjectName("maze_filename");
-  textEdit->setFixedHeight(70);
 
   frameLayout->addWidget(browse_button);
   frameLayout->addWidget(textEdit);
@@ -46,7 +48,7 @@ RegenerateWidget::RegenerateWidget()
   mainFrame->setLayout(frameLayout);
   mainLayout->addWidget(mainFrame);
 
-  frameLayout->setContentsMargins(2, 2, 2, 2);
+  frameLayout->setContentsMargins(0, 0, 0, 0);
   mainLayout->setContentsMargins(0, 0, 0, 0);
 
   this->setLayout(mainLayout);

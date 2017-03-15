@@ -57,6 +57,16 @@ target_link_libraries(mouse_plugin gzmaze_msgs ${GAZEBO_LIBRARIES} ${Boost_LIBRA
 set_target_properties(mouse_plugin PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh")
 add_dependencies(mouse_plugin gazebo_pch)
 
+add_library(binary_ir_plugin SHARED BinaryIR.cc)
+target_link_libraries(binary_ir_plugin ${GAZEBO_LIBRARIES})
+set_target_properties(binary_ir_plugin PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh")
+add_dependencies(binary_ir_plugin gazebo_pch)
+
+add_library(analog_ir_plugin SHARED AnalogIR.cc)
+target_link_libraries(analog_ir_plugin ${GAZEBO_LIBRARIES})
+set_target_properties(analog_ir_plugin PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh")
+add_dependencies(analog_ir_plugin gazebo_pch)
+
 add_library(maze_plugin SHARED MazeFactory.cc)
 target_link_libraries(maze_plugin ${GAZEBO_LIBRARIES})
 set_target_properties(maze_plugin PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh")

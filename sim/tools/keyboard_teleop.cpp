@@ -24,11 +24,11 @@ void stateCallback(RobotStatePtr &msg) {
   ignition::math::Quaterniond q = gazebo::msgs::ConvertIgn(msg->position().orientation());
   const double yaw = q.Yaw();
 
-	filter_prints += 1;
+	//filter_prints += 1;
 
-  if (filter_prints % 100 == 0) {
-    printf("l:%f, r:%f, x:%f, y:%f, yaw:%f\r\n", lmps, rmps, x, y, yaw);
-  }
+  //if (filter_prints % 100 == 0) {
+    //printf("l:%f, r:%f, x:%f, y:%f, yaw:%f\r\n", lmps, rmps, x, y, yaw);
+  //}
 }
 
 int main(int argc, char **argv) {
@@ -48,6 +48,7 @@ int main(int argc, char **argv) {
     printf("failed to connect to gazebo. Is it running?\n");
     exit(0);
   }
+    printf("connected to gazebo. Press W,A,S,D,X then enter to send a command.\n");
 
   SimTimer timer;
   Command::setTimerImplementation(&timer);
@@ -65,9 +66,9 @@ int main(int argc, char **argv) {
   gazebo::transport::PublisherPtr controlPub;
   controlPub = node->Advertise<gazebo::msgs::JointCmd>("~/mouse/joint_cmd");
 
-  double kP = 0.04;
-  double kI = 0.01;
-  double kD = 0;
+  double kP = 0.05;
+  double kI = 0.0000;
+  double kD = 0.0000;
 
 	bool keepGoing = true;
 	char key;
@@ -75,28 +76,29 @@ int main(int argc, char **argv) {
   // meter's per second
   double lspeed = 0;
   double rspeed = 0;
+  const double u = .18; // meters/second
 	while (keepGoing){
     key = std::cin.get();
 
     if (key == 'w') {
-      lspeed += 0.1;
-      rspeed += 0.1;
+      lspeed += u;
+      rspeed += u;
 		}
     else if (key == 'a') {
-      lspeed += 0.1;
-      rspeed -= 0.1;
+      lspeed += u;
+      rspeed -= u;
     }
     else if (key == 's') {
       lspeed = 0;
       rspeed = 0;
     }
     else if (key == 'd') {
-      lspeed -= 0.1;
-      rspeed += 0.1;
+      lspeed -= u;
+      rspeed += u;
     }
     else if (key == 'x') {
-      lspeed -= 0.1;
-      rspeed -= 0.1;
+      lspeed -= u;
+      rspeed -= u;
     }
     else if (key == 'q') {
       keepGoing = false;
