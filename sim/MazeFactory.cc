@@ -22,7 +22,7 @@ void MazeFactory::Load(physics::WorldPtr _parent, sdf::ElementPtr _sdf)
 {
   this->parent = _parent;
   node = transport::NodePtr(new transport::Node());
-  node->Init(parent->GetName());
+  node->Init(parent->Name());
   regen_sub = node->Subscribe("~/maze/regenerate", &MazeFactory::Regenerate, this);
 
   //seed random generator
@@ -49,8 +49,7 @@ void MazeFactory::Regenerate(ConstGzStringPtr &msg)
   }
 
   model->GetAttribute("name")->Set("my_maze");
-  model->GetElement("pose")->Set(
-    math::Pose(math::Vector3(0, 0, 0), math::Quaternion(0, 0, 0)));
+  model->GetElement("pose")->Set(ignition::math::Pose3d(0, 0, 0, 0, 0, 0));
   parent->InsertModelSDF(*modelSDF);
 }
 

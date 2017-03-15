@@ -17,7 +17,7 @@ endforeach()
 add_definitions(${QT_DEFINITIONS})
 include_directories(${GAZEBO_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR} ${PROTOBUF_INCLUDE_DIRS} ${Qt5Test_INCLUDE_DIRS})
 link_directories(${GAZEBO_LIBRARY_DIRS})
-set(CMAKE_CXX_FLAGS "${GAZEBO_CXX_FLAGS} ${CMAKE_CXX_FLAGS} -fPIC -DSIM -fext-numeric-literals")
+set(CMAKE_CXX_FLAGS "${GAZEBO_CXX_FLAGS} ${CMAKE_CXX_FLAGS} -fPIC -DSIM -fext-numeric-literals -Wno-deprecated-declarations")
 
 ##################################
 # build the custom protobuf msgs
@@ -35,7 +35,7 @@ target_include_directories(gzmaze_msgs PRIVATE ${PROTOBUF_INCLUDE_DIRS})
 ##################################
 set(pch_out ${CMAKE_CURRENT_BINARY_DIR}/gazebo_pch.hh.gch)
 set(pch_in ${CMAKE_CURRENT_SOURCE_DIR}//gazebo_pch.in)
-set(FLAGS -g -fPIC -DSIM -std=c++11 -fext-numeric-literals -x c++-header)
+set(FLAGS -g -fPIC -DSIM -std=c++11 -fext-numeric-literals -x c++-header -Wno-deprecated-declarations)
 foreach(GZ_INCLUDE ${GAZEBO_INCLUDE_DIRS})
   list(APPEND GZ_INCLUDE_FLAGS "-I${GZ_INCLUDE}")
 endforeach()

@@ -30,15 +30,14 @@ go to [http://gazebosim.org/tutorials?tut=install_ubuntu&cat=install](http://gaz
 
     sudo apt-get install gazebo8 libgazebo8-dev cmake
 
-Test by running `gazebo --verbose`, it should open gazebo
+Test by running `gazebo --verbose`, it should open gazebo and print out version information.
 
 Clone this repo, which contains the gazebo models and plugins.
-
 
 Assuming you've installed gazebo correctly and built with simuation...
 
     source sim/setup.sh
-    gazebo --verbose gzmaze/gzmaze.world
+    gazebo --verbose sim/gzmaze.world
 
 
 If you see errors, fix them before moving on. Then in another terminal...

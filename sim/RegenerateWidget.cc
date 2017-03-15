@@ -13,6 +13,8 @@ RegenerateWidget::RegenerateWidget()
 {
   this->counter = 0;
 
+  gzmsg << "loading" << std::endl;
+
   // Set the frame background and foreground colors
   this->setStyleSheet(
     "QFrame { background-color : rgba(100, 100, 100, 255); color : white; }");
