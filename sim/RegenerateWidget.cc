@@ -9,15 +9,14 @@ GZ_REGISTER_GUI_PLUGIN(RegenerateWidget)
 
 /////////////////////////////////////////////////
 RegenerateWidget::RegenerateWidget()
-  : GUIPlugin()
-{
+        : GUIPlugin() {
   this->counter = 0;
 
   gzmsg << "loading" << std::endl;
 
   // Set the frame background and foreground colors
   this->setStyleSheet(
-    "QFrame { background-color : rgba(100, 100, 100, 255); color : white; }");
+          "QFrame { background-color : rgba(100, 100, 100, 255); color : white; }");
 
   // Create the main layout
   QHBoxLayout *mainLayout = new QHBoxLayout;
@@ -62,17 +61,15 @@ RegenerateWidget::RegenerateWidget()
 }
 
 /////////////////////////////////////////////////
-RegenerateWidget::~RegenerateWidget()
-{
+RegenerateWidget::~RegenerateWidget() {
 }
 
 /////////////////////////////////////////////////
-void RegenerateWidget::OnBrowseFile()
-{
+void RegenerateWidget::OnBrowseFile() {
   QFileDialog fileDialog(this, tr("Open Maze"), QDir::homePath(),
-      tr("Maze Files (*.mz)"));
+                         tr("Maze Files (*.mz)"));
   fileDialog.setWindowFlags(Qt::Window | Qt::WindowCloseButtonHint |
-      Qt::WindowStaysOnTopHint | Qt::CustomizeWindowHint);
+                            Qt::WindowStaysOnTopHint | Qt::CustomizeWindowHint);
   fileDialog.setAcceptMode(QFileDialog::AcceptOpen);
 
   if (fileDialog.exec() == QDialog::Accepted) {
@@ -86,20 +83,18 @@ void RegenerateWidget::OnBrowseFile()
 }
 
 /////////////////////////////////////////////////
-void RegenerateWidget::OnRandomButton()
-{
+void RegenerateWidget::OnRandomButton() {
   msgs::GzString msg;
   msg.set_data("random");
   this->regenPub->Publish(msg);
 }
 
 /////////////////////////////////////////////////
-void RegenerateWidget::OnButton()
-{
+void RegenerateWidget::OnButton() {
   msgs::GzString msg;
   maze_filename = textEdit->toPlainText().toStdString();
   std::string user = std::getenv("USER");
-  boost::replace_all(maze_filename, "~", "/home/"+user);
+  boost::replace_all(maze_filename, "~", "/home/" + user);
   msg.set_data(maze_filename);
   this->regenPub->Publish(msg);
 }

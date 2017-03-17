@@ -1,5 +1,8 @@
+#include <sim/state.pb.h>
+#include <gazebo/physics/PhysicsTypes.hh>
+#include <gazebo/common/Events.hh>
+#include <gazebo/gazebo_core.hh>
 #include "MousePlugin.hh"
-#include "msgs/msgs.h"
 
 GZ_REGISTER_MODEL_PLUGIN(MousePlugin)
 
@@ -17,14 +20,14 @@ void MousePlugin::Load(physics::ModelPtr model, sdf::ElementPtr sdf) {
   // Connect to the world update event.
   // This will trigger the Update function every Gazebo iteration
   updateConn = event::Events::ConnectWorldUpdateBegin(
-      boost::bind(&MousePlugin::Update, this, _1));
+          boost::bind(&MousePlugin::Update, this, _1));
 }
 
 void MousePlugin::Update(const common::UpdateInfo &info) {
   PublishInfo();
 }
 
-void MousePlugin::PublishInfo(){
+void MousePlugin::PublishInfo() {
   ignition::math::Pose3d relativePose = body->WorldCoGPose();
 
   msgs::Vector3d *pos = new msgs::Vector3d();
@@ -42,8 +45,8 @@ void MousePlugin::PublishInfo(){
   pose->set_allocated_position(pos);
   pose->set_allocated_orientation(rot);
 
-  double left_vel = this->left_wheel->GetVelocity(0);
-  double right_vel = this->right_wheel->GetVelocity(0);
+  float left_vel = this->left_wheel->GetVelocity(0);
+  float right_vel = this->right_wheel->GetVelocity(0);
 
   gzmaze::msgs::RobotState state;
   state.set_allocated_position(pose);
