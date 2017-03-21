@@ -11,14 +11,16 @@ Our build system is platformio. Install it first. To install platform IO. simply
 
 ### Building Instructions
 
-    mkdir build
+    mkdir .build
+    cd .build
     cmake ..
     make
 
 
 #### If you want simulation, use this
 
-    mkdir build
+    mkdir .build
+    cd .build
     cmake -DBUILD_SIM=ON ..
     make
 
@@ -42,6 +44,6 @@ Assuming you've installed gazebo correctly and built with simuation...
 
 If you see errors, fix them before moving on. Then in another terminal...
 
-    ./build/SimSolve
+    ./.build/SimSolve
 
 Press enter. Watch the mouse go!
