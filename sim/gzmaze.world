@@ -10,7 +10,7 @@
     </include>
 
     <include>
-      <pose>-1.344 1.344 0.025 0 0 0</pose>
+      <pose>-1.344 1.344 0.015 0 0 0</pose>
       <uri>model://mouse</uri>
     </include>
 
@@ -19,6 +19,11 @@
     </gui>
 
     <plugin name="maze" filename="libmaze_plugin.so"/>
+
+    <joint name="maze_world_joint" type="fixed">
+      <parent>world</parent>
+      <child>my_maze</child>
+    </joint>
 
 		<physics type="ode">
       <real_time_update_rate>1000.0</real_time_update_rate>

@@ -1,5 +1,4 @@
-#ifndef _GUI_EXAMPLE_SPAWN_WIDGET_HH_
-#define _GUI_EXAMPLE_SPAWN_WIDGET_HH_
+#pragma once
 
 #ifndef Q_MOC_RUN  // See: https://bugreports.qt-project.org/browse/QTBUG-22829
 
@@ -55,4 +54,3 @@ namespace gazebo {
     std::string maze_filename;
   };
 }
-#endif

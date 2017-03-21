@@ -1,5 +1,7 @@
 #include <tuple>
 #include <random>
+#include <gazebo/gazebo_core.hh>
+#include <gazebo/msgs/gz_string.pb.h>
 
 namespace gazebo {
 

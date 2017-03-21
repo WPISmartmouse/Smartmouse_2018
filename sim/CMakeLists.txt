@@ -76,8 +76,17 @@ target_link_libraries(maze_plugin ${GAZEBO_LIBRARIES})
 set_target_properties(maze_plugin PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh")
 add_dependencies(maze_plugin gazebo_pch)
 
-QT5_WRAP_CPP(headers_MOC RegenerateWidget.hh)
-add_library(regenerate_widget SHARED ${headers_MOC} RegenerateWidget.cc)
+QT5_WRAP_CPP(sensor_viz_MOC SensorViz.hh)
+add_library(sensor_viz SHARED ${sensor_viz_MOC} SensorViz.cc)
+set_target_properties(sensor_viz PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh")
+target_link_libraries(sensor_viz
+        ${GAZEBO_LIBRARIES}
+        ${QT_LIBRARIES}
+        ${PROTOBUF_LIBRARIES})
+add_dependencies(sensor_viz gazebo_pch)
+
+QT5_WRAP_CPP(regenerate_widget_MOC RegenerateWidget.hh)
+add_library(regenerate_widget SHARED ${regenerate_widget_MOC} RegenerateWidget.cc)
 set_target_properties(regenerate_widget PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh")
 target_link_libraries(regenerate_widget
     ${GAZEBO_LIBRARIES}

@@ -40,6 +40,27 @@ namespace gazebo {
     sdf::ElementPtr model = LoadModel();
     sdf::ElementPtr base_link = model->GetElement("link");
 
+    // Add base
+    sdf::ElementPtr base_collision = base_link->GetElement("collision")->GetElement("geometry");
+    sdf::ElementPtr base_visual = base_link->GetElement("visual")->GetElement("geometry");
+    sdf::ElementPtr collision_box_size = base_collision->AddElement("box")->GetElement("size");
+    sdf::ElementPtr visual_box_size = base_visual->AddElement("box")->GetElement("size");
+    collision_box_size->Set("2.98 2.98 " + std::to_string(BASE_HEIGHT));
+    visual_box_size->Set("2.98 2.98 " + std::to_string(BASE_HEIGHT));
+
+    // Add interia values
+    sdf::ElementPtr inertial = base_link->AddElement("inertial");
+    sdf::ElementPtr inertia = inertial->AddElement("inertia");
+    sdf::ElementPtr ixx = inertia->GetElement("ixx");
+    sdf::ElementPtr iyy = inertia->GetElement("iyy");
+    sdf::ElementPtr izz = inertia->GetElement("izz");
+    sdf::ElementPtr mass = inertial->AddElement("mass");
+    ixx->Set(69);
+    iyy->Set(34);
+    izz->Set(34);
+    mass->Set(50);
+    base_link->PrintValues("");
+
     if (maze_filename == "random") {
       //create random maze here
       InsertRandomWalls(base_link);
@@ -316,7 +337,9 @@ namespace gazebo {
 
     sdf::initFile("root.sdf", modelSDF);
 
-    return modelSDF->Root()->GetElement("model");
+    sdf::ElementPtr root = modelSDF->Root();
+    sdf::ElementPtr model = root->GetElement("model");
+    return model;
   }
 
   Direction operator++(Direction &dir, int) {
