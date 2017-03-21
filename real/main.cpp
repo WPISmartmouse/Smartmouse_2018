@@ -1,8 +1,8 @@
 #include <CommanDuino.h>
 #include "ArduinoTimer.h"
-#include "commands/SolveCommand.h"
-#include "commands/WaitForStart.h"
-#include "commands/WaitThenDrive.h"
+#include "SolveCommand.h"
+#include "WaitForStart.h"
+#include "WaitThenDrive.h"
 #include "RealMouse.h"
 #include "WallFollow.h"
 #include "Flood.h"

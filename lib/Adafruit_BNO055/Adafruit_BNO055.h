@@ -26,12 +26,7 @@
  #include "WProgram.h"
 #endif
 
-#ifdef __AVR_ATtiny85__
- #include <TinyWireM.h>
- #define Wire TinyWireM
-#else
- #include <Wire.h>
-#endif
+#include <i2c_t3.h>
 
 #include <Adafruit_Sensor.h>
 #include <utility/imumaths.h>

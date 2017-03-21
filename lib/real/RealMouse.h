@@ -7,7 +7,7 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055.h>
 #include <utility/imumaths.h>
-#include <Wire.h>
+#include <i2c_t3.h>
 #include <Encoder.h>
 #include <RegulatedMotor.h>
 #include <VL6180X.h>
@@ -100,13 +100,15 @@ private:
   const static int IREMITTER3 = A6;
   const static int IREMITTER4 = A9;
   const static int IREMITTER5 = A11;
-  const static int IREMITTER6 = CANRX;
+  //const static int IREMITTER6 = CANRX;
+  const static int IREMITTER6 = A12;
 
   const static int IRRECEIVER1 = A2;
   const static int IRRECEIVER2 = A5;
   const static int IRRECEIVER3 = A7;
   const static int IRRECEIVER4 = A10;
-  const static int IRRECEIVER5 = DAC1;
+  //const static int IRRECEIVER5 = DAC1;
+  const static int IRRECEIVER5 = A13;
   const static int IRRECEIVER6 =
       A3; // wired to non adc pin. this does not work.
 

@@ -30,7 +30,7 @@ All text above, and the splash screen below must be included in any redistributi
 
 #include <stdlib.h>
 
-#include <Wire.h>
+#include <i2c_t3.h>
 #include <SPI.h>
 #include "Adafruit_GFX.h"
 #include "Adafruit_SSD1306.h"
