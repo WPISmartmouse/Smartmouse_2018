@@ -80,9 +80,9 @@ QT5_WRAP_CPP(sensor_viz_MOC SensorViz.hh)
 add_library(sensor_viz SHARED ${sensor_viz_MOC} SensorViz.cc)
 set_target_properties(sensor_viz PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh")
 target_link_libraries(sensor_viz
-        ${GAZEBO_LIBRARIES}
-        ${QT_LIBRARIES}
-        ${PROTOBUF_LIBRARIES})
+    ${GAZEBO_LIBRARIES}
+    ${QT_LIBRARIES}
+    ${PROTOBUF_LIBRARIES})
 add_dependencies(sensor_viz gazebo_pch)
 
 QT5_WRAP_CPP(regenerate_widget_MOC RegenerateWidget.hh)

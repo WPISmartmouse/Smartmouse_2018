@@ -4,6 +4,7 @@
 
 #include <gazebo/transport/transport.hh>
 #include <gazebo/gui/gui.hh>
+#include <QtGui/QPainter>
 
 #endif
 
@@ -16,17 +17,20 @@ namespace gazebo {
     SensorViz();
     virtual ~SensorViz();
 
-  private:
-    void LeftAnalogCallback(ConstLaserScanStampedPtr &msg);
-    void RightAnalogCallback(ConstLaserScanStampedPtr &msg);
-    void LeftBinaryCallback(ConstLaserScanStampedPtr &msg);
-    void RightBinaryCallback(ConstLaserScanStampedPtr &msg);
+  protected:
+    void paintEvent(QPaintEvent *event);
 
+  private:
     unsigned int counter;
     transport::NodePtr node;
     transport::SubscriberPtr left_analog_sub;
     transport::SubscriberPtr right_analog_sub;
     transport::SubscriberPtr left_binary_sub;
     transport::SubscriberPtr right_binary_sub;
+
+    void LeftAnalogCallback(ConstLaserScanStampedPtr &msg);
+    void RightAnalogCallback(ConstLaserScanStampedPtr &msg);
+    void LeftBinaryCallback(ConstLaserScanStampedPtr &msg);
+    void RightBinaryCallback(ConstLaserScanStampedPtr &msg);
   };
 }

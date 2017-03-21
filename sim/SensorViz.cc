@@ -8,6 +8,8 @@ using namespace gazebo;
 GZ_REGISTER_GUI_PLUGIN(SensorViz)
 
 SensorViz::SensorViz() : GUIPlugin() {
+  setBackgroundRole(QPalette::Base);
+  setAutoFillBackground(true);
 
   this->node = transport::NodePtr(new transport::Node());
   this->node->Init();
@@ -34,4 +36,17 @@ void SensorViz::LeftBinaryCallback(ConstLaserScanStampedPtr &msg) {
 
 void SensorViz::RightBinaryCallback(ConstLaserScanStampedPtr &msg) {
   gzmsg << "right binary" << std::endl;
+}
+
+void SensorViz::paintEvent(QPaintEvent *event) {
+  static const QPoint points[4] = {
+          QPoint(10, 80),
+          QPoint(20, 10),
+          QPoint(80, 30),
+          QPoint(90, 70)
+  };
+
+  QRect rect(10, 20, 80, 60);
+  QPainter painter(this);
+  painter.drawRect(rect);
 }

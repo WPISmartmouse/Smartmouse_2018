@@ -16,6 +16,7 @@
 
     <gui>
       <plugin name="regenerate_widget" filename="libregenerate_widget.so"/>
+      <plugin name="sensor_viz_plugin" filename="libsensor_viz.so"/>
     </gui>
 
     <plugin name="maze" filename="libmaze_plugin.so"/>
