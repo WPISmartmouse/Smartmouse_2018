@@ -9,13 +9,14 @@ else()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Winvalid-pch")
 endif()
 
-file(GLOB_RECURSE COM_SRC lib/common/*.cpp lib/commanduino/*.cpp)
+file(GLOB_RECURSE COM_SRC lib/common_commands/*.cpp lib/common/*.cpp lib/commanduino/*.cpp)
 file(GLOB CONSOLE_SRC console/*.cpp console/commands/*.cpp)
 file(GLOB REAL_SRC lib/real/*.cpp lib/real/commands/*.cpp)
 
 include_directories(build
   lib/commanduino
   lib/common
+  lib/common_commands
   lib/common/commands)
 
 ################################
@@ -44,10 +45,10 @@ endforeach()
 ################################
 # actual real robot programs
 ################################
-add_custom_target(serial COMMAND cd ../ && platformio serialports monitor -b 115200)
+add_custom_target(serial COMMAND cd ../ && platformio serialports monitor -b 9600)
 add_custom_target(upload COMMAND cd ../ && platformio run -v --target upload)
 
-add_custom_target(due COMMAND cd ../ && platformio run -v)
+add_custom_target(robot COMMAND cd ../ && platformio run)
 
 ################################
 # all simulation stuff
@@ -59,7 +60,7 @@ endif()
 ################################
 # testing
 ################################
-if (test)
+if (TESTS)
   add_subdirectory(gtest)
 
   enable_testing()
