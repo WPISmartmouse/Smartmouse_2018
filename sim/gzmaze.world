@@ -20,11 +20,6 @@
 
     <plugin name="maze" filename="libmaze_plugin.so"/>
 
-    <joint name="maze_world_joint" type="fixed">
-      <parent>world</parent>
-      <child>my_maze</child>
-    </joint>
-
 		<physics type="ode">
       <real_time_update_rate>1000.0</real_time_update_rate>
     </physics>
