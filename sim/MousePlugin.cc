@@ -45,13 +45,13 @@ void MousePlugin::PublishInfo() {
   pose->set_allocated_position(pos);
   pose->set_allocated_orientation(rot);
 
-  float left_vel = this->left_wheel->GetVelocity(0);
-  float right_vel = this->right_wheel->GetVelocity(0);
-
-  gzmaze::msgs::RobotState state;
-  state.set_allocated_position(pose);
-  state.set_left_wheel(left_vel);
-  state.set_right_wheel(right_vel);
-  state_pub->Publish(state);
+//  float left_vel = this->left_wheel->GetVelocity(0);
+//  float right_vel = this->right_wheel->GetVelocity(0);
+//
+//  gzmaze::msgs::RobotState state;
+//  state.set_allocated_position(pose);
+//  state.set_left_wheel(left_vel);
+//  state.set_right_wheel(right_vel);
+//  state_pub->Publish(state);
 
 }

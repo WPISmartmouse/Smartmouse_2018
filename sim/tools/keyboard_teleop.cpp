@@ -3,6 +3,8 @@
 #include <cstdio>
 #include <termios.h>
 #include <unistd.h>
+#include <gazebo/msgs/joint_cmd.pb.h>
+#include <gazebo/transport/TransportTypes.hh>
 
 #include "SimTimer.h"
 #include "msgs/msgs.h"
@@ -76,7 +78,7 @@ int main(int argc, char **argv) {
   // meter's per second
   double lspeed = 0;
   double rspeed = 0;
-  const double u = .18; // meters/second
+  const double u = .09; // meters/second
 	while (keepGoing){
     key = std::cin.get();
 

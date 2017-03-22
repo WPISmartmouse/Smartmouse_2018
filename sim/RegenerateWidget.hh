@@ -12,45 +12,21 @@ namespace gazebo {
   class GAZEBO_VISIBLE RegenerateWidget : public GUIPlugin {
   Q_OBJECT
 
-    /// \brief Constructor
-    /// \param[in] _parent Parent widget
   public:
+    static constexpr unsigned int WIDTH = 350;
+    static constexpr unsigned int HEIGHT = 120;
     RegenerateWidget();
-
-    /// \brief Destructor
-  public:
     virtual ~RegenerateWidget();
 
-    /// \brief Callback trigged when the button is pressed.
   protected slots:
-
     void OnRandomButton();
-
-    /// \brief Callback trigged when the button is pressed.
-  protected slots:
-
     void OnBrowseFile();
-
-    /// \brief Callback trigged when the button is pressed.
-  protected slots:
-
     void OnButton();
 
-    /// \brief Counter used to create unique model names
-  private:
-    unsigned int counter;
-
-    /// \brief Node used to establish communication with gzserver.
   private:
     transport::NodePtr node;
-
-    /// \brief Publisher of factory messages.
-  private:
     transport::PublisherPtr regenPub;
-
-  private:
     QTextEdit *textEdit;
-  private:
     std::string maze_filename;
   };
 }

@@ -59,7 +59,6 @@ namespace gazebo {
     iyy->Set(34);
     izz->Set(34);
     mass->Set(50);
-    base_link->PrintValues("");
 
     if (maze_filename == "random") {
       //create random maze here

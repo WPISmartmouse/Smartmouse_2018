@@ -10,10 +10,6 @@ GZ_REGISTER_GUI_PLUGIN(RegenerateWidget)
 /////////////////////////////////////////////////
 RegenerateWidget::RegenerateWidget()
         : GUIPlugin() {
-  this->counter = 0;
-
-  gzmsg << "loading" << std::endl;
-
   // Set the frame background and foreground colors
   this->setStyleSheet(
           "QFrame { background-color : rgba(100, 100, 100, 255); color : white; }");
@@ -52,8 +48,8 @@ RegenerateWidget::RegenerateWidget()
 
   this->setLayout(mainLayout);
 
-  this->move(10, 10);
-  this->resize(350, 120);
+  this->move(0, 0);
+  setFixedSize(RegenerateWidget::WIDTH, RegenerateWidget::HEIGHT);
 
   this->node = transport::NodePtr(new transport::Node());
   this->node->Init();

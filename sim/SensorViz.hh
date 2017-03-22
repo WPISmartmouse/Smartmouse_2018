@@ -4,10 +4,10 @@
 
 #include <gazebo/transport/transport.hh>
 #include <gazebo/gui/gui.hh>
-#include <QtGui/QPainter>
 
 #endif
 
+#include <QtGui/QPainter>
 
 namespace gazebo {
   class GAZEBO_VISIBLE SensorViz : public GUIPlugin {
@@ -21,16 +21,31 @@ namespace gazebo {
     void paintEvent(QPaintEvent *event);
 
   private:
-    unsigned int counter;
+    constexpr static unsigned int WIDTH = 200; // pixels
+    constexpr static unsigned int HEIGHT = 120; // pixels
+    constexpr static double ANALOG_ANGLE = 1.35255; // radians
+    constexpr static double BINARY_ANGLE = 0.65; // radians
+    constexpr static double LEFT_BINARY_THRESHOLD = 0.18; // meters
+    constexpr static double RIGHT_BINARY_THRESHOLD = 0.18; // meters
+    constexpr static double FRONT_BINARY_THRESHOLD = 0.18; // meters
+    constexpr static double meters_to_pixels = 625;
     transport::NodePtr node;
     transport::SubscriberPtr left_analog_sub;
     transport::SubscriberPtr right_analog_sub;
     transport::SubscriberPtr left_binary_sub;
     transport::SubscriberPtr right_binary_sub;
+    transport::SubscriberPtr front_binary_sub;
+    transport::SubscriberPtr statsSub;
+
+    bool leftWall, rightWall, frontWall;
+    double leftAnalogDist, rightAnalogDist;
+    bool leftBinaryState, rightBinaryState, frontBinaryState;
 
     void LeftAnalogCallback(ConstLaserScanStampedPtr &msg);
     void RightAnalogCallback(ConstLaserScanStampedPtr &msg);
     void LeftBinaryCallback(ConstLaserScanStampedPtr &msg);
     void RightBinaryCallback(ConstLaserScanStampedPtr &msg);
+    void FrontBinaryCallback(ConstLaserScanStampedPtr &msg);
+    void OnStats(ConstWorldStatisticsPtr &msg);
   };
 }

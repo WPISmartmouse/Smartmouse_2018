@@ -34,6 +34,7 @@ add_library(gzmaze_msgs SHARED ${PROTO_SRCS})
 target_link_libraries(gzmaze_msgs ${PROTOBUF_LIBRARY})
 target_include_directories(gzmaze_msgs PRIVATE ${PROTOBUF_INCLUDE_DIRS})
 
+
 ##################################
 # procompiled gazebo header
 ##################################
@@ -52,6 +53,7 @@ add_custom_command(OUTPUT ${pch_out}
   VERBATIM)
 
 add_custom_target(gazebo_pch DEPENDS ${pch_out})
+
 
 ##################################
 # build the gazebo plugins

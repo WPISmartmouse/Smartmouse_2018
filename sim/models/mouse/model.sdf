@@ -177,6 +177,28 @@
         <update_rate>20</update_rate>
         <visualize>true</visualize>
       </sensor>
+      <sensor name="front_binary" type="ray">
+        <pose>0.043 0 0.015 0 0 0</pose>
+        <ray>
+          <scan>
+            <horizontal>
+              <samples>10</samples>
+              <resolution>0.10</resolution>
+              <min_angle>-0.04</min_angle>
+              <max_angle>0.04</max_angle>
+            </horizontal>
+          </scan>
+          <range>
+            <min>0.02</min>
+            <max>0.15</max>
+            <resolution>0.015</resolution>
+          </range>
+        </ray>
+        <plugin name="front_binary_ray" filename="libRayPlugin.so" />
+        <always_on>1</always_on>
+        <update_rate>20</update_rate>
+        <visualize>true</visualize>
+      </sensor>
     </link>
     <link name='right_wheel'>
       <pose frame=''>0.0 0.0313 0.02 0 1.57079 1.57079</pose>
