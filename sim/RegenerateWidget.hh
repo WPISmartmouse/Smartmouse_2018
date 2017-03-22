@@ -15,12 +15,17 @@ namespace gazebo {
   public:
     static constexpr unsigned int WIDTH = 350;
     static constexpr unsigned int HEIGHT = 120;
+
     RegenerateWidget();
+
     virtual ~RegenerateWidget();
 
   protected slots:
+
     void OnRandomButton();
+
     void OnBrowseFile();
+
     void OnButton();
 
   private:

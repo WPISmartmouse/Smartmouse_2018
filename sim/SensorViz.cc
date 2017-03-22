@@ -18,11 +18,11 @@ SensorViz::SensorViz() : GUIPlugin(),
                          leftBinaryState(false),
                          rightBinaryState(false),
                          frontBinaryState(false) {
-  this->move(RegenerateWidget::WIDTH + 2, 0);
+  this->move(RegenerateWidget::WIDTH, 0);
   this->resize(SensorViz::WIDTH, SensorViz::HEIGHT);
-  QPalette pal = palette();
 
-  // set black background
+  // set background
+  QPalette pal = palette();
   pal.setColor(QPalette::Background, Qt::lightGray);
   this->setAutoFillBackground(true);
   this->setPalette(pal);
@@ -39,17 +39,12 @@ SensorViz::SensorViz() : GUIPlugin(),
                                                  this);
   this->statsSub = this->node->Subscribe("~/world_stats",
                                          &SensorViz::OnStats, this);
-
-//  QTimer *timer = new QTimer(this);
-//  connect(timer, SIGNAL(timeout()), this, SLOT(Update()));
-//  timer->start(30); // 100 millisecond period
 }
 
 SensorViz::~SensorViz() {
 }
 
 void SensorViz::OnStats(ConstWorldStatisticsPtr &msg) {
-  // pass
   update();
 }
 

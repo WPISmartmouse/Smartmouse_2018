@@ -5,6 +5,8 @@
 #include <unistd.h>
 #include <gazebo/msgs/joint_cmd.pb.h>
 #include <gazebo/transport/TransportTypes.hh>
+#include <ignition/math/Quaternion.hh>
+#include <gazebo/msgs/msgs.hh>
 
 #include "SimTimer.h"
 #include "msgs/msgs.h"
@@ -16,8 +18,8 @@ int filter_prints = 0;
 
 void stateCallback(RobotStatePtr &msg) {
   // radians/sec
-  double l = msg->left_wheel();
-  double r = msg->right_wheel();
+  double l = msg->left_wheel_velocity();
+  double r = msg->right_wheel_velocity();
   double lmps = l / (2 * M_PI) * WHEEL_CIRC;
   double rmps = r / (2 * M_PI) * WHEEL_CIRC;
 

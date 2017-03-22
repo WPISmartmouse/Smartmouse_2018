@@ -78,6 +78,16 @@ target_link_libraries(maze_plugin ${GAZEBO_LIBRARIES})
 set_target_properties(maze_plugin PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh")
 add_dependencies(maze_plugin gazebo_pch)
 
+QT5_WRAP_CPP(state_viz_MOC StateViz.hh)
+add_library(state_viz SHARED ${state_viz_MOC} StateViz.cc)
+set_target_properties(state_viz PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh")
+target_link_libraries(state_viz
+    gzmaze_msgs
+    ${GAZEBO_LIBRARIES}
+    ${QT_LIBRARIES}
+    ${PROTOBUF_LIBRARIES})
+add_dependencies(state_viz gazebo_pch)
+
 QT5_WRAP_CPP(sensor_viz_MOC SensorViz.hh)
 add_library(sensor_viz SHARED ${sensor_viz_MOC} SensorViz.cc)
 set_target_properties(sensor_viz PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh")

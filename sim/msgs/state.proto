@@ -4,7 +4,7 @@ import "pose.proto";
 message RobotState
 {
   required gazebo.msgs.Pose    position    = 1;
-  required float               left_wheel  = 2;
-  required float               right_wheel = 3;
+  required float               left_wheel_velocity  = 2;
+  required float               right_wheel_velocity = 3;
 
 }

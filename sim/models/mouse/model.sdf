@@ -243,8 +243,11 @@
         <surface>
           <friction>
             <ode>
-              <mu>10</mu>
-              <mu2>10</mu2>
+              <mu>0.5</mu>
+              <mu2>0.75</mu2>
+              <fdir1>0 0 1</fdir1>
+              <slip1>0</slip1>
+              <slip2>0</slip2>
             </ode>
             <torsional>
               <coefficient>1</coefficient>
@@ -252,18 +255,11 @@
               <surface_radius>0</surface_radius>
               <use_patch_radius>1</use_patch_radius>
               <ode>
-                <slip>0</slip>
+                <slip>10</slip>
               </ode>
             </torsional>
           </friction>
-          <bounce>
-            <restitution_coefficient>0</restitution_coefficient>
-            <threshold>1e+06</threshold>
-          </bounce>
           <contact>
-            <collide_without_contact>0</collide_without_contact>
-            <collide_without_contact_bitmask>1</collide_without_contact_bitmask>
-            <collide_bitmask>1</collide_bitmask>
             <ode>
               <soft_cfm>0</soft_cfm>
               <soft_erp>0.2</soft_erp>
@@ -317,8 +313,11 @@
         <surface>
           <friction>
             <ode>
-              <mu>10</mu>
-              <mu2>10</mu2>
+              <mu>0.50</mu>
+              <mu2>0.75</mu2>
+              <fdir1>0 0 1</fdir1>
+              <slip1>0</slip1>
+              <slip2>0</slip2>
             </ode>
             <torsional>
               <coefficient>1</coefficient>
@@ -326,18 +325,11 @@
               <surface_radius>0</surface_radius>
               <use_patch_radius>1</use_patch_radius>
               <ode>
-                <slip>0</slip>
+                <slip>10</slip>
               </ode>
             </torsional>
           </friction>
-          <bounce>
-            <restitution_coefficient>0</restitution_coefficient>
-            <threshold>1e+06</threshold>
-          </bounce>
           <contact>
-            <collide_without_contact>0</collide_without_contact>
-            <collide_without_contact_bitmask>1</collide_without_contact_bitmask>
-            <collide_bitmask>1</collide_bitmask>
             <ode>
               <soft_cfm>0</soft_cfm>
               <soft_erp>0.2</soft_erp>
@@ -357,12 +349,11 @@
       <axis>
         <xyz>0 0 1</xyz>
         <limit>
-          <effort>0.1</effort>
-          <velocity>40</velocity>
+          <effort>0.016</effort> <!-- 16 kg-cm -->
+          <velocity>41.88</velocity> <!-- ~400 rpm -->
         </limit>
         <dynamics>
-          <damping>0.00001</damping>
-          <friction>0</friction>
+          <friction>0.001</friction>
         </dynamics>
       </axis>
       <physics>
@@ -387,12 +378,11 @@
         <xyz>0 0 1</xyz>
         <use_parent_model_frame>0</use_parent_model_frame>
         <limit>
-          <effort>0.1</effort>
-          <velocity>40</velocity>
+          <effort>0.016</effort> <!-- 16 kg-cm -->
+          <velocity>41.88</velocity> <!-- ~400 rpm -->
         </limit>
         <dynamics>
-          <damping>0.00001</damping>
-          <friction>0</friction>
+          <friction>0.001</friction> <!-- not sure how to calculate this, or what the units are -->
         </dynamics>
       </axis>
       <physics>

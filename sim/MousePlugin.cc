@@ -50,8 +50,8 @@ void MousePlugin::PublishInfo() {
 
   gzmaze::msgs::RobotState state;
   state.set_allocated_position(pose);
-  state.set_left_wheel(left_vel);
-  state.set_right_wheel(right_vel);
+  state.set_left_wheel_velocity(left_vel);
+  state.set_right_wheel_velocity(right_vel);
   state_pub->Publish(state);
 
 }

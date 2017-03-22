@@ -14,6 +14,9 @@ namespace gazebo {
   Q_OBJECT
 
   public:
+    constexpr static unsigned int WIDTH = 200; // pixels
+    constexpr static unsigned int HEIGHT = 120; // pixels
+
     SensorViz();
     virtual ~SensorViz();
 
@@ -21,8 +24,6 @@ namespace gazebo {
     void paintEvent(QPaintEvent *event);
 
   private:
-    constexpr static unsigned int WIDTH = 200; // pixels
-    constexpr static unsigned int HEIGHT = 120; // pixels
     constexpr static double ANALOG_ANGLE = 1.35255; // radians
     constexpr static double BINARY_ANGLE = 0.65; // radians
     constexpr static double LEFT_BINARY_THRESHOLD = 0.18; // meters

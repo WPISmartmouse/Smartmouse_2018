@@ -17,12 +17,18 @@
     <gui>
       <plugin name="regenerate_widget" filename="libregenerate_widget.so"/>
       <plugin name="sensor_viz_plugin" filename="libsensor_viz.so"/>
+      <plugin name="state_viz_plugin" filename="libstate_viz.so"/>
     </gui>
 
     <plugin name="maze" filename="libmaze_plugin.so"/>
 
 		<physics type="ode">
       <real_time_update_rate>1000.0</real_time_update_rate>
+      <ode>
+				<constraints>
+          <cfm>0.2</cfm> <!-- increasing this (0 - 1) can increase numerical stability -->
+        </constraints>
+      </ode>
     </physics>
   </world>
 </sdf>
