@@ -178,13 +178,13 @@ void SensorViz::paintEvent(QPaintEvent *event) {
   painter.drawLine(mouse_x + 32, mouse_y, mouse_x + 32 + bin_l, mouse_y);
 
   // text for analog sensors
-  char leftDistStr[6];
-  snprintf(leftDistStr, 6, "%0.2f m" ,this->leftAnalogDist);
+  char leftDistStr[8];
+  snprintf(leftDistStr, 8, "%2.1f mm" ,this->leftAnalogDist * 1000);
   painter.setPen(QPen(Qt::black));
   painter.drawText(30, 30, leftDistStr);
 
-  char rightDistStr[6];
-  snprintf(rightDistStr, 6, "%0.2f m" ,this->rightAnalogDist);
+  char rightDistStr[8];
+  snprintf(rightDistStr, 8, "%2.1f mm" ,this->rightAnalogDist * 1000);
   painter.setPen(QPen(Qt::black));
   painter.drawText(30, HEIGHT - 20, rightDistStr);
 }
