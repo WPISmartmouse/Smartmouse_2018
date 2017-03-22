@@ -71,8 +71,8 @@
           <friction>
             <ode>
               <mu>0.01</mu>
-              <mu2>0.01</mu2>
-              <fdir1>0 0 0</fdir1>
+              <mu2>0.001</mu2>
+              <fdir1>0 1 0</fdir1>
               <slip1>0</slip1>
               <slip2>0</slip2>
             </ode>
@@ -243,8 +243,8 @@
         <surface>
           <friction>
             <ode>
-              <mu>0.5</mu>
-              <mu2>0.75</mu2>
+              <mu>0.04</mu>
+              <mu2>0.08</mu2>
               <fdir1>0 0 1</fdir1>
               <slip1>0</slip1>
               <slip2>0</slip2>
@@ -313,8 +313,8 @@
         <surface>
           <friction>
             <ode>
-              <mu>0.50</mu>
-              <mu2>0.75</mu2>
+              <mu>0.04</mu>
+              <mu2>0.08</mu2>
               <fdir1>0 0 1</fdir1>
               <slip1>0</slip1>
               <slip2>0</slip2>
@@ -353,7 +353,7 @@
           <velocity>41.88</velocity> <!-- ~400 rpm -->
         </limit>
         <dynamics>
-          <friction>0.001</friction>
+          <friction>0.00020</friction>
         </dynamics>
       </axis>
       <physics>
@@ -382,7 +382,7 @@
           <velocity>41.88</velocity> <!-- ~400 rpm -->
         </limit>
         <dynamics>
-          <friction>0.001</friction> <!-- not sure how to calculate this, or what the units are -->
+          <friction>0.00020</friction> <!-- not sure how to calculate this, or what the units are -->
         </dynamics>
       </axis>
       <physics>

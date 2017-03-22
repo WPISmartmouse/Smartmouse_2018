@@ -25,6 +25,8 @@ namespace gazebo {
     constexpr static unsigned int WIDTH = 250; // pixels
     constexpr static unsigned int HEIGHT = 40; // pixels
 
+    float left_accumulator, right_accumulator;
+
     transport::NodePtr node;
     transport::SubscriberPtr state_sub;
 
