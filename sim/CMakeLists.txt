@@ -120,7 +120,7 @@ add_dependencies(sim gazebo_pch)
 #################################
 # actual sim mouse programs
 #################################
-set(SIMS SimSolve SimStepSolve SimNavTest)
+set(SIMS SimSolve SimNavTest)
 
 foreach(MAIN ${SIMS})
   add_executable(${MAIN} "main/${MAIN}.cpp")

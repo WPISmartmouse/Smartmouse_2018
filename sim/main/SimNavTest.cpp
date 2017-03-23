@@ -35,6 +35,7 @@ int main(int argc, char *argv[]) {
   SimMouse::inst()->indicatorPub = node->Advertise<gazebo::msgs::Visual>("~/visual", AbstractMaze::MAZE_SIZE *
                                                                                      AbstractMaze::MAZE_SIZE);
 
+  // .01 seconds
   usleep(10000);
 
   SimMouse::inst()->simInit();
