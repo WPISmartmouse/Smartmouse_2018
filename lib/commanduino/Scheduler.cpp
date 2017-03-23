@@ -4,6 +4,7 @@ Scheduler::Scheduler(Command *masterCommand) {
   addCommand(masterCommand);
 }
 
+
 void Scheduler::addCommand(Command *command) {
   commands.add(command);
 }

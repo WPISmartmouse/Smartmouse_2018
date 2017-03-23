@@ -24,11 +24,6 @@ namespace gazebo {
     void paintEvent(QPaintEvent *event);
 
   private:
-    constexpr static double ANALOG_ANGLE = 1.35255; // radians
-    constexpr static double BINARY_ANGLE = 0.65; // radians
-    constexpr static double LEFT_BINARY_THRESHOLD = 0.18; // meters
-    constexpr static double RIGHT_BINARY_THRESHOLD = 0.18; // meters
-    constexpr static double FRONT_BINARY_THRESHOLD = 0.18; // meters
     constexpr static double meters_to_pixels = 625;
     transport::NodePtr node;
     transport::SubscriberPtr left_analog_sub;

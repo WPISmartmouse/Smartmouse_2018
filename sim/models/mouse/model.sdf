@@ -31,6 +31,7 @@
         </material>
       </visual>
       <collision name='main_body_collision'>
+        <max_contacts>10</max_contacts>
         <pose>0 0.032 0.015 1.5707 0 0</pose>
         <geometry>
           <mesh>
@@ -43,17 +44,14 @@
             <ode>
               <mu>0.01</mu>
               <mu2>0.01</mu2>
-              <fdir1>0 0 0</fdir1>
-              <slip1>0</slip1>
-              <slip2>0</slip2>
             </ode>
           </friction>
           <contact>
             <ode>
-              <soft_cfm>0</soft_cfm>
+              <soft_cfm>0.2</soft_cfm>
               <soft_erp>0.2</soft_erp>
               <kp>1e13</kp>
-              <kd>1.0</kd>
+              <kd>5e8</kd>
               <max_vel>0.01</max_vel>
               <min_depth>0</min_depth>
             </ode>
@@ -62,6 +60,7 @@
       </collision>
       <collision name='front_runner_collision'>
         <pose frame=''>0.05 0 0.002 0 0 0</pose>
+        <max_contacts>4</max_contacts>
         <geometry>
           <box>
             <size>0.01 0.076 0.002</size>
@@ -70,19 +69,18 @@
         <surface>
           <friction>
             <ode>
-              <mu>0.01</mu>
+              <mu>0.001</mu>
               <mu2>0.001</mu2>
-              <fdir1>0 1 0</fdir1>
               <slip1>0</slip1>
               <slip2>0</slip2>
             </ode>
           </friction>
           <contact>
             <ode>
-              <soft_cfm>0</soft_cfm>
+              <soft_cfm>0.2</soft_cfm>
               <soft_erp>0.2</soft_erp>
               <kp>1e13</kp>
-              <kd>1.0</kd>
+              <kd>5e8</kd>
               <max_vel>0.01</max_vel>
               <min_depth>0</min_depth>
             </ode>
@@ -201,7 +199,7 @@
       </sensor>
     </link>
     <link name='right_wheel'>
-      <pose frame=''>0.0 0.0313 0.02 0 1.57079 1.57079</pose>
+      <pose frame=''>0.0 0.0313 0.019 0 1.57079 1.57079</pose>
       <inertial>
         <mass>0.01</mass>
         <inertia>
@@ -214,9 +212,6 @@
         </inertia>
         <pose frame=''>0 0 0 0 0 0</pose>
       </inertial>
-      <self_collide>0</self_collide>
-      <kinematic>0</kinematic>
-      <gravity>1</gravity>
       <visual name='visual'>
         <pose frame=''>0 0 0 0 0 0</pose>
         <geometry>
@@ -234,6 +229,7 @@
       </visual>
       <collision name='collision'>
         <pose frame=''>0 0 0 0 0 0</pose>
+        <max_contacts>4</max_contacts>
         <geometry>
           <cylinder>
             <radius>0.015</radius>
@@ -247,24 +243,15 @@
               <mu2>0.08</mu2>
               <fdir1>0 0 1</fdir1>
               <slip1>0</slip1>
-              <slip2>0</slip2>
+              <slip2>0</slip2> <!-- increases "drifting" -->
             </ode>
-            <torsional>
-              <coefficient>1</coefficient>
-              <patch_radius>0</patch_radius>
-              <surface_radius>0</surface_radius>
-              <use_patch_radius>1</use_patch_radius>
-              <ode>
-                <slip>10</slip>
-              </ode>
-            </torsional>
           </friction>
           <contact>
             <ode>
-              <soft_cfm>0</soft_cfm>
-              <soft_erp>0.2</soft_erp>
-              <kp>1000000.0</kp>
-              <kd>100.0</kd>
+              <soft_cfm>1.7e-10</soft_cfm>
+              <soft_erp>0.17</soft_erp>
+              <kp>1e9</kp>
+              <kd>5e10</kd>
               <max_vel>0.01</max_vel>
               <min_depth>0</min_depth>
             </ode>
@@ -273,7 +260,7 @@
       </collision>
     </link>
     <link name='left_wheel'>
-      <pose frame=''>0.0 -0.0313 0.02 0 1.57079 1.57079</pose>
+      <pose frame=''>0.0 -0.0313 0.019 0 1.57079 1.57079</pose>
       <inertial>
         <mass>0.01</mass>
         <inertia>
@@ -285,8 +272,6 @@
           <izz>1.125e-06</izz>
         </inertia>
       </inertial>
-      <self_collide>0</self_collide>
-      <kinematic>0</kinematic>
       <visual name='visual'>
         <pose frame=''>0 0 0 0 0 0</pose>
         <geometry>
@@ -303,6 +288,7 @@
         </material>
       </visual>
       <collision name='collision'>
+        <max_contacts>4</max_contacts>
         <pose frame=''>0 0 0 0 0 0</pose>
         <geometry>
           <cylinder>
@@ -319,22 +305,13 @@
               <slip1>0</slip1>
               <slip2>0</slip2>
             </ode>
-            <torsional>
-              <coefficient>1</coefficient>
-              <patch_radius>0</patch_radius>
-              <surface_radius>0</surface_radius>
-              <use_patch_radius>1</use_patch_radius>
-              <ode>
-                <slip>10</slip>
-              </ode>
-            </torsional>
           </friction>
           <contact>
             <ode>
-              <soft_cfm>0</soft_cfm>
-              <soft_erp>0.2</soft_erp>
-              <kp>1000000.0</kp>
-              <kd>100.0</kd>
+              <soft_cfm>1.7e-10</soft_cfm>
+              <soft_erp>0.17</soft_erp>
+              <kp>1e9</kp>
+              <kd>5e10</kd>
               <max_vel>0.01</max_vel>
               <min_depth>0</min_depth>
             </ode>
@@ -360,11 +337,11 @@
         <ode>
           <implicit_spring_damper>true</implicit_spring_damper>
           <limit>
-            <cfm>0</cfm>
+            <cfm>0.2</cfm>
             <erp>0.2</erp>
           </limit>
           <suspension>
-            <cfm>0</cfm>
+            <cfm>0.2</cfm>
             <erp>0.2</erp>
           </suspension>
         </ode>
@@ -406,8 +383,3 @@
     </plugin>
   </model>
 </sdf>
-<!--
-.75 newtons front slip
-.50 newtons side slip
---!>
-

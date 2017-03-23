@@ -1,9 +1,7 @@
 #ifdef SIM
 #include "SimMouse.h"
-#include <unistd.h>
-#include <stdio.h>
-#include <math.h>
-#include <cstdlib>
+#include <ignition/math.hh>
+#include <gazebo/msgs/msgs.hh>
 
 const float SimMouse::MAX_SPEED = 100;
 const float SimMouse::MIN_SPEED = 20;
@@ -96,54 +94,49 @@ void SimMouse::indicatePath(int row, int col, std::string path, gazebo::common::
   publishIndicators();
 }
 
-void SimMouse::poseCallback(ConstPosePtr &msg){
-  pose.Pos().X(msg->position().x());
-  pose.Pos().Y(msg->position().y());
-  pose.Pos().Z(msg->position().z());
+void SimMouse::poseCallback(ConstRobotStatePtr &msg){
+  pose.Pos().X(msg->pose().position().x());
+  pose.Pos().Y(msg->pose().position().y());
+  pose.Pos().Z(msg->pose().position().z());
 
-  pose.Rot().X(msg->orientation().x());
-  pose.Rot().Y(msg->orientation().y());
-  pose.Rot().Z(msg->orientation().z());
-  pose.Rot().W(msg->orientation().w());
+  pose.Rot().X(msg->pose().orientation().x());
+  pose.Rot().Y(msg->pose().orientation().y());
+  pose.Rot().Z(msg->pose().orientation().z());
+  pose.Rot().W(msg->pose().orientation().w());
 
   poseCond.notify_all();
-}
 
-void SimMouse::checkWallsCallback(ConstLaserScanStampedPtr &msg){
   //transform from Mouse frame to Cardinal frame;
-  int size = msg->scan().ranges_size();
-
-  for (int i=0;i<size;i++){
-    rawDistances[i] = msg->scan().ranges(i);
-  }
-
-  const int FRONT_INDEX = 1;
-  const int RIGHT_INDEX = 2;
+  this->range_data.left_analog = msg->left_analog();
+  this->range_data.right_analog = msg->right_analog();
+  this->range_data.left_binary = msg->left_binary();
+  this->range_data.right_binary = msg->right_binary();
+  this->range_data.front_binary = msg->front_binary();
 
   switch(dir) {
     case Direction::N:
-      walls[0] = msg->scan().ranges(FRONT_INDEX) < WALL_DIST;
-      walls[1] = msg->scan().ranges(0) < WALL_DIST;
+      walls[0] = range_data.front_binary;
+      walls[1] = range_data.left_binary;
       walls[2] = false;
-      walls[3] = msg->scan().ranges(RIGHT_INDEX) < WALL_DIST;
+      walls[3] = range_data.right_binary;
       break;
     case Direction::E:
-      walls[0] = msg->scan().ranges(RIGHT_INDEX) < WALL_DIST;
-      walls[1] = msg->scan().ranges(FRONT_INDEX) < WALL_DIST;
-      walls[2] = msg->scan().ranges(0) < WALL_DIST;
+      walls[0] = range_data.right_binary;
+      walls[1] = range_data.front_binary;
+      walls[2] = range_data.left_binary;
       walls[3] = false;
       break;
     case Direction::S:
       walls[0] = false;
-      walls[1] = msg->scan().ranges(RIGHT_INDEX) < WALL_DIST;
-      walls[2] = msg->scan().ranges(FRONT_INDEX) < WALL_DIST;
-      walls[3] = msg->scan().ranges(0) < WALL_DIST;
+      walls[1] = range_data.right_binary;
+      walls[2] = range_data.front_binary;
+      walls[3] = range_data.left_binary;
       break;
     case Direction::W:
-      walls[0] = msg->scan().ranges(0) < WALL_DIST;
+      walls[0] = range_data.left_binary;
       walls[1] = false;
-      walls[2] = msg->scan().ranges(RIGHT_INDEX) < WALL_DIST;
-      walls[3] = msg->scan().ranges(FRONT_INDEX) < WALL_DIST;;
+      walls[2] = range_data.right_binary;
+      walls[3] = range_data.front_binary;
       break;
   }
   checkWallsCond.notify_all();
@@ -190,7 +183,7 @@ void SimMouse::simInit(){
 }
 
 //lspeed and rspeed should be from -1 to 1
-void SimMouse::setSpeed(float lspeed, float rspeed){
+void SimMouse::setSpeed(double lspeed, double rspeed){
   gazebo::msgs::JointCmd left;
 	left.set_name("mouse::left_wheel_joint");
 	left.mutable_velocity()->set_target(lspeed);
@@ -208,11 +201,11 @@ void SimMouse::setSpeed(float lspeed, float rspeed){
 	controlPub->Publish(right);
 }
 
-float *SimMouse::getRawDistances(){
+SimMouse::RangeData SimMouse::getRangeData(){
   //wait for the next message to occur
   std::unique_lock<std::mutex> lk(checkWallsMutex);
   checkWallsCond.wait(lk);
-  return rawDistances;
+  return this->range_data;
 }
 
 ignition::math::Pose3d SimMouse::getPose(){

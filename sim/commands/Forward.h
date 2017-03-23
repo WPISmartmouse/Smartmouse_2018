@@ -2,6 +2,7 @@
 
 #ifdef SIM
 
+#include <ignition/math.hh>
 #include "CommanDuino.h"
 #include "SimMouse.h"
 #include "Mouse.h"
@@ -15,21 +16,20 @@ class Forward : public Command {
     void end();
 
   private:
-    bool outOfRange(float range);
-    float forwardDisplacement(ignition::math::Pose3d p0, ignition::math::Pose3d p1);
-    float yawDiff(float y1, float y2);
+    double forwardDisplacement(ignition::math::Pose3d p0, ignition::math::Pose3d p1);
+    double yawDiff(double y1, double y2);
 
     ignition::math::Pose3d start;
-    float disp;
+    double disp;
     SimMouse *mouse;
 
-    float l,r;
+    double l,r;
     bool checkedWalls;
-    float *distances;
+    SimMouse::RangeData range_data;
     bool walls[4];
     bool wallOnLeft, wallOnRight;
     const float kPWall = 2000;
-    const float kPDisp= 3000;
+    const float kPDisp = 3000;
 
 };
 #endif

@@ -3,6 +3,7 @@
 #include <boost/algorithm/string/replace.hpp>
 #include "SensorViz.hh"
 #include "RegenerateWidget.hh"
+#include "SimMouse.h"
 
 using namespace gazebo;
 
@@ -76,21 +77,21 @@ void SensorViz::LeftBinaryCallback(ConstLaserScanStampedPtr &msg) {
   msgs::LaserScan scan = msg->scan();
   assert(scan.ranges_size() == 1);
   double range = scan.ranges(0);
-  this->leftBinaryState = !std::isinf(range) and range < LEFT_BINARY_THRESHOLD;
+  this->leftBinaryState = !std::isinf(range) and range < SimMouse::LEFT_BINARY_THRESHOLD;
 }
 
 void SensorViz::RightBinaryCallback(ConstLaserScanStampedPtr &msg) {
   msgs::LaserScan scan = msg->scan();
   assert(scan.ranges_size() == 1);
   double range = scan.ranges(0);
-  this->rightBinaryState = !std::isinf(range) and range < RIGHT_BINARY_THRESHOLD;
+  this->rightBinaryState = !std::isinf(range) and range < SimMouse::RIGHT_BINARY_THRESHOLD;
 }
 
 void SensorViz::FrontBinaryCallback(ConstLaserScanStampedPtr &msg) {
   msgs::LaserScan scan = msg->scan();
   assert(scan.ranges_size() == 1);
   double range = scan.ranges(0);
-  this->frontBinaryState = !std::isinf(range) and range < FRONT_BINARY_THRESHOLD;
+  this->frontBinaryState = !std::isinf(range) and range < SimMouse::FRONT_BINARY_THRESHOLD;
 }
 
 void SensorViz::paintEvent(QPaintEvent *event) {
@@ -132,13 +133,13 @@ void SensorViz::paintEvent(QPaintEvent *event) {
   }
 
   // rays for analog sensors
-  int left_analog_x = (int) (cos(ANALOG_ANGLE) * leftAnalogDist * meters_to_pixels);
-  int left_analog_y = (int) (sin(ANALOG_ANGLE) * leftAnalogDist * meters_to_pixels);
+  int left_analog_x = (int) (cos(SimMouse::ANALOG_ANGLE) * leftAnalogDist * meters_to_pixels);
+  int left_analog_y = (int) (sin(SimMouse::ANALOG_ANGLE) * leftAnalogDist * meters_to_pixels);
   painter.setPen(QPen(Qt::blue));
   painter.drawLine(mouse_x + 30, mouse_y - 10, mouse_x + 30 + left_analog_x, mouse_y - 10 - left_analog_y);
 
-  int right_analog_x = (int) (cos(ANALOG_ANGLE) * rightAnalogDist * meters_to_pixels);
-  int right_analog_y = (int) (sin(ANALOG_ANGLE) * rightAnalogDist * meters_to_pixels);
+  int right_analog_x = (int) (cos(SimMouse::ANALOG_ANGLE) * rightAnalogDist * meters_to_pixels);
+  int right_analog_y = (int) (sin(SimMouse::ANALOG_ANGLE) * rightAnalogDist * meters_to_pixels);
   painter.setPen(QPen(Qt::blue));
   painter.drawLine(mouse_x + 30, mouse_y + 10, mouse_x + 30 + right_analog_x, mouse_y + 10 + right_analog_y);
 
@@ -150,8 +151,8 @@ void SensorViz::paintEvent(QPaintEvent *event) {
     painter.setPen(QPen(Qt::darkGray));
   }
   const int bin_l = (int) (0.18 * meters_to_pixels); // fairly arbitrary
-  int left_binary_x = (int) (cos(BINARY_ANGLE) * bin_l);
-  int left_binary_y = (int) (sin(BINARY_ANGLE) * bin_l);
+  int left_binary_x = (int) (cos(SimMouse::BINARY_ANGLE) * bin_l);
+  int left_binary_y = (int) (sin(SimMouse::BINARY_ANGLE) * bin_l);
   painter.drawLine(mouse_x + 32, mouse_y - 8, mouse_x + 32 + left_binary_x, mouse_y - 8 - left_binary_y);
 
   if (this->rightBinaryState) {
@@ -160,8 +161,8 @@ void SensorViz::paintEvent(QPaintEvent *event) {
   else {
     painter.setPen(QPen(Qt::darkGray));
   }
-  int right_binary_x = (int) (cos(BINARY_ANGLE) * bin_l);
-  int right_binary_y = (int) (sin(BINARY_ANGLE) * bin_l);
+  int right_binary_x = (int) (cos(SimMouse::BINARY_ANGLE) * bin_l);
+  int right_binary_y = (int) (sin(SimMouse::BINARY_ANGLE) * bin_l);
   painter.drawLine(mouse_x + 32, mouse_y + 8, mouse_x + 32 + right_binary_x , mouse_y + 8 + right_binary_y);
 
   if (this->frontBinaryState) {

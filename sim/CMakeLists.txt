@@ -118,10 +118,9 @@ target_link_libraries(sim gzmaze_msgs ${GAZEBO_LIBRARIES})
 add_dependencies(sim gazebo_pch)
 
 #################################
-# actual mouse programs
+# actual sim mouse programs
 #################################
-set(SIMS SimSolve
-  SimStepSolve)
+set(SIMS SimSolve SimStepSolve SimNavTest)
 
 foreach(MAIN ${SIMS})
   add_executable(${MAIN} "main/${MAIN}.cpp")

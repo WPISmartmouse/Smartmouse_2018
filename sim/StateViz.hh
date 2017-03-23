@@ -8,7 +8,7 @@
 #endif
 
 #include <QtGui/QPainter>
-#include <sim/state.pb.h>
+#include "msgs/msgs.h"
 
 namespace gazebo {
   class GAZEBO_VISIBLE StateViz : public GUIPlugin {
@@ -36,7 +36,6 @@ namespace gazebo {
     QLineEdit *left_wheel_velocity_edit;
     QLineEdit *right_wheel_velocity_edit;
 
-    typedef const boost::shared_ptr<gzmaze::msgs::RobotState const> ConstRobotStatePtr;
     void StateCallback(ConstRobotStatePtr &msg);
   };
 }

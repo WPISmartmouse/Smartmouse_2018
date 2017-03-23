@@ -24,9 +24,9 @@ void stateCallback(RobotStatePtr &msg) {
   double lmps = l / (2 * M_PI) * WHEEL_CIRC;
   double rmps = r / (2 * M_PI) * WHEEL_CIRC;
 
-  double x = msg->position().position().x();
-  double y = msg->position().position().y();
-  ignition::math::Quaterniond q = gazebo::msgs::ConvertIgn(msg->position().orientation());
+  double x = msg->pose().position().x();
+  double y = msg->pose().position().y();
+  ignition::math::Quaterniond q = gazebo::msgs::ConvertIgn(msg->pose().orientation());
   const double yaw = q.Yaw();
 
 	//filter_prints += 1;

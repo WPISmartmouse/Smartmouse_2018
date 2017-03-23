@@ -7,6 +7,8 @@
 #include "Flood.h"
 #include "WallFollow.h"
 #include <iostream>
+#include <gazebo/msgs/visual.pb.h>
+#include <gazebo/transport/TransportTypes.hh>
 
 int main(int argc, char* argv[]){
   // Load gazebo
@@ -28,9 +30,6 @@ int main(int argc, char* argv[]){
 
   gazebo::transport::SubscriberPtr poseSub =
     node->Subscribe("~/mouse/pose", &SimMouse::poseCallback, SimMouse::inst());
-
-  gazebo::transport::SubscriberPtr checkWallsSub = node->Subscribe("~/mouse/base/laser/scan",
-      &SimMouse::checkWallsCallback, SimMouse::inst());
 
   SimMouse::inst()->controlPub = node->Advertise<gazebo::msgs::JointCmd>("~/mouse/joint_cmd");
   SimMouse::inst()->indicatorPub = node->Advertise<gazebo::msgs::Visual>("~/visual",

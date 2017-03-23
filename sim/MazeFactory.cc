@@ -19,8 +19,7 @@ namespace gazebo {
   const float MazeFactory::WALL_LENGTH = 0.192;
   const float MazeFactory::WALL_THICKNESS = 0.012;
   const float MazeFactory::BASE_HEIGHT = 0.005;
-  const float MazeFactory::PAINT_THICKNESS = 0.01;
-  const float MazeFactory::INDICATOR_RADIUS = 0.03;
+  const float MazeFactory::RED_HIGHLIGHT_THICKNESS = 0.01;
 
   MazeFactory::MazeFactory() : neighbor_dist(0, 3) {}
 
@@ -41,10 +40,14 @@ namespace gazebo {
     sdf::ElementPtr base_link = model->GetElement("link");
 
     // Add base
+    sdf::ElementPtr base_collision_pose = base_link->GetElement("collision")->GetElement("pose");
     sdf::ElementPtr base_collision = base_link->GetElement("collision")->GetElement("geometry");
+    sdf::ElementPtr base_visual_pose = base_link->GetElement("visual")->GetElement("pose");
     sdf::ElementPtr base_visual = base_link->GetElement("visual")->GetElement("geometry");
     sdf::ElementPtr collision_box_size = base_collision->AddElement("box")->GetElement("size");
     sdf::ElementPtr visual_box_size = base_visual->AddElement("box")->GetElement("size");
+    base_collision_pose->Set("0 0 " + std::to_string(BASE_HEIGHT/2) + " 0 0 0");
+    base_visual_pose->Set("0 0 " + std::to_string(BASE_HEIGHT/2) + " 0 0 0");
     collision_box_size->Set("2.98 2.98 " + std::to_string(BASE_HEIGHT));
     visual_box_size->Set("2.98 2.98 " + std::to_string(BASE_HEIGHT));
 
@@ -212,11 +215,11 @@ namespace gazebo {
   }
 
   std::list<sdf::ElementPtr> MazeFactory::CreateWallVisual(int row, int col, Direction dir) {
-    msgs::Pose *visual_pose = CreatePose(row, col, BASE_HEIGHT + (WALL_HEIGHT - PAINT_THICKNESS) / 2, dir);
-    msgs::Pose *paint_visual_pose = CreatePose(row, col, BASE_HEIGHT + WALL_HEIGHT - PAINT_THICKNESS / 2, dir);
+    msgs::Pose *visual_pose = CreatePose(row, col, BASE_HEIGHT + (WALL_HEIGHT - RED_HIGHLIGHT_THICKNESS) / 2, dir);
+    msgs::Pose *paint_visual_pose = CreatePose(row, col, BASE_HEIGHT + WALL_HEIGHT - RED_HIGHLIGHT_THICKNESS / 2, dir);
 
-    msgs::Geometry *visual_geo = CreateBoxGeometry(WALL_LENGTH, WALL_THICKNESS, WALL_HEIGHT - PAINT_THICKNESS);
-    msgs::Geometry *paint_visual_geo = CreateBoxGeometry(WALL_LENGTH, WALL_THICKNESS, PAINT_THICKNESS);
+    msgs::Geometry *visual_geo = CreateBoxGeometry(WALL_LENGTH, WALL_THICKNESS, WALL_HEIGHT - RED_HIGHLIGHT_THICKNESS);
+    msgs::Geometry *paint_visual_geo = CreateBoxGeometry(WALL_LENGTH, WALL_THICKNESS, RED_HIGHLIGHT_THICKNESS);
 
     msgs::Visual visual;
     std::string visual_name = "v_" + std::to_string(row)
@@ -301,18 +304,6 @@ namespace gazebo {
     msgs::Pose *pose = new msgs::Pose;
     pose->set_allocated_orientation(orientation);
     pose->set_allocated_position(position);
-  }
-
-  msgs::Geometry *MazeFactory::CreateCylinderGeometry(float r, float l) {
-    msgs::CylinderGeom *cylinder = new msgs::CylinderGeom();
-    cylinder->set_radius(r);
-    cylinder->set_length(l);
-
-    msgs::Geometry *geo = new msgs::Geometry();
-    geo->set_type(msgs::Geometry_Type_CYLINDER);
-    geo->set_allocated_cylinder(cylinder);
-
-    return geo;
   }
 
   msgs::Geometry *MazeFactory::CreateBoxGeometry(float x, float y, float z) {

@@ -29,9 +29,6 @@ namespace gazebo {
 
       void Regenerate(ConstGzStringPtr &msg);
 
-      /// \brief insert a circular visual model that can be set to different colors!
-      void InsertIndicator(ConstGzStringPtr &msg);
-
     private:
 
       char to_char(Direction dir);
@@ -78,7 +75,7 @@ namespace gazebo {
       const static float WALL_LENGTH,
             WALL_HEIGHT,
             WALL_THICKNESS,
-            PAINT_THICKNESS,
+            RED_HIGHLIGHT_THICKNESS,
             INDICATOR_RADIUS,
             UNIT,
             BASE_HEIGHT;
