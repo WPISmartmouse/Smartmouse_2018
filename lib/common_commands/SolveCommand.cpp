@@ -13,5 +13,5 @@ SolveCommand::SolveCommand(Solver *solver) : CommandGroup("SolveGroup") {
   //addSequential(new ReturnToStart(solver->mouse));
   //addSequential(new SpeedRun(solver->mouse));
   //addSequential(new ReturnToStart(solver->mouse));
-  //addSequential(new Finish(solver->mouse->maze));
+  addSequential(new Finish(solver->mouse->maze));
 }
