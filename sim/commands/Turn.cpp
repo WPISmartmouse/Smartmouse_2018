@@ -9,8 +9,8 @@ void Turn::initialize(){
   goalYaw = toYaw(dir);
 }
 
-float Turn::yawDiff(float y1, float y2){
-  float diff = y2 - y1;
+double Turn::yawDiff(double y1, double y2){
+  double diff = y2 - y1;
   if (diff > M_PI) {
     return diff - 2*M_PI;
   }
@@ -37,13 +37,13 @@ void Turn::execute(){
 }
 
 bool Turn::isFinished(){
-  float currentYaw = mouse->getPose().Rot().Yaw();
+  double currentYaw = mouse->getPose().Rot().Yaw();
   dYaw = yawDiff(currentYaw, goalYaw);
   return (mouse->getDir() == dir) || (fabs(dYaw) < Mouse::ROT_TOLERANCE);
 }
 
 void Turn::end(){
   mouse->internalTurnToFace(dir);
-  mouse->setSpeed(0,0);
+  mouse->setSpeed(0, 0);
 }
 #endif

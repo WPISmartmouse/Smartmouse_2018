@@ -1,11 +1,7 @@
 #ifdef SIM
 #include "SimMouse.h"
-#include <ignition/math.hh>
 #include <gazebo/msgs/msgs.hh>
 
-const float SimMouse::MAX_SPEED = 100;
-const float SimMouse::MIN_SPEED = 20;
-const float SimMouse::WALL_DIST = 0.115;
 SimMouse *SimMouse::instance = nullptr;
 
 const gazebo::common::Color SimMouse::red_color{1, 0, 0, 1};
@@ -40,12 +36,12 @@ void SimMouse::updateIndicator(int row, int col, gazebo::common::Color color) {
   geomMsg->mutable_cylinder()->set_radius(INDICATOR_RAD);
   geomMsg->mutable_cylinder()->set_length(INDICATOR_LEN);
 
-  float zero_offset = (AbstractMaze::UNIT_DIST * (AbstractMaze::MAZE_SIZE - 1)/2);
-  float y = zero_offset - row * AbstractMaze::UNIT_DIST;
-  float x = -zero_offset + col * AbstractMaze::UNIT_DIST;
+  double zero_offset = (AbstractMaze::UNIT_DIST * (AbstractMaze::MAZE_SIZE - 1)/2);
+  double y = zero_offset - row * AbstractMaze::UNIT_DIST;
+  double x = -zero_offset + col * AbstractMaze::UNIT_DIST;
 
 	gazebo::msgs::Set(visual->mutable_pose(),
-      ignition::math::Pose3d(x, y, 0.02, 0, 0, 0));
+      ignition::math::Pose3d(x, y, INDICATOR_Z, 0, 0, 0));
 
   gazebo::msgs::Set(visual->mutable_material()->mutable_diffuse(), color);
 }
@@ -104,7 +100,8 @@ void SimMouse::poseCallback(ConstRobotStatePtr &msg){
   pose.Rot().Z(msg->pose().orientation().z());
   pose.Rot().W(msg->pose().orientation().w());
 
-  poseCond.notify_all();
+  this->left_wheel_velocity = msg->left_wheel_velocity();
+  this->right_wheel_velocity = msg->right_wheel_velocity();
 
   //transform from Mouse frame to Cardinal frame;
   this->range_data.left_analog = msg->left_analog();
@@ -139,12 +136,12 @@ void SimMouse::poseCallback(ConstRobotStatePtr &msg){
       walls[3] = range_data.front_binary;
       break;
   }
-  checkWallsCond.notify_all();
+  dataCond.notify_all();
 }
 
 SensorReading SimMouse::checkWalls(){
-  std::unique_lock<std::mutex> lk(checkWallsMutex);
-  checkWallsCond.wait(lk);
+  std::unique_lock<std::mutex> lk(dataMutex);
+  dataCond.wait(lk);
   SensorReading sr(row, col);
   std::array<bool, 4> *w = &sr.walls;
 
@@ -183,10 +180,30 @@ void SimMouse::simInit(){
 }
 
 //lspeed and rspeed should be from -1 to 1
-void SimMouse::setSpeed(double lspeed, double rspeed){
+void SimMouse::setSpeed(double left_wheel_velocity_setpoint_mps, double right_wheel_velocity_setpoint_mps){
+  static double left_wheel_velocity_mps;
+  static double right_wheel_velocity_mps;
+
+  if (right_wheel_velocity_mps < right_wheel_velocity_setpoint_mps) {
+    right_wheel_velocity_mps = std::min(right_wheel_velocity_mps + ACCELERATION, right_wheel_velocity_setpoint_mps);
+  } else if (right_wheel_velocity_mps > right_wheel_velocity_setpoint_mps) {
+    right_wheel_velocity_mps = std::max(right_wheel_velocity_mps - ACCELERATION, right_wheel_velocity_setpoint_mps);
+  }
+
+  if (left_wheel_velocity_mps < left_wheel_velocity_setpoint_mps) {
+    left_wheel_velocity_mps = std::min(left_wheel_velocity_mps + ACCELERATION, left_wheel_velocity_setpoint_mps);
+  } else if (left_wheel_velocity_mps > left_wheel_velocity_setpoint_mps) {
+    left_wheel_velocity_mps = std::max(left_wheel_velocity_mps - ACCELERATION, left_wheel_velocity_setpoint_mps);
+  }
+
+//  printf("speed: %f, %f\n", left_wheel_velocity_mps, right_wheel_velocity_mps);
+
+  double left_wheel_velocity = left_wheel_velocity_mps * (2 * M_PI) / WHEEL_CIRC;
+  double right_wheel_velocity = right_wheel_velocity_mps * (2 * M_PI) / WHEEL_CIRC;
+
   gazebo::msgs::JointCmd left;
 	left.set_name("mouse::left_wheel_joint");
-	left.mutable_velocity()->set_target(lspeed);
+	left.mutable_velocity()->set_target(left_wheel_velocity);
 	left.mutable_velocity()->set_p_gain(kP);
 	left.mutable_velocity()->set_i_gain(kI);
 	left.mutable_velocity()->set_d_gain(kD);
@@ -194,7 +211,7 @@ void SimMouse::setSpeed(double lspeed, double rspeed){
 
   gazebo::msgs::JointCmd right;
 	right.set_name("mouse::right_wheel_joint");
-	right.mutable_velocity()->set_target(rspeed);
+	right.mutable_velocity()->set_target(right_wheel_velocity);
 	right.mutable_velocity()->set_p_gain(kP);
 	right.mutable_velocity()->set_i_gain(kI);
 	right.mutable_velocity()->set_d_gain(kD);
@@ -203,15 +220,21 @@ void SimMouse::setSpeed(double lspeed, double rspeed){
 
 SimMouse::RangeData SimMouse::getRangeData(){
   //wait for the next message to occur
-  std::unique_lock<std::mutex> lk(checkWallsMutex);
-  checkWallsCond.wait(lk);
+  std::unique_lock<std::mutex> lk(dataMutex);
+  dataCond.wait(lk);
   return this->range_data;
 }
 
 ignition::math::Pose3d SimMouse::getPose(){
   //wait for the next message to occur
-  std::unique_lock<std::mutex> lk(poseMutex);
-  poseCond.wait(lk);
+  std::unique_lock<std::mutex> lk(dataMutex);
+  dataCond.wait(lk);
   return pose;
+}
+
+std::pair<double, double> SimMouse::getWheelVelocities() {
+  std::pair<double, double> pair;
+  pair.first = this->left_wheel_velocity;
+  pair.second = this->right_wheel_velocity;
 }
 #endif

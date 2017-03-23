@@ -57,10 +57,10 @@ void StateViz::StateCallback(ConstRobotStatePtr &msg) {
   double smooth_right_vel = (0.9 * right_accumulator + 0.1 * msg->right_wheel_velocity()) * WHEEL_CIRC / (2 * M_PI);
 
   char left_wheel_velocity_str[11];
-  snprintf(left_wheel_velocity_str, 11, "%0.3f m/s", smooth_left_vel);
+  snprintf(left_wheel_velocity_str, 11, "%2.2f mm/s", (1000 * smooth_left_vel));
 
   char right_wheel_velocity_str[11];
-  snprintf(right_wheel_velocity_str, 11, "%0.3f m/s", smooth_right_vel);
+  snprintf(right_wheel_velocity_str, 11, "%2.2f mm/s", (1000 * smooth_right_vel));
 
   this->SetLeftVelocity(left_wheel_velocity_str);
   this->SetRightVelocity(right_wheel_velocity_str);

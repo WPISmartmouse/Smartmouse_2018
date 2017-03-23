@@ -21,8 +21,8 @@ public:
   constexpr static double FRONT_BINARY_THRESHOLD = 0.18; // meters
 
   typedef struct {
-    float left_analog;
-    float right_analog;
+    double left_analog;
+    double right_analog;
     bool left_binary;
     bool right_binary;
     bool front_binary;
@@ -33,15 +33,21 @@ public:
 
   void poseCallback(ConstRobotStatePtr &msg);
 
-  static const float MAX_SPEED;
-  static const float MIN_SPEED;
-  static const float WALL_DIST;
+  static constexpr double MAX_SPEED = 0.09; // m/sec
+  static constexpr double MIN_SPEED = 0.01; // m/sec
+  static constexpr double ACCELERATION = 0.005; // m/iteration^2
+  static constexpr double WALL_DIST = 0.115;
+  static constexpr double WHEEL_RAD = 0.015;
+  static constexpr double WHEEL_CIRC = 2 * WHEEL_RAD * M_PI;
 
   static const gazebo::common::Color red_color;
   static const gazebo::common::Color green_color;
   static const gazebo::common::Color blue_color;
   static const gazebo::common::Color black_color;
   static const gazebo::common::Color grey_color;
+
+  double left_wheel_velocity;
+  double right_wheel_velocity;
 
   static SimMouse *inst();
 
@@ -52,6 +58,8 @@ public:
   void setSpeed(double left, double right);
 
   ignition::math::Pose3d getPose();
+
+  std::pair<double, double> getWheelVelocities();
 
   void suggestWalls(bool *walls);
 
@@ -74,22 +82,20 @@ private:
 
   SimMouse();
 
-  std::condition_variable checkWallsCond;
-  std::mutex checkWallsMutex;
-
-  std::condition_variable poseCond;
-  std::mutex poseMutex;
+  std::condition_variable dataCond;
+  std::mutex dataMutex;
 
   ignition::math::Pose3d pose;
 
   gazebo::transport::SubscriberPtr regen_sub;
 
-  const float kP = 0.01;
-  const float kI = 0.000;
-  const float kD = 0.000;
+  const double kP = 0.001;
+  const double kI = 0.000;
+  const double kD = 0.000;
 
-  static constexpr float INDICATOR_RAD = 0.05;
-  static constexpr float INDICATOR_LEN = 0.001;
+  static constexpr double INDICATOR_RAD = 0.05;
+  static constexpr double INDICATOR_LEN = 0.001;
+  static constexpr double INDICATOR_Z = 0.002;
 
   bool walls[4];
   bool suggestedWalls[4];

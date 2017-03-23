@@ -5,9 +5,10 @@
 #include <gazebo/transport/TransportTypes.hh>
 #include <gazebo/msgs/joint_cmd.pb.h>
 #include <gazebo/msgs/visual.pb.h>
+#include <SimMouse.h>
 
 #include "SimTimer.h"
-#include "Forward.h"
+#include "NavTestCommand.h"
 
 int main(int argc, char *argv[]) {
   // Load gazebo
@@ -37,7 +38,7 @@ int main(int argc, char *argv[]) {
   usleep(10000);
 
   SimMouse::inst()->simInit();
-  Scheduler scheduler(new Forward());
+  Scheduler scheduler(new NavTestCommand());
 
   bool done = false;
   while (!done) {

@@ -15,16 +15,16 @@ class Turn : public Command {
     void end();
 
   private:
-    float yawDiff(float y1, float y2);
+    double yawDiff(double y1, double y2);
 
     ignition::math::Pose3d start;
-    float goalYaw;
-    float dYaw;
+    double goalYaw;
+    double dYaw;
     SimMouse *mouse;
     Direction dir;
 
-    float l,r;
-    const float kP = 100;
+    double l,r;
+    const double kP = 0.15;
 
 };
 #endif

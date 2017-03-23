@@ -1,17 +1,21 @@
-#include "SolveCommand.h"
-#include "WaitForStart.h"
-#include "SolveMaze.h"
-#include "ReturnToStart.h"
-#include "WallFollow.h"
-#include "SpeedRun.h"
-#include "Flood.h"
+#include "NavTestCommand.h"
+#include "Forward.h"
 #include "Finish.h"
+#include "Stop.h"
+#include "Turn.h"
 
-SolveCommand::SolveCommand(Solver *solver) : CommandGroup("SolveGroup") {
-  addSequential(new WaitForStart());
-  addSequential(new SolveMaze(solver));
-  //addSequential(new ReturnToStart(solver->mouse));
-  //addSequential(new SpeedRun(solver->mouse));
-  //addSequential(new ReturnToStart(solver->mouse));
-  //addSequential(new Finish(solver->mouse->maze));
+NavTestCommand::NavTestCommand() : CommandGroup("NavTestGroup") {
+  addSequential(new Forward());
+  addSequential(new Turn(Direction::S));
+  addSequential(new Forward());
+  addSequential(new Turn(Direction::N));
+  addSequential(new Forward());
+  addSequential(new Turn(Direction::S));
+  addSequential(new Forward());
+  addSequential(new Turn(Direction::N));
+  addSequential(new Forward());
+  addSequential(new Turn(Direction::S));
+  addSequential(new Forward());
+  addSequential(new Turn(Direction::N));
+  addSequential(new Stop());
 }

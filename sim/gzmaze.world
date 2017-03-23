@@ -26,7 +26,7 @@
       <real_time_update_rate>1000.0</real_time_update_rate>
       <ode>
 				<constraints>
-          <cfm>0.0</cfm> <!-- increasing this (0 - 1) can increase numerical stability -->
+          <cfm>0.2</cfm> <!-- increasing this (0 - 1) can increase numerical stability -->
         </constraints>
       </ode>
     </physics>

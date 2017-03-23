@@ -10,19 +10,17 @@
 #include <gazebo/common/Console.hh>
 
 #include "SimTimer.h"
+#include "SimMouse.h"
 #include "msgs/msgs.h"
 
 typedef const boost::shared_ptr<const gzmaze::msgs::RobotState> RobotStatePtr;
-constexpr double WHEEL_RAD = 0.015;
-constexpr double WHEEL_CIRC = 2 * WHEEL_RAD * M_PI;
-int filter_prints = 0;
 
 void stateCallback(RobotStatePtr &msg) {
   // radians/sec
   double l = msg->left_wheel_velocity();
   double r = msg->right_wheel_velocity();
-  double lmps = l / (2 * M_PI) * WHEEL_CIRC;
-  double rmps = r / (2 * M_PI) * WHEEL_CIRC;
+  double lmps = l / (2 * M_PI) * SimMouse::WHEEL_CIRC;
+  double rmps = r / (2 * M_PI) * SimMouse::WHEEL_CIRC;
 
   double x = msg->pose().position().x();
   double y = msg->pose().position().y();
@@ -74,7 +72,7 @@ int main(int argc, char **argv) {
   double kP = 0.001;
   double kI = 0.0000;
   double kD = 0.0000;
-  double acc = 0.001; // m/s^2
+  double acc = 0.0005; // m/iteration^2
 
 	bool keepGoing = true;
 	char key;
@@ -128,8 +126,8 @@ int main(int argc, char **argv) {
         lspeed = std::max(lspeed - acc, lspeed_setpoint);
       }
 
-      double lrps = lspeed * (2 * M_PI) / WHEEL_CIRC;
-      double rrps = rspeed * (2 * M_PI) / WHEEL_CIRC;
+      double lrps = lspeed * (2 * M_PI) / SimMouse::WHEEL_CIRC;
+      double rrps = rspeed * (2 * M_PI) / SimMouse::WHEEL_CIRC;
 
       printf("%f, %f\r\n", lspeed, rspeed);
 

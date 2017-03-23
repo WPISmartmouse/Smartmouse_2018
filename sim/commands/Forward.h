@@ -28,8 +28,7 @@ class Forward : public Command {
     SimMouse::RangeData range_data;
     bool walls[4];
     bool wallOnLeft, wallOnRight;
-    const float kPWall = 2000;
-    const float kPDisp = 3000;
-
+    const float kPWall = 0;
+    const float kPDisp = 4;
 };
 #endif

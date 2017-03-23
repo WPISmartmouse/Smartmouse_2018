@@ -39,6 +39,7 @@ double Forward::yawDiff(double y1, double y2){
 void Forward::execute(){
   range_data = mouse->getRangeData();
   disp = forwardDisplacement(start,mouse->getPose());
+  printf("%f\n", disp);
 
   double currentYaw = mouse->getPose().Rot().Yaw();
   double angleError = yawDiff(toYaw(mouse->getDir()), currentYaw);
@@ -94,7 +95,7 @@ void Forward::end(){
 //  mouse->indicatePath(0, 0, mouse->maze->fastest_theoretical_route, SimMouse::blue_color);
 
   mouse->internalForward();
-  mouse->setSpeed(0,0);
+  mouse->setSpeed(0, 0);
 
   walls[static_cast<int>(mouse->getDir())] = range_data.front_binary;
   walls[static_cast<int>(opposite_direction(mouse->getDir()))] = false;

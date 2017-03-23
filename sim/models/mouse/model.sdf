@@ -239,8 +239,8 @@
         <surface>
           <friction>
             <ode>
-              <mu>0.04</mu>
-              <mu2>0.08</mu2>
+              <mu>0.4</mu>
+              <mu2>0.8</mu2>
               <fdir1>0 0 1</fdir1>
               <slip1>0</slip1>
               <slip2>0</slip2> <!-- increases "drifting" -->
@@ -299,8 +299,8 @@
         <surface>
           <friction>
             <ode>
-              <mu>0.04</mu>
-              <mu2>0.08</mu2>
+              <mu>0.4</mu>
+              <mu2>0.8</mu2>
               <fdir1>0 0 1</fdir1>
               <slip1>0</slip1>
               <slip2>0</slip2>
@@ -330,7 +330,7 @@
           <velocity>41.88</velocity> <!-- ~400 rpm -->
         </limit>
         <dynamics>
-          <friction>0.00020</friction>
+          <friction>0.00040</friction>
         </dynamics>
       </axis>
       <physics>
@@ -359,7 +359,7 @@
           <velocity>41.88</velocity> <!-- ~400 rpm -->
         </limit>
         <dynamics>
-          <friction>0.00020</friction> <!-- not sure how to calculate this, or what the units are -->
+          <friction>0.00040</friction> <!-- not sure how to calculate this, or what the units are -->
         </dynamics>
       </axis>
       <physics>

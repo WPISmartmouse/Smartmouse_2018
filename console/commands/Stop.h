@@ -1,10 +1,9 @@
 #pragma once
 
-#ifdef SIM
+#ifdef CONSOLE
 
-#include <ignition/math.hh>
 #include "CommanDuino.h"
-#include "SimMouse.h"
+#include "ConsoleMouse.h"
 #include "Mouse.h"
 
 class Stop : public Command {
@@ -16,6 +15,6 @@ class Stop : public Command {
     void end();
 
   private:
-    SimMouse *mouse;
+    ConsoleMouse *mouse;
 };
 #endif
