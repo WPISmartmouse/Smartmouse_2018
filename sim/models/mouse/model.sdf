@@ -381,5 +381,14 @@
       <right_wheel_joint>right_wheel_joint</right_wheel_joint>
       <body>base</body>
     </plugin>
+    <plugin name="link_plot_3d" filename="liblink_plot_3d_plugin.so">
+      <minimum_distance>0.001</minimum_distance>
+      <buffer_length>5000</buffer_length>
+      <plot>
+        <link>base</link>
+        <pose>0 0 0.005 0 0 0</pose>
+      </plot>
+      <frequency>10000</frequency>
+    </plugin>
   </model>
 </sdf>

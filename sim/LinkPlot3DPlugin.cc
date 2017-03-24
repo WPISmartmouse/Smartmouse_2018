@@ -47,6 +47,9 @@ class gazebo::LinkPlot3DPluginPrivate
   /// \brief Update period
   public: int period;
 
+  /// \brief number of points to keep
+  public: int buffer_length;
+
   /// \brief Update minimum_distance
   public: float minimum_distance;
 
@@ -81,16 +84,27 @@ void LinkPlot3DPlugin::Load(physics::ModelPtr _model,
   }
 
   // minimum distance
-  if (_sdf->HasElement("minimum_distance"))
-      this->dataPtr->minimum_distance = _sdf->Get<float>("minimum_distance");
-  else
-      this->dataPtr->minimum_distance = 0.05;
+  if (_sdf->HasElement("minimum_distance")) {
+    this->dataPtr->minimum_distance = _sdf->Get<float>("minimum_distance");
+  }
+  else {
+    this->dataPtr->minimum_distance = 0.05;
+  }
 
+  // buffer length
+  if (_sdf->HasElement("buffer_length")) {
+    this->dataPtr->buffer_length = _sdf->Get<int>("buffer_length");
+  }
+  else {
+    this->dataPtr->buffer_length = 1000;
+  }
   // Update period
-  if (_sdf->HasElement("frequency"))
-      this->dataPtr->period = 1.0/_sdf->Get<int>("frequency");
-  else
-      this->dataPtr->period = 1.0/30.0;
+  if (_sdf->HasElement("frequency")) {
+    this->dataPtr->period = 1.0 / _sdf->Get<int>("frequency");
+  }
+  else {
+    this->dataPtr->period = 1.0 / 30.0;
+  }
 
   // Construct the plots
   auto plotElem = _sdf->GetElement("plot");
@@ -121,6 +135,7 @@ void LinkPlot3DPlugin::Load(physics::ModelPtr _model,
       markerMsg.set_id(id++);
       markerMsg.set_action(ignition::msgs::Marker::ADD_MODIFY);
       markerMsg.set_type(ignition::msgs::Marker::LINE_STRIP);
+      markerMsg.set_layer(1);
 
       // Material
       std::string mat;
@@ -183,7 +198,7 @@ void LinkPlot3DPlugin::OnUpdate()
       ignition::msgs::Set(plot.msg.add_point(), point);
 
       // Reduce message array
-      if (plot.msg.point_size() > 1000)
+      if (plot.msg.point_size() > this->dataPtr->buffer_length)
         plot.msg.mutable_point()->DeleteSubrange(0, 5);
 
       // plot.prevPoint = point;

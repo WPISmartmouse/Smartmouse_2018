@@ -78,6 +78,11 @@ target_link_libraries(maze_plugin ${GAZEBO_LIBRARIES})
 set_target_properties(maze_plugin PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh")
 add_dependencies(maze_plugin gazebo_pch)
 
+add_library(link_plot_3d_plugin SHARED LinkPlot3DPlugin.cc)
+target_link_libraries(link_plot_3d_plugin ${GAZEBO_LIBRARIES})
+set_target_properties(link_plot_3d_plugin PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh")
+add_dependencies(link_plot_3d_plugin gazebo_pch)
+
 QT5_WRAP_CPP(state_viz_MOC StateViz.hh)
 add_library(state_viz SHARED ${state_viz_MOC} StateViz.cc)
 set_target_properties(state_viz PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh")

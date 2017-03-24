@@ -41,6 +41,7 @@ void MousePlugin::LeftAnalogCallback(ConstLaserScanStampedPtr &msg) {
   msgs::LaserScan scan = msg->scan();
   assert(scan.ranges_size() == 1);
   double raw_range = scan.ranges(0);
+
   if (std::isinf(raw_range)) {
     this->left_analog = 0.15;
   }
@@ -100,8 +101,13 @@ void MousePlugin::PublishInfo() {
   pose->set_allocated_position(pos);
   pose->set_allocated_orientation(rot);
 
-  float left_vel = this->left_wheel->GetVelocity(0);
-  float right_vel = this->right_wheel->GetVelocity(0);
+  float left_vel = 0;
+  float right_vel = 0;
+  if (this->left_wheel && this->right_wheel) {
+    left_vel = this->left_wheel->GetVelocity(0);
+    right_vel = this->right_wheel->GetVelocity(0);
+  }
+
 
   gzmaze::msgs::RobotState state;
   state.set_allocated_pose(pose);
