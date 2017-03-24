@@ -1,5 +1,4 @@
 # SmartMouse2017
-[![Build Status](https://travis-ci.org/WPISmartmouse/2016_Solvers.svg?branch=master)](https://travis-ci.org/WPISmartmouse/2016_Solvers)
 
 
 WPI CollabLab Smartmouse Team code for exploring and solving the maze.
@@ -9,19 +8,11 @@ WPI CollabLab Smartmouse Team code for exploring and solving the maze.
 
 Our build system is platformio. Install it first. To install platform IO. simply use `pip install platformio`. You may need to prepend `sudo -H` if you're on linux.
 
-### Building Instructions
+### Building Instructions (no simulation)
 
     mkdir .build
     cd .build
     cmake ..
-    make
-
-
-#### If you want simulation, use this
-
-    mkdir .build
-    cd .build
-    cmake -DBUILD_SIM=ON ..
     make
 
 ## The simulator
@@ -30,13 +21,23 @@ Our build system is platformio. Install it first. To install platform IO. simply
 
 go to [http://gazebosim.org/tutorials?tut=install_ubuntu&cat=install](http://gazebosim.org/tutorials?tut=install_ubuntu&cat=install) and follow the installation tutorials. You will need to install both gazebo8 and libgazebo8-dev
 
-    sudo apt-get install gazebo8 libgazebo8-dev cmake
+    sudo apt-get install gazebo8 libgazebo8-dev cmake protobuf-compiler libncurses5-dev
 
 Test by running `gazebo --verbose`, it should open gazebo and print out version information.
 
 Clone this repo, which contains the gazebo models and plugins.
 
-Assuming you've installed gazebo correctly and built with simuation...
+
+#### Building Simulation
+
+    mkdir .build
+    cd .build
+    cmake -DBUILD_SIM=ON ..
+    make
+
+#### Running Simulation
+
+Assuming you've installed gazebo correctly and built with simuation, cd to the root of the project `Smartmouse_2017`.
 
     source sim/setup.sh
     gazebo --verbose sim/gzmaze.world
