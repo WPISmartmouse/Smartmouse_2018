@@ -18,8 +18,8 @@ RealMouse::RealMouse() :
   right_rangefinder(VL6180EN3,0x43),
   motL(ENCODER1A, ENCODER1B, MOTOR1B, MOTOR1A),
   motR(ENCODER2A, ENCODER2B, MOTOR2B, MOTOR2A),
-  hasSuggestion(false),
   kc(&motL, &motR, 1, -1, 78.3f, 31.71f, 12 * (1537480.0f/20280)),
+  hasSuggestion(false),
   eastYaw(0),
   lastDisplayUpdate(0) { }
 

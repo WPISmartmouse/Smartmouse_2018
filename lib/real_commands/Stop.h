@@ -1,9 +1,9 @@
 #pragma once
 #include "CommanDuino.h"
 
-class End : public Command {
+class Stop : public Command {
   public:
-    End();
+    Stop();
     bool isFinished();
     void end();
 };

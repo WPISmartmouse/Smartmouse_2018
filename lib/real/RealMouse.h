@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Arduino.h>
-#define M_PI 3.141592653589
 
 #include <math.h>
 #include <Adafruit_Sensor.h>
@@ -41,6 +40,8 @@ public:
   constexpr static float MAX_SPEED = 250; //mm/s
   constexpr static float MAX_ROT_SPEED = M_PI/2; //rad/s
 
+  Adafruit_SSD1306 display;
+
   Bounce goButton;
   Bounce aButton;
   Bounce bButton;
@@ -48,7 +49,6 @@ public:
   static RealMouse *inst();
 
   Adafruit_BNO055 imu;
-  Adafruit_SSD1306 display;
 
   virtual SensorReading checkWalls() override;
 
@@ -141,9 +141,9 @@ private:
   const static int BUTTON2 = 50;
   const static int BUTTONGO = 44;
 
+  VL6180X middle_rangefinder;
   VL6180X left_rangefinder;
   VL6180X right_rangefinder;
-  VL6180X middle_rangefinder;
 
   Encoder encL;
   Encoder encR;

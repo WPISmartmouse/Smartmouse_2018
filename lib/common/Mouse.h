@@ -42,8 +42,6 @@ public:
   /** \brief is the mouse at the center of the maze? */
   bool atCenter();
 
-  void turnToFace(char c);
-
   void mark_mouse_position_visited();
 
   /** \brief get the node that the mouse is currently on

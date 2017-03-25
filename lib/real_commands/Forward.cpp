@@ -8,7 +8,7 @@ Forward::Forward() :
   checkedWalls(false),
   state(FwdState::GO_UNTIL_CHECK),
   remainingDistance(FLT_MAX),
-  walls({true, true, true, true}),
+  walls{true, true, true, true},
   goalYaw(0) {}
 
 void Forward::initialize(){
@@ -21,16 +21,12 @@ float Forward::forwardDisplacement(Pose p0, Pose p1){
   switch(mouse->getDir()){
     case Direction::N:
       return p1.y - p0.y;
-      break;
     case Direction::E:
       return p1.x - p0.x;
-      break;
     case Direction::S:
       return p0.y - p1.y;
-      break;
     case Direction::W:
       return p0.x - p1.x;
-      break;
   }
 }
 
@@ -58,7 +54,6 @@ float Forward::calculateRemainingDistance(float dToWallLeft, float dToWallRight,
         this->state = FwdState::CHECK;
       }
       return AbstractMaze::UNIT_DIST - this->distanceSoFar;
-      break;
 
     case FwdState::CHECK: {
 
@@ -75,16 +70,13 @@ float Forward::calculateRemainingDistance(float dToWallLeft, float dToWallRight,
         this->state = FwdState::STOP_AT_DIST;
       }
       return AbstractMaze::UNIT_DIST - distanceSoFar;
-      break;
     }
 
     case FwdState::STOP_AT_WALL:
       return rawFrontWallDist - distFromSensorToWallFromCenter;
-      break;
 
     case FwdState::STOP_AT_DIST:
       return AbstractMaze::UNIT_DIST - distanceSoFar;
-      break;
   }
 }
 

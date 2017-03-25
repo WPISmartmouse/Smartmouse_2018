@@ -10,7 +10,7 @@ void Delay::execute(){
 }
 
 bool Delay::isFinished(){
-  isTimedOut();
+  return isTimedOut();
 }
 
 void Delay::end(){

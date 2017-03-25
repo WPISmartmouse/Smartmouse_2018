@@ -1,8 +1,9 @@
 #pragma once
 
 #include "CommanDuino.h"
-#include "RealMouse.h"
 #include "Pose.h"
+#include "../real/RealMouse.h"
+#include "../KinematicMotorController/Pose.h"
 
 class Forward : public CommandGroup {
   public:
@@ -20,12 +21,12 @@ class Forward : public CommandGroup {
     float calculateRemainingDistance(float dToWallOnLeft, float dToWallRight, float rawFrontWallDist);
 
     enum class FwdState { GO_UNTIL_CHECK, CHECK, STOP_AT_WALL, STOP_AT_DIST};
-    FwdState state;
     RealMouse *mouse;
+    bool checkedWalls;
+    FwdState state;
     Pose start;
     float distanceSoFar;
     float *distances;
-    bool checkedWalls;
     float remainingDistance;
     bool walls[4];
     float goalYaw;
