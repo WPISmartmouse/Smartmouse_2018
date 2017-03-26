@@ -14,8 +14,7 @@ using namespace gazebo;
 GZ_REGISTER_MODEL_PLUGIN(LinkPlot3DPlugin)
 
 /// \brief Information about each plot
-struct Plot3D
-{
+struct Plot3D {
   /// \brief Message
   ignition::msgs::Marker msg;
 
@@ -30,55 +29,58 @@ struct Plot3D
 };
 
 /// \brief Private data class
-class gazebo::LinkPlot3DPluginPrivate
-{
+class gazebo::LinkPlot3DPluginPrivate {
   /// \brief Connection to World Update events.
-  public: event::ConnectionPtr updateConnection;
+public:
+  event::ConnectionPtr updateConnection;
 
   /// \brief Set of plots
-  public: std::vector<Plot3D> plots;
+public:
+  std::vector<Plot3D> plots;
 
   /// \brief Communication node
-  public: ignition::transport::Node node;
+public:
+  ignition::transport::Node node;
 
   /// \brief Pointer to the world
-  public: physics::WorldPtr world;
+public:
+  physics::WorldPtr world;
 
   /// \brief Update period
-  public: int period;
+public:
+  int period;
 
   /// \brief number of points to keep
-  public: int buffer_length;
+public:
+  int buffer_length;
 
   /// \brief Update minimum_distance
-  public: float minimum_distance;
+public:
+  float minimum_distance;
 
   /// \brief PRevious update time.
-  public: common::Time prevTime;
+public:
+  common::Time prevTime;
 };
 
 /////////////////////////////////////////////////
 LinkPlot3DPlugin::LinkPlot3DPlugin()
-: dataPtr(new LinkPlot3DPluginPrivate)
-{
+        : dataPtr(new LinkPlot3DPluginPrivate) {
 }
 
 /////////////////////////////////////////////////
-LinkPlot3DPlugin::~LinkPlot3DPlugin()
-{
+LinkPlot3DPlugin::~LinkPlot3DPlugin() {
 }
 
 /////////////////////////////////////////////////
 void LinkPlot3DPlugin::Load(physics::ModelPtr _model,
-                     sdf::ElementPtr _sdf)
-{
+                            sdf::ElementPtr _sdf) {
   GZ_ASSERT(_model, "LinkPlot3DPlugin _model pointer is NULL");
   GZ_ASSERT(_sdf, "LinkPlot3DPlugin _sdf pointer is NULL");
 
   this->dataPtr->world = _model->GetWorld();
 
-  if (!_sdf->HasElement("plot"))
-  {
+  if (!_sdf->HasElement("plot")) {
     gzwarn << "No plot elements" << std::endl;
     return;
   }
@@ -86,37 +88,32 @@ void LinkPlot3DPlugin::Load(physics::ModelPtr _model,
   // minimum distance
   if (_sdf->HasElement("minimum_distance")) {
     this->dataPtr->minimum_distance = _sdf->Get<float>("minimum_distance");
-  }
-  else {
+  } else {
     this->dataPtr->minimum_distance = 0.05;
   }
 
   // buffer length
   if (_sdf->HasElement("buffer_length")) {
     this->dataPtr->buffer_length = _sdf->Get<int>("buffer_length");
-  }
-  else {
+  } else {
     this->dataPtr->buffer_length = 1000;
   }
   // Update period
   if (_sdf->HasElement("frequency")) {
     this->dataPtr->period = 1.0 / _sdf->Get<int>("frequency");
-  }
-  else {
+  } else {
     this->dataPtr->period = 1.0 / 30.0;
   }
 
   // Construct the plots
   auto plotElem = _sdf->GetElement("plot");
   int id = 0;
-  while (plotElem)
-  {
+  while (plotElem) {
     auto linkName = plotElem->Get<std::string>("link");
 
     auto link = _model->GetLink(linkName);
 
-    if (link)
-    {
+    if (link) {
       Plot3D plot;
 
       // Link pointer
@@ -149,31 +146,26 @@ void LinkPlot3DPlugin::Load(physics::ModelPtr _model,
       plot.msg = markerMsg;
 
       this->dataPtr->plots.push_back(plot);
-    }
-    else
-    {
+    } else {
       gzerr << "Couldn't find link [" << linkName << "] in model [" <<
-          _model->GetName() << "]" << std::endl;
+            _model->GetName() << "]" << std::endl;
     }
 
     plotElem = plotElem->GetNextElement("plot");
   }
 
-  if (!this->dataPtr->plots.empty())
-  {
+  if (!this->dataPtr->plots.empty()) {
     this->dataPtr->updateConnection = event::Events::ConnectWorldUpdateBegin(
-        std::bind(&LinkPlot3DPlugin::OnUpdate, this));
+            std::bind(&LinkPlot3DPlugin::OnUpdate, this));
   }
 }
 
 /////////////////////////////////////////////////
-void LinkPlot3DPlugin::OnUpdate()
-{
+void LinkPlot3DPlugin::OnUpdate() {
   auto currentTime = this->dataPtr->world->SimTime();
 
   // check for world reset
-  if (currentTime < this->dataPtr->prevTime)
-  {
+  if (currentTime < this->dataPtr->prevTime) {
     this->dataPtr->prevTime = currentTime;
     for (auto &plot : this->dataPtr->plots)
       plot.msg.mutable_point()->Clear();
@@ -187,13 +179,11 @@ void LinkPlot3DPlugin::OnUpdate()
   this->dataPtr->prevTime = currentTime;
 
   // Process each plot
-  for (auto &plot : this->dataPtr->plots)
-  {
+  for (auto &plot : this->dataPtr->plots) {
     auto point = (plot.pose + plot.link->WorldPose()).Pos();
 
     // Only add points if the distance is past a threshold.
-    if (point.Distance(plot.prevPoint) > this->dataPtr->minimum_distance)
-    {
+    if (point.Distance(plot.prevPoint) > this->dataPtr->minimum_distance) {
       plot.prevPoint = point;
       ignition::msgs::Set(plot.msg.add_point(), point);
 

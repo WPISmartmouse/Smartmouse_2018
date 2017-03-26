@@ -6,11 +6,17 @@ class MousePlugin : public ModelPlugin {
 public:
 
   void Load(physics::ModelPtr model, sdf::ElementPtr sdf);
+
   void Update(const common::UpdateInfo &info);
+
   void LeftAnalogCallback(ConstLaserScanStampedPtr &msg);
+
   void RightAnalogCallback(ConstLaserScanStampedPtr &msg);
+
   void LeftBinaryCallback(ConstLaserScanStampedPtr &msg);
+
   void RightBinaryCallback(ConstLaserScanStampedPtr &msg);
+
   void FrontBinaryCallback(ConstLaserScanStampedPtr &msg);
 
   transport::SubscriberPtr left_analog_sub;

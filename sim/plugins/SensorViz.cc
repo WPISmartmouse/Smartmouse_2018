@@ -2,7 +2,6 @@
 #include <cmath>
 #include <boost/algorithm/string/replace.hpp>
 #include "SensorViz.hh"
-#include "RegenerateWidget.hh"
 #include "SimMouse.h"
 
 using namespace gazebo;
@@ -55,8 +54,7 @@ void SensorViz::LeftAnalogCallback(ConstLaserScanStampedPtr &msg) {
   double raw_range = scan.ranges(0);
   if (std::isinf(raw_range)) {
     this->leftAnalogDist = 0.15;
-  }
-  else {
+  } else {
     this->leftAnalogDist = raw_range;
   }
 }
@@ -67,8 +65,7 @@ void SensorViz::RightAnalogCallback(ConstLaserScanStampedPtr &msg) {
   double raw_range = scan.ranges(0);
   if (std::isinf(raw_range)) {
     this->rightAnalogDist = 0.15;
-  }
-  else {
+  } else {
     this->rightAnalogDist = raw_range;
   }
 }
@@ -146,8 +143,7 @@ void SensorViz::paintEvent(QPaintEvent *event) {
   // rays for binary sensors
   if (this->leftBinaryState) {
     painter.setPen(QPen(Qt::green));
-  }
-  else {
+  } else {
     painter.setPen(QPen(Qt::darkGray));
   }
   const int bin_l = (int) (0.18 * meters_to_pixels); // fairly arbitrary
@@ -157,30 +153,28 @@ void SensorViz::paintEvent(QPaintEvent *event) {
 
   if (this->rightBinaryState) {
     painter.setPen(QPen(Qt::green));
-  }
-  else {
+  } else {
     painter.setPen(QPen(Qt::darkGray));
   }
   int right_binary_x = (int) (cos(SimMouse::BINARY_ANGLE) * bin_l);
   int right_binary_y = (int) (sin(SimMouse::BINARY_ANGLE) * bin_l);
-  painter.drawLine(mouse_x + 32, mouse_y + 8, mouse_x + 32 + right_binary_x , mouse_y + 8 + right_binary_y);
+  painter.drawLine(mouse_x + 32, mouse_y + 8, mouse_x + 32 + right_binary_x, mouse_y + 8 + right_binary_y);
 
   if (this->frontBinaryState) {
     painter.setPen(QPen(Qt::green));
-  }
-  else {
+  } else {
     painter.setPen(QPen(Qt::darkGray));
   }
   painter.drawLine(mouse_x + 32, mouse_y, mouse_x + 32 + bin_l, mouse_y);
 
   // text for analog sensors
   char leftDistStr[8];
-  snprintf(leftDistStr, 8, "%2.1f mm" ,this->leftAnalogDist * 1000);
+  snprintf(leftDistStr, 8, "%2.1f mm", this->leftAnalogDist * 1000);
   painter.setPen(QPen(Qt::black));
   painter.drawText(30, 30, leftDistStr);
 
   char rightDistStr[8];
-  snprintf(rightDistStr, 8, "%2.1f mm" ,this->rightAnalogDist * 1000);
+  snprintf(rightDistStr, 8, "%2.1f mm", this->rightAnalogDist * 1000);
   painter.setPen(QPen(Qt::black));
   painter.drawText(30, HEIGHT - 20, rightDistStr);
 }

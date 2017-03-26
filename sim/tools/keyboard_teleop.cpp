@@ -1,7 +1,6 @@
 #include <iostream>
 #include <math.h>
 #include <cstdio>
-#include <termios.h>
 #include <unistd.h>
 #include <gazebo/msgs/joint_cmd.pb.h>
 #include <gazebo/transport/TransportTypes.hh>
@@ -27,31 +26,31 @@ void stateCallback(RobotStatePtr &msg) {
   ignition::math::Quaterniond q = gazebo::msgs::ConvertIgn(msg->pose().orientation());
   const double yaw = q.Yaw();
 
-	//filter_prints += 1;
+  //filter_prints += 1;
 
   //if (filter_prints % 100 == 0) {
-    //printf("l:%f, r:%f, x:%f, y:%f, yaw:%f\r\n", lmps, rmps, x, y, yaw);
+  //printf("l:%f, r:%f, x:%f, y:%f, yaw:%f\r\n", lmps, rmps, x, y, yaw);
   //}
 }
 
 int main(int argc, char **argv) {
 
-	struct termios original_settings;
-	tcgetattr(STDIN_FILENO, &original_settings);
+  struct termios original_settings;
+  tcgetattr(STDIN_FILENO, &original_settings);
 
-	struct termios tty;
-	tcgetattr(STDIN_FILENO, &tty);
-	tty.c_lflag &= ~ECHO;
-	tcsetattr(STDIN_FILENO, TCSANOW, &tty);
+  struct termios tty;
+  tcgetattr(STDIN_FILENO, &tty);
+  tty.c_lflag &= ~ECHO;
+  tcsetattr(STDIN_FILENO, TCSANOW, &tty);
 
   // Load gazebo
   printf("Waiting for gazebo...\r\n");
   bool connected = gazebo::client::setup(argc, argv);
-  if (!connected){
+  if (!connected) {
     printf("failed to connect to gazebo. Is it running?\n");
     exit(0);
   }
-    printf("connected to gazebo. Press W,A,S,D,X then enter to send a command.\n");
+  printf("connected to gazebo. Press W,A,S,D,X then enter to send a command.\n");
 
   SimTimer timer;
   Command::setTimerImplementation(&timer);
@@ -61,10 +60,10 @@ int main(int argc, char **argv) {
   node->Init();
 
   gazebo::transport::SubscriberPtr timeSub =
-    node->Subscribe("~/world_stats", &SimTimer::simTimeCallback);
+          node->Subscribe("~/world_stats", &SimTimer::simTimeCallback);
 
   gazebo::transport::SubscriberPtr stateSub =
-    node->Subscribe("~/mouse/state", &stateCallback);
+          node->Subscribe("~/mouse/state", &stateCallback);
 
   gazebo::transport::PublisherPtr controlPub;
   controlPub = node->Advertise<gazebo::msgs::JointCmd>("~/mouse/joint_cmd");
@@ -74,41 +73,35 @@ int main(int argc, char **argv) {
   double kD = 0.0000;
   double acc = 0.0005; // m/iteration^2
 
-	bool keepGoing = true;
-	char key;
+  bool keepGoing = true;
+  char key;
 
   double lspeed_setpoint = 0; // m/sec^2
   double rspeed_setpoint = 0; // m/sec^2
   double lspeed = 0; // m/s
   double rspeed = 0; // m/s
   const double u = .09; // m/s
-	while (keepGoing){
+  while (keepGoing) {
     key = std::cin.get();
 
     if (key == 'w') {
       lspeed_setpoint += u;
       rspeed_setpoint += u;
-		}
-    else if (key == 'a') {
+    } else if (key == 'a') {
       lspeed_setpoint += u;
       rspeed_setpoint -= u;
-    }
-    else if (key == 's') {
+    } else if (key == 's') {
       lspeed_setpoint = 0;
       rspeed_setpoint = 0;
-    }
-    else if (key == 'd') {
+    } else if (key == 'd') {
       lspeed_setpoint -= u;
       rspeed_setpoint += u;
-    }
-    else if (key == 'x') {
+    } else if (key == 'x') {
       lspeed_setpoint -= u;
       rspeed_setpoint -= u;
-    }
-    else if (key == 'q') {
+    } else if (key == 'q') {
       keepGoing = false;
-    }
-    else {
+    } else {
     }
 
     // Handle acceleration
@@ -147,7 +140,7 @@ int main(int argc, char **argv) {
       right.mutable_velocity()->set_d_gain(kD);
       controlPub->Publish(right);
     }
-	}
+  }
 
-	tcsetattr(STDIN_FILENO, TCSANOW, &original_settings);
+  tcsetattr(STDIN_FILENO, TCSANOW, &original_settings);
 }

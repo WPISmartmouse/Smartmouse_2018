@@ -1,15 +1,14 @@
 package gzmaze.msgs;
 import "pose.proto";
 
-message RobotState
-{
-  required gazebo.msgs.Pose    pose    = 1;
-  required float               left_wheel_velocity  = 2;
-  required float               right_wheel_velocity = 3;
-  required float               left_analog          = 4;
-  required float               right_analog         = 5;
-  required bool                left_binary          = 6;
-  required bool                right_binary         = 7;
-  required bool                front_binary         = 8;
+message RobotState {
+    required gazebo.msgs.Pose pose = 1;
+    required float left_wheel_velocity = 2;
+    required float right_wheel_velocity = 3;
+    required float left_analog = 4;
+    required float right_analog = 5;
+    required bool left_binary = 6;
+    required bool right_binary = 7;
+    required bool front_binary = 8;
 
 }

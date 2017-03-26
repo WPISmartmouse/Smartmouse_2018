@@ -61,7 +61,7 @@ int main(int argc, char* argv[]){
     return EXIT_SUCCESS;
   }
   else {
-		printf("error opening maze file!\n");
+    printf("error opening maze file!\n");
     fs.close();
     return EXIT_FAILURE;
   }

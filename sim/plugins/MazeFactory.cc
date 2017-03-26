@@ -46,8 +46,8 @@ namespace gazebo {
     sdf::ElementPtr base_visual = base_link->GetElement("visual")->GetElement("geometry");
     sdf::ElementPtr collision_box_size = base_collision->AddElement("box")->GetElement("size");
     sdf::ElementPtr visual_box_size = base_visual->AddElement("box")->GetElement("size");
-    base_collision_pose->Set("0 0 " + std::to_string(BASE_HEIGHT/2) + " 0 0 0");
-    base_visual_pose->Set("0 0 " + std::to_string(BASE_HEIGHT/2) + " 0 0 0");
+    base_collision_pose->Set("0 0 " + std::to_string(BASE_HEIGHT / 2) + " 0 0 0");
+    base_visual_pose->Set("0 0 " + std::to_string(BASE_HEIGHT / 2) + " 0 0 0");
     collision_box_size->Set("2.98 2.98 " + std::to_string(BASE_HEIGHT));
     visual_box_size->Set("2.98 2.98 " + std::to_string(BASE_HEIGHT));
 

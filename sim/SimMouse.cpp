@@ -24,14 +24,14 @@ void SimMouse::updateIndicator(int row, int col, gazebo::common::Color color) {
   gazebo::msgs::Visual *visual = indicators[row][col];
 
   std::string visual_name = "my_maze::base::indicator_"
-				+ std::to_string(row)
-				+ "_" + std::to_string(col);
+        + std::to_string(row)
+        + "_" + std::to_string(col);
   visual->set_name(visual_name);
   visual->set_visible(true);
   visual->set_parent_name("my_maze::base");
   visual->set_cast_shadows(false);
 
-	gazebo::msgs::Geometry *geomMsg = visual->mutable_geometry();
+  gazebo::msgs::Geometry *geomMsg = visual->mutable_geometry();
   geomMsg->set_type(gazebo::msgs::Geometry::CYLINDER);
   geomMsg->mutable_cylinder()->set_radius(INDICATOR_RAD);
   geomMsg->mutable_cylinder()->set_length(INDICATOR_LEN);
@@ -40,7 +40,7 @@ void SimMouse::updateIndicator(int row, int col, gazebo::common::Color color) {
   double y = zero_offset - row * AbstractMaze::UNIT_DIST;
   double x = -zero_offset + col * AbstractMaze::UNIT_DIST;
 
-	gazebo::msgs::Set(visual->mutable_pose(),
+  gazebo::msgs::Set(visual->mutable_pose(),
       ignition::math::Pose3d(x, y, INDICATOR_Z, 0, 0, 0));
 
   gazebo::msgs::Set(visual->mutable_material()->mutable_diffuse(), color);
@@ -202,20 +202,20 @@ void SimMouse::setSpeed(double left_wheel_velocity_setpoint_mps, double right_wh
   double right_wheel_velocity = right_wheel_velocity_mps * (2 * M_PI) / WHEEL_CIRC;
 
   gazebo::msgs::JointCmd left;
-	left.set_name("mouse::left_wheel_joint");
-	left.mutable_velocity()->set_target(left_wheel_velocity);
-	left.mutable_velocity()->set_p_gain(kP);
-	left.mutable_velocity()->set_i_gain(kI);
-	left.mutable_velocity()->set_d_gain(kD);
-	controlPub->Publish(left);
+  left.set_name("mouse::left_wheel_joint");
+  left.mutable_velocity()->set_target(left_wheel_velocity);
+  left.mutable_velocity()->set_p_gain(kP);
+  left.mutable_velocity()->set_i_gain(kI);
+  left.mutable_velocity()->set_d_gain(kD);
+  controlPub->Publish(left);
 
   gazebo::msgs::JointCmd right;
-	right.set_name("mouse::right_wheel_joint");
-	right.mutable_velocity()->set_target(right_wheel_velocity);
-	right.mutable_velocity()->set_p_gain(kP);
-	right.mutable_velocity()->set_i_gain(kI);
-	right.mutable_velocity()->set_d_gain(kD);
-	controlPub->Publish(right);
+  right.set_name("mouse::right_wheel_joint");
+  right.mutable_velocity()->set_target(right_wheel_velocity);
+  right.mutable_velocity()->set_p_gain(kP);
+  right.mutable_velocity()->set_i_gain(kI);
+  right.mutable_velocity()->set_d_gain(kD);
+  controlPub->Publish(right);
 }
 
 SimMouse::RangeData SimMouse::getRangeData(){

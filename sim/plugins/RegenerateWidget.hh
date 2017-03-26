@@ -9,29 +9,32 @@
 
 
 namespace gazebo {
-  class GAZEBO_VISIBLE RegenerateWidget : public GUIPlugin {
+  class GAZEBO_VISIBLE RegenerateWidget :
+
+  public GUIPlugin {
   Q_OBJECT
 
   public:
-    static constexpr unsigned int WIDTH = 350;
-    static constexpr unsigned int HEIGHT = 120;
+  static constexpr unsigned int WIDTH = 350;
+  static constexpr unsigned int HEIGHT = 120;
 
-    RegenerateWidget();
+  RegenerateWidget();
 
-    virtual ~RegenerateWidget();
+  virtual ~RegenerateWidget();
 
-  protected slots:
+  protected
+  slots:
 
-    void OnRandomButton();
+  void OnRandomButton();
 
-    void OnBrowseFile();
+  void OnBrowseFile();
 
-    void OnButton();
+  void OnButton();
 
   private:
-    transport::NodePtr node;
-    transport::PublisherPtr regenPub;
-    QTextEdit *textEdit;
-    std::string maze_filename;
-  };
+  transport::NodePtr node;
+  transport::PublisherPtr regenPub;
+  QTextEdit *textEdit;
+  std::string maze_filename;
+};
 }

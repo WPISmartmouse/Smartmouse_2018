@@ -44,8 +44,7 @@ void MousePlugin::LeftAnalogCallback(ConstLaserScanStampedPtr &msg) {
 
   if (std::isinf(raw_range)) {
     this->left_analog = 0.15;
-  }
-  else {
+  } else {
     this->left_analog = raw_range;
   }
 }
@@ -56,8 +55,7 @@ void MousePlugin::RightAnalogCallback(ConstLaserScanStampedPtr &msg) {
   double raw_range = scan.ranges(0);
   if (std::isinf(raw_range)) {
     this->right_analog = 0.15;
-  }
-  else {
+  } else {
     this->right_analog = raw_range;
   }
 }
@@ -73,7 +71,7 @@ void MousePlugin::RightBinaryCallback(ConstLaserScanStampedPtr &msg) {
   msgs::LaserScan scan = msg->scan();
   assert(scan.ranges_size() == 1);
   double range = scan.ranges(0);
-  this->right_binary= !std::isinf(range) and range < SimMouse::RIGHT_BINARY_THRESHOLD;
+  this->right_binary = !std::isinf(range) and range < SimMouse::RIGHT_BINARY_THRESHOLD;
 }
 
 void MousePlugin::FrontBinaryCallback(ConstLaserScanStampedPtr &msg) {

@@ -11,31 +11,40 @@
 #include "msgs/msgs.h"
 
 namespace gazebo {
-  class GAZEBO_VISIBLE StateViz : public GUIPlugin {
+  class GAZEBO_VISIBLE StateViz :
+
+  public GUIPlugin {
   Q_OBJECT
 
   public:
-    StateViz();
-    virtual ~StateViz();
 
-  signals: void SetLeftVelocity(QString str);
-  signals: void SetRightVelocity(QString str);
+  StateViz();
+
+  virtual ~StateViz();
+
+  signals:
+
+  void SetLeftVelocity(QString str);
+
+  signals:
+
+  void SetRightVelocity(QString str);
 
   private:
-    constexpr static unsigned int WIDTH = 250; // pixels
-    constexpr static unsigned int HEIGHT = 40; // pixels
+  constexpr static unsigned int WIDTH = 250; // pixels
+  constexpr static unsigned int HEIGHT = 40; // pixels
 
-    float left_accumulator, right_accumulator;
+  float left_accumulator, right_accumulator;
 
-    transport::NodePtr node;
-    transport::SubscriberPtr state_sub;
+  transport::NodePtr node;
+  transport::SubscriberPtr state_sub;
 
-    QLabel *left_wheel_velocity_label;
-    QLabel *right_wheel_velocity_label;
+  QLabel *left_wheel_velocity_label;
+  QLabel *right_wheel_velocity_label;
 
-    QLineEdit *left_wheel_velocity_edit;
-    QLineEdit *right_wheel_velocity_edit;
+  QLineEdit *left_wheel_velocity_edit;
+  QLineEdit *right_wheel_velocity_edit;
 
-    void StateCallback(ConstRobotStatePtr &msg);
-  };
+  void StateCallback(ConstRobotStatePtr &msg);
+};
 }
