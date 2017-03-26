@@ -69,7 +69,7 @@ set(TEENSY_CXX_CORE_FILES
     ${TEENSY_ROOT}/WString.cpp
 )
 
-macro(add_teensy_executable TARGET_NAME SOURCES)
+macro(add_teensy_executable TARGET_NAME)
     # Determine the target flags for this executable.
     set(USB_MODE_DEF)
     if(${TEENSY_USB_MODE} STREQUAL SERIAL)
@@ -87,7 +87,6 @@ macro(add_teensy_executable TARGET_NAME SOURCES)
     else()
         message(FATAL_ERROR "Invalid USB mode: ${TEENSY_USB_MODE}")
     endif()
-    message("USB MODE: ${USB_MODE_DEF}")
     set(TARGET_FLAGS "-D${USB_MODE_DEF} -DF_CPU=${TEENSY_FREQUENCY}000000 ${TEENSY_FLAGS}")
     set(TARGET_C_FLAGS "${TARGET_FLAGS} ${TEENSY_C_FLAGS}")
     set(TARGET_CXX_FLAGS "${TARGET_FLAGS} ${TEENSY_CXX_FLAGS}")
@@ -104,7 +103,7 @@ macro(add_teensy_executable TARGET_NAME SOURCES)
         PROPERTIES COMPILE_FLAGS ${TARGET_CXX_FLAGS})
 
     set(FINAL_SOURCES ${TEENSY_LIB_SOURCES})
-    foreach(SOURCE ${SOURCES})
+    foreach(SOURCE ${ARGN})
         get_filename_component(SOURCE_EXT ${SOURCE} EXT)
         get_filename_component(SOURCE_NAME ${SOURCE} NAME_WE)
         get_filename_component(SOURCE_PATH ${SOURCE} REALPATH)

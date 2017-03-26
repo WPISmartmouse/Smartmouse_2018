@@ -11,18 +11,30 @@ project(smartmouse)
 
 include(Teensy)
 
-file(GLOB_RECURSE COM_SRC lib/common_commands/*.cpp lib/common/*.cpp lib/commanduino/*.cpp)
-file(GLOB CONSOLE_SRC console/*.cpp console/commands/*.cpp)
-file(GLOB REAL_SRC lib/real/*.cpp lib/real/commands/*.cpp)
+file(GLOB_RECURSE COM_SRC
+  common/*.cpp
+  common/commands/*.cpp)
 
-include_directories(build
-  lib/commanduino
-  lib/common
-  lib/common_commands
-  lib/common/commands)
+file(GLOB REAL_SRC
+  real/*.cpp
+  real/commands/*.cpp)
+
+file(GLOB_RECURSE REAL_LIBS_SRC
+  real/lib/*.cpp)
+
+file(GLOB LIB_DIRS real/lib/*)
+
+include_directories(${CMAKE_SOURCE_DIR} ${LIB_DIRS} real/commands)
 
 import_arduino_library(Bounce2)
-add_teensy_executable(robot real/dummy_main.cpp)
+import_arduino_library(i2c_t3)
+import_arduino_library(SPI)
+
+add_teensy_executable(dummy_main real/main/dummy_main.ino)
+
+add_teensy_executable(main real/main/main.ino ${COM_SRC} ${REAL_SRC} ${REAL_LIBS_SRC})
+
+#file(GLOB CONSOLE_SRC console/*.cpp console/commands/*.cpp)
 
 #################################
 ## library for console programs
