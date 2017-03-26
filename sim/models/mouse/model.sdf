@@ -383,7 +383,7 @@
     </plugin>
     <plugin name="link_plot_3d" filename="liblink_plot_3d_plugin.so">
       <minimum_distance>0.001</minimum_distance>
-      <buffer_length>5000</buffer_length>
+      <buffer_length>1000</buffer_length>
       <plot>
         <link>base</link>
         <pose>0 0 0.005 0 0 0</pose>

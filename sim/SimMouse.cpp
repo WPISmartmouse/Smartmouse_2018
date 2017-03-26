@@ -23,6 +23,9 @@ SimMouse *SimMouse::inst(){
 void SimMouse::updateIndicator(int row, int col, gazebo::common::Color color) {
   gazebo::msgs::Visual *visual = indicators[row][col];
 
+  gazebo::msgs::Visual::Meta *meta = visual->mutable_meta();
+  meta->set_layer(2);
+
   std::string visual_name = "my_maze::base::indicator_"
 				+ std::to_string(row)
 				+ "_" + std::to_string(col);
@@ -195,8 +198,6 @@ void SimMouse::setSpeed(double left_wheel_velocity_setpoint_mps, double right_wh
   } else if (left_wheel_velocity_mps > left_wheel_velocity_setpoint_mps) {
     left_wheel_velocity_mps = std::max(left_wheel_velocity_mps - ACCELERATION, left_wheel_velocity_setpoint_mps);
   }
-
-//  printf("speed: %f, %f\n", left_wheel_velocity_mps, right_wheel_velocity_mps);
 
   double left_wheel_velocity = left_wheel_velocity_mps * (2 * M_PI) / WHEEL_CIRC;
   double right_wheel_velocity = right_wheel_velocity_mps * (2 * M_PI) / WHEEL_CIRC;

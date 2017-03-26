@@ -4,47 +4,42 @@
 
 Forward::Forward() : mouse(SimMouse::inst()), l(0), r(0), checkedWalls(false), wallOnLeft(true), wallOnRight(true) {}
 
-double Forward::forwardDisplacement(ignition::math::Pose3d p0, ignition::math::Pose3d p1){
-  switch(mouse->getDir()){
+double Forward::forwardDisplacement(ignition::math::Pose3d p0, ignition::math::Pose3d p1) {
+  switch (mouse->getDir()) {
     case Direction::N:
       return p1.Pos().Y() - p0.Pos().Y();
-      break;
     case Direction::E:
       return p1.Pos().X() - p0.Pos().X();
-      break;
     case Direction::S:
       return p0.Pos().Y() - p1.Pos().Y();
-      break;
     case Direction::W:
       return p0.Pos().X() - p1.Pos().X();
-      break;
   }
 }
 
 
-void Forward::initialize(){
-//  mouse->resetIndicators(SimMouse::red_color);
-//  mouse->indicatePath(mouse->getRow(), mouse->getCol(), mouse->maze->pathToNextGoal, SimMouse::red_color);
+void Forward::initialize() {
+  mouse->resetIndicators(SimMouse::red_color);
+  mouse->indicatePath(mouse->getRow(), mouse->getCol(), mouse->maze->pathToNextGoal, SimMouse::red_color);
   start = mouse->getPose();
   disp = 0.0f;
 }
 
-double Forward::yawDiff(double y1, double y2){
+double Forward::yawDiff(double y1, double y2) {
   double diff = y2 - y1;
-  if (diff > M_PI) return diff - M_PI*2;
-  if (diff < -M_PI) return diff + M_PI*2;
+  if (diff > M_PI) return diff - M_PI * 2;
+  if (diff < -M_PI) return diff + M_PI * 2;
   return diff;
 }
 
-void Forward::execute(){
+void Forward::execute() {
   range_data = mouse->getRangeData();
-  disp = forwardDisplacement(start,mouse->getPose());
-  printf("%f\n", disp);
+  disp = forwardDisplacement(start, mouse->getPose());
 
   double currentYaw = mouse->getPose().Rot().Yaw();
   double angleError = yawDiff(toYaw(mouse->getDir()), currentYaw);
-  double dToWallRight = range_data.right_analog * cos(M_PI/6 + angleError);
-  double dToWallLeft = range_data.left_analog * cos(M_PI/6 - angleError);
+  double dToWallRight = range_data.right_analog * cos(M_PI / 6 + angleError);
+  double dToWallLeft = range_data.left_analog * cos(M_PI / 6 - angleError);
 
   double dispError = AbstractMaze::UNIT_DIST - disp;
   l = dispError * kPDisp;
@@ -56,18 +51,18 @@ void Forward::execute(){
   l = l < SimMouse::MIN_SPEED ? SimMouse::MIN_SPEED : l;
   r = r < SimMouse::MIN_SPEED ? SimMouse::MIN_SPEED : r;
 
-  if (!checkedWalls && dispError < AbstractMaze::UNIT_DIST/2) {
+  if (!checkedWalls && dispError < AbstractMaze::UNIT_DIST / 2) {
     checkedWalls = true;
     walls[static_cast<int>(right_of_dir(mouse->getDir()))] =
-      dToWallRight < SimMouse::WALL_DIST;
+            dToWallRight < SimMouse::WALL_DIST;
     walls[static_cast<int>(left_of_dir(mouse->getDir()))] =
-      dToWallLeft < SimMouse::WALL_DIST;
+            dToWallLeft < SimMouse::WALL_DIST;
   }
 
-  if (!range_data.right_binary && wallOnRight){
+  if (!range_data.right_binary && wallOnRight) {
     wallOnRight = false;
   }
-  if (!range_data.left_binary && wallOnLeft){
+  if (!range_data.left_binary && wallOnLeft) {
     wallOnLeft = false;
   }
 
@@ -83,16 +78,16 @@ void Forward::execute(){
     r += correction;
   }
 
-  mouse->setSpeed(l,r);
+  mouse->setSpeed(l, r);
 }
 
-bool Forward::isFinished(){
+bool Forward::isFinished() {
   return disp > AbstractMaze::UNIT_DIST;
 }
 
-void Forward::end(){
-//  mouse->resetIndicators(SimMouse::blue_color);
-//  mouse->indicatePath(0, 0, mouse->maze->fastest_theoretical_route, SimMouse::blue_color);
+void Forward::end() {
+  mouse->resetIndicators(SimMouse::blue_color);
+  mouse->indicatePath(0, 0, mouse->maze->fastest_theoretical_route, SimMouse::blue_color);
 
   mouse->internalForward();
   mouse->setSpeed(0, 0);
@@ -102,4 +97,5 @@ void Forward::end(){
 
   mouse->suggestWalls(walls);
 }
+
 #endif

@@ -21,8 +21,7 @@
 
 #include "gazebo/common/Plugin.hh"
 
-namespace gazebo
-{
+namespace gazebo {
   // Forward declare private data class
   class LinkPlot3DPluginPrivate;
 
@@ -66,22 +65,29 @@ namespace gazebo
   ///      </plot>
   ///
   ///    </plugin>
-  class GAZEBO_VISIBLE LinkPlot3DPlugin : public ModelPlugin
-  {
+  class GAZEBO_VISIBLE LinkPlot3DPlugin : public ModelPlugin {
     /// \brief Constructor.
-    public: LinkPlot3DPlugin();
+  public:
+    LinkPlot3DPlugin();
 
     /// \brief Destructor.
-    public: ~LinkPlot3DPlugin();
+  public:
+    ~LinkPlot3DPlugin();
 
     // Documentation Inherited.
-    public: virtual void Load(physics::ModelPtr _model, sdf::ElementPtr _sdf);
+  public:
+    virtual void Load(physics::ModelPtr _model, sdf::ElementPtr _sdf);
 
     /// \brief Callback for World Update events.
-    private: virtual void OnUpdate();
+  private:
+    virtual void OnUpdate();
+
+  private:
+    void delete_plot_callback(const ignition::msgs::Empty &_msg);
 
     // Private data pointer.
-    private: std::unique_ptr<LinkPlot3DPluginPrivate> dataPtr;
+  private:
+    std::unique_ptr<LinkPlot3DPluginPrivate> dataPtr;
   };
 }
 #endif
