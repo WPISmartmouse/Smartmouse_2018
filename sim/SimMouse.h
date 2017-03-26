@@ -11,6 +11,7 @@
 #include <ignition/math.hh>
 #include "Mouse.h"
 #include "AbstractMaze.h"
+#include "Pose.h"
 
 class SimMouse : public Mouse {
 public:
@@ -19,6 +20,7 @@ public:
   constexpr static double LEFT_BINARY_THRESHOLD = 0.18; // meters
   constexpr static double RIGHT_BINARY_THRESHOLD = 0.18; // meters
   constexpr static double FRONT_BINARY_THRESHOLD = 0.18; // meters
+  constexpr static double ANALOG_MAX_DIST = 0.15; // meters
 
   typedef struct {
     double left_analog;
@@ -57,7 +59,9 @@ public:
 
   void setSpeed(double left, double right);
 
-  ignition::math::Pose3d getPose();
+  ignition::math::Pose3d getExactPose();
+
+  Pose getEstimatedPose();
 
   std::pair<double, double> getWheelVelocities();
 

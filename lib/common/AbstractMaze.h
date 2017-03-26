@@ -17,10 +17,11 @@ class AbstractMaze {
   friend class Mouse;
   public:
 
-    const static int MAZE_SIZE = 16;
-    const static int PATH_SIZE = 256;
-    const static int CENTER = MAZE_SIZE/2;
-    const static float UNIT_DIST;
+    constexpr static int MAZE_SIZE = 16;
+    constexpr static int PATH_SIZE = 256;
+    constexpr static int CENTER = MAZE_SIZE/2;
+    constexpr static float UNIT_DIST = 0.18;
+    constexpr static float INNER_UNIT_DIST = 0.16;
     bool solved; //boolean for if we know the fastest route
     char *fastest_route; //a char array like NSEWNENNSNE, which means North, South, East...
     char *fastest_theoretical_route;

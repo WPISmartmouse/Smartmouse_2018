@@ -1,5 +1,6 @@
 #include "RealMouse.h"
 #include "KinematicController.h"
+#include "Pose.h"
 
 RealMouse *RealMouse::instance = nullptr;
 

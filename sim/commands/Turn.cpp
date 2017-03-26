@@ -5,7 +5,7 @@ Turn::Turn(Direction dir) : mouse(SimMouse::inst()), dir(dir),
     l(0), r(0) {}
 
 void Turn::initialize(){
-  start = mouse->getPose();
+  start = mouse->getExactPose();
   goalYaw = toYaw(dir);
 }
 
@@ -37,7 +37,7 @@ void Turn::execute(){
 }
 
 bool Turn::isFinished(){
-  double currentYaw = mouse->getPose().Rot().Yaw();
+  double currentYaw = mouse->getExactPose().Rot().Yaw();
   dYaw = yawDiff(currentYaw, goalYaw);
   return (mouse->getDir() == dir) || (fabs(dYaw) < Mouse::ROT_TOLERANCE);
 }

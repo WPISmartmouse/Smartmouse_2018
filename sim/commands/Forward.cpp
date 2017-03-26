@@ -1,5 +1,6 @@
 #ifdef SIM
 
+#include <SimMouse.h>
 #include "Forward.h"
 
 Forward::Forward() : mouse(SimMouse::inst()), l(0), r(0), checkedWalls(false), wallOnLeft(true), wallOnRight(true) {}
@@ -21,7 +22,7 @@ double Forward::forwardDisplacement(ignition::math::Pose3d p0, ignition::math::P
 void Forward::initialize() {
   mouse->resetIndicators(SimMouse::red_color);
   mouse->indicatePath(mouse->getRow(), mouse->getCol(), mouse->maze->pathToNextGoal, SimMouse::red_color);
-  start = mouse->getPose();
+  start = mouse->getExactPose();
   disp = 0.0f;
 }
 
@@ -34,9 +35,16 @@ double Forward::yawDiff(double y1, double y2) {
 
 void Forward::execute() {
   range_data = mouse->getRangeData();
-  disp = forwardDisplacement(start, mouse->getPose());
 
-  double currentYaw = mouse->getPose().Rot().Yaw();
+//  if (range_data.front_binary) {
+//    disp = AbstractMaze::UNIT_DIST - SimMouse::FRONT_BINARY_THRESHOLD;
+//  }
+//  else {
+//    disp = forwardDisplacement(start, mouse->getExactPose());
+//  }
+  disp = forwardDisplacement(start, mouse->getExactPose());
+
+  double currentYaw = mouse->getExactPose().Rot().Yaw();
   double angleError = yawDiff(toYaw(mouse->getDir()), currentYaw);
   double dToWallRight = range_data.right_analog * cos(M_PI / 6 + angleError);
   double dToWallLeft = range_data.left_analog * cos(M_PI / 6 - angleError);
@@ -59,26 +67,24 @@ void Forward::execute() {
             dToWallLeft < SimMouse::WALL_DIST;
   }
 
-  if (!range_data.right_binary && wallOnRight) {
-    wallOnRight = false;
-  }
-  if (!range_data.left_binary && wallOnLeft) {
-    wallOnLeft = false;
-  }
+  double rightWallError = AbstractMaze::INNER_UNIT_DIST/2 - dToWallRight;
+  double leftWallError = AbstractMaze::INNER_UNIT_DIST/2 - dToWallLeft;
 
-  double rightWallError = 0.084 - dToWallRight;
-  double leftWallError = 0.084 - dToWallLeft;
-
-  if (wallOnRight) {
+  // defualt to follow right wall (arbitrary)
+  // if both exist, follow right. If only left exists follow left
+  // if only right exists follow right, otherwise dead reckon
+  if (range_data.right_analog < SimMouse::ANALOG_MAX_DIST) {
+    printf("r %f\n", dToWallRight);
     double correction = rightWallError * kPWall * dispError;
     l += correction;
   }
-  if (wallOnLeft) {
+  else if (range_data.left_analog < SimMouse::ANALOG_MAX_DIST) {
+    printf("l %f\n", dToWallLeft);
     double correction = leftWallError * kPWall * dispError;
     r += correction;
   }
 
-  mouse->setSpeed(l, r);
+//  mouse->setSpeed(l, r);
 }
 
 bool Forward::isFinished() {
@@ -90,7 +96,7 @@ void Forward::end() {
   mouse->indicatePath(0, 0, mouse->maze->fastest_theoretical_route, SimMouse::blue_color);
 
   mouse->internalForward();
-  mouse->setSpeed(0, 0);
+//  mouse->setSpeed(0, 0);
 
   walls[static_cast<int>(mouse->getDir())] = range_data.front_binary;
   walls[static_cast<int>(opposite_direction(mouse->getDir()))] = false;

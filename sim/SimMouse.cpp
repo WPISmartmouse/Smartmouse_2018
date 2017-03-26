@@ -226,7 +226,18 @@ SimMouse::RangeData SimMouse::getRangeData(){
   return this->range_data;
 }
 
-ignition::math::Pose3d SimMouse::getPose(){
+Pose SimMouse::getEstimatedPose() {
+  //wait for the next message to occur
+  std::unique_lock<std::mutex> lk(dataMutex);
+  dataCond.wait(lk);
+  Pose pose;
+  pose.x = 0;
+  pose.y = 0;
+  pose.yaw = 0;
+  return pose;
+}
+
+ignition::math::Pose3d SimMouse::getExactPose(){
   //wait for the next message to occur
   std::unique_lock<std::mutex> lk(dataMutex);
   dataCond.wait(lk);

@@ -20,14 +20,13 @@ namespace gazebo {
     virtual ~StateViz();
 
   signals:
-
     void SetLeftVelocity(QString str);
-
-  signals:
-
     void SetRightVelocity(QString str);
+    void SetRow(QString str);
+    void SetCol(QString str);
 
   protected slots:
+
     void ClearRobotTrace();
 
   private:
@@ -35,6 +34,7 @@ namespace gazebo {
     constexpr static unsigned int HEIGHT = 40; // pixels
 
     float left_accumulator, right_accumulator;
+    gazebo::msgs::Pose last_pose;
 
     std::string topic;
 
@@ -45,9 +45,13 @@ namespace gazebo {
 
     QLabel *left_wheel_velocity_label;
     QLabel *right_wheel_velocity_label;
+    QLabel *col_label;
+    QLabel *row_label;
 
     QLineEdit *left_wheel_velocity_edit;
     QLineEdit *right_wheel_velocity_edit;
+    QLineEdit *col_edit;
+    QLineEdit *row_edit;
 
     void StateCallback(ConstRobotStatePtr &msg);
   };

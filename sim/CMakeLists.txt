@@ -87,6 +87,7 @@ QT5_WRAP_CPP(state_viz_MOC StateViz.hh)
 add_library(state_viz SHARED ${state_viz_MOC} StateViz.cc)
 set_target_properties(state_viz PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh")
 target_link_libraries(state_viz
+    sim
     gzmaze_msgs
     ${GAZEBO_LIBRARIES}
     ${QT_LIBRARIES}

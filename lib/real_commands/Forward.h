@@ -3,7 +3,7 @@
 #include "CommanDuino.h"
 #include "Pose.h"
 #include "../real/RealMouse.h"
-#include "../KinematicMotorController/Pose.h"
+#include "Pose.h"
 
 class Forward : public CommandGroup {
   public:

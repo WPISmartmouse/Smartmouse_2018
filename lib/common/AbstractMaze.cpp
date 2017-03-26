@@ -10,8 +10,6 @@
 #include <Arduino.h>
 #endif
 
-const float AbstractMaze::UNIT_DIST = 0.18;
-
 AbstractMaze::AbstractMaze() : solved(false) {
   fastest_route = (char *)malloc(PATH_SIZE*sizeof(char));
   fastest_theoretical_route = (char *)malloc(PATH_SIZE*sizeof(char));

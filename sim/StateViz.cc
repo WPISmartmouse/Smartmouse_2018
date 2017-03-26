@@ -1,6 +1,7 @@
 #include <sstream>
 #include <cmath>
 #include <boost/algorithm/string/replace.hpp>
+#include <AbstractMaze.h>
 #include "StateViz.hh"
 #include "RegenerateWidget.hh"
 #include "SensorViz.hh"
@@ -24,12 +25,18 @@ StateViz::StateViz() : GUIPlugin(), left_accumulator(0), right_accumulator(0), t
   QVBoxLayout *main_layout = new QVBoxLayout();
   QHBoxLayout *left_wheel_vel_layout = new QHBoxLayout();
   QHBoxLayout *right_wheel_vel_layout= new QHBoxLayout();
+  QHBoxLayout *row_layout = new QHBoxLayout();
+  QHBoxLayout *col_layout = new QHBoxLayout();
 
   left_wheel_velocity_label = new QLabel(tr("left wheel velocity:"));
   right_wheel_velocity_label = new QLabel(tr("right wheel velocity:"));
+  row_label = new QLabel(tr("row:"));
+  col_label = new QLabel(tr("column:"));
 
   left_wheel_velocity_edit = new QLineEdit(tr("0.000 m/sec"));
   right_wheel_velocity_edit = new QLineEdit(tr("0.000 m/sec"));
+  row_edit = new QLineEdit(tr("0"));
+  col_edit = new QLineEdit(tr("0"));
 
   QPushButton *clear_plot_button = new QPushButton(tr("Clear Robot Trace"));
   clear_plot_button->setStyleSheet("padding: 0px;");
@@ -39,13 +46,23 @@ StateViz::StateViz() : GUIPlugin(), left_accumulator(0), right_accumulator(0), t
           SLOT(setText(QString)), Qt::QueuedConnection);
   connect(this, SIGNAL(SetRightVelocity(QString)), this->right_wheel_velocity_edit,
           SLOT(setText(QString)), Qt::QueuedConnection);
+  connect(this, SIGNAL(SetRow(QString)), this->row_edit,
+          SLOT(setText(QString)), Qt::QueuedConnection);
+  connect(this, SIGNAL(SetCol(QString)), this->col_edit,
+          SLOT(setText(QString)), Qt::QueuedConnection);
 
   left_wheel_vel_layout->addWidget(left_wheel_velocity_label);
   left_wheel_vel_layout->addWidget(left_wheel_velocity_edit);
   right_wheel_vel_layout->addWidget(right_wheel_velocity_label);
   right_wheel_vel_layout->addWidget(right_wheel_velocity_edit);
+  row_layout->addWidget(row_label);
+  row_layout->addWidget(row_edit);
+  col_layout->addWidget(col_label);
+  col_layout->addWidget(col_edit);
   main_layout->addLayout(left_wheel_vel_layout);
   main_layout->addLayout(right_wheel_vel_layout);
+  main_layout->addLayout(row_layout);
+  main_layout->addLayout(col_layout);
   main_layout->addWidget(clear_plot_button);
 
   QPalette pal = palette();
@@ -75,6 +92,24 @@ void StateViz::StateCallback(ConstRobotStatePtr &msg) {
 
   char right_wheel_velocity_str[11];
   snprintf(right_wheel_velocity_str, 11, "%2.2f mm/s", (1000 * smooth_right_vel));
+
+  gazebo::msgs::Pose pose = msg->pose();
+
+  // compute x and y with respect to the top left square
+  double x = pose.position().x() + AbstractMaze::UNIT_DIST * 8 - 0.006;
+  double y = -pose.position().y() + AbstractMaze::UNIT_DIST * 8 - 0.006;
+
+  int row = (int) (x / (AbstractMaze::UNIT_DIST));
+  int col = (int) (y / (AbstractMaze::UNIT_DIST));
+
+  char row_str[3];
+  snprintf(row_str, 3, "%i", row);
+  char col_str[3];
+  snprintf(col_str, 3, "%i", col);
+  this->SetRow(row_str);
+  this->SetCol(col_str);
+
+  this->last_pose = pose;
 
   this->SetLeftVelocity(left_wheel_velocity_str);
   this->SetRightVelocity(right_wheel_velocity_str);
