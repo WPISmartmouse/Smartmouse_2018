@@ -1,24 +1,22 @@
 #include "Forward.h"
-#include "LEDBlink.h"
-#include <math.h>
 #include <cfloat>
 
 Forward::Forward() :
-  mouse(RealMouse::inst()),
-  checkedWalls(false),
-  state(FwdState::GO_UNTIL_CHECK),
-  remainingDistance(FLT_MAX),
-  walls{true, true, true, true},
-  goalYaw(0) {}
+        mouse(RealMouse::inst()),
+        checkedWalls(false),
+        state(FwdState::GO_UNTIL_CHECK),
+        remainingDistance(FLT_MAX),
+        walls{true, true, true, true},
+        goalYaw(0) {}
 
-void Forward::initialize(){
+void Forward::initialize() {
   start = mouse->getPose();
   distanceSoFar = 0.0f;
   goalYaw = toYaw(mouse->getDir());
 }
 
-float Forward::forwardDisplacement(Pose p0, Pose p1){
-  switch(mouse->getDir()){
+float Forward::forwardDisplacement(Pose p0, Pose p1) {
+  switch (mouse->getDir()) {
     case Direction::N:
       return p1.y - p0.y;
     case Direction::E:
@@ -33,7 +31,7 @@ float Forward::forwardDisplacement(Pose p0, Pose p1){
   return -1;
 }
 
-float Forward::yawDiff(){
+float Forward::yawDiff() {
   float currentYaw;
 
   int imu_in_calib = (mouse->getIMUCalibration() > 0);
@@ -45,13 +43,13 @@ float Forward::yawDiff(){
   }
 
   float diff = currentYaw - goalYaw;
-  if (diff > M_PI) return diff - M_PI*2;
-  if (diff < -M_PI) return diff + M_PI*2;
+  if (diff > M_PI) return diff - M_PI * 2;
+  if (diff < -M_PI) return diff + M_PI * 2;
   return diff;
 }
 
-float Forward::calculateRemainingDistance(float dToWallLeft, float dToWallRight, float rawFrontWallDist){
-  switch(this->state) {
+float Forward::calculateRemainingDistance(float dToWallLeft, float dToWallRight, float rawFrontWallDist) {
+  switch (this->state) {
     case FwdState::GO_UNTIL_CHECK:
       if (distanceSoFar >= CHECK_DIST) {
         this->state = FwdState::CHECK;
@@ -68,8 +66,7 @@ float Forward::calculateRemainingDistance(float dToWallLeft, float dToWallRight,
       if (rawFrontWallDist < maxFrontDist) {
         digitalWrite(RealMouse::LEDGO, 1);
         this->state = FwdState::STOP_AT_WALL;
-      }
-      else {
+      } else {
         this->state = FwdState::STOP_AT_DIST;
       }
       return AbstractMaze::UNIT_DIST - distanceSoFar;
@@ -84,11 +81,11 @@ float Forward::calculateRemainingDistance(float dToWallLeft, float dToWallRight,
   return -1;
 }
 
-bool Forward::outOfRange(float range){
+bool Forward::outOfRange(float range) {
   return (range >= WALL_OUT_OF_RANGE_DIST);
 }
 
-void Forward::execute(){
+void Forward::execute() {
   float dYaw = yawDiff();
   float angleError = -dYaw;
 
@@ -112,13 +109,11 @@ void Forward::execute(){
     digitalWrite(RealMouse::LEDG, 1);
     digitalWrite(RealMouse::LEDR, 0);
     correction = -leftWallError * kPWall * this->remainingDistance;
-  }
-  else if (!outOfRange(rawRightWallDist)) {
+  } else if (!outOfRange(rawRightWallDist)) {
     digitalWrite(RealMouse::LEDG, 0);
     digitalWrite(RealMouse::LEDR, 1);
     correction = rightWallError * kPWall * this->remainingDistance;
-  }
-  else {
+  } else {
     digitalWrite(RealMouse::LEDR, 0);
     digitalWrite(RealMouse::LEDG, 0);
   }
@@ -132,7 +127,7 @@ void Forward::execute(){
   mouse->setSpeed(speed, sumCorrection);
 }
 
-bool Forward::isFinished(){
+bool Forward::isFinished() {
   if (remainingDistance <= 0) {
     return true;
   }
@@ -140,10 +135,10 @@ bool Forward::isFinished(){
 
 }
 
-void Forward::end(){
+void Forward::end() {
   digitalWrite(RealMouse::LEDGO, 0);
   mouse->internalForward();
-  mouse->setSpeed(0,0);
+  mouse->setSpeed(0, 0);
 
   this->walls[static_cast<int>(mouse->getDir())] = this->distances[1] < RealMouse::WALL_DIST;
   this->walls[static_cast<int>(opposite_direction(mouse->getDir()))] = false;

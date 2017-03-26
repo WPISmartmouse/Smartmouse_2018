@@ -1,43 +1,41 @@
 #include "Turn.h"
-#include <stdio.h>
-#include <math.h>
 
 Turn::Turn(Direction dir) : mouse(RealMouse::inst()), dir(dir) {}
 
-float Turn::yawDiff(float y1, float y2){
+float Turn::yawDiff(float y1, float y2) {
   float diff = y2 - y1;
   if (diff > M_PI) {
-    return diff - 2*M_PI;
+    return diff - 2 * M_PI;
   }
   if (diff < -M_PI) {
-    return diff + 2*M_PI;
+    return diff + 2 * M_PI;
   }
   return diff;
 }
 
-void Turn::initialize(){
+void Turn::initialize() {
   start = mouse->getPose();
   goalYaw = toYaw(dir);
 }
 
-void Turn::execute(){
+void Turn::execute() {
   float speed = dYaw * kP;
 
   //don't allow turn command to set turn speed to zero
   if (speed < MIN_ROT_SPEED && speed >= 0) speed = MIN_ROT_SPEED;
   if (speed > -MIN_ROT_SPEED && speed <= 0) speed = -MIN_ROT_SPEED;
 
-  mouse->setSpeed(0,speed);
+  mouse->setSpeed(0, speed);
 }
 
-bool Turn::isFinished(){
+bool Turn::isFinished() {
   float currentYaw = -1;
   currentYaw = mouse->getPose().yaw;
   dYaw = yawDiff(currentYaw, goalYaw);
   return (mouse->getDir() == dir) || (fabs(dYaw) < Mouse::ROT_TOLERANCE);
 }
 
-void Turn::end(){
+void Turn::end() {
   mouse->internalTurnToFace(dir);
   mouse->brake();
   mouse->updateGlobalYaw();

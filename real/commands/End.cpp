@@ -7,6 +7,6 @@ bool End::isFinished() {
   return true;
 }
 
-void End::end(){
+void End::end() {
   Serial.println("DONE.");
 }

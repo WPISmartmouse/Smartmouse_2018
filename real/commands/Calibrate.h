@@ -4,15 +4,19 @@
 #include <real/RealMouse.h>
 
 class Calibrate : public Command {
-  public:
-    Calibrate();
-    void initialize();
-    void execute();
-    bool isFinished();
-    void end();
+public:
+  Calibrate();
 
-  private:
-    const unsigned long REFRESH_TIME = 200;
-    RealMouse *mouse;
-    uint32_t lastDisplayUpdate;
+  void initialize();
+
+  void execute();
+
+  bool isFinished();
+
+  void end();
+
+private:
+  const unsigned long REFRESH_TIME = 200;
+  RealMouse *mouse;
+  uint32_t lastDisplayUpdate;
 };

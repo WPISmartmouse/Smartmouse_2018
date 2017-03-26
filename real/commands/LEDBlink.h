@@ -5,20 +5,23 @@
 #include <real/RealMouse.h>
 
 class LEDBlink : public Command {
-  public:
+public:
 
-    const static int B = RealMouse::LEDB;
-    const static int R = RealMouse::LEDR;
-    const static int G = RealMouse::LEDG;
-    const static int W = RealMouse::LEDGO;
+  const static int B = RealMouse::LEDB;
+  const static int R = RealMouse::LEDR;
+  const static int G = RealMouse::LEDG;
+  const static int W = RealMouse::LEDGO;
 
-    LEDBlink(const int led_pin, unsigned long blink_time);
-    void initialize();
-    bool isFinished();
-    void end();
+  LEDBlink(const int led_pin, unsigned long blink_time);
 
-  private:
-    const int led_pin;
-    unsigned long blink_time;
-    unsigned long blink_end;
+  void initialize();
+
+  bool isFinished();
+
+  void end();
+
+private:
+  const int led_pin;
+  unsigned long blink_time;
+  unsigned long blink_end;
 };

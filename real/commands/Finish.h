@@ -4,12 +4,14 @@
 #include <common/AbstractMaze.h>
 
 class Finish : public Command {
-  public:
-    Finish(AbstractMaze *maze);
-    void initialize();
-    bool isFinished();
+public:
+  Finish(AbstractMaze *maze);
 
-  private:
-    AbstractMaze *maze;
+  void initialize();
+
+  bool isFinished();
+
+private:
+  AbstractMaze *maze;
 
 };

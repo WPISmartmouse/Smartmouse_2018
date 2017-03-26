@@ -8,7 +8,7 @@ ArduinoTimer timer;
 AbstractMaze maze;
 Scheduler scheduler(new SolveCommand(new Flood(RealMouse::inst())));
 
-void setup(){
+void setup() {
   pinMode(13, OUTPUT);
   digitalWrite(13, LOW);
   Serial.begin(115200);
@@ -17,7 +17,7 @@ void setup(){
   RealMouse::inst()->setup();
 }
 
-void loop(){
+void loop() {
   RealMouse::inst()->run();
   scheduler.run();
 }
