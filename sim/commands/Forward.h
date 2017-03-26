@@ -3,9 +3,9 @@
 #ifdef SIM
 
 #include <ignition/math.hh>
-#include "CommanDuino.h"
-#include "SimMouse.h"
-#include "Mouse.h"
+#include "common/commanduino/Command.h"
+#include "sim/SimMouse.h"
+#include "common/Mouse.h"
 
 class Forward : public Command {
   public:

@@ -6,9 +6,11 @@
 #include <gazebo/msgs/joint_cmd.pb.h>
 #include <gazebo/msgs/visual.pb.h>
 #include <SimMouse.h>
+#include <common/commanduino/Command.h>
+#include <common/commanduino/Scheduler.h>
+#include <common/commands/NavTestCommand.h>
 
 #include "SimTimer.h"
-#include "NavTestCommand.h"
 
 int main(int argc, char *argv[]) {
   // Load gazebo

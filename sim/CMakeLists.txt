@@ -58,33 +58,34 @@ add_custom_target(gazebo_pch DEPENDS ${pch_out})
 ##################################
 # build the gazebo plugins
 ##################################
-add_library(mouse_plugin SHARED MousePlugin.cc)
+add_library(mouse_plugin SHARED plugins/MousePlugin.cc)
 target_link_libraries(mouse_plugin gzmaze_msgs ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 set_target_properties(mouse_plugin PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh")
 add_dependencies(mouse_plugin gazebo_pch)
 
-add_library(binary_ir_plugin SHARED BinaryIR.cc)
+add_library(binary_ir_plugin SHARED plugins/BinaryIR.cc)
 target_link_libraries(binary_ir_plugin ${GAZEBO_LIBRARIES})
 set_target_properties(binary_ir_plugin PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh")
 add_dependencies(binary_ir_plugin gazebo_pch)
 
-add_library(analog_ir_plugin SHARED AnalogIR.cc)
+add_library(analog_ir_plugin SHARED plugins/AnalogIR.cc)
 target_link_libraries(analog_ir_plugin ${GAZEBO_LIBRARIES})
 set_target_properties(analog_ir_plugin PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh")
 add_dependencies(analog_ir_plugin gazebo_pch)
 
-add_library(maze_plugin SHARED MazeFactory.cc)
+
+add_library(maze_plugin SHARED plugins/MazeFactory.cc)
 target_link_libraries(maze_plugin ${GAZEBO_LIBRARIES})
 set_target_properties(maze_plugin PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh")
 add_dependencies(maze_plugin gazebo_pch)
 
-add_library(link_plot_3d_plugin SHARED LinkPlot3DPlugin.cc)
+add_library(link_plot_3d_plugin SHARED plugins/LinkPlot3DPlugin.cc)
 target_link_libraries(link_plot_3d_plugin ${GAZEBO_LIBRARIES})
 set_target_properties(link_plot_3d_plugin PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh")
 add_dependencies(link_plot_3d_plugin gazebo_pch)
 
-QT5_WRAP_CPP(state_viz_MOC StateViz.hh)
-add_library(state_viz SHARED ${state_viz_MOC} StateViz.cc)
+QT5_WRAP_CPP(state_viz_MOC plugins/StateViz.hh)
+add_library(state_viz SHARED ${state_viz_MOC} plugins/StateViz.cc)
 set_target_properties(state_viz PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh")
 target_link_libraries(state_viz
         gzmaze_msgs
@@ -93,8 +94,8 @@ target_link_libraries(state_viz
         ${PROTOBUF_LIBRARIES})
 add_dependencies(state_viz gazebo_pch)
 
-QT5_WRAP_CPP(sensor_viz_MOC SensorViz.hh)
-add_library(sensor_viz SHARED ${sensor_viz_MOC} SensorViz.cc)
+QT5_WRAP_CPP(sensor_viz_MOC plugins/SensorViz.hh)
+add_library(sensor_viz SHARED ${sensor_viz_MOC} plugins/SensorViz.cc)
 set_target_properties(sensor_viz PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh")
 target_link_libraries(sensor_viz
         ${GAZEBO_LIBRARIES}
@@ -102,8 +103,8 @@ target_link_libraries(sensor_viz
         ${PROTOBUF_LIBRARIES})
 add_dependencies(sensor_viz gazebo_pch)
 
-QT5_WRAP_CPP(regenerate_widget_MOC RegenerateWidget.hh)
-add_library(regenerate_widget SHARED ${regenerate_widget_MOC} RegenerateWidget.cc)
+QT5_WRAP_CPP(regenerate_widget_MOC plugins/RegenerateWidget.hh)
+add_library(regenerate_widget SHARED ${regenerate_widget_MOC} plugins/RegenerateWidget.cc)
 set_target_properties(regenerate_widget PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh")
 target_link_libraries(regenerate_widget
         ${GAZEBO_LIBRARIES}

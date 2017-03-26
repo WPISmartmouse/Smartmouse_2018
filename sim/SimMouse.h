@@ -9,8 +9,8 @@
 #include <gazebo/common/Color.hh>
 #include <gazebo/transport/TransportTypes.hh>
 #include <ignition/math.hh>
-#include "Mouse.h"
-#include "AbstractMaze.h"
+#include "common/Mouse.h"
+#include "common/AbstractMaze.h"
 
 class SimMouse : public Mouse {
 public:

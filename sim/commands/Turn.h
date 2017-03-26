@@ -2,9 +2,9 @@
 #ifdef SIM
 
 #include <ignition/math.hh>
-#include "CommanDuino.h"
-#include "SimMouse.h"
-#include "Direction.h"
+#include "common/commanduino/Command.h"
+#include "sim/SimMouse.h"
+#include "common/Direction.h"
 
 class Turn : public Command {
   public:

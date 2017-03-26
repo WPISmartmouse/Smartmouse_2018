@@ -3,16 +3,14 @@
 #include <fstream>
 #include <iostream>
 #include <string.h>
+#include <common/Flood.h>
+#include <common/commanduino/Scheduler.h>
+#include <common/commands/StepSolveCommand.h>
+#include <common/commands/SolveCommand.h>
 
-#include "CommanDuino.h"
-#include "StepSolveCommand.h"
-#include "SolveCommand.h"
 #include "ConsoleMaze.h"
 #include "ConsoleMouse.h"
 #include "ConsoleTimer.h"
-#include "Mouse.h"
-#include "Flood.h"
-#include "WallFollow.h"
 
 int main(int argc, char* argv[]){
 

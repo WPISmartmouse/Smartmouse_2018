@@ -2,9 +2,8 @@
 
 #ifdef CONSOLE
 
-#include "CommanDuino.h"
+#include <common/commanduino/Command.h>
 #include "ConsoleMouse.h"
-#include "Mouse.h"
 
 class Stop : public Command {
   public:

@@ -1,7 +1,7 @@
 #pragma once
 #ifdef SIM
-#include "CommanDuino.h"
-#include "AbstractMaze.h"
+#include <common/commanduino/Command.h>
+#include <common/AbstractMaze.h>
 
 class Finish : public Command {
   public:

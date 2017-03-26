@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Mouse.h"
-#include "SensorReading.h"
+
+#include "common/Mouse.h"
 
 class ConsoleMouse : public Mouse {
 public:

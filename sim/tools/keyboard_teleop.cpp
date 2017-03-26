@@ -1,16 +1,16 @@
 #include <iostream>
 #include <math.h>
-#include <cstdio>
 #include <unistd.h>
 #include <gazebo/msgs/joint_cmd.pb.h>
 #include <gazebo/transport/TransportTypes.hh>
-#include <ignition/math/Quaternion.hh>
 #include <gazebo/msgs/msgs.hh>
 #include <gazebo/common/Console.hh>
-
-#include "SimTimer.h"
-#include "SimMouse.h"
-#include "msgs/msgs.h"
+#include <common/commanduino/Command.h>
+#include <termio.h>
+#include <sim/msgs/msgs.h>
+#include <sim/SimMouse.h>
+#include <sim/SimTimer.h>
+#include <ignition/math/Quaternion.hh>
 
 typedef const boost::shared_ptr<const gzmaze::msgs::RobotState> RobotStatePtr;
 

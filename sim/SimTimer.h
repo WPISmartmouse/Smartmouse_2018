@@ -1,6 +1,7 @@
 #pragma once
 
-#include "CommanDuino.h"
+#include <gazebo/msgs/world_stats.pb.h>
+#include "common/commanduino/TimerInterface.h"
 
 class SimTimer : public TimerInterface {
 public:

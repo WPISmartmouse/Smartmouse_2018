@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommanDuino.h"
+#include <common/commanduino/Command.h>
 
 class WaitForStart : public Command {
 public:

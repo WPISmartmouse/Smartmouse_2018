@@ -1,95 +1,104 @@
 cmake_minimum_required(VERSION 3.1)
 
-set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/cmake/teensy-arm.toolchain.cmake")
+option(BUILD_SIM "build gazebo simulations" OFF)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/bin")
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib")
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+if (NOT ${BUILD_SIM})
+    set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/cmake/teensy-arm.toolchain.cmake")
+
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/bin")
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib")
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib")
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+endif ()
 
 project(smartmouse)
 
-include(Teensy)
-
 file(GLOB_RECURSE COM_SRC
-  common/*.cpp
-  common/commands/*.cpp)
+        common/*.cpp
+        common/commands/*.cpp)
 
-file(GLOB REAL_SRC
-  real/*.cpp
-  real/commands/*.cpp)
+if (NOT ${BUILD_SIM})
+    include(Teensy)
 
-file(GLOB_RECURSE REAL_LIBS_SRC
-  real/lib/*.cpp)
+    file(GLOB REAL_SRC
+            real/*.cpp
+            real/commands/*.cpp)
 
-file(GLOB LIB_DIRS real/lib/*)
+    file(GLOB_RECURSE REAL_LIBS_SRC
+            real/lib/*.cpp)
 
-include_directories(${CMAKE_SOURCE_DIR} ${LIB_DIRS} real/commands)
+    file(GLOB REAL_LIB_DIRS real/lib/*)
 
-import_arduino_library(Bounce2)
-import_arduino_library(i2c_t3)
-import_arduino_library(SPI)
+    include_directories(${CMAKE_SOURCE_DIR} ${REAL_LIB_DIRS} real/commands)
 
-add_teensy_executable(dummy_main real/main/dummy_main.ino)
+    import_arduino_library(Bounce2)
+    import_arduino_library(i2c_t3)
+    import_arduino_library(SPI)
 
-add_teensy_executable(main real/main/main.ino ${COM_SRC} ${REAL_SRC} ${REAL_LIBS_SRC})
+    add_teensy_executable(dummy_main real/main/dummy_main.ino)
 
-#file(GLOB CONSOLE_SRC console/*.cpp console/commands/*.cpp)
+    add_teensy_executable(main real/main/main.ino ${COM_SRC} ${REAL_SRC} ${REAL_LIBS_SRC})
+else ()
 
-#################################
-## library for console programs
-#################################
-#add_library(console ${COM_SRC} ${CONSOLE_SRC})
-#target_compile_features(console PRIVATE cxx_strong_enums)
-#set_target_properties(console PROPERTIES COMPILE_FLAGS "-DCONSOLE")
-#target_include_directories(console PRIVATE console/ console/commands)
+    include_directories(${CMAKE_SOURCE_DIR})
 
-#################################
-## text-only console programs
-#################################
-#set(CONSOLES Solve
-  #Animate
-  #ReadAndPrint)
+    file(GLOB CONSOLE_SRC console/*.cpp console/commands/*.cpp)
 
-#foreach(MAIN ${CONSOLES})
-  #add_executable(${MAIN} "console/main/${MAIN}.cpp")
-  #target_link_libraries(${MAIN} console)
-  #target_compile_features(${MAIN} PRIVATE cxx_strong_enums)
-  #set_target_properties(${MAIN} PROPERTIES COMPILE_FLAGS "-DCONSOLE")
-  #target_include_directories(${MAIN} PRIVATE console/ console/commands)
-#endforeach()
+    ################################
+    # library for console programs
+    ################################
+    add_library(console ${COM_SRC} ${CONSOLE_SRC})
+    target_compile_features(console PRIVATE cxx_strong_enums)
+    set_target_properties(console PROPERTIES COMPILE_FLAGS "-DCONSOLE")
+    target_include_directories(console PRIVATE console/ console/commands)
 
-#################################
-## actual real robot programs
-#################################
-#add_custom_target(serial COMMAND cd ../ && platformio serialports monitor -b 9600)
-#add_custom_target(upload COMMAND cd ../ && platformio run -v --target upload)
+    ################################
+    # text-only console programs
+    ################################
+    set(CONSOLES Solve
+            Animate
+            ReadAndPrint)
 
-#add_custom_target(robot COMMAND cd ../ && platformio run)
+    foreach (MAIN ${CONSOLES})
+        add_executable(${MAIN} "console/main/${MAIN}.cpp")
+        target_link_libraries(${MAIN} console)
+        target_compile_features(${MAIN} PRIVATE cxx_strong_enums)
+        set_target_properties(${MAIN} PROPERTIES COMPILE_FLAGS "-DCONSOLE")
+        target_include_directories(${MAIN} PRIVATE console/ console/commands)
+    endforeach ()
 
-#################################
-## all simulation stuff
-#################################
-#if (BUILD_SIM)
-  #add_subdirectory(sim)
-#endif()
+    ################################
+    # actual real robot programs
+    ################################
+    add_custom_target(serial COMMAND cd ../ && platformio serialports monitor -b 9600)
+    add_custom_target(upload COMMAND cd ../ && platformio run -v --target upload)
 
-#################################
-## testing
-#################################
-#if (TESTS)
-  #add_subdirectory(gtest)
+    add_custom_target(robot COMMAND cd ../ && platformio run)
 
-  #enable_testing()
+    ################################
+    # all simulation stuff
+    ################################
+    if (BUILD_SIM)
+        add_subdirectory(sim)
+    endif ()
 
-  #include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+    ################################
+    # testing
+    ################################
+    if (TESTS)
+        add_subdirectory(gtest)
 
-  #add_executable(runConsoleTests test/Test.cpp ${COM_SRC} ${CONSOLE_SRC})
-	#target_compile_features(runConsoleTests PRIVATE cxx_strong_enums)
-  #target_include_directories(runConsoleTests PRIVATE console/ console/commands)
+        enable_testing()
 
-  #target_link_libraries(runConsoleTests gtest gtest_main)
-  #set_target_properties(runConsoleTests PROPERTIES COMPILE_FLAGS "-DCONSOLE")
+        include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
-  #add_test(all-tests runConsoleTests)
-#endif()
+        add_executable(runConsoleTests test/Test.cpp ${COM_SRC} ${CONSOLE_SRC})
+        target_compile_features(runConsoleTests PRIVATE cxx_strong_enums)
+        target_include_directories(runConsoleTests PRIVATE console/ console/commands)
+
+        target_link_libraries(runConsoleTests gtest gtest_main)
+        set_target_properties(runConsoleTests PROPERTIES COMPILE_FLAGS "-DCONSOLE")
+
+        add_test(all-tests runConsoleTests)
+    endif ()
+endif ()

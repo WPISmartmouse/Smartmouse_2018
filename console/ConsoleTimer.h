@@ -2,7 +2,7 @@
 
 #ifdef CONSOLE
 
-#include "CommanDuino.h"
+#include "common/commanduino/TimerInterface.h"
 
 class ConsoleTimer : public TimerInterface {
   public:

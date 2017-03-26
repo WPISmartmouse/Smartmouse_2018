@@ -1,9 +1,9 @@
 #pragma once
 #ifdef CONSOLE
 
-#include "CommanDuino.h"
-#include "Mouse.h"
-#include "Direction.h"
+#include <common/commanduino/Command.h>
+#include "common/Mouse.h"
+#include "common/Direction.h"
 
 class Turn : public Command {
   public:

@@ -3,7 +3,7 @@
 #include <gazebo/common/Events.hh>
 #include <gazebo/gazebo_core.hh>
 #include "MousePlugin.hh"
-#include "SimMouse.h"
+#include "sim/SimMouse.h"
 
 GZ_REGISTER_MODEL_PLUGIN(MousePlugin)
 

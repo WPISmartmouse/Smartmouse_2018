@@ -1,8 +1,8 @@
 #pragma once
 #ifdef CONSOLE
 
-#include "CommanDuino.h"
-#include "Mouse.h"
+#include <common/commanduino/Command.h>
+#include <common/Mouse.h>
 
 class Forward : public Command {
   public:

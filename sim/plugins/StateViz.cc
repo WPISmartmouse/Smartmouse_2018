@@ -2,6 +2,8 @@
 #include <cmath>
 #include <boost/algorithm/string/replace.hpp>
 #include "StateViz.hh"
+#include "RegenerateWidget.hh"
+#include "SensorViz.hh"
 
 using namespace gazebo;
 
