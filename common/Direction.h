@@ -5,13 +5,14 @@ enum class Direction {
   E, //1
   S, //2
   W, //3
-	Last, //4
-	First = N, //0
+  Last, //4
+  First = N, //0
   INVALID = -1
 };
 
 /** \brief returns the left of the given direction */
 Direction left_of_dir(Direction d);
+
 Direction right_of_dir(Direction d);
 
 double toYaw(Direction d);
@@ -21,8 +22,9 @@ char opposite_direction(char c);
 /**
  * \brief increments the direction in the order N, E, S, W, N, ...
  */
-Direction operator++(Direction& dir, int);
-Direction operator--(Direction& dir, int);
+Direction operator++(Direction &dir, int);
+
+Direction operator--(Direction &dir, int);
 
 /**
  * \brief returns the opposite direction of the input direction

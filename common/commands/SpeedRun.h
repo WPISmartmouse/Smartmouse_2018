@@ -3,14 +3,16 @@
 #include <common/commanduino/CommandGroup.h>
 #include <common/Mouse.h>
 
-class SpeedRun: public CommandGroup {
-  public:
-    SpeedRun(Mouse *mouse);
-    void initialize();
-    bool isFinished();
+class SpeedRun : public CommandGroup {
+public:
+  SpeedRun(Mouse *mouse);
 
-  private:
-    Mouse *mouse;
-    char *path;
-    int index;
+  void initialize();
+
+  bool isFinished();
+
+private:
+  Mouse *mouse;
+  char *path;
+  int index;
 };

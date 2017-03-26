@@ -4,6 +4,6 @@
 #include <common/Solver.h>
 
 class SolveCommand : public CommandGroup {
-  public:
-    SolveCommand(Solver *solver);
+public:
+  SolveCommand(Solver *solver);
 };

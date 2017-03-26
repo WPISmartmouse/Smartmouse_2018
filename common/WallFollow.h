@@ -9,16 +9,21 @@
 
 class WallFollow : public Solver {
 
-  public:
+public:
 
-    WallFollow(Mouse *mouse);
-    virtual void setup() override;
-    virtual Direction planNextStep() override;
-    virtual char *solve() override;
-    virtual void teardown() override;
-    virtual bool isFinished() override;
+  WallFollow(Mouse *mouse);
 
-  private:
-    int step;
+  virtual void setup() override;
+
+  virtual Direction planNextStep() override;
+
+  virtual char *solve() override;
+
+  virtual void teardown() override;
+
+  virtual bool isFinished() override;
+
+private:
+  int step;
 
 };

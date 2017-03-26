@@ -1,6 +1,5 @@
 #include "NavTestCommand.h"
 #include "Forward.h"
-#include "Finish.h"
 #include "Stop.h"
 #include "Turn.h"
 

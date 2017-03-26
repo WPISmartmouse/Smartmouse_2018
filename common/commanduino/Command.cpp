@@ -1,19 +1,17 @@
 #include "Command.h"
 
-#include "Scheduler.h"
-
 TimerInterface *Command::timer;
 
-void Command::setTimerImplementation(TimerInterface *timer){
+void Command::setTimerImplementation(TimerInterface *timer) {
   Command::timer = timer;
 }
 
 Command::Command() : initialized(false) {}
 
 Command::Command(const char *name) : name(name),
-  initialized(false) {}
+                                     initialized(false) {}
 
-Command::~Command(){}
+Command::~Command() {}
 
 bool Command::cycle() {
   bool finished = false;
@@ -22,13 +20,11 @@ bool Command::cycle() {
     initialize();
     _initialize();
     initialized = true;
-  }
-  else if (isFinished()) {
+  } else if (isFinished()) {
     finished = true;
     end();
     _end();
-  }
-  else {
+  } else {
     execute();
     _execute();
   }
@@ -54,20 +50,23 @@ bool Command::isRunning() {
 }
 
 void Command::initialize() {}
+
 void Command::_initialize() {
   running = true;
   startTime = timer->programTimeMs();
 }
 
 void Command::execute() {}
+
 void Command::_execute() {}
 
 
 void Command::end() {}
+
 void Command::_end() {
   running = false;
 }
 
-bool Command::operator!=(const Command& other){
-    return this->name != other.name;
+bool Command::operator!=(const Command &other) {
+  return this->name != other.name;
 }
