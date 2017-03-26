@@ -1,6 +1,7 @@
 .idea
 build
 .build
+.sim_build
 html
 latex
 .pioenvs
