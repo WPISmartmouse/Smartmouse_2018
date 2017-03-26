@@ -31,7 +31,7 @@ int main(int argc, char **argv) {
     printf("failed to connect to gazebo. Is it running?\n");
     exit(0);
   }
-  printf("connected to gazebo. Press W,A,S,D,X then enter to send a command.\n");
+  printf("Ready.\n");
 
   SimTimer timer;
   Command::setTimerImplementation(&timer);
@@ -109,8 +109,6 @@ int main(int argc, char **argv) {
 
       double lrps = lspeed * (2 * M_PI) / SimMouse::WHEEL_CIRC;
       double rrps = rspeed * (2 * M_PI) / SimMouse::WHEEL_CIRC;
-
-      printf("%f, %f\r\n", lspeed, rspeed);
 
       gazebo::msgs::JointCmd left;
       left.set_name("mouse::left_wheel_joint");

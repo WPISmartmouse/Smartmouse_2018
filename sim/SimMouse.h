@@ -21,6 +21,11 @@ public:
   constexpr static double RIGHT_BINARY_THRESHOLD = 0.18; // meters
   constexpr static double FRONT_BINARY_THRESHOLD = 0.18; // meters
   constexpr static double ANALOG_MAX_DIST = 0.15; // meters
+  constexpr static double SIDE_ANALOG_X = 0.04; // meters
+  constexpr static double SIDE_ANALOG_Y = 0.024; // meters
+  constexpr static double SIDE_BINARY_X = 0.043; // meters
+  constexpr static double SIDE_BINARY_Y = 0.022; // meters
+  constexpr static double FRONT_BINARY_Y = 0.045; // meters
 
   typedef struct {
     double left_analog;

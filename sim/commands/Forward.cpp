@@ -46,8 +46,13 @@ void Forward::execute() {
 
   double currentYaw = mouse->getExactPose().Rot().Yaw();
   double angleError = yawDiff(toYaw(mouse->getDir()), currentYaw);
-  double dToWallRight = range_data.right_analog * cos(M_PI / 6 + angleError);
-  double dToWallLeft = range_data.left_analog * cos(M_PI / 6 - angleError);
+  double dToWallLeft = sin(SimMouse::ANALOG_ANGLE + angleError) * range_data.left_analog
+                        + sin(angleError) * SimMouse::SIDE_ANALOG_X
+                        + cos(angleError) * SimMouse::SIDE_ANALOG_Y;
+  double dToWallRight = sin(-SimMouse::ANALOG_ANGLE + angleError) * range_data.right_analog
+                        + sin(angleError) * SimMouse::SIDE_ANALOG_X
+                        + cos(angleError) * -SimMouse::SIDE_ANALOG_Y;
+  printf("%f %f\n", dToWallLeft, dToWallRight);
 
   double dispError = AbstractMaze::UNIT_DIST - disp;
   l = dispError * kPDisp;
@@ -67,19 +72,16 @@ void Forward::execute() {
             dToWallLeft < SimMouse::WALL_DIST;
   }
 
-  double rightWallError = AbstractMaze::INNER_UNIT_DIST/2 - dToWallRight;
-  double leftWallError = AbstractMaze::INNER_UNIT_DIST/2 - dToWallLeft;
+  double rightWallError = AbstractMaze::INNER_UNIT_DIST / 2 - dToWallRight;
+  double leftWallError = AbstractMaze::INNER_UNIT_DIST / 2 - dToWallLeft;
 
   // defualt to follow right wall (arbitrary)
   // if both exist, follow right. If only left exists follow left
   // if only right exists follow right, otherwise dead reckon
   if (range_data.right_analog < SimMouse::ANALOG_MAX_DIST) {
-    printf("r %f\n", dToWallRight);
     double correction = rightWallError * kPWall * dispError;
     l += correction;
-  }
-  else if (range_data.left_analog < SimMouse::ANALOG_MAX_DIST) {
-    printf("l %f\n", dToWallLeft);
+  } else if (range_data.left_analog < SimMouse::ANALOG_MAX_DIST) {
     double correction = leftWallError * kPWall * dispError;
     r += correction;
   }

@@ -96,16 +96,18 @@ void StateViz::StateCallback(ConstRobotStatePtr &msg) {
   gazebo::msgs::Pose pose = msg->pose();
 
   // compute x and y with respect to the top left square
-  double x = pose.position().x() + AbstractMaze::UNIT_DIST * 8 - 0.006;
-  double y = -pose.position().y() + AbstractMaze::UNIT_DIST * 8 - 0.006;
+  double x = pose.position().x() + AbstractMaze::UNIT_DIST * 8;
+  double y = -pose.position().y() + AbstractMaze::UNIT_DIST * 8;
 
-  int row = (int) (x / (AbstractMaze::UNIT_DIST));
-  int col = (int) (y / (AbstractMaze::UNIT_DIST));
+  int row = (int) (y / (AbstractMaze::UNIT_DIST));
+  int col = (int) (x / (AbstractMaze::UNIT_DIST));
+  double row_offset = fmod(y, AbstractMaze::UNIT_DIST) - AbstractMaze::UNIT_DIST/2;
+  double col_offset = fmod(x, AbstractMaze::UNIT_DIST) - AbstractMaze::UNIT_DIST/2;
 
-  char row_str[3];
-  snprintf(row_str, 3, "%i", row);
-  char col_str[3];
-  snprintf(col_str, 3, "%i", col);
+  char row_str[14];
+  snprintf(row_str, 14, "%i (%0.3f m)", row, row_offset);
+  char col_str[14];
+  snprintf(col_str, 14, "%i (%0.3f m)", col, col_offset);
   this->SetRow(row_str);
   this->SetCol(col_str);
 

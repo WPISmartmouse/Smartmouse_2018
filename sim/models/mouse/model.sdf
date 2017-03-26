@@ -31,7 +31,7 @@
         </material>
       </visual>
       <collision name='main_body_collision'>
-        <max_contacts>10</max_contacts>
+        <max_contacts>6</max_contacts>
         <pose>0 0.032 0.015 1.5707 0 0</pose>
         <geometry>
           <mesh>
@@ -48,39 +48,10 @@
           </friction>
           <contact>
             <ode>
-              <soft_cfm>0.2</soft_cfm>
-              <soft_erp>0.2</soft_erp>
-              <kp>1e13</kp>
-              <kd>5e8</kd>
-              <max_vel>0.01</max_vel>
-              <min_depth>0</min_depth>
-            </ode>
-          </contact>
-        </surface>
-      </collision>
-      <collision name='front_runner_collision'>
-        <pose frame=''>0.05 0 0.002 0 0 0</pose>
-        <max_contacts>4</max_contacts>
-        <geometry>
-          <box>
-            <size>0.01 0.076 0.002</size>
-          </box>
-        </geometry>
-        <surface>
-          <friction>
-            <ode>
-              <mu>0.001</mu>
-              <mu2>0.001</mu2>
-              <slip1>0</slip1>
-              <slip2>0</slip2>
-            </ode>
-          </friction>
-          <contact>
-            <ode>
-              <soft_cfm>0.2</soft_cfm>
-              <soft_erp>0.2</soft_erp>
-              <kp>1e13</kp>
-              <kd>5e8</kd>
+              <soft_cfm>1.7e-10</soft_cfm>
+              <soft_erp>0.17</soft_erp>
+              <kp>1e9</kp>
+              <kd>5e10</kd>
               <max_vel>0.01</max_vel>
               <min_depth>0</min_depth>
             </ode>
@@ -176,7 +147,7 @@
         <visualize>true</visualize>
       </sensor>
       <sensor name="front_binary" type="ray">
-        <pose>0.043 0 0.015 0 0 0</pose>
+        <pose>0.045 0 0.015 0 0 0</pose>
         <ray>
           <scan>
             <horizontal>
@@ -212,7 +183,7 @@
         </inertia>
         <pose frame=''>0 0 0 0 0 0</pose>
       </inertial>
-      <visual name='visual'>
+      <visual name='right_wheel_visual'>
         <pose frame=''>0 0 0 0 0 0</pose>
         <geometry>
           <cylinder>
@@ -227,9 +198,9 @@
           </script>
         </material>
       </visual>
-      <collision name='collision'>
+      <collision name='right_wheel_collision'>
         <pose frame=''>0 0 0 0 0 0</pose>
-        <max_contacts>4</max_contacts>
+        <max_contacts>2</max_contacts>
         <geometry>
           <cylinder>
             <radius>0.015</radius>
@@ -272,7 +243,7 @@
           <izz>1.125e-06</izz>
         </inertia>
       </inertial>
-      <visual name='visual'>
+      <visual name='left_wheel_visual'>
         <pose frame=''>0 0 0 0 0 0</pose>
         <geometry>
           <cylinder>
@@ -287,8 +258,8 @@
           </script>
         </material>
       </visual>
-      <collision name='collision'>
-        <max_contacts>4</max_contacts>
+      <collision name='left_wheel_collision'>
+        <max_contacts>2</max_contacts>
         <pose frame=''>0 0 0 0 0 0</pose>
         <geometry>
           <cylinder>
