@@ -122,6 +122,7 @@ target_include_directories(sim PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${PROTOBUF_IN
 target_link_libraries(sim gzmaze_msgs ${GAZEBO_LIBRARIES})
 add_dependencies(sim gazebo_pch)
 
+
 #################################
 # actual sim mouse programs
 #################################
@@ -143,3 +144,9 @@ set_target_properties(teleop PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh")
 target_link_libraries(teleop sim ${GAZEBO_LIBRARIES} ncurses)
 target_include_directories(teleop PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${PROTOBUF_INCLUDE_DIRS} commands)
 add_dependencies(teleop gazebo_pch)
+
+add_executable(joy_teleop ./tools/joystick_teleop.cpp joystick/joystick.cc)
+set_target_properties(joy_teleop PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh")
+target_link_libraries(joy_teleop sim ${GAZEBO_LIBRARIES} ncurses)
+target_include_directories(joy_teleop PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${PROTOBUF_INCLUDE_DIRS} commands)
+add_dependencies(joy_teleop gazebo_pch)
