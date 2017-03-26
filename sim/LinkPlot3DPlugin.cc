@@ -164,8 +164,8 @@ void LinkPlot3DPlugin::Load(physics::ModelPtr _model,
 
   // subscribe to requests to clear plot
   std::string topic = "/delete_plot";
-  this->dataPtr->sub = this->dataPtr->node.Subscribe(topic, &LinkPlot3DPlugin::delete_plot_callback, this);
-  if (! this->dataPtr->sub) {
+  bool success = this->dataPtr->node.Subscribe(topic, &LinkPlot3DPlugin::delete_plot_callback, this);
+  if (! success) {
     gzerr << "Failed to subscribe to [" << topic << "]" << std::endl;
   }
 }
@@ -208,7 +208,6 @@ void LinkPlot3DPlugin::OnUpdate() {
 
 void LinkPlot3DPlugin::delete_plot_callback(const ignition::msgs::Empty &_msg)
 {
-  std::cout << "clear" << std::endl;
   for (auto &plot : this->dataPtr->plots) {
     plot.msg.mutable_point()->Clear();
   }
