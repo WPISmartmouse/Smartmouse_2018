@@ -84,10 +84,10 @@ int main(int argc, char **argv) {
     if (event.type == JS_EVENT_BUTTON && event.number == 1) {
     }
     else if (event.type == JS_EVENT_AXIS) {
-      if (event.number == 4) {
+      if (event.number == 1) {
         lspeed_setpoint = -u * event.value / 30000.0;
       }
-      else if (event.number == 1) {
+      else if (event.number == 4) {
         rspeed_setpoint = -u * event.value / 30000.0;
       }
     }

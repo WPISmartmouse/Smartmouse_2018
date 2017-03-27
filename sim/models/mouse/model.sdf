@@ -170,7 +170,7 @@
       </sensor>
     </link>
     <link name='right_wheel'>
-      <pose frame=''>0.0 0.0313 0.019 0 1.57079 1.57079</pose>
+      <pose frame=''>0.0 -0.0313 0.019 0 1.57079 1.57079</pose>
       <inertial>
         <mass>0.01</mass>
         <inertia>
@@ -231,7 +231,7 @@
       </collision>
     </link>
     <link name='left_wheel'>
-      <pose frame=''>0.0 -0.0313 0.019 0 1.57079 1.57079</pose>
+      <pose frame=''>0.0 0.0313 0.019 0 1.57079 1.57079</pose>
       <inertial>
         <mass>0.01</mass>
         <inertia>
