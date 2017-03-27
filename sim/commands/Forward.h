@@ -6,29 +6,30 @@
 #include "CommanDuino.h"
 #include "SimMouse.h"
 #include "Mouse.h"
+#include "WallFollower.h"
 
 class Forward : public Command {
-  public:
-    Forward();
-    void initialize();
-    void execute();
-    bool isFinished();
-    void end();
+public:
+  Forward();
 
-  private:
-    double forwardDisplacement(ignition::math::Pose3d p0, ignition::math::Pose3d p1);
-    double yawDiff(double y1, double y2);
+  void initialize();
 
-    ignition::math::Pose3d start;
-    double disp;
-    SimMouse *mouse;
+  void execute();
 
-    double l,r;
-    bool checkedWalls;
-    SimMouse::RangeData range_data;
-    bool walls[4];
-    bool wallOnLeft, wallOnRight;
-    const float kPWall = 4;
-    const float kPDisp = 4;
+  bool isFinished();
+
+  void end();
+
+private:
+
+  ignition::math::Pose3d start;
+  SimMouse *mouse;
+
+  bool checkedWalls;
+  SimMouse::RangeData range_data;
+  WallFollower follower;
+  bool walls[4];
+  bool wallOnLeft, wallOnRight;
 };
+
 #endif

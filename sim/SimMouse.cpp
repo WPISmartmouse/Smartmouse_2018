@@ -49,14 +49,6 @@ void SimMouse::updateIndicator(int row, int col, gazebo::common::Color color) {
   gazebo::msgs::Set(visual->mutable_material()->mutable_diffuse(), color);
 }
 
-void SimMouse::resetAllIndicators() {
-  for (int i=0;i<AbstractMaze::MAZE_SIZE;i++){
-    for (int j=0;j<AbstractMaze::MAZE_SIZE;j++){
-      updateIndicator(i,j,grey_color);
-    }
-  }
-}
-
 void SimMouse::resetIndicators(gazebo::common::Color color) {
   for (int i=0;i<AbstractMaze::MAZE_SIZE;i++){
     for (int j=0;j<AbstractMaze::MAZE_SIZE;j++){

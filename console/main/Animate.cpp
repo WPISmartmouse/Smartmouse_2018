@@ -2,14 +2,7 @@
 
 #include "ConsoleMouse.h"
 #include "ConsoleMaze.h"
-#include "Flood.h"
-#include "Mouse.h"
-#include "WallFollow.h"
-#include <errno.h>
-#include <fstream>
 #include <iostream>
-#include <ctype.h>
-#include <stdlib.h>
 
 #ifdef __linux__
 #include <unistd.h>

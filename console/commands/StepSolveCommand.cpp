@@ -1,8 +1,6 @@
 #include "StepSolveCommand.h"
 #include "WaitForStart.h"
 #include "StepSolveMaze.h"
-#include "WallFollow.h"
-#include "Flood.h"
 #include "Finish.h"
 
 StepSolveCommand::StepSolveCommand(Solver *solver) : CommandGroup("Solve") {

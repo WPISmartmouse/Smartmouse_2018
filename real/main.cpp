@@ -11,7 +11,6 @@ ArduinoTimer timer;
 
 AbstractMaze maze;
 Scheduler scheduler(new SolveCommand(new Flood(RealMouse::inst())));
-//Scheduler scheduler(new WaitThenDrive());
 
 void setup(){
   pinMode(13, OUTPUT);

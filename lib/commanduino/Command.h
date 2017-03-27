@@ -66,9 +66,9 @@ class Command {
     /** \brief for convenient printing */
     const char *name;
 
-  private:
-    bool initialized,running;
     static TimerInterface *timer;
+
+    bool initialized,running;
     unsigned long timeout = 0;
     unsigned long startTime = 0;
 };

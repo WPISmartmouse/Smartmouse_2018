@@ -10,9 +10,7 @@
 #include "ConsoleMaze.h"
 #include "ConsoleMouse.h"
 #include "ConsoleTimer.h"
-#include "Mouse.h"
 #include "Flood.h"
-#include "WallFollow.h"
 
 int main(int argc, char* argv[]){
 

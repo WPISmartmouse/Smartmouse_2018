@@ -101,8 +101,8 @@ void StateViz::StateCallback(ConstRobotStatePtr &msg) {
 
   int row = (int) (y / (AbstractMaze::UNIT_DIST));
   int col = (int) (x / (AbstractMaze::UNIT_DIST));
-  double row_offset = fmod(y, AbstractMaze::UNIT_DIST) - AbstractMaze::UNIT_DIST/2;
-  double col_offset = fmod(x, AbstractMaze::UNIT_DIST) - AbstractMaze::UNIT_DIST/2;
+  double row_offset = fmod(y, AbstractMaze::UNIT_DIST) - AbstractMaze::HALF_UNIT_DIST;
+  double col_offset = fmod(x, AbstractMaze::UNIT_DIST) - AbstractMaze::HALF_UNIT_DIST;
 
   char row_str[14];
   snprintf(row_str, 14, "%i (%0.3f m)", row, row_offset);

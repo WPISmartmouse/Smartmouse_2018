@@ -6,6 +6,6 @@
 
 class ConsoleTimer : public TimerInterface {
   public:
-    virtual unsigned long long programTimeMs() override;
+    virtual unsigned long programTimeMs() override;
 };
 #endif

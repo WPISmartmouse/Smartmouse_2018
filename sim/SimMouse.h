@@ -40,9 +40,9 @@ public:
 
   void poseCallback(ConstRobotStatePtr &msg);
 
-  static constexpr double MAX_SPEED = 0.09; // m/sec
-  static constexpr double MIN_SPEED = 0.01; // m/sec
-  static constexpr double ACCELERATION = 0.005; // m/iteration^2
+  static constexpr double MAX_SPEED = 0.18; // m/sec
+  static constexpr double MIN_SPEED = 0.02; // m/sec
+  static constexpr double ACCELERATION = 0.002; // m/iteration^2
   static constexpr double WALL_DIST = 0.115;
   static constexpr double WHEEL_RAD = 0.015;
   static constexpr double WHEEL_CIRC = 2 * WHEEL_RAD * M_PI;
@@ -81,8 +81,6 @@ public:
 
   void publishIndicators();
 
-  void resetAllIndicators();
-
   void resetIndicators(gazebo::common::Color color);
 
 private:
@@ -104,7 +102,7 @@ private:
 
   static constexpr double INDICATOR_RAD = 0.05;
   static constexpr double INDICATOR_LEN = 0.001;
-  static constexpr double INDICATOR_Z = 0.002;
+  static constexpr double INDICATOR_Z = 0.008;
 
   bool walls[4];
   bool suggestedWalls[4];

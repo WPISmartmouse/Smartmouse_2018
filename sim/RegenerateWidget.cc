@@ -31,7 +31,7 @@ RegenerateWidget::RegenerateWidget()
   randomButton->setStyleSheet("padding: 0px;");
   connect(randomButton, SIGNAL(clicked()), this, SLOT(OnRandomButton()));
 
-  textEdit = new QTextEdit(tr("~/Projects/Smartmouse_2017/mazes/16x16.mz"));
+  textEdit = new QTextEdit(tr("~/Projects/Smartmouse_2017/mazes/competition.mz"));
   textEdit->setContentsMargins(1, 1, 1, 1);
   textEdit->setAlignment(Qt::AlignBottom | Qt::AlignLeft);
   textEdit->setObjectName("maze_filename");

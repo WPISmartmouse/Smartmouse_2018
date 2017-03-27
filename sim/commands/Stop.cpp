@@ -5,7 +5,7 @@
 Stop::Stop() : mouse(SimMouse::inst()) {}
 
 void Stop::initialize(){
-  setTimeout(2.0);
+  setTimeout(2000);
 }
 
 void Stop::execute(){
@@ -15,7 +15,7 @@ void Stop::execute(){
 bool Stop::isFinished(){
   double left_velocity, right_velocity;
   std::tie(left_velocity, right_velocity) = mouse->getWheelVelocities();
-  return (left_velocity <= SimMouse::MIN_SPEED && right_velocity <= SimMouse::MIN_SPEED) || isTimedOut();
+  return (left_velocity <= SimMouse::MIN_SPEED && right_velocity <= SimMouse::MIN_SPEED) && isTimedOut();
 }
 
 void Stop::end(){

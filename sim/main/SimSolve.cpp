@@ -5,7 +5,6 @@
 #include "SimTimer.h"
 #include "SolveCommand.h"
 #include "Flood.h"
-#include <StepSolveCommand.h>
 
 int main(int argc, char* argv[]) {
   // Load gazebo
@@ -13,13 +12,6 @@ int main(int argc, char* argv[]) {
   if (!connected) {
     printf("failed to connect to gazebo. Is it running?\n");
     exit(0);
-  }
-
-  bool step = false;
-  if (argc == 2) {
-    if (strncmp("--step", argv[1], 6) == 0) {
-      step = true;
-    }
   }
 
   SimTimer timer;
@@ -45,12 +37,7 @@ int main(int argc, char* argv[]) {
   SimMouse::inst()->simInit();
 
   Scheduler *scheduler;
-  if (step) {
-    scheduler = new Scheduler(new StepSolveCommand(new Flood(SimMouse::inst())));
-  }
-  else {
-    scheduler = new Scheduler(new SolveCommand(new Flood(SimMouse::inst())));
-  }
+  scheduler = new Scheduler(new SolveCommand(new Flood(SimMouse::inst())));
 
   bool done = false;
   while (!done) {
