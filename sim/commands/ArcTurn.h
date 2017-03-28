@@ -2,10 +2,11 @@
 #ifdef SIM
 
 #include <ignition/math.hh>
-#include <WallFollower.h>
 #include <common/commanduino/CommanDuino.h>
+#include <common/Direction.h>
+
+#include "WallFollower.h"
 #include "SimMouse.h"
-#include "Direction.h"
 
 class ArcTurn : public Command {
 public:

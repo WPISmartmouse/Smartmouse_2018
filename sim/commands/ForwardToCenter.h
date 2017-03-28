@@ -4,8 +4,9 @@
 
 #include <ignition/math.hh>
 #include <common/commanduino/CommanDuino.h>
+#include <common/Mouse.h>
+
 #include "SimMouse.h"
-#include "Mouse.h"
 #include "WallFollower.h"
 
 class ForwardToCenter : public Command {

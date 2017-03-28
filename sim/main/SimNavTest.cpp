@@ -5,12 +5,11 @@
 #include <gazebo/transport/TransportTypes.hh>
 #include <gazebo/msgs/joint_cmd.pb.h>
 #include <gazebo/msgs/visual.pb.h>
-#include <SimMouse.h>
-#include "maze_location.pb.h"
+#include <common/commands/NavTestCommand.h>
 #include <ignition/transport/Node.hh>
 
+#include "SimMouse.h"
 #include "SimTimer.h"
-#include "NavTestCommand.h"
 
 int main(int argc, char *argv[]) {
   // Load gazebo

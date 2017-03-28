@@ -12,13 +12,13 @@
 #include <VL6180X.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
+#include <KinematicController.h>
+#include <Bounce2.h>
 
-#include "KinematicController.h"
-#include "Mouse.h"
-#include "AbstractMaze.h"
-#include "Pose.h"
-#include "Direction.h"
-#include "Bounce2.h"
+#include <common/Mouse.h>
+#include <common/AbstractMaze.h>
+#include <common/Pose.h>
+#include <common/Direction.h>
 
 class RealMouse : public Mouse {
 public:

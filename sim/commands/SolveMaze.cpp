@@ -1,8 +1,6 @@
 #include "SolveMaze.h"
 #include "Forward.h"
 #include "Turn.h"
-#include "Delay.h"
-#include "WaitForStart.h"
 
 SolveMaze::SolveMaze(Solver *solver) : CommandGroup("solve"), solver(solver) { }
 

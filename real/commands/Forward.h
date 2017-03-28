@@ -1,9 +1,8 @@
 #pragma once
 
 #include <common/commanduino/CommanDuino.h>
-#include "Pose.h"
-#include "../real/RealMouse.h"
-#include "Pose.h"
+#include <common/Pose.h>
+#include "RealMouse.h"
 
 class Forward : public CommandGroup {
   public:

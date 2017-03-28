@@ -1,8 +1,9 @@
+#include <common/commands/Delay.h>
+
 #include "WaitThenDrive.h"
 #include "Forward.h"
-#include "WaitForStart.h"
-#include "Delay.h"
 #include "Turn.h"
+#include "WaitForStart.h"
 
 WaitThenDrive::WaitThenDrive() : CommandGroup("wait then drive") {
   addSequential(new WaitForStart());

@@ -1,10 +1,9 @@
 #pragma once
 
 #include <common/commanduino/CommanDuino.h>
-#include "Mouse.h"
 #include "RealMouse.h"
-#include "Pose.h"
-#include "Direction.h"
+#include <common/Pose.h>
+#include <common/Direction.h>
 
 class Turn : public Command {
   public:

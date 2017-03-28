@@ -1,6 +1,6 @@
 #include "ArduinoTimer.h"
 #include <Arduino.h>
 
-unsigned long long ArduinoTimer::programTimeMs(){
+unsigned long ArduinoTimer::programTimeMs(){
   return millis();
 }

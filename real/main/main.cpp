@@ -1,11 +1,10 @@
-#include <CommanDuino.h>
-#include "ArduinoTimer.h"
-#include "SolveCommand.h"
-#include "WaitForStart.h"
-#include "WaitThenDrive.h"
-#include "RealMouse.h"
-#include "WallFollow.h"
-#include "Flood.h"
+#include <Arduino.h>
+#include <common/commanduino/CommanDuino.h>
+#include <real/ArduinoTimer.h>
+#include <common/AbstractMaze.h>
+#include <common/commands/SolveCommand.h>
+#include <common/Flood.h>
+#include <real/RealMouse.h>
 
 ArduinoTimer timer;
 

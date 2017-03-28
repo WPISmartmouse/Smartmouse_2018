@@ -27,6 +27,8 @@ public:
   double angleError;
   double dToWallLeft;
   double dToWallRight;
+  double lastLeftWallError;
+  double lastRightWallError;
   const double kPWall = 2;
   const double kDWall = 0;
 };

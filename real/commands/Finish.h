@@ -1,7 +1,7 @@
 #pragma once
 
 #include <common/commanduino/CommanDuino.h>
-#include "AbstractMaze.h"
+#include <common/AbstractMaze.h>
 
 class Finish : public Command {
   public:

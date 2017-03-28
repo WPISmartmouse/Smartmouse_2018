@@ -29,7 +29,8 @@ if (NOT ${BUILD_SIM})
 
     file(GLOB REAL_LIB_DIRS real/lib/*)
 
-    include_directories(${CMAKE_SOURCE_DIR} ${REAL_LIB_DIRS} real/commands)
+    include_directories(${CMAKE_SOURCE_DIR} ${REAL_LIB_DIRS} real real/commands)
+    add_definitions(-DEMBED)
 
     import_arduino_library(Bounce2)
     import_arduino_library(i2c_t3)

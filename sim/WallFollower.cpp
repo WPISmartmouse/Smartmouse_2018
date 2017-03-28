@@ -2,22 +2,26 @@
 
 #include "WallFollower.h"
 
-WallFollower::WallFollower() : disp(0.0), goalDisp(AbstractMaze::UNIT_DIST), dispError(goalDisp) {}
-WallFollower::WallFollower(double goalDisp) : disp(0.0), goalDisp(goalDisp), dispError(goalDisp) {}
+WallFollower::WallFollower() : disp(0.0), goalDisp(AbstractMaze::UNIT_DIST), dispError(goalDisp), lastLeftWallError(0),
+                               lastRightWallError(0) {}
+
+WallFollower::WallFollower(double goalDisp) : disp(0.0), goalDisp(goalDisp), dispError(goalDisp), lastLeftWallError(0),
+                                              lastRightWallError(0) {}
 
 std::pair<double, double>
-WallFollower::compute_wheel_velocities(SimMouse* mouse, ignition::math::Pose3d start_pose, SimMouse::RangeData range_data) {
+WallFollower::compute_wheel_velocities(SimMouse *mouse, ignition::math::Pose3d start_pose,
+                                       SimMouse::RangeData range_data) {
   ignition::math::Pose3d current_pose = mouse->getExactPose();
   disp = forwardDisplacement(mouse->getDir(), start_pose, current_pose);
 
   double currentYaw = current_pose.Rot().Yaw();
   angleError = yawDiff(toYaw(mouse->getDir()), currentYaw);
   dToWallLeft = sin(SimMouse::ANALOG_ANGLE + angleError) * range_data.left_analog
-                       + sin(angleError) * SimMouse::SIDE_ANALOG_X
-                       + cos(angleError) * SimMouse::SIDE_ANALOG_Y;
+                + sin(angleError) * SimMouse::SIDE_ANALOG_X
+                + cos(angleError) * SimMouse::SIDE_ANALOG_Y;
   dToWallRight = -(sin(-SimMouse::ANALOG_ANGLE + angleError) * range_data.right_analog
-                          + sin(angleError) * SimMouse::SIDE_ANALOG_X
-                          + cos(angleError) * -SimMouse::SIDE_ANALOG_Y);
+                   + sin(angleError) * SimMouse::SIDE_ANALOG_X
+                   + cos(angleError) * -SimMouse::SIDE_ANALOG_Y);
 
 
   dispError = goalDisp - disp;
@@ -33,7 +37,9 @@ WallFollower::compute_wheel_velocities(SimMouse* mouse, ignition::math::Pose3d s
   double leftWallError = fabs(AbstractMaze::HALF_INNER_UNIT_DIST - dToWallLeft);
   double rightWallError = fabs(AbstractMaze::HALF_INNER_UNIT_DIST - dToWallRight);
   double dLeftWallError = leftWallError - lastLeftWallError;
-  double dLeftWallError = rightWallError - lastRightWallError;
+  double dRightWallError = rightWallError - lastRightWallError;
+  lastLeftWallError = leftWallError;
+  lastRightWallError = rightWallError;
 
   if (dToWallLeft < SimMouse::WALL_DIST) {
     double correction = leftWallError * kPWall + dLeftWallError * kDWall;
@@ -41,10 +47,10 @@ WallFollower::compute_wheel_velocities(SimMouse* mouse, ignition::math::Pose3d s
   } else if (dToWallRight < SimMouse::WALL_DIST) {
     double correction = rightWallError * kPWall + dRightWallError * kDWall;;
     l -= correction;
-  } else if (dToWallLeft > AbstractMaze::HALF_INNER_UNIT_DIST && dToWallLeft < SimMouse::WALL_DIST) {
+  } else if (AbstractMaze::HALF_INNER_UNIT_DIST < dToWallLeft && dToWallLeft < SimMouse::WALL_DIST) {
     double correction = leftWallError * kPWall;
     l -= correction;
-  } else if (dToWallRight > AbstractMaze::HALF_INNER_UNIT_DIST && dToWallRight < SimMouse::WALL_DIST) {
+  } else if (AbstractMaze::HALF_INNER_UNIT_DIST < dToWallRight && dToWallRight < SimMouse::WALL_DIST) {
     double correction = rightWallError * kPWall;
     r -= correction;
   }
@@ -52,7 +58,8 @@ WallFollower::compute_wheel_velocities(SimMouse* mouse, ignition::math::Pose3d s
   return std::pair<double, double>(l, r);
 }
 
-double WallFollower::forwardDisplacement(Direction dir, ignition::math::Pose3d start_pose, ignition::math::Pose3d end_pose) {
+double
+WallFollower::forwardDisplacement(Direction dir, ignition::math::Pose3d start_pose, ignition::math::Pose3d end_pose) {
   switch (dir) {
     case Direction::N:
       return end_pose.Pos().Y() - start_pose.Pos().Y();
@@ -83,7 +90,7 @@ double WallFollower::dispToEdge(SimMouse *mouse) {
     case Direction::S:
       return row_offset;
     case Direction::E:
-      return AbstractMaze::UNIT_DIST -  col_offset;
+      return AbstractMaze::UNIT_DIST - col_offset;
     case Direction::W:
       return col_offset;
   }
@@ -102,7 +109,7 @@ double WallFollower::dispToCenter(SimMouse *mouse) {
     case Direction::N:
       return row_offset_to_center;
     case Direction::W:
-      return AbstractMaze::UNIT_DIST -  col_offset_to_center;
+      return AbstractMaze::UNIT_DIST - col_offset_to_center;
     case Direction::E:
       return col_offset_to_center;
   }

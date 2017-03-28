@@ -1,10 +1,8 @@
 #include "Flood.h"
-#include <string.h>
 
-#ifndef EMBED
-#include <iostream>
-#else
+#ifdef EMBED
 #include <Arduino.h>
+#include <stdlib.h>
 #endif
 
 Flood::Flood(Mouse *mouse) : Solver(mouse),

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "RegulatedMotor.h"
-#include "Pose.h"
 #include <Arduino.h>
+#include <common/Pose.h>
 
 class KinematicController {
 public:

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "CommanDuino.h"
+#include <common/commanduino/CommanDuino.h>
 
 class ArduinoTimer : public TimerInterface {
-  virtual unsigned long long programTimeMs() override;
+  virtual unsigned long programTimeMs() override;
 };

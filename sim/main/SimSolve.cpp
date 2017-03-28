@@ -1,10 +1,11 @@
 #ifdef SIM
-#include "CommanDuino.h"
+
+#include <common/commanduino/CommanDuino.h>
+#include <common/commands/SolveCommand.h>
+#include <common/Flood.h>
 
 #include "SimMouse.h"
 #include "SimTimer.h"
-#include "SolveCommand.h"
-#include "Flood.h"
 
 int main(int argc, char* argv[]) {
   // Load gazebo
