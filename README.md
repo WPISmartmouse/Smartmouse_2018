@@ -6,7 +6,7 @@ WPI CollabLab Smartmouse Team code for exploring and solving the maze.
 
 ## Programming the robot
 
-Our build system is platformio. Install it first. To install platform IO. simply use `pip install platformio`. You may need to prepend `sudo -H` if you're on linux.
+Our build system is CMake. Install it first.
 
 ### Building Instructions (no simulation)
 
@@ -30,8 +30,8 @@ Clone this repo, which contains the gazebo models and plugins.
 
 #### Building Simulation
 
-    mkdir .build
-    cd .build
+    mkdir .sim_build
+    cd .sim_build
     cmake -DBUILD_SIM=ON ..
     make
 
@@ -45,6 +45,6 @@ Assuming you've installed gazebo correctly and built with simuation, cd to the r
 
 If you see errors, fix them before moving on. Then in another terminal...
 
-    ./.build/SimSolve
+    ./.sim_build/sim/SimSolve
 
 Press enter. Watch the mouse go!
