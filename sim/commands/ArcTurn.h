@@ -3,7 +3,7 @@
 
 #include <ignition/math.hh>
 #include <WallFollower.h>
-#include "CommanDuino.h"
+#include <common/commanduino/CommanDuino.h>
 #include "SimMouse.h"
 #include "Direction.h"
 

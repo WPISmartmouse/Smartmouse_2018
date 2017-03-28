@@ -1,5 +1,5 @@
 #pragma once
-#include "CommanDuino.h"
+#include <common/commanduino/CommanDuino.h>
 
 class End : public Command {
   public:

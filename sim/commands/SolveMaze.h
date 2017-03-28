@@ -1,8 +1,7 @@
 #pragma once
 
-#include "CommanDuino.h"
-#include "Solver.h"
-#include "Mouse.h"
+#include <common/commanduino/CommanDuino.h>
+#include <common/Solver.h>
 
 class SolveMaze : public CommandGroup {
   public:

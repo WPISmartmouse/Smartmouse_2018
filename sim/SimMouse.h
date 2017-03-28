@@ -9,13 +9,13 @@
 #include <gazebo/common/Color.hh>
 #include <gazebo/transport/TransportTypes.hh>
 #include <ignition/math.hh>
-#include "Mouse.h"
-#include "AbstractMaze.h"
-#include "Pose.h"
+#include <common/Mouse.h>
+#include <common/Pose.h>
 
 class SimMouse : public Mouse {
 public:
   static double radPerSecToMetersPerSec(double x);
+
   static double metersPerSecToRadPerSec(double x);
 
   constexpr static double ANALOG_ANGLE = 1.35255; // radians
@@ -71,8 +71,11 @@ public:
   Pose getEstimatedPose();
 
   double getRowOffsetToEdge();
+
   double getColOffsetToEdge();
+
   int getComputedRow();
+
   int getComputedCol();
 
   std::pair<double, double> getWheelVelocities();

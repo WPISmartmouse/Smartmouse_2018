@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommanDuino.h"
+#include <common/commanduino/CommanDuino.h>
 #include "Pose.h"
 #include "../real/RealMouse.h"
 #include "Pose.h"

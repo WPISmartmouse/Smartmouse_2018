@@ -2,20 +2,27 @@
 
 #ifdef CONSOLE
 
-#include "CommanDuino.h"
+#include <common/commanduino/CommanDuino.h>
+#include <common/Mouse.h>
+
 #include "ConsoleMouse.h"
-#include "Mouse.h"
 
 class Stop : public Command {
-  public:
-    Stop(unsigned long stop_time);
-    Stop();
-    void initialize();
-    void execute();
-    bool isFinished();
-    void end();
+public:
+  Stop(unsigned long stop_time);
 
-  private:
-    ConsoleMouse *mouse;
+  Stop();
+
+  void initialize();
+
+  void execute();
+
+  bool isFinished();
+
+  void end();
+
+private:
+  ConsoleMouse *mouse;
 };
+
 #endif

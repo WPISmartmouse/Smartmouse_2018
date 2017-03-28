@@ -1,7 +1,7 @@
 #pragma once
 #ifdef CONSOLE
 
-#include "CommanDuino.h"
+#include <common/commanduino/CommanDuino.h>
 
 class WaitForStart : public Command {
   public:

@@ -4,13 +4,13 @@
 #include <iostream>
 #include <string.h>
 
-#include "CommanDuino.h"
+#include <common/commanduino/CommanDuino.h>
 #include "StepSolveCommand.h"
-#include "SolveCommand.h"
+#include <common/commands/SolveCommand.h>
 #include "ConsoleMaze.h"
 #include "ConsoleMouse.h"
 #include "ConsoleTimer.h"
-#include "Flood.h"
+#include <common/Flood.h>
 
 int main(int argc, char* argv[]){
 

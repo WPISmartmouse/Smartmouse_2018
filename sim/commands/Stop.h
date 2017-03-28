@@ -3,9 +3,8 @@
 #ifdef SIM
 
 #include <ignition/math.hh>
-#include "CommanDuino.h"
+#include <common/commanduino/CommanDuino.h>
 #include "SimMouse.h"
-#include "Mouse.h"
 
 class Stop : public Command {
 public:

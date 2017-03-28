@@ -1,16 +1,19 @@
 #pragma once
 #ifdef CONSOLE
 
-#include "CommanDuino.h"
-#include "AbstractMaze.h"
+#include <common/commanduino/CommanDuino.h>
+#include <common/AbstractMaze.h>
 
 class Finish : public Command {
-  public:
-    Finish(AbstractMaze *maze);
-    void initialize();
-    bool isFinished();
+public:
+  Finish(AbstractMaze *maze);
 
-  private:
-    AbstractMaze *maze;
+  void initialize();
+
+  bool isFinished();
+
+private:
+  AbstractMaze *maze;
 };
+
 #endif

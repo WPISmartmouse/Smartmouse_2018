@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommanDuino.h"
+#include <common/commanduino/CommanDuino.h>
 #include "RealMouse.h"
 
 class LEDBlink : public Command {

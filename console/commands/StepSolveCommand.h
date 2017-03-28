@@ -1,6 +1,6 @@
 #pragma once
-#include "CommanDuino.h"
-#include "Solver.h"
+#include <common/commanduino/CommanDuino.h>
+#include <common/Solver.h>
 
 class StepSolveCommand : public CommandGroup {
   public:

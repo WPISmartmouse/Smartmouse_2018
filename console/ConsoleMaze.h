@@ -3,11 +3,12 @@
 
 #include <fstream>
 #include <string>
-#include "SensorReading.h"
-#include "AbstractMaze.h"
+#include <common/SensorReading.h>
+#include <common/AbstractMaze.h>
 
 class ConsoleMaze : public AbstractMaze {
-  public:
-    ConsoleMaze(std::fstream& fs);
+public:
+  ConsoleMaze(std::fstream &fs);
 };
+
 #endif
