@@ -28,7 +28,7 @@ public:
   constexpr static float CENTER_TO_SENSOR = 0.025; //meters
   constexpr static float HALF_SQUARE = 0.084; //meters
   constexpr static float WALL_DIST_SETPOINT = HALF_SQUARE - CENTER_TO_SENSOR;
-  constexpr static float SENSOR_ANGLE = M_PI/6;
+  constexpr static float SENSOR_ANGLE = M_PI / 6;
 
   const static int LEDGO = 13;
   const static int LEDR = 52;
@@ -38,7 +38,7 @@ public:
 
   constexpr static float WALL_DIST = 0.12;
   constexpr static float MAX_SPEED = 250; //mm/s
-  constexpr static float MAX_ROT_SPEED = M_PI/2; //rad/s
+  constexpr static float MAX_ROT_SPEED = M_PI / 2; //rad/s
 
   Adafruit_SSD1306 display;
 
@@ -82,6 +82,7 @@ public:
   void setEastYaw(float yaw);
 
   void clearDisplay();
+
   void updateDisplay();
 
 private:
@@ -110,7 +111,7 @@ private:
   //const static int IRRECEIVER5 = DAC1;
   const static int IRRECEIVER5 = A13;
   const static int IRRECEIVER6 =
-      A3; // wired to non adc pin. this does not work.
+          A3; // wired to non adc pin. this does not work.
 
   const static int BATTERYSENSE = A0;
 

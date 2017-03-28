@@ -1,24 +1,25 @@
 #ifdef CONSOLE
+
 #include "Forward.h"
 #include "ConsoleMouse.h"
-#include <stdio.h>
 
 Forward::Forward() : mouse(ConsoleMouse::inst()) {}
 
-void Forward::initialize(){
+void Forward::initialize() {
   mouse->internalForward();
-	if (!mouse->inBounds()){
+  if (!mouse->inBounds()) {
     //this is probably the most serious error possible
     //it means you've run into a wall. Just give up.
     printf("RAN INTO A WALL\n");
-	}
+  }
 }
 
-void Forward::execute(){}
+void Forward::execute() {}
 
-bool Forward::isFinished(){
+bool Forward::isFinished() {
   return true;
 }
 
-void Forward::end(){}
+void Forward::end() {}
+
 #endif

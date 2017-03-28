@@ -9,29 +9,29 @@
 #include "Command.h"
 
 class Scheduler {
-  public:
-    /** \brief pass the master command to the constructor
-     * \param[_in] the master command to control everything
-     * */
-    Scheduler(Command *command);
+public:
+  /** \brief pass the master command to the constructor
+   * \param[_in] the master command to control everything
+   * */
+  Scheduler(Command *command);
 
-    /** \brief adds a command to the command group
-     * \param[_in] command the pointer
-     */
-    void addCommand(Command *command);
+  /** \brief adds a command to the command group
+   * \param[_in] command the pointer
+   */
+  void addCommand(Command *command);
 
-    /** \brief runs all the commands.
-     * Iterates through the list of commands and runs them.
-     * If they are done, it removes them from the list of commands.
-     * \return returns true if there are no commands left
-     */
-    bool run();
+  /** \brief runs all the commands.
+   * Iterates through the list of commands and runs them.
+   * If they are done, it removes them from the list of commands.
+   * \return returns true if there are no commands left
+   */
+  bool run();
 
-  private:
+private:
 
-    /** \brief singleton instance */
-    static Scheduler *instance;
+  /** \brief singleton instance */
+  static Scheduler *instance;
 
-    /** \brief list of commands */
-    LinkedList<Command *> commands;
+  /** \brief list of commands */
+  LinkedList<Command *> commands;
 };

@@ -18,6 +18,7 @@ namespace gazebo {
     constexpr static unsigned int HEIGHT = 120; // pixels
 
     SensorViz();
+
     virtual ~SensorViz();
 
   protected:
@@ -38,10 +39,15 @@ namespace gazebo {
     bool leftBinaryState, rightBinaryState, frontBinaryState;
 
     void LeftAnalogCallback(ConstLaserScanStampedPtr &msg);
+
     void RightAnalogCallback(ConstLaserScanStampedPtr &msg);
+
     void LeftBinaryCallback(ConstLaserScanStampedPtr &msg);
+
     void RightBinaryCallback(ConstLaserScanStampedPtr &msg);
+
     void FrontBinaryCallback(ConstLaserScanStampedPtr &msg);
+
     void OnStats(ConstWorldStatisticsPtr &msg);
   };
 }

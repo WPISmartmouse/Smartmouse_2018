@@ -15,7 +15,7 @@ void ConsoleMouse::seedMaze(AbstractMaze *maze) { this->maze = maze; }
 ConsoleMouse::ConsoleMouse() {}
 
 ConsoleMouse::ConsoleMouse(int starting_row, int starting_col)
-    : Mouse(starting_row, starting_col) {}
+        : Mouse(starting_row, starting_col) {}
 
 SensorReading ConsoleMouse::checkWalls() {
   SensorReading sr(row, col);

@@ -3,6 +3,6 @@
 #include <common/commanduino/CommanDuino.h>
 
 class WaitThenDrive : public CommandGroup {
-  public:
-    WaitThenDrive();
+public:
+  WaitThenDrive();
 };

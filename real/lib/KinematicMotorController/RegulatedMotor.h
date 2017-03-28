@@ -1,60 +1,70 @@
 #pragma once
 
-#define LIBRARY_VERSION	2.0.0
+#define LIBRARY_VERSION  2.0.0
 
 #include <Encoder.h>
 
 class RegulatedMotor {
-  public:
+public:
 
-    RegulatedMotor(int encoderPinA, int encoderPinB, int fwdPin, int revPin);
+  RegulatedMotor(int encoderPinA, int encoderPinB, int fwdPin, int revPin);
 
-    enum class MotorState {COAST, RAW_PWM, BRAKE, VELOCITY};
+  enum class MotorState {
+    COAST, RAW_PWM, BRAKE, VELOCITY
+  };
 
-    void setup();
-    bool run();
-    void runNow(unsigned long deltaTime);
-    void setSpeed(int speed);
-    void setState(MotorState state);
-    void setPID(float kp, float ki, float kd, float kvff);
-    void setSampleTime(unsigned long sampleTime);
-    void goPWM(int pwm);
-    long getEncoder();
+  void setup();
 
-  private:
+  bool run();
 
-    Encoder encoder;
+  void runNow(unsigned long deltaTime);
 
-    int encoderPinA;
-    int encoderPinB;
+  void setSpeed(int speed);
 
-    long thisPosition;
-    long lastPosition;
+  void setState(MotorState state);
 
-    int calculatedSpeed;
-    int lastCalculatedSpeed;
-    int targetSpeed;
+  void setPID(float kp, float ki, float kd, float kvff);
 
-    int outputValue;
+  void setSampleTime(unsigned long sampleTime);
 
-    float kp;
-    float ki;
-    float kd;
-    float kvff;
+  void goPWM(int pwm);
 
-    int iTerm;
+  long getEncoder();
 
-    unsigned long lastTime;
-    int lastOutput;
+private:
 
-    unsigned long sampleTime; //MILLISECONDS
+  Encoder encoder;
 
-    MotorState state;
-    MotorState lastState;
+  int encoderPinA;
+  int encoderPinB;
 
-    int fwdPin;
-    int revPin;
+  long thisPosition;
+  long lastPosition;
 
-    int error;
+  int calculatedSpeed;
+  int lastCalculatedSpeed;
+  int targetSpeed;
+
+  int outputValue;
+
+  float kp;
+  float ki;
+  float kd;
+  float kvff;
+
+  int iTerm;
+
+  unsigned long lastTime;
+  int lastOutput;
+
+  unsigned long sampleTime; //MILLISECONDS
+
+  MotorState state;
+  MotorState lastState;
+
+  int fwdPin;
+  int revPin;
+
+  int error;
 
 };

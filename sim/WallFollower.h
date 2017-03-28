@@ -8,6 +8,7 @@
 class WallFollower {
 public:
   WallFollower();
+
   WallFollower(double goalDisp);
 
   static double forwardDisplacement(Direction dir, ignition::math::Pose3d start_pose, ignition::math::Pose3d end_pose);

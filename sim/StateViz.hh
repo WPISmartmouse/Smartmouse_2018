@@ -20,10 +20,15 @@ namespace gazebo {
     virtual ~StateViz();
 
   signals:
+
     void SetLeftVelocity(QString str);
+
     void SetRightVelocity(QString str);
+
     void SetRow(QString str);
+
     void SetCol(QString str);
+
     void SetDir(QString str);
 
   protected slots:
@@ -54,6 +59,7 @@ namespace gazebo {
     QLineEdit *dir_edit;
 
     void StateCallback(ConstRobotStatePtr &msg);
+
     void MazeLocationCallback(ConstMazeLocationPtr &msg);
   };
 }

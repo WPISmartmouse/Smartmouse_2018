@@ -11,30 +11,32 @@
  * visited is meant for ACTUALLY visiting, known is just used for searching/solving
  */
 class Node {
-  public:
-    int weight; //used for flood-fill
-    int distance; //used for a star
-    bool known;
-    bool visited;
+public:
+  int weight; //used for flood-fill
+  int distance; //used for a star
+  bool known;
+  bool visited;
 
-    //if you want to iterate over neighbors, just increment the pointer to north
-    std::array<Node *, 4> neighbors;
+  //if you want to iterate over neighbors, just increment the pointer to north
+  std::array<Node *, 4> neighbors;
 
-    static const int OUT_OF_BOUNDS;
+  static const int OUT_OF_BOUNDS;
 
-    /** \brief intializes a node */
-    Node(int row, int col);
-    Node();
+  /** \brief intializes a node */
+  Node(int row, int col);
 
-    int row();
-    int col();
+  Node();
 
-    /** \brief get the neighbor in the given direction */
-    Node *neighbor(const Direction dir);
+  int row();
 
-    void assign_weights_to_neighbors(Node *goal, int weight,  bool *success);
+  int col();
 
-  private:
-    int r;
-    int c;
+  /** \brief get the neighbor in the given direction */
+  Node *neighbor(const Direction dir);
+
+  void assign_weights_to_neighbors(Node *goal, int weight, bool *success);
+
+private:
+  int r;
+  int c;
 };

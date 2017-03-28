@@ -11,16 +11,16 @@ RealMouse *RealMouse::inst() {
 }
 
 RealMouse::RealMouse() :
-  display(OLED_RESET),
-  middle_rangefinder(VL6180EN2,0x41),
-  left_rangefinder(VL6180EN1,0x42),
-  right_rangefinder(VL6180EN3,0x43),
-  motL(ENCODER1A, ENCODER1B, MOTOR1B, MOTOR1A),
-  motR(ENCODER2A, ENCODER2B, MOTOR2B, MOTOR2A),
-  kc(&motL, &motR, 1, -1, 78.3f, 31.71f, 12 * (1537480.0f/20280)),
-  hasSuggestion(false),
-  eastYaw(0),
-  lastDisplayUpdate(0) { }
+        display(OLED_RESET),
+        middle_rangefinder(VL6180EN2, 0x41),
+        left_rangefinder(VL6180EN1, 0x42),
+        right_rangefinder(VL6180EN3, 0x43),
+        motL(ENCODER1A, ENCODER1B, MOTOR1B, MOTOR1A),
+        motR(ENCODER2A, ENCODER2B, MOTOR2B, MOTOR2A),
+        kc(&motL, &motR, 1, -1, 78.3f, 31.71f, 12 * (1537480.0f / 20280)),
+        hasSuggestion(false),
+        eastYaw(0),
+        lastDisplayUpdate(0) {}
 
 void RealMouse::setSpeed(int forwardVelocity, float ccwVelocity) {
   if (ccwVelocity > RealMouse::MAX_ROT_SPEED) ccwVelocity = RealMouse::MAX_ROT_SPEED;
@@ -31,14 +31,14 @@ void RealMouse::setSpeed(int forwardVelocity, float ccwVelocity) {
   kc.setVelocity(forwardVelocity, ccwVelocity);
 }
 
-Pose RealMouse::getPose(){
+Pose RealMouse::getPose() {
   return kc.getPose();
 }
 
 float *RealMouse::getRawDistances() {
-  rawDistances[0] = right_rangefinder.readRangeContinuous()/1000.0;
-  rawDistances[1] = middle_rangefinder.readRangeContinuous()/1000.0;
-  rawDistances[2] = left_rangefinder.readRangeContinuous()/1000.0;
+  rawDistances[0] = right_rangefinder.readRangeContinuous() / 1000.0;
+  rawDistances[1] = middle_rangefinder.readRangeContinuous() / 1000.0;
+  rawDistances[2] = left_rangefinder.readRangeContinuous() / 1000.0;
   return rawDistances;
 }
 
@@ -47,14 +47,13 @@ SensorReading RealMouse::checkWalls() {
   std::array<bool, 4> *walls = &sr.walls;
 
   //if nothing was suggested yet, then do a raw sensor read
-  if (hasSuggestion){
+  if (hasSuggestion) {
     (*walls)[0] = suggestedWalls[0];
     (*walls)[1] = suggestedWalls[1];
     (*walls)[2] = suggestedWalls[2];
     (*walls)[3] = suggestedWalls[3];
 
-  }
-  else {
+  } else {
     (*walls)[0] = true;
     (*walls)[1] = false;
     (*walls)[2] = true;
@@ -64,12 +63,12 @@ SensorReading RealMouse::checkWalls() {
   return sr;
 }
 
-void RealMouse::run(){
+void RealMouse::run() {
 
   unsigned long currentTime = millis();
   unsigned long deltaTime = currentTime - lastRunTime;
 
-  if (deltaTime >= sampleTime){
+  if (deltaTime >= sampleTime) {
     kc.updateGlobalYaw(getIMUYaw());
     kc.runNow(deltaTime, currentTime);
     lastRunTime = currentTime;
@@ -80,149 +79,149 @@ void RealMouse::run(){
   bButton.update();
 }
 
-void RealMouse::brake(){
+void RealMouse::brake() {
   kc.brake();
 }
 
-void RealMouse::updateGlobalYaw(){
+void RealMouse::updateGlobalYaw() {
   kc.updateGlobalYaw(getIMUYaw());
 }
 
-float RealMouse::getVoltage(){
+float RealMouse::getVoltage() {
   return analogRead(BATTERYSENSE) * (3.3 / 4095) * (49 / 10.0) / 3.0;
 }
 
-uint8_t RealMouse::getIMUCalibration(){
+uint8_t RealMouse::getIMUCalibration() {
   uint8_t system = 0, gyro = 0, accel = 0, mag = 0;
   imu.getCalibration(&system, &gyro, &accel, &mag);
   return system;
 }
 
-float RealMouse::getRawIMUYaw(){
+float RealMouse::getRawIMUYaw() {
   imu::Vector<3> euler = imu.getVector(Adafruit_BNO055::VECTOR_EULER);
   float degreeYaw = euler.x();
-  float radYaw = - (degreeYaw * M_PI / 180.0);
+  float radYaw = -(degreeYaw * M_PI / 180.0);
   return KinematicController::constrainAngle(radYaw);
 }
 
-float RealMouse::getIMUYaw(){
+float RealMouse::getIMUYaw() {
   return KinematicController::constrainAngle(getRawIMUYaw() - eastYaw);
 }
 
 void RealMouse::suggestWalls(bool *walls) {
   hasSuggestion = true;
-  for (int i=0;i<4;i++){
+  for (int i = 0; i < 4; i++) {
     suggestedWalls[i] = walls[i];
   }
 }
 
-void RealMouse::setup(){
+void RealMouse::setup() {
   analogReadResolution(12);
 
-  digitalWrite(LEDR,LOW);
-  digitalWrite(LEDG,LOW);
-  digitalWrite(LEDB,LOW);
-  digitalWrite(LEDGO,LOW);
-  digitalWrite(SDCS,LOW);
-  digitalWrite(BUZZER,LOW);
+  digitalWrite(LEDR, LOW);
+  digitalWrite(LEDG, LOW);
+  digitalWrite(LEDB, LOW);
+  digitalWrite(LEDGO, LOW);
+  digitalWrite(SDCS, LOW);
+  digitalWrite(BUZZER, LOW);
 
-  digitalWrite(IREMITTER1,LOW);
-  digitalWrite(IREMITTER2,LOW);
-  digitalWrite(IREMITTER3,LOW);
-  digitalWrite(IREMITTER4,LOW);
-  digitalWrite(IREMITTER5,LOW);
-  digitalWrite(IREMITTER6,LOW);
+  digitalWrite(IREMITTER1, LOW);
+  digitalWrite(IREMITTER2, LOW);
+  digitalWrite(IREMITTER3, LOW);
+  digitalWrite(IREMITTER4, LOW);
+  digitalWrite(IREMITTER5, LOW);
+  digitalWrite(IREMITTER6, LOW);
 
-  digitalWrite(VL6180EN1,LOW);
-  digitalWrite(VL6180EN2,LOW);
-  digitalWrite(VL6180EN3,LOW);
-  digitalWrite(VL6180EN4,LOW);
-  digitalWrite(VL6180EN5,LOW);
-  digitalWrite(VL6180EN6,LOW);
+  digitalWrite(VL6180EN1, LOW);
+  digitalWrite(VL6180EN2, LOW);
+  digitalWrite(VL6180EN3, LOW);
+  digitalWrite(VL6180EN4, LOW);
+  digitalWrite(VL6180EN5, LOW);
+  digitalWrite(VL6180EN6, LOW);
 
-  digitalWrite(MOTOR1A,LOW);
-  digitalWrite(MOTOR1B,LOW);
-  digitalWrite(MOTOR2A,LOW);
-  digitalWrite(MOTOR2B,LOW);
-  digitalWrite(MOTORDIR1,LOW);
-  digitalWrite(MOTORDIR2,LOW);
+  digitalWrite(MOTOR1A, LOW);
+  digitalWrite(MOTOR1B, LOW);
+  digitalWrite(MOTOR2A, LOW);
+  digitalWrite(MOTOR2B, LOW);
+  digitalWrite(MOTORDIR1, LOW);
+  digitalWrite(MOTORDIR2, LOW);
 
-  pinMode(IREMITTER1,OUTPUT);
-  pinMode(IREMITTER2,OUTPUT);
-  pinMode(IREMITTER3,OUTPUT);
-  pinMode(IREMITTER4,OUTPUT);
-  pinMode(IREMITTER5,OUTPUT);
-  pinMode(IREMITTER6,OUTPUT);
-  pinMode(IRRECEIVER1,INPUT);
-  pinMode(IRRECEIVER2,INPUT);
-  pinMode(IRRECEIVER3,INPUT);
-  pinMode(IRRECEIVER4,INPUT);
-  pinMode(IRRECEIVER5,INPUT);
-  pinMode(IRRECEIVER6,INPUT);
+  pinMode(IREMITTER1, OUTPUT);
+  pinMode(IREMITTER2, OUTPUT);
+  pinMode(IREMITTER3, OUTPUT);
+  pinMode(IREMITTER4, OUTPUT);
+  pinMode(IREMITTER5, OUTPUT);
+  pinMode(IREMITTER6, OUTPUT);
+  pinMode(IRRECEIVER1, INPUT);
+  pinMode(IRRECEIVER2, INPUT);
+  pinMode(IRRECEIVER3, INPUT);
+  pinMode(IRRECEIVER4, INPUT);
+  pinMode(IRRECEIVER5, INPUT);
+  pinMode(IRRECEIVER6, INPUT);
 
-  pinMode(BATTERYSENSE,INPUT);
+  pinMode(BATTERYSENSE, INPUT);
 
-  pinMode(VL6180EN1,OUTPUT);
-  pinMode(VL6180EN2,OUTPUT);
-  pinMode(VL6180EN3,OUTPUT);
-  pinMode(VL6180EN4,OUTPUT);
-  pinMode(VL6180EN5,OUTPUT);
-  pinMode(VL6180EN6,OUTPUT);
+  pinMode(VL6180EN1, OUTPUT);
+  pinMode(VL6180EN2, OUTPUT);
+  pinMode(VL6180EN3, OUTPUT);
+  pinMode(VL6180EN4, OUTPUT);
+  pinMode(VL6180EN5, OUTPUT);
+  pinMode(VL6180EN6, OUTPUT);
 
-  pinMode(ENCODER1A,INPUT);
-  pinMode(ENCODER1B,INPUT);
-  pinMode(ENCODER2A,INPUT);
-  pinMode(ENCODER2B,INPUT);
+  pinMode(ENCODER1A, INPUT);
+  pinMode(ENCODER1B, INPUT);
+  pinMode(ENCODER2A, INPUT);
+  pinMode(ENCODER2B, INPUT);
 
-  pinMode(MOTOR1A,OUTPUT);
-  pinMode(MOTOR1B,OUTPUT);
-  pinMode(MOTOR2A,OUTPUT);
-  pinMode(MOTOR2B,OUTPUT);
+  pinMode(MOTOR1A, OUTPUT);
+  pinMode(MOTOR1B, OUTPUT);
+  pinMode(MOTOR2A, OUTPUT);
+  pinMode(MOTOR2B, OUTPUT);
 
-  pinMode(MOTORDIR1,OUTPUT);
-  pinMode(MOTORDIR2,OUTPUT);
+  pinMode(MOTORDIR1, OUTPUT);
+  pinMode(MOTORDIR2, OUTPUT);
 
-  pinMode(LEDR,OUTPUT);
-  pinMode(LEDG,OUTPUT);
-  pinMode(LEDB,OUTPUT);
-  pinMode(LEDGO,OUTPUT);
+  pinMode(LEDR, OUTPUT);
+  pinMode(LEDG, OUTPUT);
+  pinMode(LEDB, OUTPUT);
+  pinMode(LEDGO, OUTPUT);
 
-  pinMode(BUTTONGO,INPUT_PULLUP);
-  pinMode(BUTTON1,INPUT_PULLUP);
-  pinMode(BUTTON2,INPUT_PULLUP);
-  pinMode(SDCARDDETECT,INPUT_PULLUP);
+  pinMode(BUTTONGO, INPUT_PULLUP);
+  pinMode(BUTTON1, INPUT_PULLUP);
+  pinMode(BUTTON2, INPUT_PULLUP);
+  pinMode(SDCARDDETECT, INPUT_PULLUP);
 
-  pinMode(SDCS,OUTPUT);
-  pinMode(BUZZER,OUTPUT);
+  pinMode(SDCS, OUTPUT);
+  pinMode(BUZZER, OUTPUT);
 
 
-  digitalWrite(LEDR,LOW);
-  digitalWrite(LEDG,LOW);
-  digitalWrite(LEDB,LOW);
-  digitalWrite(LEDGO,LOW);
-  digitalWrite(SDCS,LOW);
-  digitalWrite(BUZZER,LOW);
+  digitalWrite(LEDR, LOW);
+  digitalWrite(LEDG, LOW);
+  digitalWrite(LEDB, LOW);
+  digitalWrite(LEDGO, LOW);
+  digitalWrite(SDCS, LOW);
+  digitalWrite(BUZZER, LOW);
 
-  digitalWrite(IREMITTER1,LOW);
-  digitalWrite(IREMITTER2,LOW);
-  digitalWrite(IREMITTER3,LOW);
-  digitalWrite(IREMITTER4,LOW);
-  digitalWrite(IREMITTER5,LOW);
-  digitalWrite(IREMITTER6,LOW);
+  digitalWrite(IREMITTER1, LOW);
+  digitalWrite(IREMITTER2, LOW);
+  digitalWrite(IREMITTER3, LOW);
+  digitalWrite(IREMITTER4, LOW);
+  digitalWrite(IREMITTER5, LOW);
+  digitalWrite(IREMITTER6, LOW);
 
-  digitalWrite(VL6180EN1,LOW);
-  digitalWrite(VL6180EN2,LOW);
-  digitalWrite(VL6180EN3,LOW);
-  digitalWrite(VL6180EN4,LOW);
-  digitalWrite(VL6180EN5,LOW);
-  digitalWrite(VL6180EN6,LOW);
+  digitalWrite(VL6180EN1, LOW);
+  digitalWrite(VL6180EN2, LOW);
+  digitalWrite(VL6180EN3, LOW);
+  digitalWrite(VL6180EN4, LOW);
+  digitalWrite(VL6180EN5, LOW);
+  digitalWrite(VL6180EN6, LOW);
 
-  digitalWrite(MOTOR1A,LOW);
-  digitalWrite(MOTOR1B,LOW);
-  digitalWrite(MOTOR2A,LOW);
-  digitalWrite(MOTOR2B,LOW);
-  digitalWrite(MOTORDIR1,LOW);
-  digitalWrite(MOTORDIR2,LOW);
+  digitalWrite(MOTOR1A, LOW);
+  digitalWrite(MOTOR1B, LOW);
+  digitalWrite(MOTOR2A, LOW);
+  digitalWrite(MOTOR2B, LOW);
+  digitalWrite(MOTORDIR1, LOW);
+  digitalWrite(MOTORDIR2, LOW);
 
   goButton.attach(BUTTONGO);
   goButton.interval(10);
@@ -248,8 +247,7 @@ void RealMouse::setup(){
   delay(200);
 
   /* Initialise the sensor */
-  if(!imu.begin())
-  {
+  if (!imu.begin()) {
     /* There was a problem detecting the BNO055 ... check your connections */
     display.print("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
     display.display();
@@ -259,7 +257,7 @@ void RealMouse::setup(){
   int left_rangefinder_init_status = left_rangefinder.initMouse();
   int middle_rangefinder_init_status = middle_rangefinder.initMouse();
   int right_rangefinder_init_status = right_rangefinder.initMouse();
-  if(left_rangefinder_init_status != 0 || middle_rangefinder_init_status != 0 || right_rangefinder_init_status != 0 ){
+  if (left_rangefinder_init_status != 0 || middle_rangefinder_init_status != 0 || right_rangefinder_init_status != 0) {
     display.println("Ooops, rangefinder broken");
     display.print(left_rangefinder_init_status);
     display.print(middle_rangefinder_init_status);
@@ -276,7 +274,7 @@ void RealMouse::setup(){
 
   float voltage = analogRead(BATTERYSENSE) * (3.3 / 4095) * (49 / 10.0) / 3.0;
 
-  if (voltage < 3.6){
+  if (voltage < 3.6) {
     display.clearDisplay();
     display.setCursor(0, 0);
     display.print("Voltage is too low!");
@@ -290,10 +288,10 @@ void RealMouse::setup(){
 
   imu.setExtCrystalUse(true);
 
-  motL.setPID(0.09,0.01,0.01,0);
-  motR.setPID(0.09,0.01,0.01,0);
+  motL.setPID(0.09, 0.01, 0.01, 0);
+  motR.setPID(0.09, 0.01, 0.01, 0);
   kc.setSampleTime(20);
-  kc.setAcceleration(12000,4*M_PI,6000,10*M_PI);
+  kc.setAcceleration(12000, 4 * M_PI, 6000, 10 * M_PI);
 
   kc.setup();
 }
@@ -311,7 +309,7 @@ void RealMouse::clearDisplay() {
 
 void RealMouse::updateDisplay() {
   unsigned long now = millis();
-  if (now - lastDisplayUpdate > displayUpdateInterval){
+  if (now - lastDisplayUpdate > displayUpdateInterval) {
     lastDisplayUpdate = now;
     display.display();
   }

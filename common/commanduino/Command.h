@@ -9,66 +9,73 @@
  */
 class Command {
 
-  public:
+public:
 
-    static void setTimerImplementation(TimerInterface *timer);
+  static void setTimerImplementation(TimerInterface *timer);
 
-    Command();
-    Command(const char *name);
-    virtual ~Command();
+  Command();
 
-    void setTimeout(unsigned long timeout);
-    unsigned long getTime();
-    bool isTimedOut();
+  Command(const char *name);
 
-    /** \brief run once in the first iteration of the command's life.
-     * this will be overrided by individual commands
-     * */
-    virtual void initialize();
-    virtual void _initialize();
+  virtual ~Command();
 
-    /** \brief stuff to do over and over each iteration.
-     * this will be overrided by individual commands
-     */
-    virtual void execute();
-    virtual void _execute();
+  void setTimeout(unsigned long timeout);
 
-    /** \brief checked every iteration to see if we're done here.
-     * this will be overrided by individual commands
-     * @return is the function finished
-     */
-    virtual bool isFinished() = 0;
+  unsigned long getTime();
 
-    /** \brief called once at the end, once isFinished() returned true.
-     * this will be overrided by individual commands.
-     */
-    virtual void end();
-    virtual void _end();
+  bool isTimedOut();
 
-    /** \brief actually does the  excuting.
-     * @return if command is finished
-     */
-    bool cycle();
+  /** \brief run once in the first iteration of the command's life.
+   * this will be overrided by individual commands
+   * */
+  virtual void initialize();
 
-    /** \brief check if the command is running. not yet implemented.
-     *  @return if command is still running
-     */
-    bool isRunning();
+  virtual void _initialize();
 
-    /** \brief comparator overload for !=. used when checking if command is in list */
-    bool operator!=(const Command& other);
+  /** \brief stuff to do over and over each iteration.
+   * this will be overrided by individual commands
+   */
+  virtual void execute();
 
-    void print();
+  virtual void _execute();
 
-    /** \brief used by command group to organize commands */
-    bool inParallel;
+  /** \brief checked every iteration to see if we're done here.
+   * this will be overrided by individual commands
+   * @return is the function finished
+   */
+  virtual bool isFinished() = 0;
 
-    /** \brief for convenient printing */
-    const char *name;
+  /** \brief called once at the end, once isFinished() returned true.
+   * this will be overrided by individual commands.
+   */
+  virtual void end();
 
-    static TimerInterface *timer;
+  virtual void _end();
 
-    bool initialized,running;
-    unsigned long timeout = 0;
-    unsigned long startTime = 0;
+  /** \brief actually does the  excuting.
+   * @return if command is finished
+   */
+  bool cycle();
+
+  /** \brief check if the command is running. not yet implemented.
+   *  @return if command is still running
+   */
+  bool isRunning();
+
+  /** \brief comparator overload for !=. used when checking if command is in list */
+  bool operator!=(const Command &other);
+
+  void print();
+
+  /** \brief used by command group to organize commands */
+  bool inParallel;
+
+  /** \brief for convenient printing */
+  const char *name;
+
+  static TimerInterface *timer;
+
+  bool initialized, running;
+  unsigned long timeout = 0;
+  unsigned long startTime = 0;
 };

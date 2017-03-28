@@ -3,7 +3,8 @@
 #include <SimMouse.h>
 #include "ForwardToCenter.h"
 
-ForwardToCenter::ForwardToCenter() : mouse(SimMouse::inst()), checkedWalls(false), wallOnLeft(true), wallOnRight(true) {}
+ForwardToCenter::ForwardToCenter() : mouse(SimMouse::inst()), checkedWalls(false), wallOnLeft(true),
+                                     wallOnRight(true) {}
 
 void ForwardToCenter::initialize() {
 //  mouse->resetIndicators(SimMouse::red_color);

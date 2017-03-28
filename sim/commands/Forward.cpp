@@ -6,7 +6,6 @@
 Forward::Forward() : mouse(SimMouse::inst()), checkedWalls(false), wallOnLeft(true), wallOnRight(true) {}
 
 
-
 void Forward::initialize() {
 //  mouse->resetIndicators(SimMouse::red_color);
 //  mouse->indicatePath(mouse->getRow(), mouse->getCol(), mouse->maze->pathToNextGoal, SimMouse::red_color);
@@ -27,7 +26,7 @@ void Forward::execute() {
   double l, r;
   std::tie(l, r) = follower.compute_wheel_velocities(this->mouse, start, range_data);
 
-  mouse->setSpeed(l ,r);
+  mouse->setSpeed(l, r);
 
   if (!checkedWalls && follower.dispError < AbstractMaze::HALF_UNIT_DIST) {
     checkedWalls = true;

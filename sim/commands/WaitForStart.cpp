@@ -6,17 +6,18 @@
 
 WaitForStart::WaitForStart() : Command("wait") {}
 
-void WaitForStart::initialize(){
+void WaitForStart::initialize() {
   printf("Press enter to begin...\n");
 }
 
-void WaitForStart::execute(){
+void WaitForStart::execute() {
   printf("Begninning.\n");
 }
 
-bool WaitForStart::isFinished(){
+bool WaitForStart::isFinished() {
   return std::cin.get();
 }
 
-void WaitForStart::end(){}
+void WaitForStart::end() {}
+
 #endif

@@ -7,7 +7,7 @@
 #include "SimMouse.h"
 #include "SimTimer.h"
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
   // Load gazebo
   bool connected = gazebo::client::setup(argc, argv);
   if (!connected) {
@@ -23,7 +23,7 @@ int main(int argc, char* argv[]) {
   node->Init();
 
   gazebo::transport::SubscriberPtr timeSub =
-    node->Subscribe("~/world_stats", &SimTimer::simTimeCallback);
+          node->Subscribe("~/world_stats", &SimTimer::simTimeCallback);
 
   gazebo::transport::SubscriberPtr poseSub =
           node->Subscribe("~/mouse/state", &SimMouse::robotStateCallback, SimMouse::inst());

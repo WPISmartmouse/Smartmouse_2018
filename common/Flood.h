@@ -12,29 +12,35 @@
 
 class Flood : public Solver {
 
-  public:
+public:
 
-    Flood(Mouse *mouse);
-    virtual void setup() override;
-    virtual Direction planNextStep() override;
-    virtual char *solve() override;
-    virtual void teardown() override;
-    virtual bool isFinished() override;
-    void setupStep();
+  Flood(Mouse *mouse);
 
-    bool done;
+  virtual void setup() override;
 
-  private:
+  virtual Direction planNextStep() override;
 
-    /// \brief this maze is initially no walls,  and walls are filled out every time the mouse moves
-    AbstractMaze no_wall_maze;
+  virtual char *solve() override;
 
-    /// \brief this maze is initially no walls,  and walls are removed every time the mouse moves
-    AbstractMaze *all_wall_maze;
+  virtual void teardown() override;
 
-    char *no_wall_path;
-    char *all_wall_path;
-    Node *goal;
+  virtual bool isFinished() override;
 
-    bool solvable, solved;
+  void setupStep();
+
+  bool done;
+
+private:
+
+  /// \brief this maze is initially no walls,  and walls are filled out every time the mouse moves
+  AbstractMaze no_wall_maze;
+
+  /// \brief this maze is initially no walls,  and walls are removed every time the mouse moves
+  AbstractMaze *all_wall_maze;
+
+  char *no_wall_path;
+  char *all_wall_path;
+  Node *goal;
+
+  bool solvable, solved;
 };

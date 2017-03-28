@@ -20,8 +20,7 @@ void ArcTurn::execute() {
 
   if (left) {
     mouse->setSpeed(inner_mps, outer_mps);
-  }
-  else {
+  } else {
     mouse->setSpeed(outer_mps, inner_mps);
   }
 }

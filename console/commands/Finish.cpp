@@ -1,6 +1,6 @@
 #ifdef CONSOLE
+
 #include "Finish.h"
-#include <stdio.h>
 
 Finish::Finish(AbstractMaze *maze) : Command("end"), maze(maze) {}
 
@@ -11,4 +11,5 @@ void Finish::initialize() {
 bool Finish::isFinished() {
   return true;
 }
+
 #endif

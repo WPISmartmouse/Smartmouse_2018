@@ -8,6 +8,7 @@
 class Turn : public CommandGroup {
 public:
   Turn(Direction dir);
+
   void initialize();
 
 private:

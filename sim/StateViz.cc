@@ -18,13 +18,13 @@ StateViz::StateViz() : GUIPlugin(), topic("/delete_plot") {
   this->maze_loc_sub = this->node->Subscribe("~/maze_location", &StateViz::MazeLocationCallback, this);
 
   this->pub = this->ign_node.Advertise<ignition::msgs::Empty>(this->topic);
-  if (! pub) {
+  if (!pub) {
     gzerr << "Failed to advertise to [" << this->topic << "]" << std::endl;
   }
 
   QVBoxLayout *main_layout = new QVBoxLayout();
   QHBoxLayout *left_wheel_vel_layout = new QHBoxLayout();
-  QHBoxLayout *right_wheel_vel_layout= new QHBoxLayout();
+  QHBoxLayout *right_wheel_vel_layout = new QHBoxLayout();
   QHBoxLayout *row_layout = new QHBoxLayout();
   QHBoxLayout *col_layout = new QHBoxLayout();
   QHBoxLayout *dir_layout = new QHBoxLayout();
@@ -39,8 +39,8 @@ StateViz::StateViz() : GUIPlugin(), topic("/delete_plot") {
   row_edit = new QLineEdit(tr("0"));
   col_edit = new QLineEdit(tr("0"));
 
-  dir_label= new QLabel(tr("Direction:"));
-  dir_edit= new QLineEdit(tr("N"));
+  dir_label = new QLabel(tr("Direction:"));
+  dir_edit = new QLineEdit(tr("N"));
 
   QPushButton *clear_plot_button = new QPushButton(tr("Clear Robot Trace"));
   clear_plot_button->setStyleSheet("padding: 0px;");

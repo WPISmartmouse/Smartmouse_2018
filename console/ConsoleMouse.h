@@ -4,18 +4,19 @@
 #include <common/SensorReading.h>
 
 class ConsoleMouse : public Mouse {
-  public:
+public:
 
-    virtual SensorReading checkWalls() override;
+  virtual SensorReading checkWalls() override;
 
-    static ConsoleMouse *inst();
+  static ConsoleMouse *inst();
 
-    void seedMaze(AbstractMaze *maze);
+  void seedMaze(AbstractMaze *maze);
 
-  private:
+private:
 
-    static ConsoleMouse *instance;
+  static ConsoleMouse *instance;
 
-    ConsoleMouse();
-    ConsoleMouse(int starting_row, int starting_col);
+  ConsoleMouse();
+
+  ConsoleMouse(int starting_row, int starting_col);
 };

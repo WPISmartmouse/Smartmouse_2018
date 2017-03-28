@@ -1,4 +1,4 @@
-#include <VL6180X.h>
+
 #include <i2c_t3.h>
 
 // Defines /////////////////////////////////////////////////////////////////////
@@ -6,8 +6,7 @@
 
 // Constructors ////////////////////////////////////////////////////////////////
 
-VL6180X::VL6180X(int _enablePin, uint8_t new_addr)
-{
+VL6180X::VL6180X(int _enablePin, uint8_t new_addr) {
   address = new_addr;
   enable_pin = _enablePin;
   io_timeout = 0;  // 0 = no timeout
@@ -19,16 +18,14 @@ VL6180X::VL6180X(int _enablePin, uint8_t new_addr)
 
 // Public Methods //////////////////////////////////////////////////////////////
 
-void VL6180X::setAddress(uint8_t new_addr)
-{
+void VL6180X::setAddress(uint8_t new_addr) {
   writeReg(I2C_SLAVE__DEVICE_ADDRESS, new_addr & 0x7F);
   address = new_addr;
 }
 
 // Initialize sensor with settings from ST application note AN4545, section 9 -
 // "Mandatory : private registers"
-void VL6180X::init()
-{
+void VL6180X::init() {
   writeReg(0x207, 0x01);
   writeReg(0x208, 0x01);
   writeReg(0x096, 0x00);
@@ -61,7 +58,7 @@ void VL6180X::init()
   writeReg(0x030, 0x00);
 }
 
-int VL6180X::initMouse(){
+int VL6180X::initMouse() {
   digitalWrite(enable_pin, LOW);
   pinMode(enable_pin, INPUT); // pull up by an ext resistor to 2.8V
 
@@ -140,8 +137,7 @@ int VL6180X::initMouse(){
 // Note that this function does not set up GPIO1 as an interrupt output as
 // suggested, though you can do so by calling:
 // writeReg(SYSTEM__MODE_GPIO1, 0x10);
-void VL6180X::configureDefault(void)
-{
+void VL6180X::configureDefault(void) {
   // "Recommended : Public registers"
 
   // readout__averaging_sample_period = 48
@@ -183,8 +179,7 @@ void VL6180X::configureDefault(void)
 }
 
 // Writes an 8-bit register
-void VL6180X::writeReg(uint16_t reg, uint8_t value)
-{
+void VL6180X::writeReg(uint16_t reg, uint8_t value) {
   Wire.beginTransmission(address);
   Wire.write((reg >> 8) & 0xff);  // reg high byte
   Wire.write(reg & 0xff);         // reg low byte
@@ -193,8 +188,7 @@ void VL6180X::writeReg(uint16_t reg, uint8_t value)
 }
 
 // Writes a 16-bit register
-void VL6180X::writeReg16Bit(uint16_t reg, uint16_t value)
-{
+void VL6180X::writeReg16Bit(uint16_t reg, uint16_t value) {
   Wire.beginTransmission(address);
   Wire.write((reg >> 8) & 0xff);  // reg high byte
   Wire.write(reg & 0xff);         // reg low byte
@@ -204,8 +198,7 @@ void VL6180X::writeReg16Bit(uint16_t reg, uint16_t value)
 }
 
 // Writes a 32-bit register
-void VL6180X::writeReg32Bit(uint16_t reg, uint32_t value)
-{
+void VL6180X::writeReg32Bit(uint16_t reg, uint32_t value) {
   Wire.beginTransmission(address);
   Wire.write((reg >> 8) & 0xff);  // reg high byte
   Wire.write(reg & 0xff);         // reg low byte
@@ -217,8 +210,7 @@ void VL6180X::writeReg32Bit(uint16_t reg, uint32_t value)
 }
 
 // Reads an 8-bit register
-uint8_t VL6180X::readReg(uint16_t reg)
-{
+uint8_t VL6180X::readReg(uint16_t reg) {
   uint8_t value;
 
   Wire.beginTransmission(address);
@@ -226,7 +218,7 @@ uint8_t VL6180X::readReg(uint16_t reg)
   Wire.write(reg & 0xff);         // reg low byte
   last_status = Wire.endTransmission();
 
-  Wire.requestFrom(address, (uint8_t)1);
+  Wire.requestFrom(address, (uint8_t) 1);
   value = Wire.read();
   Wire.endTransmission();
 
@@ -234,8 +226,7 @@ uint8_t VL6180X::readReg(uint16_t reg)
 }
 
 // Reads a 16-bit register
-uint16_t VL6180X::readReg16Bit(uint16_t reg)
-{
+uint16_t VL6180X::readReg16Bit(uint16_t reg) {
   uint16_t value;
 
   Wire.beginTransmission(address);
@@ -243,8 +234,8 @@ uint16_t VL6180X::readReg16Bit(uint16_t reg)
   Wire.write(reg & 0xff);         // reg low byte
   last_status = Wire.endTransmission();
 
-  Wire.requestFrom(address, (uint8_t)2);
-  value = (uint16_t)Wire.read() << 8; // value high byte
+  Wire.requestFrom(address, (uint8_t) 2);
+  value = (uint16_t) Wire.read() << 8; // value high byte
   value |= Wire.read();               // value low byte
   Wire.endTransmission();
 
@@ -252,8 +243,7 @@ uint16_t VL6180X::readReg16Bit(uint16_t reg)
 }
 
 // Reads a 32-bit register
-uint32_t VL6180X::readReg32Bit(uint16_t reg)
-{
+uint32_t VL6180X::readReg32Bit(uint16_t reg) {
   uint32_t value;
 
   Wire.beginTransmission(address);
@@ -261,10 +251,10 @@ uint32_t VL6180X::readReg32Bit(uint16_t reg)
   Wire.write(reg & 0xff);         // reg low byte
   last_status = Wire.endTransmission();
 
-  Wire.requestFrom(address, (uint8_t)4);
-  value = (uint32_t)Wire.read() << 24;  // value highest byte
-  value |= (uint32_t)Wire.read() << 16;
-  value |= (uint16_t)Wire.read() << 8;
+  Wire.requestFrom(address, (uint8_t) 4);
+  value = (uint32_t) Wire.read() << 24;  // value highest byte
+  value |= (uint32_t) Wire.read() << 16;
+  value |= (uint16_t) Wire.read() << 8;
   value |= Wire.read();                 // value lowest byte
   Wire.endTransmission();
 
@@ -272,15 +262,13 @@ uint32_t VL6180X::readReg32Bit(uint16_t reg)
 }
 
 // Performs a single-shot ranging measurement
-uint8_t VL6180X::readRangeSingle()
-{
+uint8_t VL6180X::readRangeSingle() {
   writeReg(SYSRANGE__START, 0x01);
   return readRangeContinuous();
 }
 
 // Performs a single-shot ambient light measurement
-uint16_t VL6180X::readAmbientSingle()
-{
+uint16_t VL6180X::readAmbientSingle() {
   writeReg(SYSALS__START, 0x01);
   return readAmbientContinuous();
 }
@@ -291,8 +279,7 @@ uint16_t VL6180X::readAmbientSingle()
 // The period must be greater than the time it takes to perform a
 // measurement. See section 2.4.4 ("Continuous mode limits") in the datasheet
 // for details.
-void VL6180X::startRangeContinuous(uint16_t period)
-{
+void VL6180X::startRangeContinuous(uint16_t period) {
 
   writeReg(SYSRANGE__START, 0x01);
   delay(50);
@@ -312,8 +299,7 @@ void VL6180X::startRangeContinuous(uint16_t period)
 // The period must be greater than the time it takes to perform a
 // measurement. See section 2.4.4 ("Continuous mode limits") in the datasheet
 // for details.
-void VL6180X::startAmbientContinuous(uint16_t period)
-{
+void VL6180X::startAmbientContinuous(uint16_t period) {
   int16_t period_reg = (int16_t)(period / 10) - 1;
   period_reg = constrain(period_reg, 0, 254);
 
@@ -331,8 +317,7 @@ void VL6180X::startAmbientContinuous(uint16_t period)
 // The period must be greater than the time it takes to perform both
 // measurements. See section 2.4.4 ("Continuous mode limits") in the datasheet
 // for details.
-void VL6180X::startInterleavedContinuous(uint16_t period)
-{
+void VL6180X::startInterleavedContinuous(uint16_t period) {
   int16_t period_reg = (int16_t)(period / 10) - 1;
   period_reg = constrain(period_reg, 0, 254);
 
@@ -347,8 +332,7 @@ void VL6180X::startInterleavedContinuous(uint16_t period)
 // and/or ambient light if continuous mode is not active, so it's a good idea to
 // wait a few hundred ms after calling this function to let that complete
 // before starting continuous mode again or taking a reading.
-void VL6180X::stopContinuous()
-{
+void VL6180X::stopContinuous() {
 
   writeReg(SYSRANGE__START, 0x01);
   writeReg(SYSALS__START, 0x01);
@@ -359,8 +343,7 @@ void VL6180X::stopContinuous()
 // Returns a range reading when continuous mode is activated
 // (readRangeSingle() also calls this function after starting a single-shot
 // range measurement)
-uint8_t VL6180X::readRangeContinuous()
-{
+uint8_t VL6180X::readRangeContinuous() {
   /*
   uint16_t millis_start = millis();
   while ((readReg(RESULT__INTERRUPT_STATUS_GPIO) & 0x04) == 0)
@@ -373,7 +356,7 @@ uint8_t VL6180X::readRangeContinuous()
   }
   */
   long now = millis();
-  if (now - lastReadTime > measurement_period){
+  if (now - lastReadTime > measurement_period) {
     lastReadTime = now;
     lastReading = readReg(RESULT__RANGE_VAL);
   }
@@ -386,13 +369,10 @@ uint8_t VL6180X::readRangeContinuous()
 // Returns an ambient light reading when continuous mode is activated
 // (readAmbientSingle() also calls this function after starting a single-shot
 // ambient light measurement)
-uint16_t VL6180X::readAmbientContinuous()
-{
+uint16_t VL6180X::readAmbientContinuous() {
   uint16_t millis_start = millis();
-  while ((readReg(RESULT__INTERRUPT_STATUS_GPIO) & 0x20) == 0)
-  {
-    if (io_timeout > 0 && ((uint16_t)millis() - millis_start) > io_timeout)
-    {
+  while ((readReg(RESULT__INTERRUPT_STATUS_GPIO) & 0x20) == 0) {
+    if (io_timeout > 0 && ((uint16_t) millis() - millis_start) > io_timeout) {
       did_timeout = true;
       return 0;
     }
@@ -406,19 +386,16 @@ uint16_t VL6180X::readAmbientContinuous()
 
 // Did a timeout occur in one of the read functions since the last call to
 // timeoutOccurred()?
-bool VL6180X::timeoutOccurred()
-{
+bool VL6180X::timeoutOccurred() {
   bool tmp = did_timeout;
   did_timeout = false;
   return tmp;
 }
 
-void VL6180X::setTimeout(uint16_t timeout)
-{
+void VL6180X::setTimeout(uint16_t timeout) {
   io_timeout = timeout;
 }
 
-uint16_t VL6180X::getTimeout()
-{
+uint16_t VL6180X::getTimeout() {
   return io_timeout;
 }

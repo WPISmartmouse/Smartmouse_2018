@@ -7,7 +7,9 @@ Code given out at the 1985 UNIFORUM conference in Dallas.
 */
 
 #ifdef __GNUC__
+
 #include <getopt.h>
+
 #endif
 #ifndef __GNUC__
 

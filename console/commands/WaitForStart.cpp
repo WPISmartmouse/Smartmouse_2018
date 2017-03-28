@@ -1,20 +1,21 @@
 #ifdef CONSOLE
+
 #include <iostream>
-#include <stdio.h>
 #include "WaitForStart.h"
 
 WaitForStart::WaitForStart() : Command("wait") {}
 
-void WaitForStart::initialize(){
+void WaitForStart::initialize() {
   printf("Waiting. Press enter...\n");
 }
 
-void WaitForStart::execute(){}
+void WaitForStart::execute() {}
 
-bool WaitForStart::isFinished(){
+bool WaitForStart::isFinished() {
   return std::cin.get();
 }
 
-void WaitForStart::end(){
+void WaitForStart::end() {
 }
+
 #endif

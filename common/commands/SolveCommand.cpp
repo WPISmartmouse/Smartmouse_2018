@@ -1,10 +1,6 @@
 #include "SolveCommand.h"
 #include "WaitForStart.h"
 #include "SolveMaze.h"
-#include "ReturnToStart.h"
-#include <common/WallFollow.h>
-#include "SpeedRun.h"
-#include <common/Flood.h>
 #include "Finish.h"
 
 SolveCommand::SolveCommand(Solver *solver) : CommandGroup("SolveGroup") {

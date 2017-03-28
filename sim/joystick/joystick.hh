@@ -25,32 +25,31 @@
 /**
  * Encapsulates all data relevant to a sampled joystick event.
  */
-class JoystickEvent
-{
+class JoystickEvent {
 public:
   /** Minimum value of axes range */
   static const short MIN_AXES_VALUE = -32768;
 
   /** Minimum value of axes range */
   static const short MAX_AXES_VALUE = 32767;
-  
+
   /**
    * The timestamp of the event, in milliseconds.
    */
   unsigned int time;
-  
+
   /**
    * The value associated with this joystick event.
    * For buttons this will be either 1 (down) or 0 (up).
    * For axes, this will range between MIN_AXES_VALUE and MAX_AXES_VALUE.
    */
   short value;
-  
+
   /**
    * The event type.
    */
   unsigned char type;
-  
+
   /**
    * The axis/button number.
    */
@@ -59,16 +58,14 @@ public:
   /**
    * Returns true if this event is the result of a button press.
    */
-  bool isButton()
-  {
+  bool isButton() {
     return (type & JS_EVENT_BUTTON) != 0;
   }
 
   /**
    * Returns true if this event is the result of an axis movement.
    */
-  bool isAxis()
-  {
+  bool isAxis() {
     return (type & JS_EVENT_AXIS) != 0;
   }
 
@@ -76,8 +73,7 @@ public:
    * Returns true if this event is part of the initial state obtained when
    * the joystick is first connected to.
    */
-  bool isInitialState()
-  {
+  bool isInitialState() {
     return (type & JS_EVENT_INIT) != 0;
   }
 
@@ -85,25 +81,24 @@ public:
    * The ostream inserter needs to be a friend so it can access the
    * internal data structures.
    */
-  friend std::ostream& operator<<(std::ostream& os, const JoystickEvent& e);
+  friend std::ostream &operator<<(std::ostream &os, const JoystickEvent &e);
 };
 
 /**
  * Stream insertion function so you can do this:
  *    cout << event << endl;
  */
-std::ostream& operator<<(std::ostream& os, const JoystickEvent& e);
+std::ostream &operator<<(std::ostream &os, const JoystickEvent &e);
 
 /**
  * Represents a joystick device. Allows data to be sampled from it.
  */
-class Joystick
-{
+class Joystick {
 private:
-  void openPath(std::string devicePath, bool blocking=false);
-  
+  void openPath(std::string devicePath, bool blocking = false);
+
   int _fd;
-  
+
 public:
   ~Joystick();
 
@@ -128,17 +123,17 @@ public:
    * the option of blocking I/O.
    */
   Joystick(std::string devicePath, bool blocking);
- 
+
   /**
    * Returns true if the joystick was found and may be used, otherwise false.
    */
   bool isFound();
-  
+
   /**
    * Attempts to populate the provided JoystickEvent instance with data
    * from the joystick. Returns true if data is available, otherwise false.
    */
-  bool sample(JoystickEvent* event);
+  bool sample(JoystickEvent *event);
 };
 
 #endif

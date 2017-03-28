@@ -12,4 +12,5 @@ unsigned long SimTimer::programTimeMs() {
 void SimTimer::simTimeCallback(ConstWorldStatisticsPtr &msg) {
   simTimeMs = (unsigned long) ((msg->sim_time().sec() * 1000) + (msg->sim_time().nsec() / 1000000));
 }
+
 #endif

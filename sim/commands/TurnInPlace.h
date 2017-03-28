@@ -8,7 +8,7 @@
 #include "WallFollower.h"
 #include "SimMouse.h"
 
-class TurnInPlace: public Command {
+class TurnInPlace : public Command {
 public:
   TurnInPlace(Direction dir);
 
@@ -22,6 +22,7 @@ public:
 
 private:
   double yawDiff(double y1, double y2);
+
   void setSpeedLimited(double l, double r);
 
   double goalYaw;

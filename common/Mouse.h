@@ -13,8 +13,11 @@ class Mouse {
 
 public:
   Mouse();
+
   Mouse(AbstractMaze *maze);
+
   Mouse(int starting_row, int starting_col);
+
   Mouse(AbstractMaze *maze, int starting_row, int starting_col);
 
   void reset();
@@ -49,6 +52,7 @@ public:
   Node *get_mouse_node();
 
   void internalTurnToFace(Direction dir);
+
   void internalForward();
 
   /** prints a maze with a mouse in it
@@ -58,7 +62,9 @@ public:
   void print_maze_mouse();
 
   virtual SensorReading checkWalls() = 0;
+
   bool is_mouse_blocked();
+
   bool is_mouse_blocked(Direction dir);
 
   AbstractMaze *maze;

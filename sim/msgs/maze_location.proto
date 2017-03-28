@@ -1,11 +1,10 @@
 package gzmaze.msgs;
 
-message MazeLocation
-{
-  required int32    row         = 1;
-  required int32    col         = 2;
-  required double   row_offset  = 3;
-  required double   col_offset  = 4;
-  required string   dir         = 5;
+message MazeLocation {
+    required int32 row = 1;
+    required int32 col = 2;
+    required double row_offset = 3;
+    required double col_offset = 4;
+    required string dir = 5;
 
 }

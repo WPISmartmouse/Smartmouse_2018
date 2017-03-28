@@ -12,7 +12,7 @@
 #include "ConsoleTimer.h"
 #include <common/Flood.h>
 
-int main(int argc, char* argv[]){
+int main(int argc, char *argv[]) {
 
   std::string maze_file;
   bool step = false;
@@ -24,12 +24,10 @@ int main(int argc, char* argv[]){
     if (strncmp("--step", argv[1], 6) == 0) {
       step = true;
       maze_file = "../mazes/16x16.mz";
-    }
-    else {
+    } else {
       maze_file = std::string(argv[1]);
     }
-  }
-  else if (argc == 3) {
+  } else if (argc == 3) {
     maze_file = std::string(argv[1]);
     if (strncmp("--step", argv[2], 6) == 0) {
       step = true;
@@ -39,7 +37,7 @@ int main(int argc, char* argv[]){
   std::fstream fs;
   fs.open(maze_file, std::fstream::in);
 
-  if (fs.good()){
+  if (fs.good()) {
     ConsoleMaze maze(fs);
     ConsoleMouse::inst()->seedMaze(&maze);
     ConsoleTimer timer;
@@ -48,8 +46,7 @@ int main(int argc, char* argv[]){
     Scheduler *scheduler;
     if (step) {
       scheduler = new Scheduler(new StepSolveCommand(new Flood(ConsoleMouse::inst())));
-    }
-    else {
+    } else {
       scheduler = new Scheduler(new SolveCommand(new Flood(ConsoleMouse::inst())));
     }
 
@@ -57,11 +54,11 @@ int main(int argc, char* argv[]){
 
     fs.close();
     return EXIT_SUCCESS;
-  }
-  else {
-		printf("error opening maze file!\n");
+  } else {
+    printf("error opening maze file!\n");
     fs.close();
     return EXIT_FAILURE;
   }
 }
+
 #endif

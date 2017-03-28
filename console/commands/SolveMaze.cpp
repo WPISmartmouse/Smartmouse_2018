@@ -2,27 +2,25 @@
 #include "Forward.h"
 #include "Turn.h"
 #include "common/commands/Delay.h"
-#include "WaitForStart.h"
 
-SolveMaze::SolveMaze(Solver *solver) : CommandGroup("solve"), solver(solver) { }
+SolveMaze::SolveMaze(Solver *solver) : CommandGroup("solve"), solver(solver) {}
 
-void SolveMaze::initialize(){
+void SolveMaze::initialize() {
   solver->setup();
 }
 
-bool SolveMaze::isFinished(){
+bool SolveMaze::isFinished() {
   bool groupFinished = CommandGroup::isFinished();
 
   if (groupFinished) {
     bool mazeSolved = solver->isFinished();
 
-    if (!mazeSolved){
+    if (!mazeSolved) {
       Direction nextDirection = solver->planNextStep();
       addSequential(new Turn(nextDirection));
       addSequential(new Delay(100)); //HACK
       addSequential(new Forward());
-    }
-    else {
+    } else {
       return true;
     }
 
@@ -32,6 +30,6 @@ bool SolveMaze::isFinished(){
   return false;
 }
 
-void SolveMaze::end(){
+void SolveMaze::end() {
   solver->teardown();
 }

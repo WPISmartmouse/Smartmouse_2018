@@ -3,6 +3,6 @@
 #include <common/commanduino/CommanDuino.h>
 
 class NavTestCommand : public CommandGroup {
-  public:
-    NavTestCommand();
+public:
+  NavTestCommand();
 };

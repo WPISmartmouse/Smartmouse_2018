@@ -6,25 +6,33 @@
 /** \brief grouping commands is a useful abstraction.
  * Commands groups execute commands in parallel or series
  */
-class CommandGroup: public Command {
-  public:
-    CommandGroup(const char *name);
-    CommandGroup() = default;
+class CommandGroup : public Command {
+public:
+  CommandGroup(const char *name);
 
-    void addSequential(Command *command);
-    void addParallel(Command *command);
+  CommandGroup() = default;
 
-    virtual void _initialize();
-    virtual void _execute();
-    virtual void _end();
+  void addSequential(Command *command);
 
-    virtual void initialize();
-    virtual void execute();
-    virtual void end();
-    virtual bool isFinished();
-    LinkedList<Command *> commands;
+  void addParallel(Command *command);
 
-  private:
+  virtual void _initialize();
 
-    int currentCommandIndex;
+  virtual void _execute();
+
+  virtual void _end();
+
+  virtual void initialize();
+
+  virtual void execute();
+
+  virtual void end();
+
+  virtual bool isFinished();
+
+  LinkedList<Command *> commands;
+
+private:
+
+  int currentCommandIndex;
 };

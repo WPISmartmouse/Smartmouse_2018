@@ -4,13 +4,16 @@
 #include <common/Solver.h>
 
 class SolveMaze : public CommandGroup {
-  public:
-    SolveMaze(Solver *solver);
-    void initialize();
-    bool isFinished();
-    void end();
+public:
+  SolveMaze(Solver *solver);
 
-  private:
-    Solver *solver;
+  void initialize();
+
+  bool isFinished();
+
+  void end();
+
+private:
+  Solver *solver;
 
 };

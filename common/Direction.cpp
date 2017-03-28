@@ -1,13 +1,12 @@
 #include "Direction.h"
-#include <stdio.h>
 #include <math.h>
 
 #if !defined M_PI
-  #define M_PI 3.14159265358979
+#define M_PI 3.14159265358979
 #endif
 
-char opposite_direction(char c){
-  switch(c){
+char opposite_direction(char c) {
+  switch (c) {
     case 'N':
       return 'S';
     case 'E':
@@ -22,7 +21,7 @@ char opposite_direction(char c){
 }
 
 Direction left_of_dir(Direction dir) {
-  switch(dir){
+  switch (dir) {
     case Direction::N:
       return Direction::W;
     case Direction::E:
@@ -37,7 +36,7 @@ Direction left_of_dir(Direction dir) {
 }
 
 Direction right_of_dir(Direction dir) {
-  switch(dir){
+  switch (dir) {
     case Direction::N:
       return Direction::E;
     case Direction::E:
@@ -51,8 +50,8 @@ Direction right_of_dir(Direction dir) {
   }
 }
 
-Direction operator--(Direction& dir, int) {
-  switch(dir){
+Direction operator--(Direction &dir, int) {
+  switch (dir) {
     case Direction::N:
       dir = Direction::W;
       break;
@@ -73,8 +72,8 @@ Direction operator--(Direction& dir, int) {
   return dir;
 }
 
-Direction operator++(Direction& dir, int) {
-  switch(dir){
+Direction operator++(Direction &dir, int) {
+  switch (dir) {
     case Direction::N:
       dir = Direction::E;
       break;
@@ -93,18 +92,23 @@ Direction operator++(Direction& dir, int) {
   return dir;
 }
 
-double toYaw(Direction d){
-  switch(d){
-    case Direction::N: return M_PI/2;
-    case Direction::E: return 0;
-    case Direction::S: return -M_PI/2;
-    case Direction::W: return M_PI;
-    default: return -999;
+double toYaw(Direction d) {
+  switch (d) {
+    case Direction::N:
+      return M_PI / 2;
+    case Direction::E:
+      return 0;
+    case Direction::S:
+      return -M_PI / 2;
+    case Direction::W:
+      return M_PI;
+    default:
+      return -999;
   }
 }
 
-Direction opposite_direction(Direction d){
-  switch(d){
+Direction opposite_direction(Direction d) {
+  switch (d) {
     case Direction::N:
       return Direction::S;
     case Direction::E:
@@ -118,23 +122,33 @@ Direction opposite_direction(Direction d){
   }
 }
 
-char dir_to_char(Direction dir){
-  switch(dir){
-    case Direction::N: return 'N';
-    case Direction::S: return 'S';
-    case Direction::E: return 'E';
-    case Direction::W: return 'W';
-    default: return '\0';
+char dir_to_char(Direction dir) {
+  switch (dir) {
+    case Direction::N:
+      return 'N';
+    case Direction::S:
+      return 'S';
+    case Direction::E:
+      return 'E';
+    case Direction::W:
+      return 'W';
+    default:
+      return '\0';
   }
 }
 
-Direction char_to_dir(char c){
-  switch(c) {
-    case 'N': return Direction::N;
-    case 'S': return Direction::S;
-    case 'E': return Direction::E;
-    case 'W': return Direction::W;
-    default: return Direction::INVALID;
+Direction char_to_dir(char c) {
+  switch (c) {
+    case 'N':
+      return Direction::N;
+    case 'S':
+      return Direction::S;
+    case 'E':
+      return Direction::E;
+    case 'W':
+      return Direction::W;
+    default:
+      return Direction::INVALID;
   }
 }
 

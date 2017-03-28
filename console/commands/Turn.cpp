@@ -1,24 +1,25 @@
 #ifdef CONSOLE
+
 #include "Turn.h"
-#include <stdio.h>
 #include "ConsoleMouse.h"
 
 Turn::Turn(Direction dir) : mouse(ConsoleMouse::inst()), dir(dir) {}
 
-void Turn::initialize(){
+void Turn::initialize() {
   mouse->internalTurnToFace(dir);
-	if (!mouse->inBounds()){
+  if (!mouse->inBounds()) {
     //this is probably the most serious error possible
     //it means you've run into a wall. Just give up.
     printf("RAN INTO A WALL\n");
-	}
+  }
 }
 
-void Turn::execute(){}
+void Turn::execute() {}
 
-bool Turn::isFinished(){
+bool Turn::isFinished() {
   return true;
 }
 
-void Turn::end(){}
+void Turn::end() {}
+
 #endif
