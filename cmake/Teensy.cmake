@@ -23,50 +23,12 @@
 
 set(TY_EXECUTABLE "/usr/bin/tyc" CACHE FILEPATH "Path to the 'ty' executable that can upload programs to the Teensy")
 
-set(TEENSY_C_CORE_FILES
-    ${TEENSY_ROOT}/math_helper.c
-    ${TEENSY_ROOT}/analog.c
-    ${TEENSY_ROOT}/serial1.c
-    ${TEENSY_ROOT}/serial2.c
-    ${TEENSY_ROOT}/serial3.c
-    ${TEENSY_ROOT}/usb_mem.c
-    ${TEENSY_ROOT}/usb_dev.c
-    ${TEENSY_ROOT}/usb_midi.c
-    ${TEENSY_ROOT}/usb_mouse.c
-    ${TEENSY_ROOT}/usb_desc.c
-    ${TEENSY_ROOT}/usb_keyboard.c
-    ${TEENSY_ROOT}/usb_joystick.c
-    ${TEENSY_ROOT}/usb_rawhid.c
-    ${TEENSY_ROOT}/usb_seremu.c
-    ${TEENSY_ROOT}/usb_serial.c
-    ${TEENSY_ROOT}/mk20dx128.c
-    ${TEENSY_ROOT}/touch.c
-    ${TEENSY_ROOT}/pins_teensy.c
-    ${TEENSY_ROOT}/keylayouts.c
-    ${TEENSY_ROOT}/nonstd.c
-    ${TEENSY_ROOT}/eeprom.c
+file(GLOB_RECURSE TEENSY_C_CORE_FILES
+    ${TEENSY_ROOT}/*.c
 )
 
-set(TEENSY_CXX_CORE_FILES
-    ${TEENSY_ROOT}/main.cpp
-    ${TEENSY_ROOT}/usb_inst.cpp
-    ${TEENSY_ROOT}/yield.cpp
-    ${TEENSY_ROOT}/HardwareSerial1.cpp
-    ${TEENSY_ROOT}/HardwareSerial2.cpp
-    ${TEENSY_ROOT}/HardwareSerial3.cpp
-    ${TEENSY_ROOT}/WMath.cpp
-    ${TEENSY_ROOT}/Print.cpp
-
-    ${TEENSY_ROOT}/new.cpp
-    ${TEENSY_ROOT}/usb_flightsim.cpp
-    ${TEENSY_ROOT}/avr_emulation.cpp
-    ${TEENSY_ROOT}/IPAddress.cpp
-    ${TEENSY_ROOT}/Stream.cpp
-    ${TEENSY_ROOT}/Tone.cpp
-    ${TEENSY_ROOT}/IntervalTimer.cpp
-    ${TEENSY_ROOT}/DMAChannel.cpp
-    ${TEENSY_ROOT}/AudioStream.cpp
-    ${TEENSY_ROOT}/WString.cpp
+file(GLOB_RECURSE TEENSY_CXX_CORE_FILES
+    ${TEENSY_ROOT}/*.cpp
 )
 
 macro(add_teensy_executable TARGET_NAME)

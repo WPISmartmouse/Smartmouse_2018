@@ -28,11 +28,11 @@ set(ARDUINO_LIB_ROOT "${ARDUINO_ROOT}/hardware/teensy/avr/libraries" CACHE PATH 
 set(TEENSY_ROOT "${TEENSY_CORES_ROOT}/teensy3")
 set(TOOLCHAIN_ROOT "${ARDUINO_ROOT}/hardware/tools/arm")
 set(ARDUINO_VERSION "108" CACHE STRING "Version of the Arduino SDK")
-set(TEENSYDUINO_VERSION "120" CACHE STRING "Version of the Teensyduino SDK")
-set(TEENSY_MODEL "MK20DX256") # XXX Add Teensy 3.0 support.
+set(TEENSYDUINO_VERSION "135" CACHE STRING "Version of the Teensyduino SDK")
+set(TEENSY_MODEL "MK66FX1M0") # XXX Add Teensy 3.0 support.
 
-set(TEENSY_FREQUENCY "96" CACHE STRING "Frequency of the Teensy MCU (Mhz)")
-set_property(CACHE TEENSY_FREQUENCY PROPERTY STRINGS 96 72 48 24 16 8 4 2)
+set(TEENSY_FREQUENCY "180" CACHE STRING "Frequency of the Teensy MCU (Mhz)")
+set_property(CACHE TEENSY_FREQUENCY PROPERTY STRINGS 180 96 72 48 24 16 8 4 2)
 
 set(TEENSY_USB_MODE "SERIAL" CACHE STRING "What kind of USB device the Teensy should emulate")
 set_property(CACHE TEENSY_USB_MODE PROPERTY STRINGS SERIAL HID SERIAL_HID MIDI RAWHID FLIGHTSIM)
