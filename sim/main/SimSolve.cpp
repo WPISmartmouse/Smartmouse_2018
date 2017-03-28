@@ -25,7 +25,7 @@ int main(int argc, char* argv[]) {
     node->Subscribe("~/world_stats", &SimTimer::simTimeCallback);
 
   gazebo::transport::SubscriberPtr poseSub =
-          node->Subscribe("~/mouse/state", &SimMouse::poseCallback, SimMouse::inst());
+          node->Subscribe("~/mouse/state", &SimMouse::robotStateCallback, SimMouse::inst());
 
   SimMouse::inst()->controlPub = node->Advertise<gazebo::msgs::JointCmd>("~/mouse/joint_cmd");
   SimMouse::inst()->indicatorPub = node->Advertise<gazebo::msgs::Visual>("~/visual", AbstractMaze::MAZE_SIZE *

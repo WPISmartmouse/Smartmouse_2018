@@ -1,7 +1,6 @@
 #include <sstream>
 #include <cmath>
 #include <boost/algorithm/string/replace.hpp>
-#include <AbstractMaze.h>
 #include "StateViz.hh"
 #include "RegenerateWidget.hh"
 #include "SensorViz.hh"
@@ -11,11 +10,12 @@ using namespace gazebo;
 // Register this plugin with the simulator
 GZ_REGISTER_GUI_PLUGIN(StateViz)
 
-StateViz::StateViz() : GUIPlugin(), left_accumulator(0), right_accumulator(0), topic("/delete_plot") {
+StateViz::StateViz() : GUIPlugin(), topic("/delete_plot") {
 
   this->node = transport::NodePtr(new transport::Node());
   this->node->Init();
   this->state_sub = this->node->Subscribe("~/mouse/state", &StateViz::StateCallback, this);
+  this->maze_loc_sub = this->node->Subscribe("~/maze_location", &StateViz::MazeLocationCallback, this);
 
   this->pub = this->ign_node.Advertise<ignition::msgs::Empty>(this->topic);
   if (! pub) {
@@ -27,6 +27,7 @@ StateViz::StateViz() : GUIPlugin(), left_accumulator(0), right_accumulator(0), t
   QHBoxLayout *right_wheel_vel_layout= new QHBoxLayout();
   QHBoxLayout *row_layout = new QHBoxLayout();
   QHBoxLayout *col_layout = new QHBoxLayout();
+  QHBoxLayout *dir_layout = new QHBoxLayout();
 
   left_wheel_velocity_label = new QLabel(tr("left wheel velocity:"));
   right_wheel_velocity_label = new QLabel(tr("right wheel velocity:"));
@@ -37,6 +38,9 @@ StateViz::StateViz() : GUIPlugin(), left_accumulator(0), right_accumulator(0), t
   right_wheel_velocity_edit = new QLineEdit(tr("0.000 m/sec"));
   row_edit = new QLineEdit(tr("0"));
   col_edit = new QLineEdit(tr("0"));
+
+  dir_label= new QLabel(tr("Direction:"));
+  dir_edit= new QLineEdit(tr("N"));
 
   QPushButton *clear_plot_button = new QPushButton(tr("Clear Robot Trace"));
   clear_plot_button->setStyleSheet("padding: 0px;");
@@ -50,6 +54,8 @@ StateViz::StateViz() : GUIPlugin(), left_accumulator(0), right_accumulator(0), t
           SLOT(setText(QString)), Qt::QueuedConnection);
   connect(this, SIGNAL(SetCol(QString)), this->col_edit,
           SLOT(setText(QString)), Qt::QueuedConnection);
+  connect(this, SIGNAL(SetDir(QString)), this->dir_edit,
+          SLOT(setText(QString)), Qt::QueuedConnection);
 
   left_wheel_vel_layout->addWidget(left_wheel_velocity_label);
   left_wheel_vel_layout->addWidget(left_wheel_velocity_edit);
@@ -59,10 +65,13 @@ StateViz::StateViz() : GUIPlugin(), left_accumulator(0), right_accumulator(0), t
   row_layout->addWidget(row_edit);
   col_layout->addWidget(col_label);
   col_layout->addWidget(col_edit);
+  dir_layout->addWidget(dir_label);
+  dir_layout->addWidget(dir_edit);
   main_layout->addLayout(left_wheel_vel_layout);
   main_layout->addLayout(right_wheel_vel_layout);
   main_layout->addLayout(row_layout);
   main_layout->addLayout(col_layout);
+  main_layout->addLayout(dir_layout);
   main_layout->addWidget(clear_plot_button);
 
   QPalette pal = palette();
@@ -81,40 +90,30 @@ StateViz::~StateViz() {
 }
 
 void StateViz::StateCallback(ConstRobotStatePtr &msg) {
-  constexpr double WHEEL_RAD = 0.015;
-  constexpr double WHEEL_CIRC = 2 * WHEEL_RAD * M_PI;
-
-  double smooth_left_vel = (0.9 * left_accumulator + 0.1 * msg->left_wheel_velocity()) * WHEEL_CIRC / (2 * M_PI);
-  double smooth_right_vel = (0.9 * right_accumulator + 0.1 * msg->right_wheel_velocity()) * WHEEL_CIRC / (2 * M_PI);
-
   char left_wheel_velocity_str[11];
-  snprintf(left_wheel_velocity_str, 11, "%2.2f mm/s", (1000 * smooth_left_vel));
+  snprintf(left_wheel_velocity_str, 11, "%2.2f mm/s", (1000 * msg->left_wheel_velocity_mps()));
 
   char right_wheel_velocity_str[11];
-  snprintf(right_wheel_velocity_str, 11, "%2.2f mm/s", (1000 * smooth_right_vel));
+  snprintf(right_wheel_velocity_str, 11, "%2.2f mm/s", (1000 * msg->right_wheel_velocity_mps()));
 
   gazebo::msgs::Pose pose = msg->pose();
-
-  // compute x and y with respect to the top left square
-  double x = pose.position().x() + AbstractMaze::UNIT_DIST * 8;
-  double y = -pose.position().y() + AbstractMaze::UNIT_DIST * 8;
-
-  int row = (int) (y / (AbstractMaze::UNIT_DIST));
-  int col = (int) (x / (AbstractMaze::UNIT_DIST));
-  double row_offset = fmod(y, AbstractMaze::UNIT_DIST) - AbstractMaze::HALF_UNIT_DIST;
-  double col_offset = fmod(x, AbstractMaze::UNIT_DIST) - AbstractMaze::HALF_UNIT_DIST;
-
-  char row_str[14];
-  snprintf(row_str, 14, "%i (%0.3f m)", row, row_offset);
-  char col_str[14];
-  snprintf(col_str, 14, "%i (%0.3f m)", col, col_offset);
-  this->SetRow(row_str);
-  this->SetCol(col_str);
 
   this->last_pose = pose;
 
   this->SetLeftVelocity(left_wheel_velocity_str);
   this->SetRightVelocity(right_wheel_velocity_str);
+}
+
+
+void StateViz::MazeLocationCallback(ConstMazeLocationPtr &msg) {
+  // compute x and y with respect to the top left square
+  char row_str[14];
+  snprintf(row_str, 14, "%i (%0.3f m)", msg->row(), msg->row_offset());
+  char col_str[14];
+  snprintf(col_str, 14, "%i (%0.3f m)", msg->col(), msg->col_offset());
+  this->SetRow(row_str);
+  this->SetCol(col_str);
+  this->SetDir(QString::fromStdString(msg->dir()));
 }
 
 void StateViz::ClearRobotTrace() {

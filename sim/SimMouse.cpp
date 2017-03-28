@@ -85,7 +85,7 @@ void SimMouse::indicatePath(int row, int col, std::string path, gazebo::common::
   publishIndicators();
 }
 
-void SimMouse::poseCallback(ConstRobotStatePtr &msg){
+void SimMouse::robotStateCallback(ConstRobotStatePtr &msg){
   pose.Pos().X(msg->pose().position().x());
   pose.Pos().Y(msg->pose().position().y());
   pose.Pos().Z(msg->pose().position().z());
@@ -95,8 +95,19 @@ void SimMouse::poseCallback(ConstRobotStatePtr &msg){
   pose.Rot().Z(msg->pose().orientation().z());
   pose.Rot().W(msg->pose().orientation().w());
 
-  this->left_wheel_velocity = msg->left_wheel_velocity();
-  this->right_wheel_velocity = msg->right_wheel_velocity();
+  double x = pose.Pos().X() + AbstractMaze::UNIT_DIST * 8;
+  double y = -pose.Pos().Y() + AbstractMaze::UNIT_DIST * 8;
+
+  computed_row = (int) (y / AbstractMaze::UNIT_DIST);
+  computed_col = (int) (x / AbstractMaze::UNIT_DIST);
+  row_offset_to_edge = fmod(y, AbstractMaze::UNIT_DIST);
+  col_offset_to_edge = fmod(x, AbstractMaze::UNIT_DIST);
+
+  this->left_wheel_velocity = msg->left_wheel_velocity_mps();
+  this->right_wheel_velocity = msg->right_wheel_velocity_mps();
+
+  this->left_wheel_angle = msg->left_wheel_angle_radians();
+  this->right_wheel_angle = msg->right_wheel_angle_radians();
 
   //transform from Mouse frame to Cardinal frame;
   this->range_data.left_analog = msg->left_analog();
@@ -179,20 +190,29 @@ void SimMouse::setSpeed(double left_wheel_velocity_setpoint_mps, double right_wh
   static double left_wheel_velocity_mps;
   static double right_wheel_velocity_mps;
 
+  double left_acc = FWD_ACCELERATION;
+  double right_acc = FWD_ACCELERATION;
+  if (left_wheel_velocity_setpoint_mps == 0) {
+    left_acc = STOP_ACCELERATION;
+  }
+  if (right_wheel_velocity_setpoint_mps == 0) {
+    right_acc = STOP_ACCELERATION;
+  }
+
   if (right_wheel_velocity_mps < right_wheel_velocity_setpoint_mps) {
-    right_wheel_velocity_mps = std::min(right_wheel_velocity_mps + ACCELERATION, right_wheel_velocity_setpoint_mps);
+    right_wheel_velocity_mps = std::min(right_wheel_velocity_mps + right_acc, right_wheel_velocity_setpoint_mps);
   } else if (right_wheel_velocity_mps > right_wheel_velocity_setpoint_mps) {
-    right_wheel_velocity_mps = std::max(right_wheel_velocity_mps - ACCELERATION, right_wheel_velocity_setpoint_mps);
+    right_wheel_velocity_mps = std::max(right_wheel_velocity_mps - right_acc, right_wheel_velocity_setpoint_mps);
   }
 
   if (left_wheel_velocity_mps < left_wheel_velocity_setpoint_mps) {
-    left_wheel_velocity_mps = std::min(left_wheel_velocity_mps + ACCELERATION, left_wheel_velocity_setpoint_mps);
+    left_wheel_velocity_mps = std::min(left_wheel_velocity_mps + left_acc, left_wheel_velocity_setpoint_mps);
   } else if (left_wheel_velocity_mps > left_wheel_velocity_setpoint_mps) {
-    left_wheel_velocity_mps = std::max(left_wheel_velocity_mps - ACCELERATION, left_wheel_velocity_setpoint_mps);
+    left_wheel_velocity_mps = std::max(left_wheel_velocity_mps - left_acc, left_wheel_velocity_setpoint_mps);
   }
 
-  double left_wheel_velocity = left_wheel_velocity_mps * (2 * M_PI) / WHEEL_CIRC;
-  double right_wheel_velocity = right_wheel_velocity_mps * (2 * M_PI) / WHEEL_CIRC;
+  double left_wheel_velocity = metersPerSecToRadPerSec(left_wheel_velocity_mps);
+  double right_wheel_velocity = metersPerSecToRadPerSec(right_wheel_velocity_mps);
 
   gazebo::msgs::JointCmd left;
 	left.set_name("mouse::left_wheel_joint");
@@ -236,9 +256,42 @@ ignition::math::Pose3d SimMouse::getExactPose(){
   return pose;
 }
 
+double SimMouse::metersPerSecToRadPerSec(double x) {
+  return x / WHEEL_CIRC * (2 * M_PI);
+}
+
+double SimMouse::radPerSecToMetersPerSec(double x) {
+  return (x / (2 * M_PI)) * WHEEL_CIRC;
+}
+
 std::pair<double, double> SimMouse::getWheelVelocities() {
   std::pair<double, double> pair;
-  pair.first = this->left_wheel_velocity;
-  pair.second = this->right_wheel_velocity;
+  pair.first = radPerSecToMetersPerSec(this->left_wheel_velocity);
+  pair.second = radPerSecToMetersPerSec(this->right_wheel_velocity);
+  return pair;
+}
+
+int SimMouse::getComputedCol() {
+  std::unique_lock<std::mutex> lk(dataMutex);
+  dataCond.wait(lk);
+  return  this->computed_col;
+}
+
+int SimMouse::getComputedRow() {
+  std::unique_lock<std::mutex> lk(dataMutex);
+  dataCond.wait(lk);
+  return  this->computed_row;
+}
+
+double SimMouse::getRowOffsetToEdge() {
+  std::unique_lock<std::mutex> lk(dataMutex);
+  dataCond.wait(lk);
+  return  this->row_offset_to_edge;
+}
+
+double SimMouse::getColOffsetToEdge() {
+  std::unique_lock<std::mutex> lk(dataMutex);
+  dataCond.wait(lk);
+  return  this->col_offset_to_edge;
 }
 #endif

@@ -30,8 +30,10 @@ private:
   event::ConnectionPtr updateConn;
   transport::NodePtr node;
   transport::PublisherPtr state_pub;
-  float left_analog;
-  float right_analog;
+  double left_accumulator;
+  double right_accumulator;
+  double left_analog;
+  double right_analog;
   bool left_binary;
   bool right_binary;
   bool front_binary;

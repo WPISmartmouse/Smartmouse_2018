@@ -15,6 +15,9 @@
 
 class SimMouse : public Mouse {
 public:
+  static double radPerSecToMetersPerSec(double x);
+  static double metersPerSecToRadPerSec(double x);
+
   constexpr static double ANALOG_ANGLE = 1.35255; // radians
   constexpr static double BINARY_ANGLE = 0.65; // radians
   constexpr static double LEFT_BINARY_THRESHOLD = 0.18; // meters
@@ -38,11 +41,13 @@ public:
   gazebo::transport::PublisherPtr controlPub;
   gazebo::transport::PublisherPtr indicatorPub;
 
-  void poseCallback(ConstRobotStatePtr &msg);
+  void robotStateCallback(ConstRobotStatePtr &msg);
 
   static constexpr double MAX_SPEED = 0.18; // m/sec
-  static constexpr double MIN_SPEED = 0.02; // m/sec
-  static constexpr double ACCELERATION = 0.002; // m/iteration^2
+  static constexpr double MIN_SPEED = 0.01; // m/sec
+  static constexpr double FWD_ACCELERATION = 0.002; // m/iteration^2
+  static constexpr double STOP_ACCELERATION = 0.01; // m/iteration^2
+  static constexpr double TRACK_WIDTH = 0.0626; // m
   static constexpr double WALL_DIST = 0.115;
   static constexpr double WHEEL_RAD = 0.015;
   static constexpr double WHEEL_CIRC = 2 * WHEEL_RAD * M_PI;
@@ -52,9 +57,6 @@ public:
   static const gazebo::common::Color blue_color;
   static const gazebo::common::Color black_color;
   static const gazebo::common::Color grey_color;
-
-  double left_wheel_velocity;
-  double right_wheel_velocity;
 
   static SimMouse *inst();
 
@@ -67,6 +69,11 @@ public:
   ignition::math::Pose3d getExactPose();
 
   Pose getEstimatedPose();
+
+  double getRowOffsetToEdge();
+  double getColOffsetToEdge();
+  int getComputedRow();
+  int getComputedCol();
 
   std::pair<double, double> getWheelVelocities();
 
@@ -96,7 +103,7 @@ private:
 
   gazebo::transport::SubscriberPtr regen_sub;
 
-  const double kP = 0.001;
+  const double kP = 0.002;
   const double kI = 0.000;
   const double kD = 0.000;
 
@@ -108,6 +115,16 @@ private:
   bool suggestedWalls[4];
   bool hasSuggestion;
   RangeData range_data;
+
+  double left_wheel_velocity;
+  double right_wheel_velocity;
+  double left_wheel_angle;
+  double right_wheel_angle;
+  double row_offset_to_edge;
+  double col_offset_to_edge;
+  int computed_row;
+  int computed_col;
+
 
   gazebo::msgs::Visual *indicators[AbstractMaze::MAZE_SIZE][AbstractMaze::MAZE_SIZE];
 };

@@ -8,6 +8,7 @@
 
 class Stop : public Command {
   public:
+    Stop(unsigned long stop_time);
     Stop();
     void initialize();
     void execute();

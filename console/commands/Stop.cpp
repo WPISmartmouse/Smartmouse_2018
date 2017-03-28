@@ -3,6 +3,7 @@
 #include "Stop.h"
 
 Stop::Stop() : mouse(ConsoleMouse::inst()) {}
+Stop::Stop(unsigned long stop_time) : mouse(ConsoleMouse::inst()) {}
 
 void Stop::initialize(){
 }

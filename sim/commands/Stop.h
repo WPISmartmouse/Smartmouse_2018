@@ -8,14 +8,23 @@
 #include "Mouse.h"
 
 class Stop : public Command {
-  public:
-    Stop();
-    void initialize();
-    void execute();
-    bool isFinished();
-    void end();
+public:
+  Stop();
 
-  private:
-    SimMouse *mouse;
+  Stop(unsigned long stop_time);
+
+  void initialize();
+
+  void execute();
+
+  bool isFinished();
+
+  void end();
+
+private:
+  SimMouse *mouse;
+  double initial_velocity;
+  unsigned long stop_time_ms = 500;
 };
+
 #endif

@@ -7,22 +7,6 @@
 #include <SimTimer.h>
 #include <joystick/joystick.hh>
 
-typedef const boost::shared_ptr<const gzmaze::msgs::RobotState> RobotStatePtr;
-
-void stateCallback(RobotStatePtr &msg) {
-  // radians/sec
-  double l = msg->left_wheel_velocity();
-  double r = msg->right_wheel_velocity();
-  double lmps = l / (2 * M_PI) * SimMouse::WHEEL_CIRC;
-  double rmps = r / (2 * M_PI) * SimMouse::WHEEL_CIRC;
-
-  double x = msg->pose().position().x();
-  double y = msg->pose().position().y();
-  ignition::math::Quaterniond q = gazebo::msgs::ConvertIgn(msg->pose().orientation());
-  const double yaw = q.Yaw();
-
-}
-
 int main(int argc, char **argv) {
   // Load gazebo
   printf("Waiting for gazebo...\r\n");
@@ -42,9 +26,6 @@ int main(int argc, char **argv) {
 
   gazebo::transport::SubscriberPtr timeSub =
     node->Subscribe("~/world_stats", &SimTimer::simTimeCallback);
-
-  gazebo::transport::SubscriberPtr stateSub =
-    node->Subscribe("~/mouse/state", &stateCallback);
 
   gazebo::transport::PublisherPtr controlPub;
   controlPub = node->Advertise<gazebo::msgs::JointCmd>("~/mouse/joint_cmd");
@@ -107,8 +88,8 @@ int main(int argc, char **argv) {
         lspeed = std::max(lspeed - acc, lspeed_setpoint);
       }
 
-      double lrps = lspeed * (2 * M_PI) / SimMouse::WHEEL_CIRC;
-      double rrps = rspeed * (2 * M_PI) / SimMouse::WHEEL_CIRC;
+      double lrps = SimMouse::metersPerSecToRadPerSec(lspeed);
+      double rrps = SimMouse::metersPerSecToRadPerSec(rspeed);
 
       gazebo::msgs::JointCmd left;
       left.set_name("mouse::left_wheel_joint");

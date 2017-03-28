@@ -1,20 +1,19 @@
 #ifdef SIM
 
 #include <SimMouse.h>
-#include "Forward.h"
+#include "ForwardToCenter.h"
 
-Forward::Forward() : mouse(SimMouse::inst()), checkedWalls(false), wallOnLeft(true), wallOnRight(true) {}
+ForwardToCenter::ForwardToCenter() : mouse(SimMouse::inst()), checkedWalls(false), wallOnLeft(true), wallOnRight(true) {}
 
-
-
-void Forward::initialize() {
+void ForwardToCenter::initialize() {
 //  mouse->resetIndicators(SimMouse::red_color);
 //  mouse->indicatePath(mouse->getRow(), mouse->getCol(), mouse->maze->pathToNextGoal, SimMouse::red_color);
   start = mouse->getExactPose();
-  follower.goalDisp = WallFollower::dispToEdge(mouse);
+  follower.goalDisp = WallFollower::dispToCenter(mouse);
+  printf("%f\n", follower.goalDisp);
 }
 
-void Forward::execute() {
+void ForwardToCenter::execute() {
   range_data = mouse->getRangeData();
 
 //  if (range_data.front_binary) {
@@ -26,8 +25,9 @@ void Forward::execute() {
 
   double l, r;
   std::tie(l, r) = follower.compute_wheel_velocities(this->mouse, start, range_data);
-
-  mouse->setSpeed(l ,r);
+  l -= follower.dispError * kDisp;
+  r -= follower.dispError * kDisp;
+  mouse->setSpeed(l, r);
 
   if (!checkedWalls && follower.dispError < AbstractMaze::HALF_UNIT_DIST) {
     checkedWalls = true;
@@ -38,14 +38,14 @@ void Forward::execute() {
   }
 }
 
-bool Forward::isFinished() {
+bool ForwardToCenter::isFinished() {
+  printf("%f\n", follower.dispError);
   return follower.dispError <= 0;
 }
 
-void Forward::end() {
+void ForwardToCenter::end() {
 //  mouse->resetIndicators(SimMouse::grey_color);
 //  mouse->indicatePath(0, 0, mouse->maze->fastest_theoretical_route, SimMouse::blue_color);
-
   walls[static_cast<int>(mouse->getDir())] = range_data.front_binary;
   walls[static_cast<int>(opposite_direction(mouse->getDir()))] = false;
 

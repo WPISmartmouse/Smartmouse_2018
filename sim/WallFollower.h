@@ -12,7 +12,9 @@ public:
 
   static double forwardDisplacement(Direction dir, ignition::math::Pose3d start_pose, ignition::math::Pose3d end_pose);
 
-  static double dispToEdge(Direction dir, ignition::math::Pose3d current_pose);
+  static double dispToEdge(SimMouse *mouse);
+
+  static double dispToCenter(SimMouse *mouse);
 
   static double yawDiff(double y1, double y2);
 
@@ -25,8 +27,8 @@ public:
   double angleError;
   double dToWallLeft;
   double dToWallRight;
-  const float kPWall = 4;
-  const float FORWARD_SPEED = 4.0;
+  const double kPWall = 2;
+  const double kDWall = 0;
 };
 
 #endif

@@ -7,8 +7,11 @@
 
 GZ_REGISTER_MODEL_PLUGIN(MousePlugin)
 
+
 void MousePlugin::Load(physics::ModelPtr model, sdf::ElementPtr sdf) {
   this->model = model;
+  this->left_accumulator = 0;
+  this->right_accumulator = 0;
 
   body = model->GetLink(sdf->Get<std::string>("body"));
   right_wheel = this->model->GetJoint("right_wheel_joint");
@@ -101,24 +104,32 @@ void MousePlugin::PublishInfo() {
   pose->set_allocated_position(pos);
   pose->set_allocated_orientation(rot);
 
-  float left_vel = 0;
-  float right_vel = 0;
+  float left_vel_rps = 0;
+  float right_vel_rps = 0;
   float left_angle = 0;
   float right_angle = 0;
   if (this->left_wheel && this->right_wheel) {
-    left_vel = this->left_wheel->GetVelocity(0);
-    right_vel = this->right_wheel->GetVelocity(0);
+    left_vel_rps = this->left_wheel->GetVelocity(0);
+    right_vel_rps = this->right_wheel->GetVelocity(0);
     left_angle = this->left_wheel->GetAngle(0).Radian();
     right_angle = this->right_wheel->GetAngle(0).Radian();
   }
 
+  double left_vel_mps = SimMouse::radPerSecToMetersPerSec(left_vel_rps);
+  double right_vel_mps = SimMouse::radPerSecToMetersPerSec(right_vel_rps);
+
+  double smooth_left_vel_mps = (0.8 * left_accumulator + 0.2 * left_vel_mps);
+  double smooth_right_vel_mps = (0.8 * right_accumulator + 0.2 * right_vel_mps);
+
+  left_accumulator = smooth_left_vel_mps;
+  right_accumulator = smooth_right_vel_mps;
 
   gzmaze::msgs::RobotState state;
   state.set_allocated_pose(pose);
-  state.set_left_wheel_velocity(left_vel);
-  state.set_right_wheel_velocity(right_vel);
-  state.set_left_wheel_angle(left_angle);
-  state.set_right_wheel_angle(right_angle);
+  state.set_left_wheel_velocity_mps(smooth_left_vel_mps);
+  state.set_right_wheel_velocity_mps(smooth_right_vel_mps);
+  state.set_left_wheel_angle_radians(left_angle);
+  state.set_right_wheel_angle_radians(right_angle);
   state.set_left_analog(this->left_analog);
   state.set_right_analog(this->right_analog);
   state.set_left_binary(this->left_binary);

@@ -27,7 +27,8 @@ set(CMAKE_CXX_FLAGS "${GAZEBO_CXX_FLAGS} ${CMAKE_CXX_FLAGS} -fPIC -DSIM -fext-nu
 # build the custom protobuf msgs
 ##################################
 set(msgs
-  ./msgs/state.proto)
+  ./msgs/state.proto
+  ./msgs/maze_location.proto)
 
 PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS ${msgs})
 add_library(gzmaze_msgs SHARED ${PROTO_SRCS})
@@ -59,7 +60,7 @@ add_custom_target(gazebo_pch DEPENDS ${pch_out})
 # build the gazebo plugins
 ##################################
 add_library(mouse_plugin SHARED MousePlugin.cc)
-target_link_libraries(mouse_plugin gzmaze_msgs ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(mouse_plugin sim gzmaze_msgs ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 set_target_properties(mouse_plugin PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh")
 add_dependencies(mouse_plugin gazebo_pch)
 

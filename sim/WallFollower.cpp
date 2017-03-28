@@ -19,9 +19,10 @@ WallFollower::compute_wheel_velocities(SimMouse* mouse, ignition::math::Pose3d s
                           + sin(angleError) * SimMouse::SIDE_ANALOG_X
                           + cos(angleError) * -SimMouse::SIDE_ANALOG_Y);
 
+
   dispError = goalDisp - disp;
-  double l = FORWARD_SPEED;
-  double r = FORWARD_SPEED;
+  double l = SimMouse::MAX_SPEED;
+  double r = SimMouse::MAX_SPEED;
 
   l = l > SimMouse::MAX_SPEED ? SimMouse::MAX_SPEED : l;
   r = r > SimMouse::MAX_SPEED ? SimMouse::MAX_SPEED : r;
@@ -31,17 +32,19 @@ WallFollower::compute_wheel_velocities(SimMouse* mouse, ignition::math::Pose3d s
 
   double leftWallError = fabs(AbstractMaze::HALF_INNER_UNIT_DIST - dToWallLeft);
   double rightWallError = fabs(AbstractMaze::HALF_INNER_UNIT_DIST - dToWallRight);
+  double dLeftWallError = leftWallError - lastLeftWallError;
+  double dLeftWallError = rightWallError - lastRightWallError;
 
-  if (dToWallLeft < AbstractMaze::HALF_INNER_UNIT_DIST) {
-    double correction = leftWallError * kPWall;
+  if (dToWallLeft < SimMouse::WALL_DIST) {
+    double correction = leftWallError * kPWall + dLeftWallError * kDWall;
     r -= correction;
-  } else if (dToWallRight < AbstractMaze::HALF_INNER_UNIT_DIST) {
-    double correction = rightWallError * kPWall;
+  } else if (dToWallRight < SimMouse::WALL_DIST) {
+    double correction = rightWallError * kPWall + dRightWallError * kDWall;;
     l -= correction;
-  } else if (dToWallLeft > AbstractMaze::HALF_INNER_UNIT_DIST) {
+  } else if (dToWallLeft > AbstractMaze::HALF_INNER_UNIT_DIST && dToWallLeft < SimMouse::WALL_DIST) {
     double correction = leftWallError * kPWall;
     l -= correction;
-  } else if (dToWallRight > AbstractMaze::HALF_INNER_UNIT_DIST) {
+  } else if (dToWallRight > AbstractMaze::HALF_INNER_UNIT_DIST && dToWallRight < SimMouse::WALL_DIST) {
     double correction = rightWallError * kPWall;
     r -= correction;
   }
@@ -69,11 +72,10 @@ double WallFollower::yawDiff(double y1, double y2) {
   return diff;
 }
 
-double WallFollower::dispToEdge(Direction dir, ignition::math::Pose3d current_pose) {
-  double x = current_pose.Pos().X() + AbstractMaze::UNIT_DIST * 8;
-  double y = -current_pose.Pos().Y() + AbstractMaze::UNIT_DIST * 8;
-  double row_offset = fmod(y, AbstractMaze::UNIT_DIST);
-  double col_offset = fmod(x, AbstractMaze::UNIT_DIST);
+double WallFollower::dispToEdge(SimMouse *mouse) {
+  double row_offset = mouse->getRowOffsetToEdge();
+  double col_offset = mouse->getColOffsetToEdge();
+  Direction dir = mouse->getDir();
 
   switch (dir) {
     case Direction::N:
@@ -86,4 +88,24 @@ double WallFollower::dispToEdge(Direction dir, ignition::math::Pose3d current_po
       return col_offset;
   }
 }
+
+double WallFollower::dispToCenter(SimMouse *mouse) {
+  // TODO: Should be HALF_UNIT_DIST but this is just a hack to prevent it from going too far
+  // TODO: this can be removed when we do proper ArcTurn stuff
+  double row_offset_to_center = AbstractMaze::HALF_UNIT_DIST - mouse->getRowOffsetToEdge();
+  double col_offset_to_center = AbstractMaze::HALF_UNIT_DIST - mouse->getColOffsetToEdge();
+  Direction dir = mouse->getDir();
+
+  switch (dir) {
+    case Direction::S:
+      return AbstractMaze::UNIT_DIST - row_offset_to_center;
+    case Direction::N:
+      return row_offset_to_center;
+    case Direction::W:
+      return AbstractMaze::UNIT_DIST -  col_offset_to_center;
+    case Direction::E:
+      return col_offset_to_center;
+  }
+}
+
 #endif

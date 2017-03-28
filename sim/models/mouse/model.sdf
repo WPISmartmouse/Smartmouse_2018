@@ -210,8 +210,8 @@
         <surface>
           <friction>
             <ode>
-              <mu>0.08</mu>
-              <mu2>0.16</mu2>
+              <mu>0.16</mu>
+              <mu2>0.24</mu2>
               <fdir1>0 0 1</fdir1>
               <slip1>0</slip1>
               <slip2>0</slip2> <!-- increases "drifting" -->
@@ -270,8 +270,8 @@
         <surface>
           <friction>
             <ode>
-              <mu>0.08</mu>
-              <mu2>0.16</mu2>
+              <mu>0.16</mu>
+              <mu2>0.24</mu2>
               <fdir1>0 0 1</fdir1>
               <slip1>0</slip1>
               <slip2>0</slip2>

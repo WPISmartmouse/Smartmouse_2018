@@ -2,22 +2,33 @@
 
 #include "Stop.h"
 
-Stop::Stop() : mouse(SimMouse::inst()) {}
+Stop::Stop() : mouse(SimMouse::inst()), stop_time_ms(0) {}
 
-void Stop::initialize(){
-  setTimeout(2000);
+Stop::Stop(unsigned long stop_time) : mouse(SimMouse::inst()), stop_time_ms(stop_time) {}
+
+void Stop::initialize() {
+  double initial_left_velocity, initial_right_velocity;
+  std::tie(initial_left_velocity, initial_right_velocity) = mouse->getWheelVelocities();
+  initial_velocity = (initial_left_velocity + initial_right_velocity) / 2;
+  setTimeout(stop_time_ms);
 }
 
-void Stop::execute(){
-  mouse->setSpeed(0,0);
+void Stop::execute() {
+  if (getTime() < stop_time_ms) {
+    double kT = ((stop_time_ms - getTime()) / (float) stop_time_ms) * initial_velocity;
+    mouse->setSpeed(kT, kT);
+  } else {
+    mouse->setSpeed(0, 0);
+  }
 }
 
-bool Stop::isFinished(){
+bool Stop::isFinished() {
   double left_velocity, right_velocity;
   std::tie(left_velocity, right_velocity) = mouse->getWheelVelocities();
-  return (left_velocity <= SimMouse::MIN_SPEED && right_velocity <= SimMouse::MIN_SPEED) && isTimedOut();
+  return (left_velocity <= 0 && right_velocity <= 0) && isTimedOut();
 }
 
-void Stop::end(){
+void Stop::end() {
 }
+
 #endif
