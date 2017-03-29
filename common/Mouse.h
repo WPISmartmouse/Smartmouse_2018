@@ -69,7 +69,7 @@ public:
 
   AbstractMaze *maze;
 
-  static const float ROT_TOLERANCE;
+  static constexpr double ROT_TOLERANCE = 0.02;
 
 protected:
   int row, col;

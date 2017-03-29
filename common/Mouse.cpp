@@ -1,7 +1,5 @@
 #include "Mouse.h"
 
-const float Mouse::ROT_TOLERANCE = 0.01;
-
 Mouse::Mouse() : maze(new AbstractMaze()), row(0), col(0), dir(Direction::E) {}
 
 Mouse::Mouse(int starting_row, int starting_col) :

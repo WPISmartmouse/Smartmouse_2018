@@ -34,8 +34,8 @@ WallFollower::compute_wheel_velocities(SimMouse *mouse, ignition::math::Pose3d s
   l = l < SimMouse::MIN_SPEED ? SimMouse::MIN_SPEED : l;
   r = r < SimMouse::MIN_SPEED ? SimMouse::MIN_SPEED : r;
 
-  double leftWallError = fabs(AbstractMaze::HALF_INNER_UNIT_DIST - dToWallLeft);
-  double rightWallError = fabs(AbstractMaze::HALF_INNER_UNIT_DIST - dToWallRight);
+  double leftWallError = AbstractMaze::HALF_INNER_UNIT_DIST - dToWallLeft;
+  double rightWallError = AbstractMaze::HALF_INNER_UNIT_DIST - dToWallRight;
   double dLeftWallError = leftWallError - lastLeftWallError;
   double dRightWallError = rightWallError - lastRightWallError;
   lastLeftWallError = leftWallError;
@@ -45,13 +45,13 @@ WallFollower::compute_wheel_velocities(SimMouse *mouse, ignition::math::Pose3d s
     double correction = leftWallError * kPWall + dLeftWallError * kDWall;
     r -= correction;
   } else if (dToWallRight < SimMouse::WALL_DIST) {
-    double correction = rightWallError * kPWall + dRightWallError * kDWall;;
+    double correction = rightWallError * kPWall + dRightWallError * kDWall;
     l -= correction;
   } else if (AbstractMaze::HALF_INNER_UNIT_DIST < dToWallLeft && dToWallLeft < SimMouse::WALL_DIST) {
-    double correction = leftWallError * kPWall;
+    double correction = leftWallError * kPWall + dLeftWallError * kDWall;
     l -= correction;
   } else if (AbstractMaze::HALF_INNER_UNIT_DIST < dToWallRight && dToWallRight < SimMouse::WALL_DIST) {
-    double correction = rightWallError * kPWall;
+    double correction = rightWallError * kPWall + dRightWallError * kDWall;
     r -= correction;
   }
 

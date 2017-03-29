@@ -5,23 +5,15 @@
 
 NavTestCommand::NavTestCommand() : CommandGroup("NavTestGroup") {
   addSequential(new Forward());
-  addSequential(new Forward());
-  addSequential(new Forward());
-  addSequential(new Forward());
-  addSequential(new Forward());
-  addSequential(new Forward());
-  addSequential(new Forward());
-  addSequential(new Forward());
-  addSequential(new Forward());
-  addSequential(new Turn(Direction::W));
-  addSequential(new Forward());
-  addSequential(new Forward());
-  addSequential(new Forward());
-  addSequential(new Forward());
-  addSequential(new Forward());
-  addSequential(new Forward());
-  addSequential(new Forward());
-  addSequential(new Forward());
-  addSequential(new Turn(Direction::E));
+  for (int i = 0; i < 4; i++) {
+    addSequential(new Forward());
+    addSequential(new Forward());
+    addSequential(new Forward());
+    addSequential(new Turn(Direction::W));
+    addSequential(new Forward());
+    addSequential(new Forward());
+    addSequential(new Forward());
+    addSequential(new Turn(Direction::E));
+  }
   addSequential(new Stop(0));
 }

@@ -30,8 +30,8 @@ public:
   double dToWallRight;
   double lastLeftWallError;
   double lastRightWallError;
-  const double kPWall = 2;
-  const double kDWall = 0;
+  const double kPWall = 0.2;
+  const double kDWall = 80;
 };
 
 #endif

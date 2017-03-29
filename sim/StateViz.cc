@@ -90,11 +90,11 @@ StateViz::~StateViz() {
 }
 
 void StateViz::StateCallback(ConstRobotStatePtr &msg) {
-  char left_wheel_velocity_str[11];
-  snprintf(left_wheel_velocity_str, 11, "%2.2f mm/s", (1000 * msg->left_wheel_velocity_mps()));
+  char left_wheel_velocity_str[12];
+  snprintf(left_wheel_velocity_str, 12, "%0.2f cm/s", (100 * msg->left_wheel_velocity_mps()));
 
-  char right_wheel_velocity_str[11];
-  snprintf(right_wheel_velocity_str, 11, "%2.2f mm/s", (1000 * msg->right_wheel_velocity_mps()));
+  char right_wheel_velocity_str[12];
+  snprintf(right_wheel_velocity_str, 12, "%0.2f cm/s", (100 * msg->right_wheel_velocity_mps()));
 
   gazebo::msgs::Pose pose = msg->pose();
 

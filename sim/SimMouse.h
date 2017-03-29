@@ -44,11 +44,11 @@ public:
   void robotStateCallback(ConstRobotStatePtr &msg);
 
   static constexpr double MAX_SPEED = 0.18; // m/sec
-  static constexpr double MIN_SPEED = 0.01; // m/sec
+  static constexpr double MIN_SPEED = 0.005; // m/sec
   static constexpr double FWD_ACCELERATION = 0.002; // m/iteration^2
   static constexpr double STOP_ACCELERATION = 0.01; // m/iteration^2
   static constexpr double TRACK_WIDTH = 0.0626; // m
-  static constexpr double WALL_DIST = 0.115;
+  static constexpr double WALL_DIST = 0.125;
   static constexpr double WHEEL_RAD = 0.015;
   static constexpr double WHEEL_CIRC = 2 * WHEEL_RAD * M_PI;
 
