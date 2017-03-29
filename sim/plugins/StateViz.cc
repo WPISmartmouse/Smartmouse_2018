@@ -121,7 +121,7 @@ StateViz::StateViz() : GUIPlugin(), topic("/delete_plot") {
   this->setLayout(main_layout);
 
   this->move(RegenerateWidget::WIDTH + SensorViz::WIDTH, 0);
-  this->setFixedSize(300, 150);
+  this->setFixedSize(315, 150);
 }
 
 StateViz::~StateViz() {
@@ -138,14 +138,14 @@ void StateViz::StateCallback(ConstRobotStatePtr &msg) {
 
   this->last_pose = pose;
 
-  char x_str[14];
-  snprintf(x_str, 14, "%0.3f m", msg->true_x_meters());
+  char x_str[15];
+  snprintf(x_str, 15, "%0.3f m", msg->true_x_meters());
 
-  char y_str[14];
-  snprintf(y_str, 14, "%0.3f m", msg->true_y_meters());
+  char y_str[15];
+  snprintf(y_str, 15, "%0.3f m", msg->true_y_meters());
 
-  char yaw_str[14];
-  snprintf(yaw_str, 14, "%0.1f deg", (msg->true_yaw_rad() * 180 / M_PI));
+  char yaw_str[15];
+  snprintf(yaw_str, 15, "%0.1f deg", (msg->true_yaw_rad() * 180 / M_PI));
 
   this->SetLeftVelocity(left_wheel_velocity_str);
   this->SetRightVelocity(right_wheel_velocity_str);

@@ -134,8 +134,8 @@ void MousePlugin::PublishInfo() {
   state.set_left_binary(this->left_binary);
   state.set_right_binary(this->right_binary);
   state.set_front_binary(this->front_binary);
-  state.set_true_x_meters(pos->x());
-  state.set_true_y_meters(pos->y());
+  state.set_true_x_meters(pos->x() - SimMouse::INIT_X_OFFSET);
+  state.set_true_y_meters(pos->y() - SimMouse::INIT_Y_OFFSET);
   double yaw = relativePose.Rot().Euler()[2];
   state.set_true_yaw_rad(yaw);
   state_pub->Publish(state);

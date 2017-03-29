@@ -156,8 +156,8 @@ void SimMouse::robotStateCallback(ConstRobotStatePtr &msg) {
   pose.Rot().Z(msg->pose().orientation().z());
   pose.Rot().W(msg->pose().orientation().w());
 
-  double x = pose.Pos().X() + AbstractMaze::UNIT_DIST * 8;
-  double y = -pose.Pos().Y() + AbstractMaze::UNIT_DIST * 8;
+  double x = pose.Pos().X() - SimMouse::INIT_X_OFFSET;
+  double y = -pose.Pos().Y() - SimMouse::INIT_Y_OFFSET;
 
   computed_row = (int) (y / AbstractMaze::UNIT_DIST);
   computed_col = (int) (x / AbstractMaze::UNIT_DIST);

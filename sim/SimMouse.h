@@ -37,6 +37,8 @@ public:
   static constexpr double WALL_DIST = 0.125;
   static constexpr double WHEEL_RAD = 0.015;
   static constexpr double WHEEL_CIRC = 2 * WHEEL_RAD * M_PI;
+  static constexpr double INIT_X_OFFSET = -1.34; // meters
+  static constexpr double INIT_Y_OFFSET= 1.35; // meters
   static const gazebo::common::Color grey_color;
 
   static SimMouse *inst();

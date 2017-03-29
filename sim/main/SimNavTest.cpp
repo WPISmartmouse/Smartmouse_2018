@@ -54,6 +54,11 @@ int main(int argc, char *argv[]) {
     msg.set_col_offset(SimMouse::inst()->getColOffsetToEdge());
     std::string dir_str(1, dir_to_char(SimMouse::inst()->getDir()));
     msg.set_dir(dir_str);
+
+    if (!msg.IsInitialized()) {
+      std::cerr << "Missing fields: [" <<  msg.InitializationErrorString() << "]" << std::endl;
+    }
+
     maze_location_pub->Publish(msg);
 
     mouse->run();
