@@ -17,8 +17,4 @@ public:
 
 private:
   RealMouse *mouse;
-  const int MAX_SAMPLE_COUNT;
-  float data;
-  bool readyToExit;
-  uint32_t lastDisplayUpdate;
 };

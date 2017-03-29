@@ -14,13 +14,11 @@ Scheduler scheduler(new SolveCommand(new Flood(RealMouse::inst())));
 void setup() {
   pinMode(13, OUTPUT);
   digitalWrite(13, LOW);
-  Serial.begin(115200);
-  Serial1.begin(115200);
+  Serial.begin(0);
   Command::setTimerImplementation(&timer);
   RealMouse::inst()->setup();
 }
 
 void loop() {
-  RealMouse::inst()->run();
   scheduler.run();
 }

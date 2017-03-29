@@ -16,7 +16,5 @@ public:
   void end();
 
 private:
-  const unsigned long REFRESH_TIME = 200;
   RealMouse *mouse;
-  uint32_t lastDisplayUpdate;
 };

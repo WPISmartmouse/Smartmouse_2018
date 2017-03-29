@@ -2,6 +2,7 @@
 
 #include <common/commanduino/CommanDuino.h>
 #include <common/AbstractMaze.h>
+#include <real/RealMouse.h>
 
 class Finish : public Command {
 public:
@@ -13,5 +14,6 @@ public:
 
 private:
   AbstractMaze *maze;
+  RealMouse *mouse;
 
 };
