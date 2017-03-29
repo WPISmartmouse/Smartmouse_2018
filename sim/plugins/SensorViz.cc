@@ -1,9 +1,10 @@
 #include <sstream>
 #include <cmath>
 #include <boost/algorithm/string/replace.hpp>
+#include <sim/SimMouse.h>
+
 #include "SensorViz.hh"
 #include "RegenerateWidget.hh"
-#include "SimMouse.h"
 
 using namespace gazebo;
 

@@ -8,7 +8,7 @@
 #endif
 
 #include <QtGui/QPainter>
-#include "msgs/msgs.h"
+#include <sim/msgs/msgs.h>
 
 namespace gazebo {
   class GAZEBO_VISIBLE StateViz : public GUIPlugin {

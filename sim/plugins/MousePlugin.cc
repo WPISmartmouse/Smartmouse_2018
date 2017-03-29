@@ -2,8 +2,9 @@
 #include <gazebo/physics/PhysicsTypes.hh>
 #include <gazebo/common/Events.hh>
 #include <gazebo/gazebo_core.hh>
+#include <sim/SimMouse.h>
+
 #include "MousePlugin.hh"
-#include "SimMouse.h"
 
 GZ_REGISTER_MODEL_PLUGIN(MousePlugin)
 
