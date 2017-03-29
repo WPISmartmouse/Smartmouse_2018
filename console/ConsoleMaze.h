@@ -2,8 +2,6 @@
 #ifdef CONSOLE
 
 #include <fstream>
-#include <string>
-#include <common/SensorReading.h>
 #include <common/AbstractMaze.h>
 
 class ConsoleMaze : public AbstractMaze {

@@ -31,6 +31,18 @@ namespace gazebo {
 
     void SetDir(QString str);
 
+    void SetTrueX(QString str);
+
+    void SetTrueY(QString str);
+
+    void SetTrueYaw(QString str);
+
+    void SetEstimatedX(QString str);
+
+    void SetEstimatedY(QString str);
+
+    void SetEstimatedYaw(QString str);
+
   protected slots:
 
     void ClearRobotTrace();
@@ -51,12 +63,24 @@ namespace gazebo {
     QLabel *col_label;
     QLabel *row_label;
     QLabel *dir_label;
+    QLabel *true_x_label;
+    QLabel *true_y_label;
+    QLabel *true_yaw_label;
+    QLabel *estimated_x_label;
+    QLabel *estimated_y_label;
+    QLabel *estimated_yaw_label;
 
     QLineEdit *left_wheel_velocity_edit;
     QLineEdit *right_wheel_velocity_edit;
     QLineEdit *col_edit;
     QLineEdit *row_edit;
     QLineEdit *dir_edit;
+    QLineEdit *true_x_edit;
+    QLineEdit *true_y_edit;
+    QLineEdit *true_yaw_edit;
+    QLineEdit *estimated_x_edit;
+    QLineEdit *estimated_y_edit;
+    QLineEdit *estimated_yaw_edit;
 
     void StateCallback(ConstRobotStatePtr &msg);
 

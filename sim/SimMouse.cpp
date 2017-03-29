@@ -206,6 +206,9 @@ void SimMouse::robotStateCallback(ConstRobotStatePtr &msg) {
   dataCond.notify_all();
 }
 
+void SimMouse::run() {
+}
+
 //lspeed and rspeed should be from -1 to 1
 void SimMouse::setSpeed(double left_wheel_velocity_setpoint_mps, double right_wheel_velocity_setpoint_mps) {
   static double left_wheel_velocity_mps;

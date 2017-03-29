@@ -14,8 +14,7 @@ endif ()
 project(smartmouse)
 
 file(GLOB_RECURSE COM_SRC
-        common/*.cpp
-        common/commands/*.cpp)
+        common/*.cpp)
 
 if (NOT ${BUILD_SIM})
     include(Teensy)

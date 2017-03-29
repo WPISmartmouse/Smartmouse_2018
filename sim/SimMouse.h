@@ -76,6 +76,8 @@ public:
 
   void robotStateCallback(ConstRobotStatePtr &msg);
 
+  void run();
+
   void setSpeed(double left, double right);
 
   void simInit();

@@ -4,7 +4,6 @@
 
 #include <Encoder.h>
 #include <common/Mouse.h>
-#include <common/KinematicMotorController/RegulatedMotor.h>
 #include <common/KinematicMotorController/KinematicController.h>
 
 

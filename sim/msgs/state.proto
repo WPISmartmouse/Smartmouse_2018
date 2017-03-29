@@ -12,5 +12,8 @@ message RobotState {
     required bool left_binary = 8;
     required bool right_binary = 9;
     required bool front_binary = 10;
+    required double true_x_meters = 11;
+    required double true_y_meters = 12;
+    required double true_yaw_rad = 13;
 
 }
