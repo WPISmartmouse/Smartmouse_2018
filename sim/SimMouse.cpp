@@ -4,11 +4,6 @@
 #include <gazebo/msgs/msgs.hh>
 
 SimMouse *SimMouse::instance = nullptr;
-
-const gazebo::common::Color SimMouse::red_color{1, 0, 0, 1};
-const gazebo::common::Color SimMouse::green_color{0, 1, 0, 1};
-const gazebo::common::Color SimMouse::blue_color{0, 0, 1, 1};
-const gazebo::common::Color SimMouse::black_color{0, 0, 0, 1};
 const gazebo::common::Color SimMouse::grey_color{0.8, 0.8, 0.8, 1};
 
 SimMouse::SimMouse() : hasSuggestion(false) {}

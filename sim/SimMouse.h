@@ -18,17 +18,28 @@ public:
 
   static double metersPerSecToRadPerSec(double x);
 
-  constexpr static double ANALOG_ANGLE = 1.35255; // radians
-  constexpr static double BINARY_ANGLE = 0.65; // radians
-  constexpr static double LEFT_BINARY_THRESHOLD = 0.18; // meters
-  constexpr static double RIGHT_BINARY_THRESHOLD = 0.18; // meters
-  constexpr static double FRONT_BINARY_THRESHOLD = 0.18; // meters
-  constexpr static double ANALOG_MAX_DIST = 0.15; // meters
-  constexpr static double SIDE_ANALOG_X = 0.04; // meters
-  constexpr static double SIDE_ANALOG_Y = 0.024; // meters
-  constexpr static double SIDE_BINARY_X = 0.043; // meters
-  constexpr static double SIDE_BINARY_Y = 0.022; // meters
-  constexpr static double FRONT_BINARY_Y = 0.045; // meters
+  static constexpr double ANALOG_ANGLE = 1.35255; // radians
+  static constexpr double BINARY_ANGLE = 0.65; // radians
+  static constexpr double LEFT_BINARY_THRESHOLD = 0.18; // meters
+  static constexpr double RIGHT_BINARY_THRESHOLD = 0.18; // meters
+  static constexpr double FRONT_BINARY_THRESHOLD = 0.18; // meters
+  static constexpr double ANALOG_MAX_DIST = 0.15; // meters
+  static constexpr double SIDE_ANALOG_X = 0.04; // meters
+  static constexpr double SIDE_ANALOG_Y = 0.024; // meters
+  static constexpr double SIDE_BINARY_X = 0.043; // meters
+  static constexpr double SIDE_BINARY_Y = 0.022; // meters
+  static constexpr double FRONT_BINARY_Y = 0.045; // meters
+  static constexpr double MAX_SPEED = 0.18; // m/sec
+  static constexpr double MIN_SPEED = 0.005; // m/sec
+  static constexpr double FWD_ACCELERATION = 0.002; // m/iteration^2
+  static constexpr double STOP_ACCELERATION = 0.01; // m/iteration^2
+  static constexpr double TRACK_WIDTH = 0.0626; // m
+  static constexpr double WALL_DIST = 0.125;
+  static constexpr double WHEEL_RAD = 0.015;
+  static constexpr double WHEEL_CIRC = 2 * WHEEL_RAD * M_PI;
+  static const gazebo::common::Color grey_color;
+
+  static SimMouse *inst();
 
   typedef struct {
     double left_analog;
@@ -42,23 +53,6 @@ public:
   gazebo::transport::PublisherPtr indicatorPub;
 
   void robotStateCallback(ConstRobotStatePtr &msg);
-
-  static constexpr double MAX_SPEED = 0.18; // m/sec
-  static constexpr double MIN_SPEED = 0.005; // m/sec
-  static constexpr double FWD_ACCELERATION = 0.002; // m/iteration^2
-  static constexpr double STOP_ACCELERATION = 0.01; // m/iteration^2
-  static constexpr double TRACK_WIDTH = 0.0626; // m
-  static constexpr double WALL_DIST = 0.125;
-  static constexpr double WHEEL_RAD = 0.015;
-  static constexpr double WHEEL_CIRC = 2 * WHEEL_RAD * M_PI;
-
-  static const gazebo::common::Color red_color;
-  static const gazebo::common::Color green_color;
-  static const gazebo::common::Color blue_color;
-  static const gazebo::common::Color black_color;
-  static const gazebo::common::Color grey_color;
-
-  static SimMouse *inst();
 
   virtual SensorReading checkWalls() override;
 
@@ -95,9 +89,17 @@ public:
 
 private:
 
-  static SimMouse *instance;
-
   SimMouse();
+
+  static constexpr double INDICATOR_RAD = 0.05;
+  static constexpr double INDICATOR_LEN = 0.001;
+  static constexpr double INDICATOR_Z = 0.008;
+
+  const double kP = 0.002;
+  const double kI = 0.000;
+  const double kD = 0.000;
+
+  static SimMouse *instance;
 
   std::condition_variable dataCond;
   std::mutex dataMutex;
@@ -105,14 +107,6 @@ private:
   ignition::math::Pose3d pose;
 
   gazebo::transport::SubscriberPtr regen_sub;
-
-  const double kP = 0.002;
-  const double kI = 0.000;
-  const double kD = 0.000;
-
-  static constexpr double INDICATOR_RAD = 0.05;
-  static constexpr double INDICATOR_LEN = 0.001;
-  static constexpr double INDICATOR_Z = 0.008;
 
   bool walls[4];
   bool suggestedWalls[4];
@@ -127,7 +121,6 @@ private:
   double col_offset_to_edge;
   int computed_row;
   int computed_col;
-
 
   gazebo::msgs::Visual *indicators[AbstractMaze::MAZE_SIZE][AbstractMaze::MAZE_SIZE];
 };
