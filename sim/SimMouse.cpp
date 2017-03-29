@@ -6,6 +6,14 @@
 SimMouse *SimMouse::instance = nullptr;
 const gazebo::common::Color SimMouse::grey_color{0.8, 0.8, 0.8, 1};
 
+double SimMouse::metersPerSecToRadPerSec(double x) {
+  return x / WHEEL_CIRC * (2 * M_PI);
+}
+
+double SimMouse::radPerSecToMetersPerSec(double x) {
+  return (x / (2 * M_PI)) * WHEEL_CIRC;
+}
+
 SimMouse::SimMouse() : hasSuggestion(false) {}
 
 SimMouse *SimMouse::inst() {
@@ -16,55 +24,81 @@ SimMouse *SimMouse::inst() {
   return instance;
 }
 
-void SimMouse::updateIndicator(int row, int col, gazebo::common::Color color) {
-  gazebo::msgs::Visual *visual = indicators[row][col];
+SensorReading SimMouse::checkWalls() {
+  std::unique_lock<std::mutex> lk(dataMutex);
+  dataCond.wait(lk);
+  SensorReading sr(row, col);
+  std::array<bool, 4> *w = &sr.walls;
 
-  gazebo::msgs::Visual::Meta *meta = visual->mutable_meta();
-  meta->set_layer(2);
-
-  std::string visual_name = "my_maze::base::indicator_"
-                            + std::to_string(row)
-                            + "_" + std::to_string(col);
-  visual->set_name(visual_name);
-  visual->set_visible(true);
-  visual->set_parent_name("my_maze::base");
-  visual->set_cast_shadows(false);
-
-  gazebo::msgs::Geometry *geomMsg = visual->mutable_geometry();
-  geomMsg->set_type(gazebo::msgs::Geometry::CYLINDER);
-  geomMsg->mutable_cylinder()->set_radius(INDICATOR_RAD);
-  geomMsg->mutable_cylinder()->set_length(INDICATOR_LEN);
-
-  double zero_offset = (AbstractMaze::UNIT_DIST * (AbstractMaze::MAZE_SIZE - 1) / 2);
-  double y = zero_offset - row * AbstractMaze::UNIT_DIST;
-  double x = -zero_offset + col * AbstractMaze::UNIT_DIST;
-
-  gazebo::msgs::Set(visual->mutable_pose(),
-                    ignition::math::Pose3d(x, y, INDICATOR_Z, 0, 0, 0));
-
-  gazebo::msgs::Set(visual->mutable_material()->mutable_diffuse(), color);
-}
-
-void SimMouse::resetIndicators(gazebo::common::Color color) {
-  for (int i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
-    for (int j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
-      gazebo::msgs::Color c = indicators[i][j]->material().diffuse();
-      if (color.r == c.r()
-          & color.g == c.g()
-          & color.b == c.b()
-          & color.a == c.a()) {
-        updateIndicator(i, j, grey_color);
-      }
+  for (int i = 0; i < w->size(); i++) {
+    if (hasSuggestion) {
+      (*w)[i] = suggestedWalls[i];
+    } else {
+      (*w)[i] = this->walls[i];
     }
   }
+
+  if (!hasSuggestion) {
+    (*w)[0] = true; // there will always be a wall North
+  }
+
+  return sr;
 }
 
-void SimMouse::publishIndicators() {
-  for (int i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
-    for (int j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
-      indicatorPub->Publish(*indicators[i][j]);
-    }
-  }
+double SimMouse::getColOffsetToEdge() {
+  std::unique_lock<std::mutex> lk(dataMutex);
+  dataCond.wait(lk);
+  return this->col_offset_to_edge;
+}
+
+int SimMouse::getComputedCol() {
+  std::unique_lock<std::mutex> lk(dataMutex);
+  dataCond.wait(lk);
+  return this->computed_col;
+}
+
+int SimMouse::getComputedRow() {
+  std::unique_lock<std::mutex> lk(dataMutex);
+  dataCond.wait(lk);
+  return this->computed_row;
+}
+
+Pose SimMouse::getEstimatedPose() {
+  //wait for the next message to occur
+  std::unique_lock<std::mutex> lk(dataMutex);
+  dataCond.wait(lk);
+  Pose pose;
+  pose.x = 0;
+  pose.y = 0;
+  pose.yaw = 0;
+  return pose;
+}
+
+ignition::math::Pose3d SimMouse::getExactPose() {
+  //wait for the next message to occur
+  std::unique_lock<std::mutex> lk(dataMutex);
+  dataCond.wait(lk);
+  return pose;
+}
+
+SimMouse::RangeData SimMouse::getRangeData() {
+  //wait for the next message to occur
+  std::unique_lock<std::mutex> lk(dataMutex);
+  dataCond.wait(lk);
+  return this->range_data;
+}
+
+double SimMouse::getRowOffsetToEdge() {
+  std::unique_lock<std::mutex> lk(dataMutex);
+  dataCond.wait(lk);
+  return this->row_offset_to_edge;
+}
+
+std::pair<double, double> SimMouse::getWheelVelocities() {
+  std::pair<double, double> pair;
+  pair.first = radPerSecToMetersPerSec(this->left_wheel_velocity);
+  pair.second = radPerSecToMetersPerSec(this->right_wheel_velocity);
+  return pair;
 }
 
 void SimMouse::indicatePath(int row, int col, std::string path, gazebo::common::Color color) {
@@ -88,6 +122,28 @@ void SimMouse::indicatePath(int row, int col, std::string path, gazebo::common::
     updateIndicator(row, col, color);
   }
   publishIndicators();
+}
+
+void SimMouse::publishIndicators() {
+  for (int i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
+    for (int j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
+      indicatorPub->Publish(*indicators[i][j]);
+    }
+  }
+}
+
+void SimMouse::resetIndicators(gazebo::common::Color color) {
+  for (int i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
+    for (int j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
+      gazebo::msgs::Color c = indicators[i][j]->material().diffuse();
+      if (color.r == c.r()
+          & color.g == c.g()
+          & color.b == c.b()
+          & color.a == c.a()) {
+        updateIndicator(i, j, grey_color);
+      }
+    }
+  }
 }
 
 void SimMouse::robotStateCallback(ConstRobotStatePtr &msg) {
@@ -150,45 +206,6 @@ void SimMouse::robotStateCallback(ConstRobotStatePtr &msg) {
   dataCond.notify_all();
 }
 
-SensorReading SimMouse::checkWalls() {
-  std::unique_lock<std::mutex> lk(dataMutex);
-  dataCond.wait(lk);
-  SensorReading sr(row, col);
-  std::array<bool, 4> *w = &sr.walls;
-
-  for (int i = 0; i < w->size(); i++) {
-    if (hasSuggestion) {
-      (*w)[i] = suggestedWalls[i];
-    } else {
-      (*w)[i] = this->walls[i];
-    }
-  }
-
-  if (!hasSuggestion) {
-    (*w)[0] = true; // there will always be a wall North
-  }
-
-  return sr;
-}
-
-void SimMouse::suggestWalls(bool *walls) {
-  hasSuggestion = true;
-  for (int i = 0; i < 4; i++) {
-    suggestedWalls[i] = walls[i];
-  }
-}
-
-void SimMouse::simInit() {
-  setSpeed(0, 0);
-  for (int i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
-    for (int j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
-      indicators[i][j] = new gazebo::msgs::Visual();
-      updateIndicator(i, j, grey_color);
-    }
-  }
-  publishIndicators();
-}
-
 //lspeed and rspeed should be from -1 to 1
 void SimMouse::setSpeed(double left_wheel_velocity_setpoint_mps, double right_wheel_velocity_setpoint_mps) {
   static double left_wheel_velocity_mps;
@@ -235,68 +252,51 @@ void SimMouse::setSpeed(double left_wheel_velocity_setpoint_mps, double right_wh
   controlPub->Publish(right);
 }
 
-SimMouse::RangeData SimMouse::getRangeData() {
-  //wait for the next message to occur
-  std::unique_lock<std::mutex> lk(dataMutex);
-  dataCond.wait(lk);
-  return this->range_data;
+void SimMouse::simInit() {
+  setSpeed(0, 0);
+  for (int i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
+    for (int j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
+      indicators[i][j] = new gazebo::msgs::Visual();
+      updateIndicator(i, j, grey_color);
+    }
+  }
+  publishIndicators();
 }
 
-Pose SimMouse::getEstimatedPose() {
-  //wait for the next message to occur
-  std::unique_lock<std::mutex> lk(dataMutex);
-  dataCond.wait(lk);
-  Pose pose;
-  pose.x = 0;
-  pose.y = 0;
-  pose.yaw = 0;
-  return pose;
+void SimMouse::suggestWalls(bool *walls) {
+  hasSuggestion = true;
+  for (int i = 0; i < 4; i++) {
+    suggestedWalls[i] = walls[i];
+  }
 }
 
-ignition::math::Pose3d SimMouse::getExactPose() {
-  //wait for the next message to occur
-  std::unique_lock<std::mutex> lk(dataMutex);
-  dataCond.wait(lk);
-  return pose;
-}
+void SimMouse::updateIndicator(int row, int col, gazebo::common::Color color) {
+  gazebo::msgs::Visual *visual = indicators[row][col];
 
-double SimMouse::metersPerSecToRadPerSec(double x) {
-  return x / WHEEL_CIRC * (2 * M_PI);
-}
+  gazebo::msgs::Visual::Meta *meta = visual->mutable_meta();
+  meta->set_layer(2);
 
-double SimMouse::radPerSecToMetersPerSec(double x) {
-  return (x / (2 * M_PI)) * WHEEL_CIRC;
-}
+  std::string visual_name = "my_maze::base::indicator_"
+                            + std::to_string(row)
+                            + "_" + std::to_string(col);
+  visual->set_name(visual_name);
+  visual->set_visible(true);
+  visual->set_parent_name("my_maze::base");
+  visual->set_cast_shadows(false);
 
-std::pair<double, double> SimMouse::getWheelVelocities() {
-  std::pair<double, double> pair;
-  pair.first = radPerSecToMetersPerSec(this->left_wheel_velocity);
-  pair.second = radPerSecToMetersPerSec(this->right_wheel_velocity);
-  return pair;
-}
+  gazebo::msgs::Geometry *geomMsg = visual->mutable_geometry();
+  geomMsg->set_type(gazebo::msgs::Geometry::CYLINDER);
+  geomMsg->mutable_cylinder()->set_radius(INDICATOR_RAD);
+  geomMsg->mutable_cylinder()->set_length(INDICATOR_LEN);
 
-int SimMouse::getComputedCol() {
-  std::unique_lock<std::mutex> lk(dataMutex);
-  dataCond.wait(lk);
-  return this->computed_col;
-}
+  double zero_offset = (AbstractMaze::UNIT_DIST * (AbstractMaze::MAZE_SIZE - 1) / 2);
+  double y = zero_offset - row * AbstractMaze::UNIT_DIST;
+  double x = -zero_offset + col * AbstractMaze::UNIT_DIST;
 
-int SimMouse::getComputedRow() {
-  std::unique_lock<std::mutex> lk(dataMutex);
-  dataCond.wait(lk);
-  return this->computed_row;
-}
+  gazebo::msgs::Set(visual->mutable_pose(),
+                    ignition::math::Pose3d(x, y, INDICATOR_Z, 0, 0, 0));
 
-double SimMouse::getRowOffsetToEdge() {
-  std::unique_lock<std::mutex> lk(dataMutex);
-  dataCond.wait(lk);
-  return this->row_offset_to_edge;
-}
-
-double SimMouse::getColOffsetToEdge() {
-  std::unique_lock<std::mutex> lk(dataMutex);
-  dataCond.wait(lk);
-  return this->col_offset_to_edge;
+  gazebo::msgs::Set(visual->mutable_material()->mutable_diffuse(), color);
 }
 
 #endif

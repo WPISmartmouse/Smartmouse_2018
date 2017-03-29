@@ -40,7 +40,8 @@ int main(int argc, char *argv[]) {
   // .01 seconds
   usleep(10000);
 
-  SimMouse::inst()->simInit();
+  SimMouse *mouse = SimMouse::inst();
+  mouse->simInit();
   Scheduler scheduler(new NavTestCommand());
 
   bool done = false;
@@ -54,6 +55,8 @@ int main(int argc, char *argv[]) {
     std::string dir_str(1, dir_to_char(SimMouse::inst()->getDir()));
     msg.set_dir(dir_str);
     maze_location_pub->Publish(msg);
+
+    mouse->run();
   }
 }
 

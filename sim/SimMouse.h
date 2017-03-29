@@ -49,22 +49,7 @@ public:
     bool front_binary;
   } RangeData;
 
-  gazebo::transport::PublisherPtr controlPub;
-  gazebo::transport::PublisherPtr indicatorPub;
-
-  void robotStateCallback(ConstRobotStatePtr &msg);
-
   virtual SensorReading checkWalls() override;
-
-  void simInit();
-
-  void setSpeed(double left, double right);
-
-  ignition::math::Pose3d getExactPose();
-
-  Pose getEstimatedPose();
-
-  double getRowOffsetToEdge();
 
   double getColOffsetToEdge();
 
@@ -72,20 +57,35 @@ public:
 
   int getComputedCol();
 
-  std::pair<double, double> getWheelVelocities();
+  Pose getEstimatedPose();
 
-  void suggestWalls(bool *walls);
+  ignition::math::Pose3d getExactPose();
 
   RangeData getRangeData();
+
+  double getRowOffsetToEdge();
+
+  std::pair<double, double> getWheelVelocities();
 
   void indicatePath(int starting_row, int starting_col,
                     std::string path, gazebo::common::Color);
 
-  void updateIndicator(int row, int col, gazebo::common::Color);
-
   void publishIndicators();
 
   void resetIndicators(gazebo::common::Color color);
+
+  void robotStateCallback(ConstRobotStatePtr &msg);
+
+  void setSpeed(double left, double right);
+
+  void simInit();
+
+  void suggestWalls(bool *walls);
+
+  void updateIndicator(int row, int col, gazebo::common::Color);
+
+  gazebo::transport::PublisherPtr controlPub;
+  gazebo::transport::PublisherPtr indicatorPub;
 
 private:
 
