@@ -4,10 +4,10 @@ class Pose {
 public:
   Pose();
 
-  Pose(float x, float y);
+  Pose(double x, double y);
 
-  Pose(float x, float y, float yaw);
+  Pose(double x, double y, double yaw);
 
-  float x, y;
-  float yaw;
+  double x, y;
+  double yaw;
 };

@@ -28,8 +28,8 @@ int main(int argc, char *argv[]) {
   gazebo::transport::SubscriberPtr poseSub =
           node->Subscribe("~/mouse/state", &SimMouse::robotStateCallback, SimMouse::inst());
 
-  SimMouse::inst()->controlPub = node->Advertise<gazebo::msgs::JointCmd>("~/mouse/joint_cmd");
-  SimMouse::inst()->indicatorPub = node->Advertise<gazebo::msgs::Visual>("~/visual", AbstractMaze::MAZE_SIZE *
+  SimMouse::inst()->joint_cmd_pub = node->Advertise<gazebo::msgs::JointCmd>("~/mouse/joint_cmd");
+  SimMouse::inst()->indicator_pub = node->Advertise<gazebo::msgs::Visual>("~/visual", AbstractMaze::MAZE_SIZE *
                                                                                      AbstractMaze::MAZE_SIZE);
 
   // .01 seconds

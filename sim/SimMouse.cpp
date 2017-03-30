@@ -68,7 +68,7 @@ Pose SimMouse::getEstimatedPose() {
   return pose;
 }
 
-ignition::math::Pose3d SimMouse::getExactPose() {
+Pose SimMouse::getExactPose() {
   //wait for the next message to occur
   std::unique_lock<std::mutex> lk(dataMutex);
   dataCond.wait(lk);
@@ -121,7 +121,7 @@ void SimMouse::indicatePath(int row, int col, std::string path, gazebo::common::
 void SimMouse::publishIndicators() {
   for (int i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
     for (int j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
-      indicatorPub->Publish(*indicators[i][j]);
+      indicator_pub->Publish(*indicators[i][j]);
     }
   }
 }
@@ -141,22 +141,14 @@ void SimMouse::resetIndicators(gazebo::common::Color color) {
 }
 
 void SimMouse::robotStateCallback(ConstRobotStatePtr &msg) {
-  true_pose.Pos().X(msg->true_pose().position().x());
-  true_pose.Pos().Y(msg->true_pose().position().y());
-  true_pose.Pos().Z(msg->true_pose().position().z());
+  true_pose.x = msg->true_x_meters();
+  true_pose.y = msg->true_y_meters();
+  true_pose.yaw = msg->true_yaw_rad();
 
-  true_pose.Rot().X(msg->true_pose().orientation().x());
-  true_pose.Rot().Y(msg->true_pose().orientation().y());
-  true_pose.Rot().Z(msg->true_pose().orientation().z());
-  true_pose.Rot().W(msg->true_pose().orientation().w());
-
-  double x = true_pose.Pos().X() - SimMouse::INIT_X_OFFSET;
-  double y = -(true_pose.Pos().Y() - SimMouse::INIT_Y_OFFSET);
-
-  computed_row = (int) (y / AbstractMaze::UNIT_DIST);
-  computed_col = (int) (x / AbstractMaze::UNIT_DIST);
-  row_offset_to_edge = fmod(y, AbstractMaze::UNIT_DIST);
-  col_offset_to_edge = fmod(x, AbstractMaze::UNIT_DIST);
+  computed_row = (int) (msg->true_y_meters() / AbstractMaze::UNIT_DIST);
+  computed_col = (int) (msg->true_x_meters() / AbstractMaze::UNIT_DIST);
+  row_offset_to_edge = fmod(msg->true_y_meters(), AbstractMaze::UNIT_DIST);
+  col_offset_to_edge = fmod(msg->true_x_meters(), AbstractMaze::UNIT_DIST);
 
   this->left_wheel_velocity = msg->left_wheel_velocity_mps();
   this->right_wheel_velocity = msg->right_wheel_velocity_mps();
@@ -201,6 +193,27 @@ void SimMouse::robotStateCallback(ConstRobotStatePtr &msg) {
 }
 
 void SimMouse::run(unsigned long time_ms) {
+  // publish status information
+  gzmaze::msgs::MazeLocation msg;
+  msg.set_row(getComputedRow());
+  msg.set_col(getComputedCol());
+  msg.set_row_offset(getRowOffsetToEdge());
+  msg.set_col_offset(getColOffsetToEdge());
+
+  Pose estimated_pose = getEstimatedPose();
+  msg.set_estimated_x_meters(estimated_pose.x);
+  msg.set_estimated_y_meters(estimated_pose.y);
+  msg.set_estimated_yaw_rad(estimated_pose.yaw);
+  std::string dir_str(1, dir_to_char(getDir()));
+  msg.set_dir(dir_str);
+
+  if (!msg.IsInitialized()) {
+    std::cerr << "Missing fields: [" <<  msg.InitializationErrorString() << "]" << std::endl;
+  }
+
+  maze_location_pub->Publish(msg);
+
+  // handle updating of odometry and PID
   double abstract_left_force;
   double abstract_right_force;
   std::tie(abstract_left_force, abstract_right_force) = kinematic_controller.run(time_ms, this->left_wheel_angle_rad,
@@ -210,13 +223,13 @@ void SimMouse::run(unsigned long time_ms) {
   gazebo::msgs::JointCmd left;
   left.set_name("mouse::left_wheel_joint");
   left.set_force(left_force_newtons);
-  controlPub->Publish(left);
+  joint_cmd_pub->Publish(left);
 
   double right_force_newtons = abstractForceToNewtons(abstract_right_force);
   gazebo::msgs::JointCmd right;
   right.set_name("mouse::right_wheel_joint");
   right.set_force(right_force_newtons);
-  controlPub->Publish(right);
+  joint_cmd_pub->Publish(right);
 }
 
 void SimMouse::setSpeed(double left_wheel_velocity_setpoint_mps, double right_wheel_velocity_setpoint_mps) {

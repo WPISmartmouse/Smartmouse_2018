@@ -21,6 +21,7 @@ public:
   double last_angle_rad;
   double last_error;
   double setpoint_rps;
+  double smoothed_velocity_rps;
   double velocity_rps;
   unsigned long period_ms;
   unsigned long last_update_time_ms;

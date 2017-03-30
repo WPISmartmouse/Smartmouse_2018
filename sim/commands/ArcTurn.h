@@ -22,8 +22,8 @@ public:
 
 private:
   static constexpr double TURN_RAD = AbstractMaze::HALF_UNIT_DIST;
-  static constexpr double TURN_RAD_INNER = TURN_RAD - SimMouse::TRACK_WIDTH / 2;
-  static constexpr double TURN_RAD_OUTER = TURN_RAD + SimMouse::TRACK_WIDTH / 2;
+  static constexpr double TURN_RAD_INNER = TURN_RAD - Mouse::TRACK_WIDTH / 2;
+  static constexpr double TURN_RAD_OUTER = TURN_RAD + Mouse::TRACK_WIDTH / 2;
   static constexpr double TURN_TIME_MS = 1000;
   static constexpr double TURN_TIME_S = TURN_TIME_MS / 1000.0;
   SimMouse *mouse;

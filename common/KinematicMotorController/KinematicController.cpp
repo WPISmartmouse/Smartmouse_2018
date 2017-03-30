@@ -11,12 +11,26 @@ Pose KinematicMotorController::get_pose() {
 
 std::pair<double, double>
 KinematicMotorController::run(unsigned long time_ms, double left_angle_rad, double right_angle_rad) {
+  static unsigned long last_run_time_ms = 0;
   std::pair<double, double> abstract_forces;
 
   abstract_forces.first = left_motor.run_pid(time_ms, left_angle_rad);
   abstract_forces.second = right_motor.run_pid(time_ms, right_angle_rad);
 
-  printf("computed %f\n", Mouse::radPerSecToMetersPerSec(left_motor.velocity_rps));
+  double vl = left_motor.smoothed_velocity_rps;
+  double vr = right_motor.smoothed_velocity_rps;
+  double w = (vr - vl) / Mouse::TRACK_WIDTH;
+  double r = Mouse::TRACK_WIDTH / 2 * (vl + vr) / (vr - vl);
+  double dt = (time_ms - last_run_time_ms) / 1000.0;
+  double x = current_pose_estimate.x;
+  double y = current_pose_estimate.y;
+  double yaw = current_pose_estimate.yaw;
+
+  current_pose_estimate.x = cos(w * dt) * r * sin(yaw) + sin(w * dt) * r * cos(yaw) + x - r * sin(yaw);
+  current_pose_estimate.x = sin(w * dt) * r * sin(yaw) - cos(w * dt) * r * cos(yaw) + y + r * sin(yaw);
+  current_pose_estimate.yaw = yaw + w * dt;
+
+  last_run_time_ms = time_ms;
 
   return abstract_forces;
 }
@@ -55,6 +69,8 @@ void KinematicMotorController::setSpeed(double left_wheel_velocity_setpoint_mps,
 
   double left_wheel_velocity_rps = Mouse::metersPerSecToRadPerSec(left_wheel_velocity_mps);
   double right_wheel_velocity_rps = Mouse::metersPerSecToRadPerSec(right_wheel_velocity_mps);
+
+//  printf("%f, %f\n", left_wheel_velocity_mps, Mouse::radPerSecToMetersPerSec(left_motor.smoothed_velocity_rps));
 
   left_motor.set_setpoint(left_wheel_velocity_rps);
   right_motor.set_setpoint(right_wheel_velocity_rps);

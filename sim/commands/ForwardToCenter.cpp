@@ -9,7 +9,7 @@ ForwardToCenter::ForwardToCenter() : mouse(SimMouse::inst()), checkedWalls(false
 void ForwardToCenter::initialize() {
 //  mouse->resetIndicators(SimMouse::red_color);
 //  mouse->indicatePath(mouse->getRow(), mouse->getCol(), mouse->maze->pathToNextGoal, SimMouse::red_color);
-  start = mouse->getEstimatedPose();
+  start = mouse->getExactPose();
   follower.goalDisp = WallFollower::dispToCenter(mouse);
   printf("%f\n", follower.goalDisp);
 }

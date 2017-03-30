@@ -47,7 +47,7 @@ void TurnInPlace::setSpeedLimited(double l, double r) {
 }
 
 bool TurnInPlace::isFinished() {
-  double currentYaw = mouse->getEstimatedPose().yaw;
+  double currentYaw = mouse->getExactPose().yaw;
   dYaw = yawDiff(currentYaw, goalYaw);
   return fabs(dYaw) < Mouse::ROT_TOLERANCE;
 }

@@ -32,7 +32,6 @@ public:
   static constexpr double MIN_SPEED = 0.005; // m/sec
   static constexpr double START_ACCELERATION = 0.002; // m/iteration^2
   static constexpr double STOP_ACCELERATION = 0.01; // m/iteration^2
-  static constexpr double TRACK_WIDTH = 0.0626; // m
   static constexpr double WALL_DIST = 0.125;
   static constexpr double INIT_X_OFFSET = -1.34; // meters
   static constexpr double INIT_Y_OFFSET= 1.35; // meters
@@ -60,7 +59,7 @@ public:
 
   Pose getEstimatedPose();
 
-  ignition::math::Pose3d getExactPose();
+  Pose getExactPose();
 
   RangeData getRangeData();
 
@@ -87,8 +86,9 @@ public:
 
   void updateIndicator(int row, int col, gazebo::common::Color);
 
-  gazebo::transport::PublisherPtr controlPub;
-  gazebo::transport::PublisherPtr indicatorPub;
+  gazebo::transport::PublisherPtr joint_cmd_pub;
+  gazebo::transport::PublisherPtr indicator_pub;
+  gazebo::transport::PublisherPtr maze_location_pub;
 
 private:
 
@@ -119,7 +119,7 @@ private:
   std::condition_variable dataCond;
   std::mutex dataMutex;
 
-  ignition::math::Pose3d true_pose;
+  Pose true_pose;
 
   gazebo::transport::SubscriberPtr regen_sub;
 

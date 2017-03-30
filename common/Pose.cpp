@@ -2,6 +2,6 @@
 
 Pose::Pose() : x(0), y(0), yaw(0) {}
 
-Pose::Pose(float x, float y) : x(x), y(y), yaw(0) {}
+Pose::Pose(double x, double y) : x(x), y(y), yaw(0) {}
 
-Pose::Pose(float x, float y, float yaw) : x(x), y(y), yaw(yaw) {}
+Pose::Pose(double x, double y, double yaw) : x(x), y(y), yaw(yaw) {}

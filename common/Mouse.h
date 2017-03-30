@@ -78,6 +78,7 @@ public:
   static constexpr double ROT_TOLERANCE = 0.02;
   static constexpr double WHEEL_RAD = 0.015;
   static constexpr double WHEEL_CIRC = 2 * WHEEL_RAD * M_PI;
+  static constexpr double TRACK_WIDTH = 0.0626; // m
 
 protected:
   int row, col;
