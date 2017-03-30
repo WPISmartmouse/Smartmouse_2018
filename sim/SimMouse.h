@@ -98,10 +98,6 @@ private:
   static constexpr double INDICATOR_LEN = 0.001;
   static constexpr double INDICATOR_Z = 0.008;
 
-  const double kP = 0.002;
-  const double kI = 0.000;
-  const double kD = 0.000;
-
   static SimMouse *instance;
 
   bool walls[4];

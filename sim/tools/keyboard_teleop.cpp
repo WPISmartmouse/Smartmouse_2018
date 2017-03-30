@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
   node->Init();
 
   gazebo::transport::SubscriberPtr timeSub =
-          node->Subscribe("~/world_stats", &SimTimer::simTimeCallback);
+          node->Subscribe("~/world_stats", &SimTimer::simTimeCallback, &timer);
 
   gazebo::transport::PublisherPtr controlPub;
   controlPub = node->Advertise<gazebo::msgs::JointCmd>("~/mouse/joint_cmd");

@@ -8,7 +8,7 @@ const gazebo::common::Color SimMouse::grey_color{0.8, 0.8, 0.8, 1};
 
 double SimMouse::abstractForceToNewtons(double x) {
   // abstract force is from -255 to 255 per motor
-  return x * MAX_FORCE / 255;
+  return x * MAX_FORCE / 255.0;
 }
 
 SimMouse::SimMouse() : hasSuggestion(false), kinematic_controller(CONTROL_PERIOD_MS) {}
@@ -151,7 +151,7 @@ void SimMouse::robotStateCallback(ConstRobotStatePtr &msg) {
   true_pose.Rot().W(msg->true_pose().orientation().w());
 
   double x = true_pose.Pos().X() - SimMouse::INIT_X_OFFSET;
-  double y = -true_pose.Pos().Y() - SimMouse::INIT_Y_OFFSET;
+  double y = -(true_pose.Pos().Y() - SimMouse::INIT_Y_OFFSET);
 
   computed_row = (int) (y / AbstractMaze::UNIT_DIST);
   computed_col = (int) (x / AbstractMaze::UNIT_DIST);
@@ -201,7 +201,6 @@ void SimMouse::robotStateCallback(ConstRobotStatePtr &msg) {
 }
 
 void SimMouse::run(unsigned long time_ms) {
-
   double abstract_left_force;
   double abstract_right_force;
   std::tie(abstract_left_force, abstract_right_force) = kinematic_controller.run(time_ms, this->left_wheel_angle_rad,
@@ -221,34 +220,7 @@ void SimMouse::run(unsigned long time_ms) {
 }
 
 void SimMouse::setSpeed(double left_wheel_velocity_setpoint_mps, double right_wheel_velocity_setpoint_mps) {
-  static double left_wheel_velocity_mps;
-  static double right_wheel_velocity_mps;
-
-  double left_acc = START_ACCELERATION;
-  double right_acc = START_ACCELERATION;
-  if (left_wheel_velocity_setpoint_mps == 0) {
-    left_acc = STOP_ACCELERATION;
-  }
-  if (right_wheel_velocity_setpoint_mps == 0) {
-    right_acc = STOP_ACCELERATION;
-  }
-
-  if (right_wheel_velocity_mps < right_wheel_velocity_setpoint_mps) {
-    right_wheel_velocity_mps = std::min(right_wheel_velocity_mps + right_acc, right_wheel_velocity_setpoint_mps);
-  } else if (right_wheel_velocity_mps > right_wheel_velocity_setpoint_mps) {
-    right_wheel_velocity_mps = std::max(right_wheel_velocity_mps - right_acc, right_wheel_velocity_setpoint_mps);
-  }
-
-  if (left_wheel_velocity_mps < left_wheel_velocity_setpoint_mps) {
-    left_wheel_velocity_mps = std::min(left_wheel_velocity_mps + left_acc, left_wheel_velocity_setpoint_mps);
-  } else if (left_wheel_velocity_mps > left_wheel_velocity_setpoint_mps) {
-    left_wheel_velocity_mps = std::max(left_wheel_velocity_mps - left_acc, left_wheel_velocity_setpoint_mps);
-  }
-
-  double left_wheel_velocity_rps = metersPerSecToRadPerSec(left_wheel_velocity_mps);
-  double right_wheel_velocity_rps = metersPerSecToRadPerSec(right_wheel_velocity_mps);
-
-  kinematic_controller.setSpeed(left_wheel_velocity_rps, right_wheel_velocity_rps);
+  kinematic_controller.setSpeed(left_wheel_velocity_setpoint_mps, right_wheel_velocity_setpoint_mps);
 }
 
 void SimMouse::simInit() {

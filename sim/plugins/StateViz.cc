@@ -25,7 +25,8 @@ StateViz::StateViz() : GUIPlugin(), topic("/delete_plot") {
   QVBoxLayout *main_layout = new QVBoxLayout();
   QHBoxLayout *left_wheel_vel_layout = new QHBoxLayout();
   QHBoxLayout *right_wheel_vel_layout = new QHBoxLayout();
-  QHBoxLayout *row_col_dir_layout = new QHBoxLayout();
+  QHBoxLayout *row_col_layout = new QHBoxLayout();
+  QHBoxLayout *dir_layout = new QHBoxLayout();
   QHBoxLayout *x_layout = new QHBoxLayout();
   QHBoxLayout *y_layout = new QHBoxLayout();
   QHBoxLayout *yaw_layout = new QHBoxLayout();
@@ -86,12 +87,12 @@ StateViz::StateViz() : GUIPlugin(), topic("/delete_plot") {
   left_wheel_vel_layout->addWidget(left_wheel_velocity_edit);
   right_wheel_vel_layout->addWidget(right_wheel_velocity_label);
   right_wheel_vel_layout->addWidget(right_wheel_velocity_edit);
-  row_col_dir_layout->addWidget(row_label);
-  row_col_dir_layout->addWidget(row_edit);
-  row_col_dir_layout->addWidget(col_label);
-  row_col_dir_layout->addWidget(col_edit);
-  row_col_dir_layout->addWidget(dir_label);
-  row_col_dir_layout->addWidget(dir_edit);
+  row_col_layout->addWidget(row_label);
+  row_col_layout->addWidget(row_edit);
+  row_col_layout->addWidget(col_label);
+  row_col_layout->addWidget(col_edit);
+  dir_layout->addWidget(dir_label);
+  dir_layout->addWidget(dir_edit);
   x_layout->addWidget(true_x_label);
   x_layout->addWidget(true_x_edit);
   x_layout->addWidget(estimated_x_label);
@@ -106,7 +107,8 @@ StateViz::StateViz() : GUIPlugin(), topic("/delete_plot") {
   yaw_layout->addWidget(estimated_yaw_edit);
   main_layout->addLayout(left_wheel_vel_layout);
   main_layout->addLayout(right_wheel_vel_layout);
-  main_layout->addLayout(row_col_dir_layout);
+  main_layout->addLayout(row_col_layout);
+  main_layout->addLayout(dir_layout);
   main_layout->addLayout(x_layout);
   main_layout->addLayout(y_layout);
   main_layout->addLayout(yaw_layout);
@@ -121,7 +123,7 @@ StateViz::StateViz() : GUIPlugin(), topic("/delete_plot") {
   this->setLayout(main_layout);
 
   this->move(RegenerateWidget::WIDTH + SensorViz::WIDTH, 0);
-  this->setFixedSize(315, 150);
+  this->setFixedSize(340, 150);
 }
 
 StateViz::~StateViz() {

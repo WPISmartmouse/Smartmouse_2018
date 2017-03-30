@@ -16,6 +16,8 @@ KinematicMotorController::run(unsigned long time_ms, double left_angle_rad, doub
   abstract_forces.first = left_motor.run_pid(time_ms, left_angle_rad);
   abstract_forces.second = right_motor.run_pid(time_ms, right_angle_rad);
 
+  printf("computed %f\n", Mouse::radPerSecToMetersPerSec(left_motor.velocity_rps));
+
   return abstract_forces;
 }
 

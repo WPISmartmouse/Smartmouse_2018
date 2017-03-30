@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
   node->Init();
 
   gazebo::transport::SubscriberPtr timeSub =
-          node->Subscribe("~/world_stats", &SimTimer::simTimeCallback);
+          node->Subscribe("~/world_stats", &SimTimer::simTimeCallback, &timer);
 
   gazebo::transport::SubscriberPtr poseSub =
           node->Subscribe("~/mouse/state", &SimMouse::robotStateCallback, SimMouse::inst());
@@ -48,11 +48,16 @@ int main(int argc, char *argv[]) {
   while (!done) {
     done = scheduler.run();
     gzmaze::msgs::MazeLocation msg;
-    msg.set_row(SimMouse::inst()->getComputedRow());
-    msg.set_col(SimMouse::inst()->getComputedCol());
-    msg.set_row_offset(SimMouse::inst()->getRowOffsetToEdge());
-    msg.set_col_offset(SimMouse::inst()->getColOffsetToEdge());
-    std::string dir_str(1, dir_to_char(SimMouse::inst()->getDir()));
+    msg.set_row(mouse->getComputedRow());
+    msg.set_col(mouse->getComputedCol());
+    msg.set_row_offset(mouse->getRowOffsetToEdge());
+    msg.set_col_offset(mouse->getColOffsetToEdge());
+
+    Pose estimated_pose = mouse->getEstimatedPose();
+    msg.set_estimated_x_meters(estimated_pose.x);
+    msg.set_estimated_y_meters(estimated_pose.y);
+    msg.set_estimated_yaw_rad(estimated_pose.yaw);
+    std::string dir_str(1, dir_to_char(mouse->getDir()));
     msg.set_dir(dir_str);
 
     if (!msg.IsInitialized()) {

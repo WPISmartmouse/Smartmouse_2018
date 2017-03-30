@@ -31,10 +31,10 @@ RegenerateWidget::RegenerateWidget()
   randomButton->setStyleSheet("padding: 0px;");
   connect(randomButton, SIGNAL(clicked()), this, SLOT(OnRandomButton()));
 
-  textEdit = new QTextEdit(tr("~/Projects/Smartmouse_2017/mazes/competition.mz"));
+  textEdit = new QLineEdit(tr("~/Projects/Smartmouse_2017/mazes/competition.mz"));
+  QFont font("Times", 10, QFont::Normal, false);
+  textEdit->setFont(font);
   textEdit->setContentsMargins(1, 1, 1, 1);
-  textEdit->setAlignment(Qt::AlignBottom | Qt::AlignLeft);
-  textEdit->setObjectName("maze_filename");
 
   frameLayout->addWidget(browse_button);
   frameLayout->addWidget(textEdit);
@@ -88,7 +88,7 @@ void RegenerateWidget::OnRandomButton() {
 /////////////////////////////////////////////////
 void RegenerateWidget::OnButton() {
   msgs::GzString msg;
-  maze_filename = textEdit->toPlainText().toStdString();
+  maze_filename = textEdit->text().toStdString();
   std::string user = std::getenv("USER");
   boost::replace_all(maze_filename, "~", "/home/" + user);
   msg.set_data(maze_filename);

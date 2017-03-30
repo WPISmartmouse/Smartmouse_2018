@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) {
   node->Init();
 
   gazebo::transport::SubscriberPtr timeSub =
-          node->Subscribe("~/world_stats", &SimTimer::simTimeCallback);
+          node->Subscribe("~/world_stats", &SimTimer::simTimeCallback, &timer);
 
   gazebo::transport::SubscriberPtr poseSub =
           node->Subscribe("~/mouse/state", &SimMouse::robotStateCallback, SimMouse::inst());

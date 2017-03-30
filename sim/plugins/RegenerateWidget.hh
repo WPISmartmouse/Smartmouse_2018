@@ -13,8 +13,8 @@ namespace gazebo {
   Q_OBJECT
 
   public:
-    static constexpr unsigned int WIDTH = 350;
-    static constexpr unsigned int HEIGHT = 120;
+    static constexpr unsigned int WIDTH = 300;
+    static constexpr unsigned int HEIGHT = 80;
 
     RegenerateWidget();
 
@@ -31,7 +31,7 @@ namespace gazebo {
   private:
     transport::NodePtr node;
     transport::PublisherPtr regenPub;
-    QTextEdit *textEdit;
+    QLineEdit *textEdit;
     std::string maze_filename;
   };
 }

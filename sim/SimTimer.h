@@ -4,11 +4,17 @@
 
 class SimTimer : public TimerInterface {
 public:
+  SimTimer();
+
   virtual unsigned long programTimeMs() override;
 
-  static void simTimeCallback(ConstWorldStatisticsPtr &msg);
+  void simTimeCallback(ConstWorldStatisticsPtr &msg);
 
 private:
-  static unsigned long simTimeMs;
+  unsigned long sim_time_ms;
+  unsigned long last_sim_time_ms;
+  unsigned long wall_time_ms;
+  unsigned long last_wall_time_ms;
+  double realtime_ratio;
 
 };
