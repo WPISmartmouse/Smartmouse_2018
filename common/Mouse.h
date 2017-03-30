@@ -1,5 +1,6 @@
 #pragma once
 
+#include <math.h>
 #include "Direction.h"
 #include "AbstractMaze.h"
 
@@ -12,6 +13,11 @@
 class Mouse {
 
 public:
+
+  static double radPerSecToMetersPerSec(double x);
+
+  static double metersPerSecToRadPerSec(double x);
+
   Mouse();
 
   Mouse(AbstractMaze *maze);
@@ -70,6 +76,8 @@ public:
   AbstractMaze *maze;
 
   static constexpr double ROT_TOLERANCE = 0.02;
+  static constexpr double WHEEL_RAD = 0.015;
+  static constexpr double WHEEL_CIRC = 2 * WHEEL_RAD * M_PI;
 
 protected:
   int row, col;

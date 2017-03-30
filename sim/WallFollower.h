@@ -2,8 +2,10 @@
 
 #ifdef SIM
 
-#include "SimMouse.h"
+#include <common/Pose.h>
 #include <ignition/math.hh>
+
+#include "SimMouse.h"
 
 class WallFollower {
 public:
@@ -11,7 +13,7 @@ public:
 
   WallFollower(double goalDisp);
 
-  static double forwardDisplacement(Direction dir, ignition::math::Pose3d start_pose, ignition::math::Pose3d end_pose);
+  static double forwardDisplacement(Direction dir, Pose start_pose, Pose end_pose);
 
   static double dispToEdge(SimMouse *mouse);
 
@@ -20,7 +22,7 @@ public:
   static double yawDiff(double y1, double y2);
 
   std::pair<double, double>
-  compute_wheel_velocities(SimMouse *mouse, ignition::math::Pose3d start_pose, SimMouse::RangeData range_data);
+  compute_wheel_velocities(SimMouse *mouse, Pose start_pose, SimMouse::RangeData range_data);
 
   double disp;
   double goalDisp;

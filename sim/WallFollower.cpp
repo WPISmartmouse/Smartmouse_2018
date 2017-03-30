@@ -9,12 +9,11 @@ WallFollower::WallFollower(double goalDisp) : disp(0.0), goalDisp(goalDisp), dis
                                               lastRightWallError(0) {}
 
 std::pair<double, double>
-WallFollower::compute_wheel_velocities(SimMouse *mouse, ignition::math::Pose3d start_pose,
-                                       SimMouse::RangeData range_data) {
-  ignition::math::Pose3d current_pose = mouse->getExactPose();
+WallFollower::compute_wheel_velocities(SimMouse *mouse, Pose start_pose, SimMouse::RangeData range_data) {
+  Pose current_pose = mouse->getEstimatedPose();
   disp = forwardDisplacement(mouse->getDir(), start_pose, current_pose);
 
-  double currentYaw = current_pose.Rot().Yaw();
+  double currentYaw = current_pose.yaw;
   angleError = yawDiff(toYaw(mouse->getDir()), currentYaw);
   dToWallLeft = sin(SimMouse::ANALOG_ANGLE + angleError) * range_data.left_analog
                 + sin(angleError) * SimMouse::SIDE_ANALOG_X
@@ -59,16 +58,16 @@ WallFollower::compute_wheel_velocities(SimMouse *mouse, ignition::math::Pose3d s
 }
 
 double
-WallFollower::forwardDisplacement(Direction dir, ignition::math::Pose3d start_pose, ignition::math::Pose3d end_pose) {
+WallFollower::forwardDisplacement(Direction dir, Pose start_pose, Pose end_pose) {
   switch (dir) {
     case Direction::N:
-      return end_pose.Pos().Y() - start_pose.Pos().Y();
+      return end_pose.y - start_pose.y;
     case Direction::E:
-      return end_pose.Pos().X() - start_pose.Pos().X();
+      return end_pose.x - start_pose.x;
     case Direction::S:
-      return start_pose.Pos().Y() - end_pose.Pos().Y();
+      return start_pose.y - end_pose.y;
     case Direction::W:
-      return start_pose.Pos().X() - end_pose.Pos().X();
+      return start_pose.x - end_pose.x;
   }
 }
 

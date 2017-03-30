@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
 
     maze_location_pub->Publish(msg);
 
-    mouse->run();
+    mouse->run(timer.programTimeMs());
   }
 }
 

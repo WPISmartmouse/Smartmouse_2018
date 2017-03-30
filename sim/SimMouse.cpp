@@ -6,15 +6,12 @@
 SimMouse *SimMouse::instance = nullptr;
 const gazebo::common::Color SimMouse::grey_color{0.8, 0.8, 0.8, 1};
 
-double SimMouse::metersPerSecToRadPerSec(double x) {
-  return x / WHEEL_CIRC * (2 * M_PI);
+double SimMouse::abstractForceToNewtons(double x) {
+  // abstract force is from -255 to 255 per motor
+  return x * MAX_FORCE / 255;
 }
 
-double SimMouse::radPerSecToMetersPerSec(double x) {
-  return (x / (2 * M_PI)) * WHEEL_CIRC;
-}
-
-SimMouse::SimMouse() : hasSuggestion(false) {}
+SimMouse::SimMouse() : hasSuggestion(false), kinematic_controller(CONTROL_PERIOD_MS) {}
 
 SimMouse *SimMouse::inst() {
   if (instance == NULL) {
@@ -67,10 +64,7 @@ Pose SimMouse::getEstimatedPose() {
   //wait for the next message to occur
   std::unique_lock<std::mutex> lk(dataMutex);
   dataCond.wait(lk);
-  Pose pose;
-  pose.x = 0;
-  pose.y = 0;
-  pose.yaw = 0;
+  Pose pose = kinematic_controller.get_pose();
   return pose;
 }
 
@@ -78,7 +72,7 @@ ignition::math::Pose3d SimMouse::getExactPose() {
   //wait for the next message to occur
   std::unique_lock<std::mutex> lk(dataMutex);
   dataCond.wait(lk);
-  return pose;
+  return true_pose;
 }
 
 SimMouse::RangeData SimMouse::getRangeData() {
@@ -147,17 +141,17 @@ void SimMouse::resetIndicators(gazebo::common::Color color) {
 }
 
 void SimMouse::robotStateCallback(ConstRobotStatePtr &msg) {
-  pose.Pos().X(msg->pose().position().x());
-  pose.Pos().Y(msg->pose().position().y());
-  pose.Pos().Z(msg->pose().position().z());
+  true_pose.Pos().X(msg->true_pose().position().x());
+  true_pose.Pos().Y(msg->true_pose().position().y());
+  true_pose.Pos().Z(msg->true_pose().position().z());
 
-  pose.Rot().X(msg->pose().orientation().x());
-  pose.Rot().Y(msg->pose().orientation().y());
-  pose.Rot().Z(msg->pose().orientation().z());
-  pose.Rot().W(msg->pose().orientation().w());
+  true_pose.Rot().X(msg->true_pose().orientation().x());
+  true_pose.Rot().Y(msg->true_pose().orientation().y());
+  true_pose.Rot().Z(msg->true_pose().orientation().z());
+  true_pose.Rot().W(msg->true_pose().orientation().w());
 
-  double x = pose.Pos().X() - SimMouse::INIT_X_OFFSET;
-  double y = -pose.Pos().Y() - SimMouse::INIT_Y_OFFSET;
+  double x = true_pose.Pos().X() - SimMouse::INIT_X_OFFSET;
+  double y = -true_pose.Pos().Y() - SimMouse::INIT_Y_OFFSET;
 
   computed_row = (int) (y / AbstractMaze::UNIT_DIST);
   computed_col = (int) (x / AbstractMaze::UNIT_DIST);
@@ -167,8 +161,8 @@ void SimMouse::robotStateCallback(ConstRobotStatePtr &msg) {
   this->left_wheel_velocity = msg->left_wheel_velocity_mps();
   this->right_wheel_velocity = msg->right_wheel_velocity_mps();
 
-  this->left_wheel_angle = msg->left_wheel_angle_radians();
-  this->right_wheel_angle = msg->right_wheel_angle_radians();
+  this->left_wheel_angle_rad = msg->left_wheel_angle_radians();
+  this->right_wheel_angle_rad = msg->right_wheel_angle_radians();
 
   //transform from Mouse frame to Cardinal frame;
   this->range_data.left_analog = msg->left_analog();
@@ -206,16 +200,32 @@ void SimMouse::robotStateCallback(ConstRobotStatePtr &msg) {
   dataCond.notify_all();
 }
 
-void SimMouse::run() {
+void SimMouse::run(unsigned long time_ms) {
+
+  double abstract_left_force;
+  double abstract_right_force;
+  std::tie(abstract_left_force, abstract_right_force) = kinematic_controller.run(time_ms, this->left_wheel_angle_rad,
+                                                                                 this->right_wheel_angle_rad);
+
+  double left_force_newtons = abstractForceToNewtons(abstract_left_force);
+  gazebo::msgs::JointCmd left;
+  left.set_name("mouse::left_wheel_joint");
+  left.set_force(left_force_newtons);
+  controlPub->Publish(left);
+
+  double right_force_newtons = abstractForceToNewtons(abstract_right_force);
+  gazebo::msgs::JointCmd right;
+  right.set_name("mouse::right_wheel_joint");
+  right.set_force(right_force_newtons);
+  controlPub->Publish(right);
 }
 
-//lspeed and rspeed should be from -1 to 1
 void SimMouse::setSpeed(double left_wheel_velocity_setpoint_mps, double right_wheel_velocity_setpoint_mps) {
   static double left_wheel_velocity_mps;
   static double right_wheel_velocity_mps;
 
-  double left_acc = FWD_ACCELERATION;
-  double right_acc = FWD_ACCELERATION;
+  double left_acc = START_ACCELERATION;
+  double right_acc = START_ACCELERATION;
   if (left_wheel_velocity_setpoint_mps == 0) {
     left_acc = STOP_ACCELERATION;
   }
@@ -235,28 +245,15 @@ void SimMouse::setSpeed(double left_wheel_velocity_setpoint_mps, double right_wh
     left_wheel_velocity_mps = std::max(left_wheel_velocity_mps - left_acc, left_wheel_velocity_setpoint_mps);
   }
 
-  double left_wheel_velocity = metersPerSecToRadPerSec(left_wheel_velocity_mps);
-  double right_wheel_velocity = metersPerSecToRadPerSec(right_wheel_velocity_mps);
+  double left_wheel_velocity_rps = metersPerSecToRadPerSec(left_wheel_velocity_mps);
+  double right_wheel_velocity_rps = metersPerSecToRadPerSec(right_wheel_velocity_mps);
 
-  gazebo::msgs::JointCmd left;
-  left.set_name("mouse::left_wheel_joint");
-  left.mutable_velocity()->set_target(left_wheel_velocity);
-  left.mutable_velocity()->set_p_gain(kP);
-  left.mutable_velocity()->set_i_gain(kI);
-  left.mutable_velocity()->set_d_gain(kD);
-  controlPub->Publish(left);
-
-  gazebo::msgs::JointCmd right;
-  right.set_name("mouse::right_wheel_joint");
-  right.mutable_velocity()->set_target(right_wheel_velocity);
-  right.mutable_velocity()->set_p_gain(kP);
-  right.mutable_velocity()->set_i_gain(kI);
-  right.mutable_velocity()->set_d_gain(kD);
-  controlPub->Publish(right);
+  kinematic_controller.setSpeed(left_wheel_velocity_rps, right_wheel_velocity_rps);
 }
 
 void SimMouse::simInit() {
   setSpeed(0, 0);
+  kinematic_controller.setAcceleration(START_ACCELERATION, STOP_ACCELERATION);
   for (int i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
     for (int j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
       indicators[i][j] = new gazebo::msgs::Visual();

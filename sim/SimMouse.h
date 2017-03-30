@@ -11,12 +11,11 @@
 #include <ignition/math.hh>
 #include <common/Mouse.h>
 #include <common/Pose.h>
+#include <common/KinematicMotorController/KinematicController.h>
 
 class SimMouse : public Mouse {
 public:
-  static double radPerSecToMetersPerSec(double x);
-
-  static double metersPerSecToRadPerSec(double x);
+  static double abstractForceToNewtons(double x);
 
   static constexpr double ANALOG_ANGLE = 1.35255; // radians
   static constexpr double BINARY_ANGLE = 0.65; // radians
@@ -31,14 +30,14 @@ public:
   static constexpr double FRONT_BINARY_Y = 0.045; // meters
   static constexpr double MAX_SPEED = 0.18; // m/sec
   static constexpr double MIN_SPEED = 0.005; // m/sec
-  static constexpr double FWD_ACCELERATION = 0.002; // m/iteration^2
+  static constexpr double START_ACCELERATION = 0.002; // m/iteration^2
   static constexpr double STOP_ACCELERATION = 0.01; // m/iteration^2
   static constexpr double TRACK_WIDTH = 0.0626; // m
   static constexpr double WALL_DIST = 0.125;
-  static constexpr double WHEEL_RAD = 0.015;
-  static constexpr double WHEEL_CIRC = 2 * WHEEL_RAD * M_PI;
   static constexpr double INIT_X_OFFSET = -1.34; // meters
   static constexpr double INIT_Y_OFFSET= 1.35; // meters
+  static constexpr double MAX_FORCE = 0.016;  // 16kg/cm from datasheet
+  static constexpr unsigned long CONTROL_PERIOD_MS = 10; // every 10 ms?
   static const gazebo::common::Color grey_color;
 
   static SimMouse *inst();
@@ -78,7 +77,7 @@ public:
 
   void robotStateCallback(ConstRobotStatePtr &msg);
 
-  void run();
+  void run(unsigned long time_ms);
 
   void setSpeed(double left, double right);
 
@@ -105,26 +104,28 @@ private:
 
   static SimMouse *instance;
 
-  std::condition_variable dataCond;
-  std::mutex dataMutex;
-
-  ignition::math::Pose3d pose;
-
-  gazebo::transport::SubscriberPtr regen_sub;
-
   bool walls[4];
   bool suggestedWalls[4];
   bool hasSuggestion;
-  RangeData range_data;
-
   double left_wheel_velocity;
   double right_wheel_velocity;
-  double left_wheel_angle;
-  double right_wheel_angle;
+  double left_wheel_angle_rad;
+  double right_wheel_angle_rad;
   double row_offset_to_edge;
   double col_offset_to_edge;
   int computed_row;
   int computed_col;
+
+  RangeData range_data;
+
+  KinematicMotorController kinematic_controller;
+
+  std::condition_variable dataCond;
+  std::mutex dataMutex;
+
+  ignition::math::Pose3d true_pose;
+
+  gazebo::transport::SubscriberPtr regen_sub;
 
   gazebo::msgs::Visual *indicators[AbstractMaze::MAZE_SIZE][AbstractMaze::MAZE_SIZE];
 };

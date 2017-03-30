@@ -5,6 +5,8 @@
 #include <ignition/math.hh>
 #include <common/commanduino/CommanDuino.h>
 #include <common/Mouse.h>
+#include <common/Pose.h>
+
 #include "SimMouse.h"
 #include "WallFollower.h"
 
@@ -22,7 +24,7 @@ public:
 
 private:
 
-  ignition::math::Pose3d start;
+  Pose start;
   SimMouse *mouse;
 
   bool checkedWalls;

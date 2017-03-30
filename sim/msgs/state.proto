@@ -2,7 +2,7 @@ package gzmaze.msgs;
 import "pose.proto";
 
 message RobotState {
-    required gazebo.msgs.Pose pose = 1;
+    required gazebo.msgs.Pose true_pose = 1;
     required double left_wheel_velocity_mps = 2;
     required double right_wheel_velocity_mps = 3;
     required double left_wheel_angle_radians = 4;

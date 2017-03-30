@@ -124,7 +124,7 @@ void MousePlugin::PublishInfo() {
   right_accumulator = smooth_right_vel_mps;
 
   gzmaze::msgs::RobotState state;
-  state.set_allocated_pose(pose);
+  state.set_allocated_true_pose(pose);
   state.set_left_wheel_velocity_mps(smooth_left_vel_mps);
   state.set_right_wheel_velocity_mps(smooth_right_vel_mps);
   state.set_left_wheel_angle_radians(left_angle);

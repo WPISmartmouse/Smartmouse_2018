@@ -134,7 +134,7 @@ void StateViz::StateCallback(ConstRobotStatePtr &msg) {
   char right_wheel_velocity_str[12];
   snprintf(right_wheel_velocity_str, 12, "%0.2f cm/s", (100 * msg->right_wheel_velocity_mps()));
 
-  gazebo::msgs::Pose pose = msg->pose();
+  gazebo::msgs::Pose pose = msg->true_pose();
 
   this->last_pose = pose;
 
