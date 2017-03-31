@@ -31,7 +31,7 @@ RegenerateWidget::RegenerateWidget()
   randomButton->setStyleSheet("padding: 0px;");
   connect(randomButton, SIGNAL(clicked()), this, SLOT(OnRandomButton()));
 
-  textEdit = new QLineEdit(tr("~/Projects/Smartmouse_2017/mazes/competition.mz"));
+  textEdit = new QLineEdit(tr("~/Projects/Smartmouse_2017/mazes/16x16.mz"));
   QFont font("Times", 10, QFont::Normal, false);
   textEdit->setFont(font);
   textEdit->setContentsMargins(1, 1, 1, 1);

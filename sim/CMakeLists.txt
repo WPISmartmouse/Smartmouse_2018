@@ -131,11 +131,11 @@ endforeach ()
 #################################
 # command line tools for simulation
 #################################
-add_executable(teleop ./tools/keyboard_teleop.cpp)
-set_target_properties(teleop PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh")
-target_link_libraries(teleop sim ${GAZEBO_LIBRARIES} ncurses)
-target_include_directories(teleop PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${PROTOBUF_INCLUDE_DIRS} commands)
-add_dependencies(teleop gazebo_pch)
+add_executable(keyboard_teleop ./tools/keyboard_teleop.cpp)
+set_target_properties(keyboard_teleop PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh")
+target_link_libraries(keyboard_teleop sim ${GAZEBO_LIBRARIES} ncurses)
+target_include_directories(keyboard_teleop PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${PROTOBUF_INCLUDE_DIRS} commands)
+add_dependencies(keyboard_teleop gazebo_pch)
 
 add_executable(joy_teleop ./tools/joystick_teleop.cpp joystick/joystick.cc)
 set_target_properties(joy_teleop PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh")

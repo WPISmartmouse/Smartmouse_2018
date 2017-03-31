@@ -10,6 +10,12 @@ public:
 
   Pose get_pose();
 
+  void reset_x_to(double new_x);
+
+  void reset_y_to(double new_y);
+
+  void reset_yaw_to(double new_yaw);
+
   std::pair<double, double> run(unsigned long time_ms, double left_angle_rad, double right_angle_rad);
 
   void setAcceleration(double start_acceleration, double stop_acceleration);

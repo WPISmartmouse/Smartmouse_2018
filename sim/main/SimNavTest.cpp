@@ -1,12 +1,10 @@
 #ifdef SIM
 
 #include <iostream>
-#include <unistd.h>
 #include <gazebo/transport/TransportTypes.hh>
 #include <gazebo/msgs/joint_cmd.pb.h>
 #include <gazebo/msgs/visual.pb.h>
 #include <common/commands/NavTestCommand.h>
-#include <ignition/transport/Node.hh>
 
 #include "SimMouse.h"
 #include "SimTimer.h"
@@ -35,11 +33,11 @@ int main(int argc, char *argv[]) {
 
   mouse->joint_cmd_pub = node->Advertise<gazebo::msgs::JointCmd>("~/mouse/joint_cmd");
   mouse->indicator_pub = node->Advertise<gazebo::msgs::Visual>("~/visual", AbstractMaze::MAZE_SIZE *
-                                                                                     AbstractMaze::MAZE_SIZE);
+                                                                           AbstractMaze::MAZE_SIZE);
   mouse->maze_location_pub = node->Advertise<gzmaze::msgs::MazeLocation>("~/maze_location");
 
-  // .01 seconds
-  usleep(10000);
+  // wait for time messages to come
+  while (!timer.isTimeReady());
 
   mouse->simInit();
   Scheduler scheduler(new NavTestCommand());
@@ -47,6 +45,13 @@ int main(int argc, char *argv[]) {
   bool done = false;
   while (!done) {
     done = scheduler.run();
+    unsigned long time_ms = timer.programTimeMs();
+    mouse->run(time_ms);
+  }
+
+  printf("ALL COMMANDS HAVE FINISHED.\n");
+
+  while (true) {
     mouse->run(timer.programTimeMs());
   }
 }

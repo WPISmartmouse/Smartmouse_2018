@@ -3,16 +3,41 @@
 #include "KinematicController.h"
 
 KinematicMotorController::KinematicMotorController(unsigned long period_ms) : left_motor(period_ms),
-                                                                              right_motor(period_ms) {}
+                                                                              right_motor(period_ms) {
+  current_pose_estimate.x = 0;
+  current_pose_estimate.y = 0;
+  current_pose_estimate.yaw = 0;
+}
 
 Pose KinematicMotorController::get_pose() {
   return current_pose_estimate;
 }
 
+void KinematicMotorController::reset_x_to(double new_x) {
+  current_pose_estimate.x = new_x;
+}
+
+void KinematicMotorController::reset_y_to(double new_y) {
+  current_pose_estimate.y = new_y;
+}
+
+void KinematicMotorController::reset_yaw_to(double new_yaw) {
+  current_pose_estimate.yaw = new_yaw;
+}
+
 std::pair<double, double>
 KinematicMotorController::run(unsigned long time_ms, double left_angle_rad, double right_angle_rad) {
   static unsigned long last_run_time_ms = 0;
+  static bool initialized = false;
   std::pair<double, double> abstract_forces;
+  abstract_forces.first = 0;
+  abstract_forces.second = 0;
+
+  if (!initialized) {
+    initialized = true;
+    last_run_time_ms = time_ms;
+    return abstract_forces;
+  }
 
   abstract_forces.first = left_motor.run_pid(time_ms, left_angle_rad);
   abstract_forces.second = right_motor.run_pid(time_ms, right_angle_rad);
@@ -26,9 +51,16 @@ KinematicMotorController::run(unsigned long time_ms, double left_angle_rad, doub
   double y = current_pose_estimate.y;
   double yaw = current_pose_estimate.yaw;
 
-  current_pose_estimate.x = cos(w * dt) * r * sin(yaw) + sin(w * dt) * r * cos(yaw) + x - r * sin(yaw);
-  current_pose_estimate.x = sin(w * dt) * r * sin(yaw) - cos(w * dt) * r * cos(yaw) + y + r * sin(yaw);
-  current_pose_estimate.yaw = yaw + w * dt;
+  // going perfectly straight is a special condition
+  if (std::isnan(r)) {
+    current_pose_estimate.x += dt * (vl + vr) / 2;
+    current_pose_estimate.y += dt * (vl + vr) / 2;
+  }
+  else {
+    current_pose_estimate.x = cos(w * dt) * r * sin(yaw) + sin(w * dt) * r * cos(yaw) + x - r * sin(yaw);
+    current_pose_estimate.x = sin(w * dt) * r * sin(yaw) - cos(w * dt) * r * cos(yaw) + y + r * sin(yaw);
+    current_pose_estimate.yaw = yaw + w * dt;
+  }
 
   last_run_time_ms = time_ms;
 
@@ -69,8 +101,6 @@ void KinematicMotorController::setSpeed(double left_wheel_velocity_setpoint_mps,
 
   double left_wheel_velocity_rps = Mouse::metersPerSecToRadPerSec(left_wheel_velocity_mps);
   double right_wheel_velocity_rps = Mouse::metersPerSecToRadPerSec(right_wheel_velocity_mps);
-
-//  printf("%f, %f\n", left_wheel_velocity_mps, Mouse::radPerSecToMetersPerSec(left_motor.smoothed_velocity_rps));
 
   left_motor.set_setpoint(left_wheel_velocity_rps);
   right_motor.set_setpoint(right_wheel_velocity_rps);

@@ -30,10 +30,11 @@ int main(int argc, char *argv[]) {
 
   SimMouse::inst()->joint_cmd_pub = node->Advertise<gazebo::msgs::JointCmd>("~/mouse/joint_cmd");
   SimMouse::inst()->indicator_pub = node->Advertise<gazebo::msgs::Visual>("~/visual", AbstractMaze::MAZE_SIZE *
-                                                                                     AbstractMaze::MAZE_SIZE);
+                                                                                      AbstractMaze::MAZE_SIZE);
+  mouse->maze_location_pub = node->Advertise<gzmaze::msgs::MazeLocation>("~/maze_location");
 
-  // .01 seconds
-  usleep(10000);
+  // wait for time messages to come
+  while (!timer.isTimeReady());
 
   SimMouse::inst()->simInit();
 

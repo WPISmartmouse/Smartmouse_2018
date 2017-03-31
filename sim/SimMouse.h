@@ -33,8 +33,8 @@ public:
   static constexpr double START_ACCELERATION = 0.002; // m/iteration^2
   static constexpr double STOP_ACCELERATION = 0.01; // m/iteration^2
   static constexpr double WALL_DIST = 0.125;
-  static constexpr double INIT_X_OFFSET = -1.34; // meters
-  static constexpr double INIT_Y_OFFSET= 1.35; // meters
+  static constexpr double X_OFFSET = -1.34; // meters
+  static constexpr double Y_OFFSET= 1.35; // meters
   static constexpr double MAX_FORCE = 0.016;  // 16kg/cm from datasheet
   static constexpr unsigned long CONTROL_PERIOD_MS = 10; // every 10 ms?
   static const gazebo::common::Color grey_color;

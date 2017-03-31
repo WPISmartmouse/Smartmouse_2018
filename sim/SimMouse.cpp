@@ -200,12 +200,15 @@ void SimMouse::run(unsigned long time_ms) {
   msg.set_row_offset(getRowOffsetToEdge());
   msg.set_col_offset(getColOffsetToEdge());
 
+
   Pose estimated_pose = getEstimatedPose();
   msg.set_estimated_x_meters(estimated_pose.x);
   msg.set_estimated_y_meters(estimated_pose.y);
   msg.set_estimated_yaw_rad(estimated_pose.yaw);
   std::string dir_str(1, dir_to_char(getDir()));
   msg.set_dir(dir_str);
+
+  printf("%f, %f, %f\n", estimated_pose.x, estimated_pose.y, estimated_pose.yaw);
 
   if (!msg.IsInitialized()) {
     std::cerr << "Missing fields: [" <<  msg.InitializationErrorString() << "]" << std::endl;
@@ -238,7 +241,9 @@ void SimMouse::setSpeed(double left_wheel_velocity_setpoint_mps, double right_wh
 
 void SimMouse::simInit() {
   setSpeed(0, 0);
+
   kinematic_controller.setAcceleration(START_ACCELERATION, STOP_ACCELERATION);
+
   for (int i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
     for (int j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
       indicators[i][j] = new gazebo::msgs::Visual();
