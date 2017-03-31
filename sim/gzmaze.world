@@ -26,6 +26,7 @@
     </gui>
 
     <plugin name="maze" filename="libmaze_plugin.so"/>
+    <plugin name="fast_sim_time" filename="libfast_sim_time_pub_plugin.so"/>
 
 		<physics type="ode">
       <real_time_update_rate>1000.0</real_time_update_rate>

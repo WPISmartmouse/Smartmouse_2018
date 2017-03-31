@@ -9,7 +9,7 @@ Forward::Forward() : mouse(SimMouse::inst()), checkedWalls(false), wallOnLeft(tr
 void Forward::initialize() {
 //  mouse->resetIndicators(SimMouse::red_color);
 //  mouse->indicatePath(mouse->getRow(), mouse->getCol(), mouse->maze->pathToNextGoal, SimMouse::red_color);
-  start = mouse->getExactPose();
+  start = mouse->getEstimatedPose();
   follower.goalDisp = WallFollower::dispToEdge(mouse);
 }
 

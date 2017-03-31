@@ -5,6 +5,7 @@
 #include <gazebo/msgs/joint_cmd.pb.h>
 #include <gazebo/msgs/visual.pb.h>
 #include <common/commands/NavTestCommand.h>
+#include <ignition/transport.hh>
 
 #include "SimMouse.h"
 #include "SimTimer.h"
@@ -25,11 +26,15 @@ int main(int argc, char *argv[]) {
   gazebo::transport::NodePtr node(new gazebo::transport::Node());
   node->Init();
 
-  gazebo::transport::SubscriberPtr timeSub =
-          node->Subscribe("~/world_stats", &SimTimer::simTimeCallback, &timer);
+  ignition::transport::Node ign_node;
+  bool success = ign_node.Subscribe("/time_ms", &SimTimer::simTimeCallback, &timer);
+  if (!success) {
+    printf("Failed to subscribe to /time_ms\n");
+    return EXIT_FAILURE;
+  }
 
-  gazebo::transport::SubscriberPtr poseSub =
-          node->Subscribe("~/mouse/state", &SimMouse::robotStateCallback, SimMouse::inst());
+  gazebo::transport::SubscriberPtr poseSub = node->Subscribe("~/mouse/state", &SimMouse::robotStateCallback,
+                                                             SimMouse::inst());
 
   mouse->joint_cmd_pub = node->Advertise<gazebo::msgs::JointCmd>("~/mouse/joint_cmd");
   mouse->indicator_pub = node->Advertise<gazebo::msgs::Visual>("~/visual", AbstractMaze::MAZE_SIZE *
@@ -46,6 +51,7 @@ int main(int argc, char *argv[]) {
   while (!done) {
     done = scheduler.run();
     unsigned long time_ms = timer.programTimeMs();
+    printf("t: %lu\n", time_ms);
     mouse->run(time_ms);
   }
 }

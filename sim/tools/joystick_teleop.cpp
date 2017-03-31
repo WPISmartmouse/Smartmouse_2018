@@ -5,6 +5,7 @@
 #include <SimMouse.h>
 #include <SimTimer.h>
 #include <joystick/joystick.hh>
+#include <ignition/transport/Node.hh>
 
 int main(int argc, char **argv) {
   // Load gazebo
@@ -23,8 +24,12 @@ int main(int argc, char **argv) {
   gazebo::transport::NodePtr node(new gazebo::transport::Node());
   node->Init();
 
-  gazebo::transport::SubscriberPtr timeSub =
-          node->Subscribe("~/world_stats", &SimTimer::simTimeCallback, &timer);
+  ignition::transport::Node ign_node;
+  bool success = ign_node.Subscribe("/time_ms", &SimTimer::simTimeCallback, &timer);
+  if (!success) {
+    printf("Failed to subscribe to /time_ms\n");
+    return EXIT_FAILURE;
+  }
 
   gazebo::transport::PublisherPtr controlPub;
   controlPub = node->Advertise<gazebo::msgs::JointCmd>("~/mouse/joint_cmd");

@@ -74,6 +74,11 @@ target_link_libraries(link_plot_3d_plugin ${GAZEBO_LIBRARIES})
 set_target_properties(link_plot_3d_plugin PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh")
 add_dependencies(link_plot_3d_plugin gazebo_pch)
 
+add_library(fast_sim_time_pub_plugin SHARED plugins/FastSimTimePub.cc)
+target_link_libraries(fast_sim_time_pub_plugin ${GAZEBO_LIBRARIES})
+set_target_properties(fast_sim_time_pub_plugin PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh")
+add_dependencies(fast_sim_time_pub_plugin gazebo_pch)
+
 QT5_WRAP_CPP(state_viz_MOC plugins/StateViz.hh)
 add_library(state_viz SHARED ${state_viz_MOC} plugins/StateViz.cc)
 set_target_properties(state_viz PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh")

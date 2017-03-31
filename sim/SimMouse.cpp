@@ -217,6 +217,7 @@ void SimMouse::run(unsigned long time_ms) {
   // handle updating of odometry and PID
   double abstract_left_force;
   double abstract_right_force;
+
   std::tie(abstract_left_force, abstract_right_force) = kinematic_controller.run(time_ms, this->left_wheel_angle_rad,
                                                                                  this->right_wheel_angle_rad);
 
@@ -224,13 +225,13 @@ void SimMouse::run(unsigned long time_ms) {
   gazebo::msgs::JointCmd left;
   left.set_name("mouse::left_wheel_joint");
   left.set_force(left_force_newtons);
-  joint_cmd_pub->Publish(left);
+//  joint_cmd_pub->Publish(left);
 
   double right_force_newtons = abstractForceToNewtons(abstract_right_force);
   gazebo::msgs::JointCmd right;
   right.set_name("mouse::right_wheel_joint");
   right.set_force(right_force_newtons);
-  joint_cmd_pub->Publish(right);
+//  joint_cmd_pub->Publish(right);
 }
 
 void SimMouse::setSpeed(double left_wheel_velocity_setpoint_mps, double right_wheel_velocity_setpoint_mps) {

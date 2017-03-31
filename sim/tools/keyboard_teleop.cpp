@@ -6,6 +6,7 @@
 #include <ignition/math/Quaternion.hh>
 #include <gazebo/msgs/msgs.hh>
 #include <gazebo/common/Console.hh>
+#include <ignition/transport/Node.hh>
 
 #include "SimTimer.h"
 #include "SimMouse.h"
@@ -36,8 +37,12 @@ int main(int argc, char **argv) {
   gazebo::transport::NodePtr node(new gazebo::transport::Node());
   node->Init();
 
-  gazebo::transport::SubscriberPtr timeSub =
-          node->Subscribe("~/world_stats", &SimTimer::simTimeCallback, &timer);
+  ignition::transport::Node ign_node;
+  bool success = ign_node.Subscribe("/time_ms", &SimTimer::simTimeCallback, &timer);
+  if (!success) {
+    printf("Failed to subscribe to /time_ms\n");
+    return EXIT_FAILURE;
+  }
 
   gazebo::transport::PublisherPtr controlPub;
   controlPub = node->Advertise<gazebo::msgs::JointCmd>("~/mouse/joint_cmd");

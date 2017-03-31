@@ -3,6 +3,7 @@
 #include <common/commanduino/CommanDuino.h>
 #include <common/commands/SolveCommand.h>
 #include <common/Flood.h>
+#include <ignition/transport/Node.hh>
 
 #include "SimMouse.h"
 #include "SimTimer.h"
@@ -24,8 +25,12 @@ int main(int argc, char *argv[]) {
 
   SimMouse *mouse = SimMouse::inst();
 
-  gazebo::transport::SubscriberPtr timeSub =
-          node->Subscribe("~/world_stats", &SimTimer::simTimeCallback, &timer);
+  ignition::transport::Node ign_node;
+  bool success = ign_node.Subscribe("/time_ms", &SimTimer::simTimeCallback, &timer);
+  if (!success) {
+    printf("Failed to subscribe to /time_ms\n");
+    return EXIT_FAILURE;
+  }
 
   gazebo::transport::SubscriberPtr poseSub =
           node->Subscribe("~/mouse/state", &SimMouse::robotStateCallback, mouse);
@@ -46,6 +51,7 @@ int main(int argc, char *argv[]) {
   bool done = false;
   while (!done) {
     done = scheduler->run();
+    mouse->run(timer.programTimeMs());
   }
 }
 

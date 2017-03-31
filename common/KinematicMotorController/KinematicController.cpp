@@ -38,6 +38,13 @@ KinematicMotorController::run(unsigned long time_ms, double left_angle_rad, doub
     return abstract_forces;
   }
 
+  // skip one iteration if time went backwards
+  if (time_ms < last_run_time_ms) {
+    printf("TIME WENT BACKWARD\n");
+    last_run_time_ms = time_ms;
+    return abstract_forces;
+  }
+
   // run PID, which will update the velocities of the wheels
   abstract_forces.first = left_motor.run_pid(time_ms, left_angle_rad);
   abstract_forces.second = right_motor.run_pid(time_ms, right_angle_rad);
@@ -60,7 +67,16 @@ KinematicMotorController::run(unsigned long time_ms, double left_angle_rad, doub
   } else {
     current_pose_estimate.x = cos(w * dt) * r * sin(yaw) + sin(w * dt) * r * cos(yaw) + x - r * sin(yaw);
     current_pose_estimate.y = sin(w * dt) * r * sin(yaw) - cos(w * dt) * r * cos(yaw) + y + r * cos(yaw);
-    current_pose_estimate.yaw = yaw + w * dt;
+    yaw += w * dt;
+
+    if (yaw < -180) {
+      yaw += 360;
+    }
+    else if (yaw >= 180) {
+      yaw -= 360;
+    }
+
+    current_pose_estimate.yaw = yaw;
   }
 
   last_run_time_ms = time_ms;
