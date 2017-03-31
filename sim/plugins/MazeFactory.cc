@@ -1,3 +1,4 @@
+#include <sim/SimMouse.h>
 #include "MazeFactory.hh"
 
 namespace gazebo {
@@ -61,7 +62,7 @@ namespace gazebo {
     }
 
     model->GetAttribute("name")->Set("my_maze");
-    model->GetElement("pose")->Set(ignition::math::Pose3d(0, 0, 0, 0, 0, 0));
+    model->GetElement("pose")->Set(ignition::math::Pose3d(-X_OFFSET, -Y_OFFSET, 0, 0, 0, 0));
     parent->InsertModelSDF(*modelSDF);
   }
 

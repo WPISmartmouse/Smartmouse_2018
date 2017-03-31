@@ -25,7 +25,7 @@ RegenerateWidget::RegenerateWidget()
 
   QPushButton *button = new QPushButton(tr("Regenerate From File"));
   button->setStyleSheet("padding: 0px;");
-  connect(button, SIGNAL(clicked()), this, SLOT(OnButton()));
+  connect(button, SIGNAL(clicked()), this, SLOT(OnInsertFromFile()));
 
   QPushButton *randomButton = new QPushButton(tr("Regenerate Randomly"));
   randomButton->setStyleSheet("padding: 0px;");
@@ -55,6 +55,7 @@ RegenerateWidget::RegenerateWidget()
   this->node->Init();
   this->regenPub = this->node->Advertise<msgs::GzString>("~/maze/regenerate");
 }
+
 
 /////////////////////////////////////////////////
 RegenerateWidget::~RegenerateWidget() {
@@ -86,7 +87,7 @@ void RegenerateWidget::OnRandomButton() {
 }
 
 /////////////////////////////////////////////////
-void RegenerateWidget::OnButton() {
+void RegenerateWidget::OnInsertFromFile() {
   msgs::GzString msg;
   maze_filename = textEdit->text().toStdString();
   std::string user = std::getenv("USER");

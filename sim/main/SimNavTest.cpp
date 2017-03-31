@@ -51,7 +51,13 @@ int main(int argc, char *argv[]) {
   while (!done) {
     done = scheduler.run();
     unsigned long time_ms = timer.programTimeMs();
-    printf("t: %lu\n", time_ms);
+    mouse->run(time_ms);
+  }
+
+  printf("Commands done.");
+
+  while (true) {
+    unsigned long time_ms = timer.programTimeMs();
     mouse->run(time_ms);
   }
 }

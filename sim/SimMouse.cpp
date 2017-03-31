@@ -243,15 +243,15 @@ void SimMouse::simInit() {
 
   // we start in the middle of the first square
   kinematic_controller.reset_x_to(AbstractMaze::HALF_UNIT_DIST);
+  kinematic_controller.reset_y_to(AbstractMaze::HALF_UNIT_DIST);
   kinematic_controller.setAcceleration(START_ACCELERATION, STOP_ACCELERATION);
 
-  for (int i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
-    for (int j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
-      indicators[i][j] = new gazebo::msgs::Visual();
-      updateIndicator(i, j, grey_color);
-    }
-  }
-  publishIndicators();
+//  for (int i = 0; i < AbstractMaze::MAZE_SIZE; i++) { for (int j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
+//      indicators[i][j] = new gazebo::msgs::Visual();
+//      updateIndicator(i, j, grey_color);
+//    }
+//  }
+//  publishIndicators();
 }
 
 void SimMouse::updateIndicator(int row, int col, gazebo::common::Color color) {

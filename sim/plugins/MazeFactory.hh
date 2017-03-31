@@ -2,23 +2,12 @@
 #include <random>
 #include <gazebo/gazebo_core.hh>
 #include <gazebo/msgs/gz_string.pb.h>
+#include <common/Direction.h>
 
 namespace gazebo {
 
-  enum class Direction {
-    N,
-    E,
-    S,
-    W,
-    Last,
-    First = N,
-    INVALID = -1
-  };
-
-  /**
-   * \brief increments the direction in the order N, E, S, W, N, ...
-   */
-  Direction operator++(Direction &dir, int);
+  static constexpr double X_OFFSET = -8 * AbstractMaze::UNIT_DIST; // meters
+  static constexpr double Y_OFFSET= 8 * AbstractMaze::UNIT_DIST; // meters
 
   class MazeFactory : public WorldPlugin {
 

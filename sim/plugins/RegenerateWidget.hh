@@ -26,7 +26,7 @@ namespace gazebo {
 
     void OnBrowseFile();
 
-    void OnButton();
+    void OnInsertFromFile();
 
   private:
     transport::NodePtr node;
