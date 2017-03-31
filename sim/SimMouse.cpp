@@ -145,6 +145,7 @@ void SimMouse::robotStateCallback(ConstRobotStatePtr &msg) {
   true_pose.y = msg->true_y_meters();
   true_pose.yaw = msg->true_yaw_rad();
 
+  // TODO: Consider also computing this on estimate pose?
   computed_row = (int) (msg->true_y_meters() / AbstractMaze::UNIT_DIST);
   computed_col = (int) (msg->true_x_meters() / AbstractMaze::UNIT_DIST);
   row_offset_to_edge = fmod(msg->true_y_meters(), AbstractMaze::UNIT_DIST);
@@ -200,7 +201,6 @@ void SimMouse::run(unsigned long time_ms) {
   msg.set_row_offset(getRowOffsetToEdge());
   msg.set_col_offset(getColOffsetToEdge());
 
-
   Pose estimated_pose = getEstimatedPose();
   msg.set_estimated_x_meters(estimated_pose.x);
   msg.set_estimated_y_meters(estimated_pose.y);
@@ -208,10 +208,8 @@ void SimMouse::run(unsigned long time_ms) {
   std::string dir_str(1, dir_to_char(getDir()));
   msg.set_dir(dir_str);
 
-  printf("%f, %f, %f\n", estimated_pose.x, estimated_pose.y, estimated_pose.yaw);
-
   if (!msg.IsInitialized()) {
-    std::cerr << "Missing fields: [" <<  msg.InitializationErrorString() << "]" << std::endl;
+    std::cerr << "Missing fields: [" << msg.InitializationErrorString() << "]" << std::endl;
   }
 
   maze_location_pub->Publish(msg);
@@ -251,13 +249,6 @@ void SimMouse::simInit() {
     }
   }
   publishIndicators();
-}
-
-void SimMouse::suggestWalls(bool *walls) {
-  hasSuggestion = true;
-  for (int i = 0; i < 4; i++) {
-    suggestedWalls[i] = walls[i];
-  }
 }
 
 void SimMouse::updateIndicator(int row, int col, gazebo::common::Color color) {

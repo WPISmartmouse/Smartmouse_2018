@@ -22,24 +22,26 @@ int main(int argc, char *argv[]) {
   gazebo::transport::NodePtr node(new gazebo::transport::Node());
   node->Init();
 
+  SimMouse *mouse = SimMouse::inst();
+
   gazebo::transport::SubscriberPtr timeSub =
           node->Subscribe("~/world_stats", &SimTimer::simTimeCallback, &timer);
 
   gazebo::transport::SubscriberPtr poseSub =
-          node->Subscribe("~/mouse/state", &SimMouse::robotStateCallback, SimMouse::inst());
+          node->Subscribe("~/mouse/state", &SimMouse::robotStateCallback, mouse);
 
-  SimMouse::inst()->joint_cmd_pub = node->Advertise<gazebo::msgs::JointCmd>("~/mouse/joint_cmd");
-  SimMouse::inst()->indicator_pub = node->Advertise<gazebo::msgs::Visual>("~/visual", AbstractMaze::MAZE_SIZE *
+  mouse->joint_cmd_pub = node->Advertise<gazebo::msgs::JointCmd>("~/mouse/joint_cmd");
+  mouse->indicator_pub = node->Advertise<gazebo::msgs::Visual>("~/visual", AbstractMaze::MAZE_SIZE *
                                                                                       AbstractMaze::MAZE_SIZE);
   mouse->maze_location_pub = node->Advertise<gzmaze::msgs::MazeLocation>("~/maze_location");
 
   // wait for time messages to come
   while (!timer.isTimeReady());
 
-  SimMouse::inst()->simInit();
+  mouse->simInit();
 
   Scheduler *scheduler;
-  scheduler = new Scheduler(new SolveCommand(new Flood(SimMouse::inst())));
+  scheduler = new Scheduler(new SolveCommand(new Flood(mouse)));
 
   bool done = false;
   while (!done) {

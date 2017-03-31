@@ -39,8 +39,11 @@ KinematicMotorController::run(unsigned long time_ms, double left_angle_rad, doub
     return abstract_forces;
   }
 
+  // run PID, which will update the velocities of the wheels
   abstract_forces.first = left_motor.run_pid(time_ms, left_angle_rad);
   abstract_forces.second = right_motor.run_pid(time_ms, right_angle_rad);
+
+  printf("%f\n", left_motor.smoothed_velocity_rps);
 
   double vl = left_motor.smoothed_velocity_rps;
   double vr = right_motor.smoothed_velocity_rps;
@@ -58,7 +61,7 @@ KinematicMotorController::run(unsigned long time_ms, double left_angle_rad, doub
   }
   else {
     current_pose_estimate.x = cos(w * dt) * r * sin(yaw) + sin(w * dt) * r * cos(yaw) + x - r * sin(yaw);
-    current_pose_estimate.x = sin(w * dt) * r * sin(yaw) - cos(w * dt) * r * cos(yaw) + y + r * sin(yaw);
+    current_pose_estimate.y = sin(w * dt) * r * sin(yaw) - cos(w * dt) * r * cos(yaw) + y + r * cos(yaw);
     current_pose_estimate.yaw = yaw + w * dt;
   }
 

@@ -82,8 +82,6 @@ public:
 
   void simInit();
 
-  void suggestWalls(bool *walls);
-
   void updateIndicator(int row, int col, gazebo::common::Color);
 
   gazebo::transport::PublisherPtr joint_cmd_pub;

@@ -47,8 +47,6 @@ void Forward::end() {
 
   walls[static_cast<int>(mouse->getDir())] = range_data.front_binary;
   walls[static_cast<int>(opposite_direction(mouse->getDir()))] = false;
-
-  mouse->suggestWalls(walls);
 }
 
 #endif

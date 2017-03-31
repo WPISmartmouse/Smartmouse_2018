@@ -49,8 +49,6 @@ void ForwardToCenter::end() {
 //  mouse->indicatePath(0, 0, mouse->maze->fastest_theoretical_route, SimMouse::blue_color);
   walls[static_cast<int>(mouse->getDir())] = range_data.front_binary;
   walls[static_cast<int>(opposite_direction(mouse->getDir()))] = false;
-
-  mouse->suggestWalls(walls);
 }
 
 #endif

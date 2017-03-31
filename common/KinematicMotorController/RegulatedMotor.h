@@ -13,6 +13,7 @@ public:
   static const double kD;
   static const double kFF;
   static const double INTEGRAL_CAP;
+  static const double VEL_SMOOTHING;
 
   double abstract_force;
   double derivative;
@@ -24,6 +25,5 @@ public:
   double smoothed_velocity_rps;
   double velocity_rps;
   unsigned long period_ms;
-  unsigned long last_update_time_ms;
 
 };

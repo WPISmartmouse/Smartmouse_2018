@@ -117,8 +117,8 @@ void MousePlugin::PublishInfo() {
   double left_vel_mps = SimMouse::radPerSecToMetersPerSec(left_vel_rps);
   double right_vel_mps = SimMouse::radPerSecToMetersPerSec(right_vel_rps);
 
-  double smooth_left_vel_mps = (0.8 * left_accumulator + 0.2 * left_vel_mps);
-  double smooth_right_vel_mps = (0.8 * right_accumulator + 0.2 * right_vel_mps);
+  double smooth_left_vel_mps = (RegulatedMotor::VEL_SMOOTHING * left_accumulator) + ((1 - RegulatedMotor::VEL_SMOOTHING) * left_vel_mps);
+  double smooth_right_vel_mps = (RegulatedMotor::VEL_SMOOTHING * right_accumulator) + ((1 - RegulatedMotor::VEL_SMOOTHING) * right_vel_mps);
 
   left_accumulator = smooth_left_vel_mps;
   right_accumulator = smooth_right_vel_mps;
@@ -140,4 +140,5 @@ void MousePlugin::PublishInfo() {
   state.set_true_yaw_rad(yaw);
   state_pub->Publish(state);
 
+  printf("true %f\n", Mouse::metersPerSecToRadPerSec(smooth_left_vel_mps));
 }

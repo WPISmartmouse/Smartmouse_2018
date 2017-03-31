@@ -42,8 +42,8 @@ StateViz::StateViz() : GUIPlugin(), topic("/delete_plot") {
   estimated_y_label = new QLabel(tr("estimated y:"));
   estimated_yaw_label = new QLabel(tr("estimated yaw:"));
 
-  left_wheel_velocity_edit = new QLineEdit(tr("0.000 m/sec"));
-  right_wheel_velocity_edit = new QLineEdit(tr("0.000 m/sec"));
+  left_wheel_velocity_edit = new QLineEdit(tr("0.00000 m/sec"));
+  right_wheel_velocity_edit = new QLineEdit(tr("0.00000 m/sec"));
   row_edit = new QLineEdit(tr("0"));
   col_edit = new QLineEdit(tr("0"));
   true_x_edit = new QLineEdit(tr("0"));
@@ -130,11 +130,11 @@ StateViz::~StateViz() {
 }
 
 void StateViz::StateCallback(ConstRobotStatePtr &msg) {
-  char left_wheel_velocity_str[12];
-  snprintf(left_wheel_velocity_str, 12, "%0.2f cm/s", (100 * msg->left_wheel_velocity_mps()));
+  char left_wheel_velocity_str[14];
+  snprintf(left_wheel_velocity_str, 14, "%0.4f cm/s", (100 * msg->left_wheel_velocity_mps()));
 
-  char right_wheel_velocity_str[12];
-  snprintf(right_wheel_velocity_str, 12, "%0.2f cm/s", (100 * msg->right_wheel_velocity_mps()));
+  char right_wheel_velocity_str[14];
+  snprintf(right_wheel_velocity_str, 14, "%0.4f cm/s", (100 * msg->right_wheel_velocity_mps()));
 
   gazebo::msgs::Pose pose = msg->true_pose();
 
