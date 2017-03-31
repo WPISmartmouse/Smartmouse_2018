@@ -36,7 +36,7 @@ public:
   static constexpr double X_OFFSET = -1.34; // meters
   static constexpr double Y_OFFSET= 1.35; // meters
   static constexpr double MAX_FORCE = 0.016;  // 16kg/cm from datasheet
-  static constexpr unsigned long CONTROL_PERIOD_MS = 5;
+  static constexpr unsigned long CONTROL_PERIOD_MS = 20;
   static const gazebo::common::Color grey_color;
 
   static SimMouse *inst();

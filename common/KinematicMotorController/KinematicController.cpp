@@ -43,10 +43,12 @@ KinematicMotorController::run(unsigned long time_ms, double left_angle_rad, doub
   abstract_forces.first = left_motor.run_pid(time_ms, left_angle_rad);
   abstract_forces.second = right_motor.run_pid(time_ms, right_angle_rad);
 
-  printf("%f\n", 100 * Mouse::radPerSecToMetersPerSec(left_motor.smoothed_velocity_rps));
+  // equations based on https://chess.eecs.berkeley.edu/eecs149/documentation/differentialDrive.pdf
+  double vl = Mouse::radPerSecToMetersPerSec(left_motor.smoothed_velocity_rps);
+  double vr = Mouse::radPerSecToMetersPerSec(right_motor.smoothed_velocity_rps);
 
-  double vl = left_motor.smoothed_velocity_rps;
-  double vr = right_motor.smoothed_velocity_rps;
+  printf("%f\n", vl);
+
   double w = (vr - vl) / Mouse::TRACK_WIDTH;
   double r = Mouse::TRACK_WIDTH / 2 * (vl + vr) / (vr - vl);
   double dt = (time_ms - last_run_time_ms) / 1000.0;

@@ -6,7 +6,7 @@ const double RegulatedMotor::kI = 0.0;
 const double RegulatedMotor::kD = 0.0;
 const double RegulatedMotor::kFF = 0.4;
 const double RegulatedMotor::INTEGRAL_CAP = 0.0;
-const double RegulatedMotor::VEL_SMOOTHING = 0.5;
+const double RegulatedMotor::VEL_SMOOTHING = 0.6;
 
 RegulatedMotor::RegulatedMotor(unsigned long period_ms) : abstract_force(0), integral(0), last_angle_rad(0),
                                                           last_error(0), setpoint_rps(0), smoothed_velocity_rps(0),
@@ -41,8 +41,8 @@ double RegulatedMotor::run_pid(unsigned long time_ms, double angle_rad) {
     last_angle_rad = angle_rad;
   }
 
+  return 15;
 //  return abstract_force;
-  return 20;
 }
 
 void RegulatedMotor::set_setpoint(double setpoint_rps) {
