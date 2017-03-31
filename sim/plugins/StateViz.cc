@@ -123,7 +123,7 @@ StateViz::StateViz() : GUIPlugin(), topic("/delete_plot") {
   this->setLayout(main_layout);
 
   this->move(RegenerateWidget::WIDTH + SensorViz::WIDTH, 0);
-  this->setFixedSize(340, 150);
+  this->setFixedSize(340, 165);
 }
 
 StateViz::~StateViz() {

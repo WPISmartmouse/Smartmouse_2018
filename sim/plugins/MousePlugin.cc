@@ -139,6 +139,4 @@ void MousePlugin::PublishInfo() {
   double yaw = relativePose.Rot().Euler()[2];
   state.set_true_yaw_rad(yaw);
   state_pub->Publish(state);
-
-  printf("true %f\n", Mouse::metersPerSecToRadPerSec(smooth_left_vel_mps));
 }

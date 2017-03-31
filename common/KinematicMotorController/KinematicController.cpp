@@ -43,7 +43,7 @@ KinematicMotorController::run(unsigned long time_ms, double left_angle_rad, doub
   abstract_forces.first = left_motor.run_pid(time_ms, left_angle_rad);
   abstract_forces.second = right_motor.run_pid(time_ms, right_angle_rad);
 
-  printf("%f\n", left_motor.smoothed_velocity_rps);
+  printf("%f\n", 100 * Mouse::radPerSecToMetersPerSec(left_motor.smoothed_velocity_rps));
 
   double vl = left_motor.smoothed_velocity_rps;
   double vr = right_motor.smoothed_velocity_rps;
