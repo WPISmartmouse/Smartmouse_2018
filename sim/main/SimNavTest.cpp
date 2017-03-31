@@ -48,12 +48,6 @@ int main(int argc, char *argv[]) {
     unsigned long time_ms = timer.programTimeMs();
     mouse->run(time_ms);
   }
-
-  printf("ALL COMMANDS HAVE FINISHED.\n");
-
-  while (true) {
-    mouse->run(timer.programTimeMs());
-  }
 }
 
 #endif

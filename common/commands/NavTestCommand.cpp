@@ -5,5 +5,6 @@
 
 NavTestCommand::NavTestCommand() : CommandGroup("NavTestGroup") {
   addSequential(new Forward());
-  addSequential(new Stop(200));
+  addSequential(new Forward());
+  addSequential(new Stop(50));
 }

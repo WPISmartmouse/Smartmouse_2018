@@ -240,6 +240,8 @@ void SimMouse::setSpeed(double left_wheel_velocity_setpoint_mps, double right_wh
 void SimMouse::simInit() {
   setSpeed(0, 0);
 
+  // we start in the middle of the first square
+  kinematic_controller.reset_x_to(AbstractMaze::HALF_UNIT_DIST);
   kinematic_controller.setAcceleration(START_ACCELERATION, STOP_ACCELERATION);
 
   for (int i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
