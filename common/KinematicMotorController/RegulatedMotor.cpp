@@ -39,8 +39,7 @@ double RegulatedMotor::run_pid(unsigned long time_ms, double angle_rad) {
     last_angle_rad = angle_rad;
   }
 
-  return 15;
-//  return abstract_force;
+  return abstract_force;
 }
 
 void RegulatedMotor::set_setpoint(double setpoint_rps) {

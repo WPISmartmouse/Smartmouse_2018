@@ -46,8 +46,6 @@ KinematicMotorController::run(unsigned long time_ms, double left_angle_rad, doub
   double vl = Mouse::radPerSecToMetersPerSec(left_motor.smoothed_velocity_rps);
   double vr = Mouse::radPerSecToMetersPerSec(right_motor.smoothed_velocity_rps);
 
-  printf("%f\n", vr);
-
   double w = (vr - vl) / Mouse::TRACK_WIDTH;
   double r = Mouse::TRACK_WIDTH / 2 * (vl + vr) / (vr - vl);
   double dt = (time_ms - last_run_time_ms) / 1000.0;
