@@ -2,8 +2,9 @@
 #include <common/Mouse.h>
 #include "KinematicController.h"
 
-KinematicMotorController::KinematicMotorController(unsigned long period_ms) : left_motor(period_ms),
-                                                                              right_motor(period_ms) {
+KinematicMotorController::KinematicMotorController(unsigned long period_ms) : initialized(false), left_motor(period_ms),
+                                                                              right_motor(period_ms),
+                                                                              last_run_time_ms(0) {
   current_pose_estimate.x = 0;
   current_pose_estimate.y = 0;
   current_pose_estimate.yaw = 0;
@@ -27,8 +28,6 @@ void KinematicMotorController::reset_yaw_to(double new_yaw) {
 
 std::pair<double, double>
 KinematicMotorController::run(unsigned long time_ms, double left_angle_rad, double right_angle_rad) {
-  static unsigned long last_run_time_ms = 0;
-  static bool initialized = false;
   std::pair<double, double> abstract_forces;
   abstract_forces.first = 0;
   abstract_forces.second = 0;
@@ -47,7 +46,7 @@ KinematicMotorController::run(unsigned long time_ms, double left_angle_rad, doub
   double vl = Mouse::radPerSecToMetersPerSec(left_motor.smoothed_velocity_rps);
   double vr = Mouse::radPerSecToMetersPerSec(right_motor.smoothed_velocity_rps);
 
-  printf("%f\n", vl);
+  printf("%f\n", vr);
 
   double w = (vr - vl) / Mouse::TRACK_WIDTH;
   double r = Mouse::TRACK_WIDTH / 2 * (vl + vr) / (vr - vl);
@@ -60,8 +59,7 @@ KinematicMotorController::run(unsigned long time_ms, double left_angle_rad, doub
   if (std::isnan(r)) {
     current_pose_estimate.x += dt * (vl + vr) / 2;
     current_pose_estimate.y += dt * (vl + vr) / 2;
-  }
-  else {
+  } else {
     current_pose_estimate.x = cos(w * dt) * r * sin(yaw) + sin(w * dt) * r * cos(yaw) + x - r * sin(yaw);
     current_pose_estimate.y = sin(w * dt) * r * sin(yaw) - cos(w * dt) * r * cos(yaw) + y + r * cos(yaw);
     current_pose_estimate.yaw = yaw + w * dt;

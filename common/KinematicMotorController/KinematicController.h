@@ -23,8 +23,10 @@ public:
   void setSpeed(double left_wheel_velocity_setpoint_mps, double right_wheel_velocity_setpoint_mps);
 
 private:
+  bool initialized = false;
   double start_acceleration;
   double stop_acceleration;
+  unsigned long last_run_time_ms;
 
   Pose current_pose_estimate;
   RegulatedMotor left_motor;

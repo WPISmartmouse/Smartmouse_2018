@@ -8,14 +8,12 @@ const double RegulatedMotor::kFF = 0.4;
 const double RegulatedMotor::INTEGRAL_CAP = 0.0;
 const double RegulatedMotor::VEL_SMOOTHING = 0.6;
 
-RegulatedMotor::RegulatedMotor(unsigned long period_ms) : abstract_force(0), integral(0), last_angle_rad(0),
-                                                          last_error(0), setpoint_rps(0), smoothed_velocity_rps(0),
-                                                          period_ms(period_ms) {}
+RegulatedMotor::RegulatedMotor(unsigned long period_ms) : initialized(false), abstract_force(0), integral(0),
+                                                          last_angle_rad(0), last_error(0), setpoint_rps(0),
+                                                          smoothed_velocity_rps(0), period_ms(period_ms),
+                                                          last_run_time_ms(0) {}
 
 double RegulatedMotor::run_pid(unsigned long time_ms, double angle_rad) {
-  static unsigned long last_run_time_ms;
-  static bool initialized = false;
-
   if (!initialized) {
     initialized = true;
     last_run_time_ms = time_ms;

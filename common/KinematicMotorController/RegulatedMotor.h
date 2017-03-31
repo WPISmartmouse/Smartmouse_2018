@@ -15,6 +15,7 @@ public:
   static const double INTEGRAL_CAP;
   static const double VEL_SMOOTHING;
 
+  bool initialized = false;
   double abstract_force;
   double derivative;
   double error;
@@ -25,5 +26,6 @@ public:
   double smoothed_velocity_rps;
   double velocity_rps;
   unsigned long period_ms;
+  unsigned long last_run_time_ms;
 
 };
