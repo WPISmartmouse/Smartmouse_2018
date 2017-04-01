@@ -140,11 +140,11 @@ void StateViz::StateCallback(ConstRobotStatePtr &msg) {
 
   this->last_pose = pose;
 
-  char x_str[15];
-  snprintf(x_str, 15, "%0.3f m", msg->true_x_meters());
+  char x_str[14];
+  snprintf(x_str, 14, "%0.3f cm", msg->true_x_meters() * 100);
 
-  char y_str[15];
-  snprintf(y_str, 15, "%0.3f m", msg->true_y_meters());
+  char y_str[14];
+  snprintf(y_str, 14, "%0.3f cm", msg->true_y_meters() * 100);
 
   char yaw_str[15];
   snprintf(yaw_str, 15, "%0.1f deg", (msg->true_yaw_rad() * 180 / M_PI));
@@ -168,10 +168,10 @@ void StateViz::MazeLocationCallback(ConstMazeLocationPtr &msg) {
   this->SetDir(QString::fromStdString(msg->dir()));
 
   char x_str[14];
-  snprintf(x_str, 14, "%0.3f m", msg->estimated_x_meters());
+  snprintf(x_str, 14, "%0.3f cm", msg->estimated_x_meters() * 100);
 
   char y_str[14];
-  snprintf(y_str, 14, "%0.3f m", msg->estimated_y_meters());
+  snprintf(y_str, 14, "%0.3f cm", msg->estimated_y_meters() * 100);
 
   char yaw_str[14];
   snprintf(yaw_str, 14, "%0.1f deg", (msg->estimated_yaw_rad() * 180 / M_PI));

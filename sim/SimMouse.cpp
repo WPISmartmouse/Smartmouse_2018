@@ -61,9 +61,6 @@ int SimMouse::getComputedRow() {
 }
 
 Pose SimMouse::getEstimatedPose() {
-  //wait for the next message to occur
-  std::unique_lock<std::mutex> lk(dataMutex);
-  dataCond.wait(lk);
   Pose pose = kinematic_controller.get_pose();
   return pose;
 }
@@ -146,10 +143,11 @@ void SimMouse::robotStateCallback(ConstRobotStatePtr &msg) {
   true_pose.yaw = msg->true_yaw_rad();
 
   // TODO: Consider also computing this on estimate pose?
-  computed_row = (int) (msg->true_y_meters() / AbstractMaze::UNIT_DIST);
-  computed_col = (int) (msg->true_x_meters() / AbstractMaze::UNIT_DIST);
-  row_offset_to_edge = fmod(msg->true_y_meters(), AbstractMaze::UNIT_DIST);
-  col_offset_to_edge = fmod(msg->true_x_meters(), AbstractMaze::UNIT_DIST);
+  Pose estimate_pose = getEstimatedPose();
+  computed_row = (int) (estimate_pose.y / AbstractMaze::UNIT_DIST);
+  computed_col = (int) (estimate_pose.x / AbstractMaze::UNIT_DIST);
+  row_offset_to_edge = fmod(estimate_pose.y, AbstractMaze::UNIT_DIST);
+  col_offset_to_edge = fmod(estimate_pose.x, AbstractMaze::UNIT_DIST);
 
   this->left_wheel_velocity = msg->left_wheel_velocity_mps();
   this->right_wheel_velocity = msg->right_wheel_velocity_mps();
