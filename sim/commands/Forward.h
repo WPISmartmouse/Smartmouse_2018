@@ -27,11 +27,8 @@ private:
   Pose start;
   SimMouse *mouse;
 
-  bool checkedWalls;
   SimMouse::RangeData range_data;
   WallFollower follower;
-  bool walls[4];
-  bool wallOnLeft, wallOnRight;
 };
 
 #endif

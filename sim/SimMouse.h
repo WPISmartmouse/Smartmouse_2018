@@ -30,12 +30,8 @@ public:
   static constexpr double FRONT_BINARY_Y = 0.045; // meters
   static constexpr double MAX_SPEED = 0.18; // m/sec
   static constexpr double MIN_SPEED = 0.005; // m/sec
-  static constexpr unsigned long CONTROL_PERIOD_MS = 20;
-  static constexpr double CONTROL_PERIOD_S = CONTROL_PERIOD_MS / 1000.0;
-  static constexpr double START_ACCELERATION_MPSS = 0.24; // m/sec^2
-  static constexpr double BRAKE_ACCELERATION_MPSS = 0.50;// m/sec^2
-  static constexpr double START_ACCELERATION = START_ACCELERATION_MPSS * CONTROL_PERIOD_S; // m/it^2
-  static constexpr double BRAKE_ACCELERATION = BRAKE_ACCELERATION_MPSS * CONTROL_PERIOD_S; // m/it^2
+  static constexpr double ACCELERAITON = 0.004; // m/it^2
+  static constexpr double BRAKE_ACCELERATION = 0.008; // m/it^2
   static constexpr double WALL_DIST = 0.125;
   static constexpr double MAX_FORCE = 0.016;  // 16kg/cm from datasheet
   static const gazebo::common::Color grey_color;

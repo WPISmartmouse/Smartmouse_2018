@@ -2,8 +2,7 @@
 #include <common/Mouse.h>
 #include "KinematicController.h"
 
-KinematicMotorController::KinematicMotorController(unsigned long period_ms) : initialized(false), period_ms(period_ms),
-                                                                              last_run_time_ms(0) {
+KinematicMotorController::KinematicMotorController() : initialized(false), last_run_time_ms(0) {
   current_pose_estimate.x = 0;
   current_pose_estimate.y = 0;
   current_pose_estimate.yaw = 0;
@@ -75,8 +74,8 @@ KinematicMotorController::run(unsigned long time_ms, double left_angle_rad, doub
   }
 
   // handle acceleration and servicing motor PIDs
-  double left_acc = start_acceleration;
-  double right_acc = start_acceleration;
+  double left_acc = acceleration;
+  double right_acc = acceleration;
 
   if (left_setpoint_mps == 0) {
     left_acc = brake_acceleration;
@@ -114,8 +113,8 @@ KinematicMotorController::run(unsigned long time_ms, double left_angle_rad, doub
   return abstract_forces;
 }
 
-void KinematicMotorController::setAcceleration(double start_acceleration, double break_acceleration) {
-  this->start_acceleration = start_acceleration;
+void KinematicMotorController::setAcceleration(double acceleration, double break_acceleration) {
+  this->acceleration = acceleration;
   this->brake_acceleration = break_acceleration;
 }
 

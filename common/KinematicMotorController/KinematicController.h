@@ -6,7 +6,7 @@
 
 class KinematicMotorController {
 public:
-  KinematicMotorController(unsigned long period_ms);
+  KinematicMotorController();
 
   Pose get_pose();
 
@@ -18,19 +18,18 @@ public:
 
   std::pair<double, double> run(unsigned long time_ms, double left_angle_rad, double right_angle_rad);
 
-  void setAcceleration(double start_acceleration, double break_acceleration);
+  void setAcceleration(double acceleration, double break_acceleration);
 
   void setSpeed(double left_wheel_velocity_setpoint_mps, double right_wheel_velocity_setpoint_mps);
 
 private:
   bool initialized = false;
-  double start_acceleration;
+  double acceleration;
   double brake_acceleration;
   double left_setpoint_mps;
   double right_setpoint_mps;
   unsigned long last_run_time_ms;
   unsigned  long last_control_run_time_ms;
-  unsigned long period_ms;
 
   Pose current_pose_estimate;
   RegulatedMotor left_motor;

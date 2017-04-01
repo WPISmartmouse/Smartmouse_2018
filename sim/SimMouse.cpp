@@ -11,7 +11,7 @@ double SimMouse::abstractForceToNewtons(double x) {
   return x * MAX_FORCE / 255.0;
 }
 
-SimMouse::SimMouse() : hasSuggestion(false), kinematic_controller(CONTROL_PERIOD_MS) {}
+SimMouse::SimMouse() : hasSuggestion(false), kinematic_controller() {}
 
 SimMouse *SimMouse::inst() {
   if (instance == NULL) {
@@ -43,20 +43,14 @@ SensorReading SimMouse::checkWalls() {
 }
 
 double SimMouse::getColOffsetToEdge() {
-  std::unique_lock<std::mutex> lk(dataMutex);
-  dataCond.wait(lk);
   return this->col_offset_to_edge;
 }
 
 int SimMouse::getComputedCol() {
-  std::unique_lock<std::mutex> lk(dataMutex);
-  dataCond.wait(lk);
   return this->computed_col;
 }
 
 int SimMouse::getComputedRow() {
-  std::unique_lock<std::mutex> lk(dataMutex);
-  dataCond.wait(lk);
   return this->computed_row;
 }
 
@@ -80,8 +74,6 @@ SimMouse::RangeData SimMouse::getRangeData() {
 }
 
 double SimMouse::getRowOffsetToEdge() {
-  std::unique_lock<std::mutex> lk(dataMutex);
-  dataCond.wait(lk);
   return this->row_offset_to_edge;
 }
 
@@ -142,13 +134,6 @@ void SimMouse::robotStateCallback(ConstRobotStatePtr &msg) {
   true_pose.y = msg->true_y_meters();
   true_pose.yaw = msg->true_yaw_rad();
 
-  // TODO: Consider also computing this on estimate pose?
-  Pose estimate_pose = getEstimatedPose();
-  computed_row = (int) (estimate_pose.y / AbstractMaze::UNIT_DIST);
-  computed_col = (int) (estimate_pose.x / AbstractMaze::UNIT_DIST);
-  row_offset_to_edge = fmod(estimate_pose.y, AbstractMaze::UNIT_DIST);
-  col_offset_to_edge = fmod(estimate_pose.x, AbstractMaze::UNIT_DIST);
-
   this->left_wheel_velocity = msg->left_wheel_velocity_mps();
   this->right_wheel_velocity = msg->right_wheel_velocity_mps();
 
@@ -192,25 +177,6 @@ void SimMouse::robotStateCallback(ConstRobotStatePtr &msg) {
 }
 
 void SimMouse::run(unsigned long time_ms) {
-  // publish status information
-  gzmaze::msgs::MazeLocation msg;
-  msg.set_row(getComputedRow());
-  msg.set_col(getComputedCol());
-  msg.set_row_offset(getRowOffsetToEdge());
-  msg.set_col_offset(getColOffsetToEdge());
-
-  Pose estimated_pose = getEstimatedPose();
-  msg.set_estimated_x_meters(estimated_pose.x);
-  msg.set_estimated_y_meters(estimated_pose.y);
-  msg.set_estimated_yaw_rad(estimated_pose.yaw);
-  std::string dir_str(1, dir_to_char(getDir()));
-  msg.set_dir(dir_str);
-
-  if (!msg.IsInitialized()) {
-    std::cerr << "Missing fields: [" << msg.InitializationErrorString() << "]" << std::endl;
-  }
-
-  maze_location_pub->Publish(msg);
 
   // handle updating of odometry and PID
   double abstract_left_force;
@@ -218,6 +184,32 @@ void SimMouse::run(unsigned long time_ms) {
 
   std::tie(abstract_left_force, abstract_right_force) = kinematic_controller.run(time_ms, this->left_wheel_angle_rad,
                                                                                  this->right_wheel_angle_rad);
+
+  // update row/col information
+  Pose estimated_pose = kinematic_controller.get_pose();
+  computed_row = (int) (estimated_pose.y / AbstractMaze::UNIT_DIST);
+  computed_col = (int) (estimated_pose.x / AbstractMaze::UNIT_DIST);
+  row_offset_to_edge = fmod(estimated_pose.y, AbstractMaze::UNIT_DIST);
+  col_offset_to_edge = fmod(estimated_pose.x, AbstractMaze::UNIT_DIST);
+
+  // publish status information
+  gzmaze::msgs::MazeLocation maze_loc_msg;
+  maze_loc_msg.set_row(getComputedRow());
+  maze_loc_msg.set_col(getComputedCol());
+  maze_loc_msg.set_row_offset(getRowOffsetToEdge());
+  maze_loc_msg.set_col_offset(getColOffsetToEdge());
+
+  maze_loc_msg.set_estimated_x_meters(estimated_pose.x);
+  maze_loc_msg.set_estimated_y_meters(estimated_pose.y);
+  maze_loc_msg.set_estimated_yaw_rad(estimated_pose.yaw);
+  std::string dir_str(1, dir_to_char(getDir()));
+  maze_loc_msg.set_dir(dir_str);
+
+  if (!maze_loc_msg.IsInitialized()) {
+    std::cerr << "Missing fields: [" << maze_loc_msg.InitializationErrorString() << "]" << std::endl;
+  }
+
+  maze_location_pub->Publish(maze_loc_msg);
 
   double left_force_newtons = abstractForceToNewtons(abstract_left_force);
   gazebo::msgs::JointCmd left;
@@ -242,7 +234,7 @@ void SimMouse::simInit() {
   // we start in the middle of the first square
   kinematic_controller.reset_x_to(AbstractMaze::HALF_UNIT_DIST);
   kinematic_controller.reset_y_to(AbstractMaze::HALF_UNIT_DIST);
-  kinematic_controller.setAcceleration(START_ACCELERATION, BRAKE_ACCELERATION);
+  kinematic_controller.setAcceleration(ACCELERAITON, BRAKE_ACCELERATION);
 
 //  for (int i = 0; i < AbstractMaze::MAZE_SIZE; i++) { for (int j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
 //      indicators[i][j] = new gazebo::msgs::Visual();

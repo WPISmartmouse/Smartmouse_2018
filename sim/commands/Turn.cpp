@@ -5,6 +5,7 @@
 #include "Forward.h"
 #include "Stop.h"
 #include "ArcTurn.h"
+#include "ForwardToCenter.h"
 
 Turn::Turn(Direction dir) : CommandGroup("SimTurnGroup"), mouse(SimMouse::inst()), dir(dir) {}
 
@@ -13,10 +14,12 @@ void Turn::initialize() {
   if (opposite_direction(mouse->getDir()) == dir) {
     addSequential(new Stop(200)); // slowly stop
     addSequential(new TurnInPlace(dir));
-    addSequential(new Stop(100)); // slowly stop
+    addSequential(new Stop(10)); // slowly stop
     addSequential(new Forward());
   } else {
-    addSequential(new ArcTurn(dir));
+    addSequential(new ForwardToCenter()); // slowly stop
+//    addSequential(new TurnInPlace(dir));
+//    addSequential(new Stop(10)); // slowly stop
 //    addSequential(new Forward());
   }
 }
