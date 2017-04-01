@@ -55,7 +55,7 @@ int SimMouse::getComputedRow() {
 }
 
 Pose SimMouse::getEstimatedPose() {
-  Pose pose = kinematic_controller.get_pose();
+  Pose pose = kinematic_controller.getPose();
   return pose;
 }
 
@@ -78,11 +78,8 @@ double SimMouse::getRowOffsetToEdge() {
 }
 
 std::pair<double, double> SimMouse::getWheelVelocities() {
-  std::pair<double, double> pair;
-  pair.first = radPerSecToMetersPerSec(this->left_wheel_velocity);
-  pair.second = radPerSecToMetersPerSec(this->right_wheel_velocity);
-  return pair;
-}
+  return kinematic_controller.getWheelVelocities();
+};
 
 void SimMouse::indicatePath(int row, int col, std::string path, gazebo::common::Color color) {
   for (char &c : path) {
@@ -105,6 +102,10 @@ void SimMouse::indicatePath(int row, int col, std::string path, gazebo::common::
     updateIndicator(row, col, color);
   }
   publishIndicators();
+}
+
+bool SimMouse::isStopped() {
+  return kinematic_controller.isStopped() && abstract_left_force == 0 && abstract_right_force == 0;
 }
 
 void SimMouse::publishIndicators() {
@@ -177,16 +178,12 @@ void SimMouse::robotStateCallback(ConstRobotStatePtr &msg) {
 }
 
 void SimMouse::run(unsigned long time_ms) {
-
   // handle updating of odometry and PID
-  double abstract_left_force;
-  double abstract_right_force;
-
   std::tie(abstract_left_force, abstract_right_force) = kinematic_controller.run(time_ms, this->left_wheel_angle_rad,
                                                                                  this->right_wheel_angle_rad);
 
   // update row/col information
-  Pose estimated_pose = kinematic_controller.get_pose();
+  Pose estimated_pose = kinematic_controller.getPose();
   computed_row = (int) (estimated_pose.y / AbstractMaze::UNIT_DIST);
   computed_col = (int) (estimated_pose.x / AbstractMaze::UNIT_DIST);
   row_offset_to_edge = fmod(estimated_pose.y, AbstractMaze::UNIT_DIST);
@@ -225,7 +222,7 @@ void SimMouse::run(unsigned long time_ms) {
 }
 
 void SimMouse::setSpeed(double left_wheel_velocity_setpoint_mps, double right_wheel_velocity_setpoint_mps) {
-  kinematic_controller.setSpeed(left_wheel_velocity_setpoint_mps, right_wheel_velocity_setpoint_mps);
+  kinematic_controller.setSpeedMps(left_wheel_velocity_setpoint_mps, right_wheel_velocity_setpoint_mps);
 }
 
 void SimMouse::simInit() {
@@ -234,7 +231,7 @@ void SimMouse::simInit() {
   // we start in the middle of the first square
   kinematic_controller.reset_x_to(AbstractMaze::HALF_UNIT_DIST);
   kinematic_controller.reset_y_to(AbstractMaze::HALF_UNIT_DIST);
-  kinematic_controller.setAcceleration(ACCELERAITON, BRAKE_ACCELERATION);
+  kinematic_controller.setAcceleration(10, 45);
 
 //  for (int i = 0; i < AbstractMaze::MAZE_SIZE; i++) { for (int j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
 //      indicators[i][j] = new gazebo::msgs::Visual();

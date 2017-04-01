@@ -48,15 +48,13 @@ int main(int argc, char *argv[]) {
   Scheduler scheduler(new NavTestCommand());
 
   bool done = false;
-  while (!done) {
-    done = scheduler.run();
-    unsigned long time_ms = timer.programTimeMs();
-    mouse->run(time_ms);
-  }
-
-  printf("Commands done.\n");
-
   while (true) {
+    if (!done) {
+      done = scheduler.run();
+      if (done) {
+        printf("done\n.");
+      }
+    }
     unsigned long time_ms = timer.programTimeMs();
     mouse->run(time_ms);
   }

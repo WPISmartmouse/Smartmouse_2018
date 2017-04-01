@@ -21,7 +21,6 @@ void ForwardToCenter::execute() {
 }
 
 bool ForwardToCenter::isFinished() {
-  printf("%f\n", follower.dispError);
   return follower.dispError <= 0;
 }
 

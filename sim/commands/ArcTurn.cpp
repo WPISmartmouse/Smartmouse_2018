@@ -5,7 +5,7 @@
 ArcTurn::ArcTurn(Direction dir) : Command("SimArcTurn"), mouse(SimMouse::inst()), dir(dir) {}
 
 void ArcTurn::initialize() {
-  mouse->kinematic_controller.setAcceleration(100, 100);
+//  mouse->kinematic_controller.setAcceleration(100, 100);
   setTimeout((unsigned long) TURN_TIME_MS);
   left = (dir == left_of_dir(mouse->getDir()));
 }

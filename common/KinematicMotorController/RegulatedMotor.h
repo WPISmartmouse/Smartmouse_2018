@@ -4,25 +4,30 @@ class RegulatedMotor {
 public:
   RegulatedMotor();
 
-  double run_pid(double dt_s, double angle_rad);
+  bool isStopped();
 
-  void set_setpoint(double setpoint_rps);
+  double runPid(double dt_s, double angle_rad);
+
+  void setAcceleration(double acceleration, double brake_acceleration);
+
+  void setSetpointMps(double setpoint_mps);
 
   static const double kP;
   static const double kI;
   static const double kD;
   static const double kFF;
   static const double INTEGRAL_CAP;
-  static const double VEL_SMOOTHING;
 
   bool initialized = false;
   double abstract_force;
+  double acceleration;
+  double brake_acceleration;
   double derivative;
   double error;
   double integral;
   double last_angle_rad;
   double last_error;
+  double raw_abstract_force;
   double setpoint_rps;
-  double smoothed_velocity_rps;
   double velocity_rps;
 };

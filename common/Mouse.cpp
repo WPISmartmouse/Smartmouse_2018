@@ -1,11 +1,11 @@
 #include "Mouse.h"
 
 double Mouse::metersPerSecToRadPerSec(double x) {
-  return x / WHEEL_CIRC * (2 * M_PI);
+  return x / WHEEL_RAD;
 }
 
 double Mouse::radPerSecToMetersPerSec(double x) {
-  return (x / (2 * M_PI)) * WHEEL_CIRC;
+  return x * WHEEL_RAD;
 }
 
 Mouse::Mouse() : maze(new AbstractMaze()), row(0), col(0), dir(Direction::E) {}

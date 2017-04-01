@@ -32,12 +32,20 @@
             </visual>
             <collision name='main_body_collision'>
                 <max_contacts>6</max_contacts>
-                <pose>0 0.032 0.015 1.5707 0 0</pose>
+                <pose>0 0 0.019 0 0 0</pose>
                 <geometry>
-                    <mesh>
-                        <uri>model://mouse/body.stl</uri>
-                        <scale>0.001 0.001 0.001</scale>
-                    </mesh>
+                        <!--<size>0.101 0.076 0.032</size>-->
+                    <polyline>
+                      <height>0.032</height>
+                      <point>-0.0410 0.019</point>
+                      <point>-0.0220 0.038</point>
+                      <point>0.0410 0.038</point>
+                      <point>0.0600 0.019</point>
+                      <point>0.0600 -0.019</point>
+                      <point>0.0410 -0.038</point>
+                      <point>-0.0220 -0.038</point>
+                      <point>-0.0410 -0.019</point>
+                    </polyline>
                 </geometry>
                 <surface>
                     <friction>
@@ -56,6 +64,23 @@
                             <min_depth>0</min_depth>
                         </ode>
                     </contact>
+                </surface>
+            </collision>
+            <collision name='bumper'>
+                <max_contacts>6</max_contacts>
+                <pose>0.05 0 0.002 0 0 0</pose>
+                <geometry>
+                    <box>
+                      <size>0.01 0.076 0.002</size>
+                    </box>
+                </geometry>
+                <surface>
+                    <friction>
+                        <ode>
+                            <mu>0.001</mu>
+                            <mu2>0.001</mu2>
+                        </ode>
+                    </friction>
                 </surface>
             </collision>
             <sensor name="left_analog" type="ray">
@@ -301,7 +326,7 @@
                     <velocity>41.88</velocity> <!-- ~400 rpm -->
                 </limit>
                 <dynamics>
-                    <friction>0.00020</friction>
+                    <friction>0.00040</friction>
                 </dynamics>
             </axis>
             <physics>
@@ -330,7 +355,7 @@
                     <velocity>41.88</velocity> <!-- ~400 rpm -->
                 </limit>
                 <dynamics>
-                    <friction>0.00020</friction> <!-- not sure how to calculate this, or what the units are -->
+                    <friction>0.00040</friction> <!-- not sure how to calculate this, or what the units are -->
                 </dynamics>
             </axis>
             <physics>

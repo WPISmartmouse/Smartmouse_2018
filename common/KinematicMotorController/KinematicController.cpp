@@ -8,8 +8,19 @@ KinematicMotorController::KinematicMotorController() : initialized(false), last_
   current_pose_estimate.yaw = 0;
 }
 
-Pose KinematicMotorController::get_pose() {
+Pose KinematicMotorController::getPose() {
   return current_pose_estimate;
+}
+
+std::pair<double, double> KinematicMotorController::getWheelVelocities() {
+  std::pair<double, double> vels;
+  vels.first = left_motor.velocity_rps;
+  vels.second = right_motor.velocity_rps;
+  return vels;
+};
+
+bool KinematicMotorController::isStopped() {
+  return left_motor.isStopped() && left_motor.isStopped();
 }
 
 void KinematicMotorController::reset_x_to(double new_x) {
@@ -26,8 +37,6 @@ void KinematicMotorController::reset_yaw_to(double new_yaw) {
 
 std::pair<double, double>
 KinematicMotorController::run(unsigned long time_ms, double left_angle_rad, double right_angle_rad) {
-  static double left_wheel_velocity_mps;
-  static double right_wheel_velocity_mps;
   static std::pair<double, double> abstract_forces;
 
   if (!initialized) {
@@ -42,8 +51,6 @@ KinematicMotorController::run(unsigned long time_ms, double left_angle_rad, doub
   double vl = Mouse::radPerSecToMetersPerSec(left_motor.velocity_rps);
   double vr = Mouse::radPerSecToMetersPerSec(right_motor.velocity_rps);
 
-//  printf("%f %f\n", vl, vr);
-
   double w = (vr - vl) / Mouse::TRACK_WIDTH;
   double r = Mouse::TRACK_WIDTH / 2 * (vl + vr) / (vr - vl);
   double dt_s = (time_ms - last_run_time_ms) / 1000.0;
@@ -53,11 +60,10 @@ KinematicMotorController::run(unsigned long time_ms, double left_angle_rad, doub
 
   if (std::isnan(r)) {
     // this means we're stopped, so ignore it
-  }
-  else if (std::isinf(r)) {
+  } else if (std::isinf(r)) {
     // going perfectly straight is a special condition
-    current_pose_estimate.x += dt_s * (vl + vr) / 2;
-    current_pose_estimate.y += dt_s * (vl + vr) / 2;
+    current_pose_estimate.x += (dt_s * (vl + vr) / 2) * cos(yaw);
+    current_pose_estimate.y += -(dt_s * (vl + vr) / 2) * sin(yaw);
   } else {
     current_pose_estimate.x = -cos(w * dt_s) * r * sin(yaw) + sin(w * dt_s) * r * cos(yaw) + x + r * sin(yaw);
     current_pose_estimate.y = -sin(w * dt_s) * r * sin(yaw) - cos(w * dt_s) * r * cos(yaw) + y + r * cos(yaw);
@@ -65,47 +71,17 @@ KinematicMotorController::run(unsigned long time_ms, double left_angle_rad, doub
 
     if (yaw < -M_PI) {
       yaw += M_PI * 2;
-    }
-    else if (yaw >= M_PI) {
+    } else if (yaw >= M_PI) {
       yaw -= M_PI * 2;
     }
 
     current_pose_estimate.yaw = yaw;
   }
 
-  // handle acceleration and servicing motor PIDs
-  double left_acc = acceleration;
-  double right_acc = acceleration;
-
-  if (left_setpoint_mps == 0) {
-    left_acc = brake_acceleration;
-  }
-  if (right_setpoint_mps == 0) {
-    right_acc = brake_acceleration;
-  }
-
-  if (right_wheel_velocity_mps < right_setpoint_mps) {
-    right_wheel_velocity_mps = std::min(right_wheel_velocity_mps + right_acc, right_setpoint_mps);
-  } else if (right_wheel_velocity_mps > right_setpoint_mps) {
-    right_wheel_velocity_mps = std::max(right_wheel_velocity_mps - right_acc, right_setpoint_mps);
-  }
-
-  if (left_wheel_velocity_mps < left_setpoint_mps) {
-    left_wheel_velocity_mps = std::min(left_wheel_velocity_mps + left_acc, left_setpoint_mps);
-  } else if (left_wheel_velocity_mps > left_setpoint_mps) {
-    left_wheel_velocity_mps = std::max(left_wheel_velocity_mps - left_acc, left_setpoint_mps);
-  }
-
-  double left_wheel_velocity_rps = Mouse::metersPerSecToRadPerSec(left_wheel_velocity_mps);
-  double right_wheel_velocity_rps = Mouse::metersPerSecToRadPerSec(right_wheel_velocity_mps);
-
-  left_motor.set_setpoint(left_wheel_velocity_rps);
-  right_motor.set_setpoint(right_wheel_velocity_rps);
-
   // run PID, which will update the velocities of the wheels
   if (dt_s > 0) {
-    abstract_forces.first = left_motor.run_pid(dt_s, left_angle_rad);
-    abstract_forces.second = right_motor.run_pid(dt_s, right_angle_rad);
+    abstract_forces.first = left_motor.runPid(dt_s, left_angle_rad);
+    abstract_forces.second = right_motor.runPid(dt_s, right_angle_rad);
   }
 
   last_run_time_ms = time_ms;
@@ -114,12 +90,12 @@ KinematicMotorController::run(unsigned long time_ms, double left_angle_rad, doub
 }
 
 void KinematicMotorController::setAcceleration(double acceleration, double break_acceleration) {
-  this->acceleration = acceleration;
-  this->brake_acceleration = break_acceleration;
+  left_motor.setAcceleration(acceleration, break_acceleration);
+  right_motor.setAcceleration(acceleration, break_acceleration);
 }
 
-void KinematicMotorController::setSpeed(double left_wheel_velocity_setpoint_mps,
-                                        double right_wheel_velocity_setpoint_mps) {
-  this->left_setpoint_mps = left_wheel_velocity_setpoint_mps;
-  this->right_setpoint_mps = right_wheel_velocity_setpoint_mps;
+void KinematicMotorController::setSpeedMps(double left_setpoint_mps,
+                                           double right_setpoint_mps) {
+  left_motor.setSetpointMps(left_setpoint_mps);
+  right_motor.setSetpointMps(right_setpoint_mps);
 }

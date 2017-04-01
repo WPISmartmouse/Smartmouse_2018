@@ -30,8 +30,6 @@ public:
   static constexpr double FRONT_BINARY_Y = 0.045; // meters
   static constexpr double MAX_SPEED = 0.18; // m/sec
   static constexpr double MIN_SPEED = 0.005; // m/sec
-  static constexpr double ACCELERAITON = 0.004; // m/it^2
-  static constexpr double BRAKE_ACCELERATION = 0.008; // m/it^2
   static constexpr double WALL_DIST = 0.125;
   static constexpr double MAX_FORCE = 0.016;  // 16kg/cm from datasheet
   static const gazebo::common::Color grey_color;
@@ -67,6 +65,8 @@ public:
   void indicatePath(int starting_row, int starting_col,
                     std::string path, gazebo::common::Color);
 
+  bool isStopped();
+
   void publishIndicators();
 
   void resetIndicators(gazebo::common::Color color);
@@ -100,6 +100,8 @@ private:
   bool walls[4];
   bool suggestedWalls[4];
   bool hasSuggestion;
+  double abstract_left_force;
+  double abstract_right_force;
   double left_wheel_velocity;
   double right_wheel_velocity;
   double left_wheel_angle_rad;
