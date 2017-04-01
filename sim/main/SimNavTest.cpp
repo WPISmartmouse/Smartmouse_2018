@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
     mouse->run(time_ms);
   }
 
-  printf("Commands done.");
+  printf("Commands done.\n");
 
   while (true) {
     unsigned long time_ms = timer.programTimeMs();

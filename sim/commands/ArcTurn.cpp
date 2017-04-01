@@ -5,6 +5,7 @@
 ArcTurn::ArcTurn(Direction dir) : Command("SimArcTurn"), mouse(SimMouse::inst()), dir(dir) {}
 
 void ArcTurn::initialize() {
+  mouse->kinematic_controller.setAcceleration(100, 100);
   setTimeout((unsigned long) TURN_TIME_MS);
   left = (dir == left_of_dir(mouse->getDir()));
 }
@@ -15,8 +16,6 @@ void ArcTurn::execute() {
   constexpr double outer_rps = (M_PI * TURN_RAD_OUTER) / (2 * TURN_TIME_S * SimMouse::WHEEL_RAD);
   double inner_mps = SimMouse::radPerSecToMetersPerSec(inner_rps);
   double outer_mps = SimMouse::radPerSecToMetersPerSec(outer_rps);
-
-  printf("%f, %f\n", inner_mps, outer_mps);
 
   if (left) {
     mouse->setSpeed(inner_mps, outer_mps);

@@ -11,8 +11,6 @@ GZ_REGISTER_MODEL_PLUGIN(MousePlugin)
 
 void MousePlugin::Load(physics::ModelPtr model, sdf::ElementPtr sdf) {
   this->model = model;
-  this->left_accumulator = 0;
-  this->right_accumulator = 0;
 
   body = model->GetLink(sdf->Get<std::string>("body"));
   right_wheel = this->model->GetJoint("right_wheel_joint");
@@ -117,16 +115,10 @@ void MousePlugin::PublishInfo() {
   double left_vel_mps = SimMouse::radPerSecToMetersPerSec(left_vel_rps);
   double right_vel_mps = SimMouse::radPerSecToMetersPerSec(right_vel_rps);
 
-  double smooth_left_vel_mps = (RegulatedMotor::VEL_SMOOTHING * left_accumulator) + ((1 - RegulatedMotor::VEL_SMOOTHING) * left_vel_mps);
-  double smooth_right_vel_mps = (RegulatedMotor::VEL_SMOOTHING * right_accumulator) + ((1 - RegulatedMotor::VEL_SMOOTHING) * right_vel_mps);
-
-  left_accumulator = smooth_left_vel_mps;
-  right_accumulator = smooth_right_vel_mps;
-
   gzmaze::msgs::RobotState state;
   state.set_allocated_true_pose(pose);
-  state.set_left_wheel_velocity_mps(smooth_left_vel_mps);
-  state.set_right_wheel_velocity_mps(smooth_right_vel_mps);
+  state.set_left_wheel_velocity_mps(left_vel_mps);
+  state.set_right_wheel_velocity_mps(right_vel_mps);
   state.set_left_wheel_angle_radians(left_angle);
   state.set_right_wheel_angle_radians(right_angle);
   state.set_left_analog(this->left_analog);

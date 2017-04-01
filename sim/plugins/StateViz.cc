@@ -140,20 +140,20 @@ StateViz::~StateViz() {
 
 void StateViz::StateCallback(ConstRobotStatePtr &msg) {
   char left_wheel_velocity_str[14];
-  snprintf(left_wheel_velocity_str, 14, "%0.4f cm/s", (100 * msg->left_wheel_velocity_mps()));
+  snprintf(left_wheel_velocity_str, 14, "%0.2f cm/s", (100 * msg->left_wheel_velocity_mps()));
 
   char right_wheel_velocity_str[14];
-  snprintf(right_wheel_velocity_str, 14, "%0.4f cm/s", (100 * msg->right_wheel_velocity_mps()));
+  snprintf(right_wheel_velocity_str, 14, "%0.2f cm/s", (100 * msg->right_wheel_velocity_mps()));
 
   gazebo::msgs::Pose pose = msg->true_pose();
 
   this->last_pose = pose;
 
   char x_str[14];
-  snprintf(x_str, 14, "%0.3f cm", msg->true_x_meters() * 100);
+  snprintf(x_str, 14, "%0.1f cm", msg->true_x_meters() * 100);
 
   char y_str[14];
-  snprintf(y_str, 14, "%0.3f cm", msg->true_y_meters() * 100);
+  snprintf(y_str, 14, "%0.1f cm", msg->true_y_meters() * 100);
 
   char yaw_str[15];
   snprintf(yaw_str, 15, "%0.1f deg", (msg->true_yaw_rad() * 180 / M_PI));
@@ -169,18 +169,18 @@ void StateViz::StateCallback(ConstRobotStatePtr &msg) {
 void StateViz::MazeLocationCallback(ConstMazeLocationPtr &msg) {
   // compute x and y with respect to the top left square
   char row_str[14];
-  snprintf(row_str, 14, "%i (%0.3f m)", msg->row(), msg->row_offset());
+  snprintf(row_str, 14, "%i (%0.1f cm)", msg->row(), msg->row_offset() * 100);
   char col_str[14];
-  snprintf(col_str, 14, "%i (%0.3f m)", msg->col(), msg->col_offset());
+  snprintf(col_str, 14, "%i (%0.1f cm)", msg->col(), msg->col_offset() * 100);
   this->SetRow(row_str);
   this->SetCol(col_str);
   this->SetDir(QString::fromStdString(msg->dir()));
 
   char x_str[14];
-  snprintf(x_str, 14, "%0.3f cm", msg->estimated_x_meters() * 100);
+  snprintf(x_str, 14, "%0.1f cm", msg->estimated_x_meters() * 100);
 
   char y_str[14];
-  snprintf(y_str, 14, "%0.3f cm", msg->estimated_y_meters() * 100);
+  snprintf(y_str, 14, "%0.1f cm", msg->estimated_y_meters() * 100);
 
   char yaw_str[14];
   snprintf(yaw_str, 14, "%0.1f deg", (msg->estimated_yaw_rad() * 180 / M_PI));

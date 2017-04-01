@@ -89,6 +89,8 @@ public:
   gazebo::transport::PublisherPtr indicator_pub;
   gazebo::transport::PublisherPtr maze_location_pub;
 
+  KinematicMotorController kinematic_controller;
+
 private:
 
   SimMouse();
@@ -112,8 +114,6 @@ private:
   int computed_col;
 
   RangeData range_data;
-
-  KinematicMotorController kinematic_controller;
 
   std::condition_variable dataCond;
   std::mutex dataMutex;

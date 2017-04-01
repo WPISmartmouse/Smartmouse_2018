@@ -36,8 +36,6 @@ private:
   event::ConnectionPtr updateConn;
   transport::NodePtr node;
   transport::PublisherPtr state_pub;
-  double left_accumulator;
-  double right_accumulator;
   double left_analog;
   double right_analog;
   bool left_binary;

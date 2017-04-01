@@ -4,7 +4,7 @@ class RegulatedMotor {
 public:
   RegulatedMotor();
 
-  double run_pid(unsigned long time_ms, double angle_rad);
+  double run_pid(double dt_s, double angle_rad);
 
   void set_setpoint(double setpoint_rps);
 
@@ -25,6 +25,4 @@ public:
   double setpoint_rps;
   double smoothed_velocity_rps;
   double velocity_rps;
-  unsigned long period_ms;
-
 };

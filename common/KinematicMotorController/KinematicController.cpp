@@ -34,15 +34,16 @@ KinematicMotorController::run(unsigned long time_ms, double left_angle_rad, doub
   if (!initialized) {
     initialized = true;
     last_run_time_ms = time_ms;
-    last_control_run_time_ms = time_ms;
     abstract_forces.first = 0;
     abstract_forces.second = 0;
     return abstract_forces;
   }
 
   // equations based on https://chess.eecs.berkeley.edu/eecs149/documentation/differentialDrive.pdf
-  double vl = Mouse::radPerSecToMetersPerSec(left_motor.smoothed_velocity_rps);
-  double vr = Mouse::radPerSecToMetersPerSec(right_motor.smoothed_velocity_rps);
+  double vl = Mouse::radPerSecToMetersPerSec(left_motor.velocity_rps);
+  double vr = Mouse::radPerSecToMetersPerSec(right_motor.velocity_rps);
+
+//  printf("%f %f\n", vl, vr);
 
   double w = (vr - vl) / Mouse::TRACK_WIDTH;
   double r = Mouse::TRACK_WIDTH / 2 * (vl + vr) / (vr - vl);
@@ -51,8 +52,11 @@ KinematicMotorController::run(unsigned long time_ms, double left_angle_rad, doub
   double y = current_pose_estimate.y;
   double yaw = current_pose_estimate.yaw;
 
-  // going perfectly straight is a special condition
   if (std::isnan(r)) {
+    // this means we're stopped, so ignore it
+  }
+  else if (std::isinf(r)) {
+    // going perfectly straight is a special condition
     current_pose_estimate.x += dt_s * (vl + vr) / 2;
     current_pose_estimate.y += dt_s * (vl + vr) / 2;
   } else {
@@ -71,41 +75,38 @@ KinematicMotorController::run(unsigned long time_ms, double left_angle_rad, doub
   }
 
   // handle acceleration and servicing motor PIDs
-  unsigned long dt_ms = time_ms - last_control_run_time_ms;
-  if (dt_ms >= period_ms) {
-    double left_acc = start_acceleration;
-    double right_acc = start_acceleration;
+  double left_acc = start_acceleration;
+  double right_acc = start_acceleration;
 
-    if (left_setpoint_mps == 0) {
-      left_acc = brake_acceleration;
-    }
-    if (right_setpoint_mps == 0) {
-      right_acc = brake_acceleration;
-    }
+  if (left_setpoint_mps == 0) {
+    left_acc = brake_acceleration;
+  }
+  if (right_setpoint_mps == 0) {
+    right_acc = brake_acceleration;
+  }
 
-    if (right_wheel_velocity_mps < right_setpoint_mps) {
-      right_wheel_velocity_mps = std::min(right_wheel_velocity_mps + right_acc, right_setpoint_mps);
-    } else if (right_wheel_velocity_mps > right_setpoint_mps) {
-      right_wheel_velocity_mps = std::max(right_wheel_velocity_mps - right_acc, right_setpoint_mps);
-    }
+  if (right_wheel_velocity_mps < right_setpoint_mps) {
+    right_wheel_velocity_mps = std::min(right_wheel_velocity_mps + right_acc, right_setpoint_mps);
+  } else if (right_wheel_velocity_mps > right_setpoint_mps) {
+    right_wheel_velocity_mps = std::max(right_wheel_velocity_mps - right_acc, right_setpoint_mps);
+  }
 
-    if (left_wheel_velocity_mps < left_setpoint_mps) {
-      left_wheel_velocity_mps = std::min(left_wheel_velocity_mps + left_acc, left_setpoint_mps);
-    } else if (left_wheel_velocity_mps > left_setpoint_mps) {
-      left_wheel_velocity_mps = std::max(left_wheel_velocity_mps - left_acc, left_setpoint_mps);
-    }
+  if (left_wheel_velocity_mps < left_setpoint_mps) {
+    left_wheel_velocity_mps = std::min(left_wheel_velocity_mps + left_acc, left_setpoint_mps);
+  } else if (left_wheel_velocity_mps > left_setpoint_mps) {
+    left_wheel_velocity_mps = std::max(left_wheel_velocity_mps - left_acc, left_setpoint_mps);
+  }
 
-    double left_wheel_velocity_rps = Mouse::metersPerSecToRadPerSec(left_wheel_velocity_mps);
-    double right_wheel_velocity_rps = Mouse::metersPerSecToRadPerSec(right_wheel_velocity_mps);
+  double left_wheel_velocity_rps = Mouse::metersPerSecToRadPerSec(left_wheel_velocity_mps);
+  double right_wheel_velocity_rps = Mouse::metersPerSecToRadPerSec(right_wheel_velocity_mps);
 
-    left_motor.set_setpoint(left_wheel_velocity_rps);
-    right_motor.set_setpoint(right_wheel_velocity_rps);
+  left_motor.set_setpoint(left_wheel_velocity_rps);
+  right_motor.set_setpoint(right_wheel_velocity_rps);
 
-    // run PID, which will update the velocities of the wheels
-    abstract_forces.first = left_motor.run_pid(dt_ms, left_angle_rad);
-    abstract_forces.second = right_motor.run_pid(dt_ms, right_angle_rad);
-
-    last_control_run_time_ms = time_ms;
+  // run PID, which will update the velocities of the wheels
+  if (dt_s > 0) {
+    abstract_forces.first = left_motor.run_pid(dt_s, left_angle_rad);
+    abstract_forces.second = right_motor.run_pid(dt_s, right_angle_rad);
   }
 
   last_run_time_ms = time_ms;

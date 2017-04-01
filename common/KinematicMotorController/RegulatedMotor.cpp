@@ -7,24 +7,22 @@ const double RegulatedMotor::kI = 0.0;
 const double RegulatedMotor::kD = 0.0;
 const double RegulatedMotor::kFF = 10.0;
 const double RegulatedMotor::INTEGRAL_CAP = 0.0;
-const double RegulatedMotor::VEL_SMOOTHING = 0.7;
 
 RegulatedMotor::RegulatedMotor() : initialized(false), abstract_force(0), integral(0), last_angle_rad(0), last_error(0),
-                                   setpoint_rps(0), smoothed_velocity_rps(0) {}
+                                   setpoint_rps(0), velocity_rps(0) {}
 
-double RegulatedMotor::run_pid(unsigned long dt, double angle_rad) {
+double RegulatedMotor::run_pid(double dt_s, double angle_rad) {
   if (!initialized) {
     initialized = true;
     last_angle_rad = angle_rad;
     return 0;
   }
 
-  velocity_rps = (angle_rad - last_angle_rad) / (dt / 1000.0);
-  smoothed_velocity_rps = (VEL_SMOOTHING * smoothed_velocity_rps) + ((1 - VEL_SMOOTHING) * velocity_rps);
+  velocity_rps = (angle_rad - last_angle_rad) / dt_s;
   error = setpoint_rps - velocity_rps;
-  derivative = (error - last_error) / dt;
+  derivative = (error - last_error) / dt_s;
 
-  integral += error * dt * kI;
+  integral += error * dt_s * kI;
   if (last_error > 0 and error <= 0) { integral = 0;}
   if (last_error < 0 and error >= 0) { integral = 0;}
   integral = std::max(std::min(integral, INTEGRAL_CAP), -INTEGRAL_CAP);
