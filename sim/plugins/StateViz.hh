@@ -47,6 +47,8 @@ namespace gazebo {
 
     void ClearRobotTrace();
 
+    void StopRobot();
+
   private:
     gazebo::msgs::Pose last_pose;
 
@@ -55,8 +57,9 @@ namespace gazebo {
     transport::NodePtr node;
     transport::SubscriberPtr state_sub;
     transport::SubscriberPtr maze_loc_sub;
+    transport::PublisherPtr stop_pub;
     ignition::transport::Node ign_node;
-    ignition::transport::Node::Publisher pub;
+    ignition::transport::Node::Publisher reset_trace_pub;
 
     QLabel *left_wheel_velocity_label;
     QLabel *right_wheel_velocity_label;

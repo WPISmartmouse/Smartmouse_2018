@@ -2,7 +2,7 @@
 
 class RegulatedMotor {
 public:
-  RegulatedMotor(unsigned long period_ms);
+  RegulatedMotor();
 
   double run_pid(unsigned long time_ms, double angle_rad);
 
@@ -26,6 +26,5 @@ public:
   double smoothed_velocity_rps;
   double velocity_rps;
   unsigned long period_ms;
-  unsigned long last_run_time_ms;
 
 };

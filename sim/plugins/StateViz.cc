@@ -10,17 +10,19 @@ using namespace gazebo;
 // Register this plugin with the simulator
 GZ_REGISTER_GUI_PLUGIN(StateViz)
 
-StateViz::StateViz() : GUIPlugin(), topic("/delete_plot") {
+StateViz::StateViz() : GUIPlugin() {
 
   this->node = transport::NodePtr(new transport::Node());
   this->node->Init();
   this->state_sub = this->node->Subscribe("~/mouse/state", &StateViz::StateCallback, this);
   this->maze_loc_sub = this->node->Subscribe("~/maze_location", &StateViz::MazeLocationCallback, this);
 
-  this->pub = this->ign_node.Advertise<ignition::msgs::Empty>(this->topic);
-  if (!pub) {
+  this->reset_trace_pub = this->ign_node.Advertise<ignition::msgs::Empty>("/delete_plot");
+  if (!reset_trace_pub) {
     gzerr << "Failed to advertise to [" << this->topic << "]" << std::endl;
   }
+
+  this->stop_pub = this->node->Advertise<gazebo::msgs::JointCmd>("~/mouse/joint_cmd");
 
   QVBoxLayout *main_layout = new QVBoxLayout();
   QHBoxLayout *left_wheel_vel_layout = new QHBoxLayout();
@@ -30,6 +32,7 @@ StateViz::StateViz() : GUIPlugin(), topic("/delete_plot") {
   QHBoxLayout *x_layout = new QHBoxLayout();
   QHBoxLayout *y_layout = new QHBoxLayout();
   QHBoxLayout *yaw_layout = new QHBoxLayout();
+  QHBoxLayout *buttons_layout = new QHBoxLayout();
 
   left_wheel_velocity_label = new QLabel(tr("left wheel velocity:"));
   right_wheel_velocity_label = new QLabel(tr("right wheel velocity:"));
@@ -59,6 +62,10 @@ StateViz::StateViz() : GUIPlugin(), topic("/delete_plot") {
   QPushButton *clear_plot_button = new QPushButton(tr("Clear Robot Trace"));
   clear_plot_button->setStyleSheet("padding: 1px;");
   connect(clear_plot_button, SIGNAL(clicked()), this, SLOT(ClearRobotTrace()));
+
+  QPushButton *stop_robot_button = new QPushButton(tr("Stop Robot"));
+  stop_robot_button->setStyleSheet("padding: 1px;");
+  connect(stop_robot_button, SIGNAL(clicked()), this, SLOT(StopRobot()));
 
   connect(this, SIGNAL(SetLeftVelocity(QString)), this->left_wheel_velocity_edit,
           SLOT(setText(QString)), Qt::QueuedConnection);
@@ -105,6 +112,8 @@ StateViz::StateViz() : GUIPlugin(), topic("/delete_plot") {
   yaw_layout->addWidget(true_yaw_edit);
   yaw_layout->addWidget(estimated_yaw_label);
   yaw_layout->addWidget(estimated_yaw_edit);
+  buttons_layout->addWidget(clear_plot_button);
+  buttons_layout->addWidget(stop_robot_button);
   main_layout->addLayout(left_wheel_vel_layout);
   main_layout->addLayout(right_wheel_vel_layout);
   main_layout->addLayout(row_col_layout);
@@ -112,7 +121,7 @@ StateViz::StateViz() : GUIPlugin(), topic("/delete_plot") {
   main_layout->addLayout(x_layout);
   main_layout->addLayout(y_layout);
   main_layout->addLayout(yaw_layout);
-  main_layout->addWidget(clear_plot_button);
+  main_layout->addLayout(buttons_layout);
 
   QPalette pal = palette();
   pal.setColor(QPalette::Background, Qt::darkGray);
@@ -181,7 +190,20 @@ void StateViz::MazeLocationCallback(ConstMazeLocationPtr &msg) {
   this->SetEstimatedYaw(yaw_str);
 }
 
+void StateViz::StopRobot() {
+  gazebo::msgs::JointCmd left;
+  left.set_name("mouse::left_wheel_joint");
+  left.set_force(0);
+  stop_pub->Publish(left);
+
+  gazebo::msgs::JointCmd right;
+  right.set_name("mouse::right_wheel_joint");
+  right.set_force(0);
+  stop_pub->Publish(right);
+
+}
+
 void StateViz::ClearRobotTrace() {
   ignition::msgs::Empty msg;
-  this->pub.Publish(msg);
+  this->reset_trace_pub.Publish(msg);
 }

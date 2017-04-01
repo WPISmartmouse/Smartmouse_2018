@@ -223,13 +223,13 @@ void SimMouse::run(unsigned long time_ms) {
   gazebo::msgs::JointCmd left;
   left.set_name("mouse::left_wheel_joint");
   left.set_force(left_force_newtons);
-//  joint_cmd_pub->Publish(left);
+  joint_cmd_pub->Publish(left);
 
   double right_force_newtons = abstractForceToNewtons(abstract_right_force);
   gazebo::msgs::JointCmd right;
   right.set_name("mouse::right_wheel_joint");
   right.set_force(right_force_newtons);
-//  joint_cmd_pub->Publish(right);
+  joint_cmd_pub->Publish(right);
 }
 
 void SimMouse::setSpeed(double left_wheel_velocity_setpoint_mps, double right_wheel_velocity_setpoint_mps) {
@@ -242,7 +242,7 @@ void SimMouse::simInit() {
   // we start in the middle of the first square
   kinematic_controller.reset_x_to(AbstractMaze::HALF_UNIT_DIST);
   kinematic_controller.reset_y_to(AbstractMaze::HALF_UNIT_DIST);
-  kinematic_controller.setAcceleration(START_ACCELERATION, STOP_ACCELERATION);
+  kinematic_controller.setAcceleration(START_ACCELERATION, BRAKE_ACCELERATION);
 
 //  for (int i = 0; i < AbstractMaze::MAZE_SIZE; i++) { for (int j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
 //      indicators[i][j] = new gazebo::msgs::Visual();
