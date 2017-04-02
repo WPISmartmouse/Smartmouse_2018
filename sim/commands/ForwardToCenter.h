@@ -28,7 +28,7 @@ private:
 
   SimMouse::RangeData range_data;
   WallFollower follower;
-  const double kDisp = 1;
+  const double kDisp = 0.8;
 };
 
 #endif

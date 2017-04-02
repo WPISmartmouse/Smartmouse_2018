@@ -10,14 +10,20 @@ namespace gazebo {
     event::ConnectionPtr updateConn;
     ignition::transport::Node ign_node;
     ignition::transport::Node::Publisher time_pub;
+    unsigned long time_ms;
+
+    FastSimTimePub() : time_ms(0) {}
 
     void Update(const common::UpdateInfo &info) {
       gazebo::common::Time time = this->world->GetSimTime();
-      unsigned long time_ms = time.sec * 1000ul + time.nsec / 1000000;
+      unsigned long _time_ms = time.sec * 1000ul + time.nsec / 1000000;
 
-      ignition::msgs::UInt64 msg;
-      msg.set_data(time_ms);
-      this->time_pub.Publish(msg);
+      if (_time_ms > time_ms + 2) {
+        time_ms = _time_ms;
+        ignition::msgs::UInt64 msg;
+        msg.set_data(time_ms);
+        this->time_pub.Publish(msg);
+      }
     }
 
     void Load(physics::WorldPtr _parent, sdf::ElementPtr _sdf) {

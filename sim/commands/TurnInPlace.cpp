@@ -21,20 +21,13 @@ double TurnInPlace::yawDiff(double y1, double y2) {
 
 void TurnInPlace::execute() {
   double s;
-  double sqrt_y = dYaw > 0 ? pow(dYaw, 3/5) : -pow(-dYaw, 3/5);
-  s = sqrt_y * kP;
+  s = dYaw * kP;
   s = limit(s);
   mouse->setSpeed(-s, s);
 }
 
 double TurnInPlace::limit(double x) {
-  if (x > 0) {
-    x = std::fmin(x, SimMouse::MAX_SPEED);
-  }
-  else {
-    x = std::fmax(x, -SimMouse::MAX_SPEED);
-  }
-  return x;
+  return std::fmax(std::fmin(x, SimMouse::MAX_SPEED), -SimMouse::MAX_SPEED);
 }
 
 bool TurnInPlace::isFinished() {
@@ -44,6 +37,7 @@ bool TurnInPlace::isFinished() {
 }
 
 void TurnInPlace::end() {
+  printf("done turning.");
   mouse->internalTurnToFace(dir);
 }
 

@@ -28,7 +28,7 @@ public:
   static constexpr double SIDE_BINARY_X = 0.043; // meters
   static constexpr double SIDE_BINARY_Y = 0.022; // meters
   static constexpr double FRONT_BINARY_Y = 0.045; // meters
-  static constexpr double MAX_SPEED = 0.18; // m/sec
+  static constexpr double MAX_SPEED = 0.09; // m/sec
   static constexpr double MIN_SPEED = 0.005; // m/sec
   static constexpr double WALL_DIST = 0.125;
   static constexpr double MAX_FORCE = 0.016;  // 16kg/cm from datasheet

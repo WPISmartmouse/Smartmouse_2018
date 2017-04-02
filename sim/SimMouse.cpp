@@ -105,7 +105,8 @@ void SimMouse::indicatePath(int row, int col, std::string path, gazebo::common::
 }
 
 bool SimMouse::isStopped() {
-  return kinematic_controller.isStopped() && abstract_left_force == 0 && abstract_right_force == 0;
+  return kinematic_controller.isStopped() && fabs(abstract_left_force) <= 5 &&
+         fabs(abstract_right_force) <= RegulatedMotor::MIN_ABSTRACT_FORCE;
 }
 
 void SimMouse::publishIndicators() {
@@ -234,7 +235,7 @@ void SimMouse::simInit() {
   // we start in the middle of the first square
   kinematic_controller.reset_x_to(AbstractMaze::HALF_UNIT_DIST);
   kinematic_controller.reset_y_to(AbstractMaze::HALF_UNIT_DIST);
-  kinematic_controller.setAcceleration(1.0, 2.5);
+  kinematic_controller.setAcceleration(1, 2);
 
 //  for (int i = 0; i < AbstractMaze::MAZE_SIZE; i++) { for (int j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
 //      indicators[i][j] = new gazebo::msgs::Visual();

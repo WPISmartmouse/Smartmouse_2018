@@ -24,8 +24,8 @@ WallFollower::compute_wheel_velocities(SimMouse *mouse, Pose start_pose, SimMous
 
 
   dispError = goalDisp - disp;
-  double l = 0.08;
-  double r = 0.08;
+  double l = SimMouse::MAX_SPEED;
+  double r = SimMouse::MAX_SPEED;
 
   double leftWallError = AbstractMaze::HALF_INNER_UNIT_DIST - dToWallLeft;
   double rightWallError = AbstractMaze::HALF_INNER_UNIT_DIST - dToWallRight;
@@ -55,11 +55,11 @@ double
 WallFollower::forwardDisplacement(Direction dir, Pose start_pose, Pose end_pose) {
   switch (dir) {
     case Direction::N:
-      return end_pose.y - start_pose.y;
+      return start_pose.y - end_pose.y;
     case Direction::E:
       return end_pose.x - start_pose.x;
     case Direction::S:
-      return start_pose.y - end_pose.y;
+      return end_pose.y - start_pose.y;
     case Direction::W:
       return start_pose.x - end_pose.x;
   }

@@ -18,7 +18,7 @@ public:
   static const double kFF;
   static const double INTEGRAL_CAP;
   static const double DERIV_CAP;
-  static const double MIN_ERR;
+  static const double MIN_ABSTRACT_FORCE;
 
   bool initialized = false;
   double abstract_force;
