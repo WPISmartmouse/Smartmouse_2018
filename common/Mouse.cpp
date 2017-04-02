@@ -1,10 +1,10 @@
 #include "Mouse.h"
 
-double Mouse::metersPerSecToRadPerSec(double x) {
+double Mouse::meterToRad(double x) {
   return x / WHEEL_RAD;
 }
 
-double Mouse::radPerSecToMetersPerSec(double x) {
+double Mouse::radToMeters(double x) {
   return x * WHEEL_RAD;
 }
 

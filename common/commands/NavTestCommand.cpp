@@ -6,13 +6,10 @@
 NavTestCommand::NavTestCommand() : CommandGroup("NavTestGroup") {
   addSequential(new Forward());
   addSequential(new Forward());
+  addSequential(new Stop(0));
   addSequential(new Forward());
   addSequential(new Forward());
-  addSequential(new Forward());
-  addSequential(new Forward());
-  addSequential(new Forward());
-  addSequential(new Forward());
-  addSequential(new Forward());
+  addSequential(new Turn(Direction::W));
 
-  addSequential(new Stop(150));
+  addSequential(new Stop(250));
 }

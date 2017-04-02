@@ -20,36 +20,27 @@ double TurnInPlace::yawDiff(double y1, double y2) {
 }
 
 void TurnInPlace::execute() {
-  double l, r;
-  l = -dYaw * kP;
-  r = dYaw * kP;
-  setSpeedLimited(l, r);
+  double s;
+  double sqrt_y = dYaw > 0 ? pow(dYaw, 3/5) : -pow(-dYaw, 3/5);
+  s = sqrt_y * kP;
+  s = limit(s);
+  mouse->setSpeed(-s, s);
 }
 
-void TurnInPlace::setSpeedLimited(double l, double r) {
-  if (l > 0) {
-    l = std::fmin(l, SimMouse::MAX_SPEED);
-    l = std::fmax(l, SimMouse::MIN_SPEED);
-  } else {
-    l = std::fmax(l, -SimMouse::MAX_SPEED);
-    l = std::fmin(l, -SimMouse::MIN_SPEED);
+double TurnInPlace::limit(double x) {
+  if (x > 0) {
+    x = std::fmin(x, SimMouse::MAX_SPEED);
   }
-
-  if (r > 0) {
-    r = std::fmin(r, SimMouse::MAX_SPEED);
-    r = std::fmax(r, SimMouse::MIN_SPEED);
-  } else {
-    r = std::fmax(r, -SimMouse::MAX_SPEED);
-    r = std::fmin(r, -SimMouse::MIN_SPEED);
+  else {
+    x = std::fmax(x, -SimMouse::MAX_SPEED);
   }
-
-  mouse->setSpeed(l, r);
+  return x;
 }
 
 bool TurnInPlace::isFinished() {
   double currentYaw = mouse->getEstimatedPose().yaw;
   dYaw = yawDiff(currentYaw, goalYaw);
-  return fabs(dYaw) < Mouse::ROT_TOLERANCE;
+  return (fabs(dYaw) < Mouse::ROT_TOLERANCE) && mouse->isStopped();
 }
 
 void TurnInPlace::end() {

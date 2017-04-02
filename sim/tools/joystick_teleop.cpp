@@ -90,8 +90,8 @@ int main(int argc, char **argv) {
         lspeed = std::max(lspeed - acc, lspeed_setpoint);
       }
 
-      double lrps = SimMouse::metersPerSecToRadPerSec(lspeed);
-      double rrps = SimMouse::metersPerSecToRadPerSec(rspeed);
+      double lrps = SimMouse::meterToRad(lspeed);
+      double rrps = SimMouse::meterToRad(rspeed);
 
       gazebo::msgs::JointCmd left;
       left.set_name("mouse::left_wheel_joint");

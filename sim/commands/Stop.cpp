@@ -11,7 +11,7 @@ void Stop::initialize() {
 }
 
 void Stop::execute() {
-  mouse->setSpeed(0, 0);
+  mouse->setSpeed(0.0, 0.0);
 }
 
 bool Stop::isFinished() {

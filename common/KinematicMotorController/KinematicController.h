@@ -20,7 +20,7 @@ public:
 
   void reset_yaw_to(double new_yaw);
 
-  std::pair<double, double> run(unsigned long time_ms, double left_angle_rad, double right_angle_rad);
+  std::pair<double, double> run(unsigned long time_ms, double left_angle_rad, double right_angle_rad, double ground_truth_left_vel_rps, double ground_truth_right_vel_rps);
 
   void setAcceleration(double acceleration, double break_acceleration);
 

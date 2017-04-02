@@ -102,8 +102,8 @@ private:
   bool hasSuggestion;
   double abstract_left_force;
   double abstract_right_force;
-  double left_wheel_velocity;
-  double right_wheel_velocity;
+  double left_wheel_velocity_mps;
+  double right_wheel_velocity_mps;
   double left_wheel_angle_rad;
   double right_wheel_angle_rad;
   double row_offset_to_edge;

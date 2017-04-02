@@ -14,9 +14,9 @@ class Mouse {
 
 public:
 
-  static double radPerSecToMetersPerSec(double x);
+  static double radToMeters(double x);
 
-  static double metersPerSecToRadPerSec(double x);
+  static double meterToRad(double x);
 
   Mouse();
 

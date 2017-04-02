@@ -135,8 +135,8 @@ void SimMouse::robotStateCallback(ConstRobotStatePtr &msg) {
   true_pose.y = msg->true_y_meters();
   true_pose.yaw = msg->true_yaw_rad();
 
-  this->left_wheel_velocity = msg->left_wheel_velocity_mps();
-  this->right_wheel_velocity = msg->right_wheel_velocity_mps();
+  this->left_wheel_velocity_mps = msg->left_wheel_velocity_mps();
+  this->right_wheel_velocity_mps = msg->right_wheel_velocity_mps();
 
   this->left_wheel_angle_rad = msg->left_wheel_angle_radians();
   this->right_wheel_angle_rad = msg->right_wheel_angle_radians();
@@ -179,8 +179,11 @@ void SimMouse::robotStateCallback(ConstRobotStatePtr &msg) {
 
 void SimMouse::run(unsigned long time_ms) {
   // handle updating of odometry and PID
-  std::tie(abstract_left_force, abstract_right_force) = kinematic_controller.run(time_ms, this->left_wheel_angle_rad,
-                                                                                 this->right_wheel_angle_rad);
+  std::tie(abstract_left_force, abstract_right_force) = kinematic_controller.run(time_ms,
+                                                                                 this->left_wheel_angle_rad,
+                                                                                 this->right_wheel_angle_rad,
+                                                                                 this->left_wheel_velocity_mps,
+                                                                                 this->right_wheel_velocity_mps);
 
   // update row/col information
   Pose estimated_pose = kinematic_controller.getPose();
@@ -231,7 +234,7 @@ void SimMouse::simInit() {
   // we start in the middle of the first square
   kinematic_controller.reset_x_to(AbstractMaze::HALF_UNIT_DIST);
   kinematic_controller.reset_y_to(AbstractMaze::HALF_UNIT_DIST);
-  kinematic_controller.setAcceleration(10, 45);
+  kinematic_controller.setAcceleration(1.0, 2.5);
 
 //  for (int i = 0; i < AbstractMaze::MAZE_SIZE; i++) { for (int j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
 //      indicators[i][j] = new gazebo::msgs::Visual();

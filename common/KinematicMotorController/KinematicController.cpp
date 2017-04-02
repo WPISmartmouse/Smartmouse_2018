@@ -36,7 +36,7 @@ void KinematicMotorController::reset_yaw_to(double new_yaw) {
 }
 
 std::pair<double, double>
-KinematicMotorController::run(unsigned long time_ms, double left_angle_rad, double right_angle_rad) {
+KinematicMotorController::run(unsigned long time_ms, double left_angle_rad, double right_angle_rad, double ground_truth_left_vel_rps, double ground_truth_right_vel_rps) {
   static std::pair<double, double> abstract_forces;
 
   if (!initialized) {
@@ -47,13 +47,19 @@ KinematicMotorController::run(unsigned long time_ms, double left_angle_rad, doub
     return abstract_forces;
   }
 
+  double dt_s = (time_ms - last_run_time_ms) / 1000.0;
+
+  // minimum period of control loop
+  if (dt_s < 0.01) {
+    return abstract_forces;
+  }
+
   // equations based on https://chess.eecs.berkeley.edu/eecs149/documentation/differentialDrive.pdf
-  double vl = Mouse::radPerSecToMetersPerSec(left_motor.velocity_rps);
-  double vr = Mouse::radPerSecToMetersPerSec(right_motor.velocity_rps);
+  double vl = Mouse::radToMeters(left_motor.velocity_rps);
+  double vr = Mouse::radToMeters(right_motor.velocity_rps);
 
   double w = (vr - vl) / Mouse::TRACK_WIDTH;
   double r = Mouse::TRACK_WIDTH / 2 * (vl + vr) / (vr - vl);
-  double dt_s = (time_ms - last_run_time_ms) / 1000.0;
   double x = current_pose_estimate.x;
   double y = current_pose_estimate.y;
   double yaw = current_pose_estimate.yaw;
@@ -79,10 +85,10 @@ KinematicMotorController::run(unsigned long time_ms, double left_angle_rad, doub
   }
 
   // run PID, which will update the velocities of the wheels
-  if (dt_s > 0) {
-    abstract_forces.first = left_motor.runPid(dt_s, left_angle_rad);
-    abstract_forces.second = right_motor.runPid(dt_s, right_angle_rad);
-  }
+  abstract_forces.first = left_motor.runPid(dt_s, left_angle_rad, ground_truth_left_vel_rps);
+  abstract_forces.second = right_motor.runPid(dt_s, right_angle_rad, ground_truth_right_vel_rps);
+
+  printf("%f, %f, %f, %f\n", left_motor.regulated_setpoint_rps, left_motor.velocity_rps, left_motor.estimated_velocity_rps, left_motor.smooth_derivative);
 
   last_run_time_ms = time_ms;
 

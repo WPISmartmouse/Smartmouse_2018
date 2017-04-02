@@ -23,14 +23,14 @@ public:
 private:
   double yawDiff(double y1, double y2);
 
-  void setSpeedLimited(double l, double r);
+  double limit(double x);
 
   double goalYaw;
   double dYaw;
   SimMouse *mouse;
   Direction dir;
 
-  const double kP = 0.02;
+  const double kP = 0.2;
 };
 
 #endif

@@ -24,14 +24,8 @@ WallFollower::compute_wheel_velocities(SimMouse *mouse, Pose start_pose, SimMous
 
 
   dispError = goalDisp - disp;
-  double l = SimMouse::MAX_SPEED;
-  double r = SimMouse::MAX_SPEED;
-
-  l = l > SimMouse::MAX_SPEED ? SimMouse::MAX_SPEED : l;
-  r = r > SimMouse::MAX_SPEED ? SimMouse::MAX_SPEED : r;
-
-  l = l < SimMouse::MIN_SPEED ? SimMouse::MIN_SPEED : l;
-  r = r < SimMouse::MIN_SPEED ? SimMouse::MIN_SPEED : r;
+  double l = 0.08;
+  double r = 0.08;
 
   double leftWallError = AbstractMaze::HALF_INNER_UNIT_DIST - dToWallLeft;
   double rightWallError = AbstractMaze::HALF_INNER_UNIT_DIST - dToWallRight;

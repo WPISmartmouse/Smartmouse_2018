@@ -112,8 +112,8 @@ void MousePlugin::PublishInfo() {
     right_angle = this->right_wheel->GetAngle(0).Radian();
   }
 
-  double left_vel_mps = SimMouse::radPerSecToMetersPerSec(left_vel_rps);
-  double right_vel_mps = SimMouse::radPerSecToMetersPerSec(right_vel_rps);
+  double left_vel_mps = SimMouse::radToMeters(left_vel_rps);
+  double right_vel_mps = SimMouse::radToMeters(right_vel_rps);
 
   gzmaze::msgs::RobotState state;
   state.set_allocated_true_pose(pose);

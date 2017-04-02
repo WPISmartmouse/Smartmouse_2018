@@ -14,8 +14,8 @@ void ArcTurn::execute() {
   // calculate speed in radians/sec
   constexpr double inner_rps = (M_PI * TURN_RAD_INNER) / (2 * TURN_TIME_S * SimMouse::WHEEL_RAD);
   constexpr double outer_rps = (M_PI * TURN_RAD_OUTER) / (2 * TURN_TIME_S * SimMouse::WHEEL_RAD);
-  double inner_mps = SimMouse::radPerSecToMetersPerSec(inner_rps);
-  double outer_mps = SimMouse::radPerSecToMetersPerSec(outer_rps);
+  double inner_mps = SimMouse::radToMeters(inner_rps);
+  double outer_mps = SimMouse::radToMeters(outer_rps);
 
   if (left) {
     mouse->setSpeed(inner_mps, outer_mps);
