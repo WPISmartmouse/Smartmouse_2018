@@ -27,6 +27,11 @@ WallFollower::compute_wheel_velocities(SimMouse *mouse, Pose start_pose, SimMous
   double l = SimMouse::MAX_SPEED;
   double r = SimMouse::MAX_SPEED;
 
+  // Add corrections based on yaw
+  l += kPYaw * angleError;
+  r -= kPYaw * angleError;
+
+  // Add corrections based on distance to walls
   double leftWallError = AbstractMaze::HALF_INNER_UNIT_DIST - dToWallLeft;
   double rightWallError = AbstractMaze::HALF_INNER_UNIT_DIST - dToWallRight;
   double dLeftWallError = leftWallError - lastLeftWallError;
@@ -34,25 +39,28 @@ WallFollower::compute_wheel_velocities(SimMouse *mouse, Pose start_pose, SimMous
   lastLeftWallError = leftWallError;
   lastRightWallError = rightWallError;
 
-  if (dToWallLeft < SimMouse::WALL_DIST) {
+  if (AbstractMaze::HALF_INNER_UNIT_DIST < dToWallLeft && dToWallLeft < SimMouse::WALL_DIST) { // to far on left
+    double correction = leftWallError * kPWall + dLeftWallError * kDWall;
+    printf("> %f %f\n", dToWallLeft, dToWallRight);
+    l -= correction;
+  } else if (AbstractMaze::HALF_INNER_UNIT_DIST < dToWallRight && dToWallRight < SimMouse::WALL_DIST) { // too far on right
+    double correction = rightWallError * kPWall + dRightWallError * kDWall;
+    printf("< %f %f\n", dToWallLeft, dToWallRight);
+    r -= correction;
+  } else if (dToWallLeft < SimMouse::WALL_DIST) { // too close on left
+    printf("+ %f %f\n", dToWallLeft, dToWallRight);
     double correction = leftWallError * kPWall + dLeftWallError * kDWall;
     r -= correction;
-  } else if (dToWallRight < SimMouse::WALL_DIST) {
+  } else if (dToWallRight < SimMouse::WALL_DIST) { // too close on right
+    printf("- %f %f\n", dToWallLeft, dToWallRight);
     double correction = rightWallError * kPWall + dRightWallError * kDWall;
     l -= correction;
-  } else if (AbstractMaze::HALF_INNER_UNIT_DIST < dToWallLeft && dToWallLeft < SimMouse::WALL_DIST) {
-    double correction = leftWallError * kPWall + dLeftWallError * kDWall;
-    l -= correction;
-  } else if (AbstractMaze::HALF_INNER_UNIT_DIST < dToWallRight && dToWallRight < SimMouse::WALL_DIST) {
-    double correction = rightWallError * kPWall + dRightWallError * kDWall;
-    r -= correction;
   }
 
   return std::pair<double, double>(l, r);
 }
 
-double
-WallFollower::forwardDisplacement(Direction dir, Pose start_pose, Pose end_pose) {
+double WallFollower::forwardDisplacement(Direction dir, Pose start_pose, Pose end_pose) {
   switch (dir) {
     case Direction::N:
       return start_pose.y - end_pose.y;
@@ -90,8 +98,6 @@ double WallFollower::dispToEdge(SimMouse *mouse) {
 }
 
 double WallFollower::dispToCenter(SimMouse *mouse) {
-  // TODO: Should be HALF_UNIT_DIST but this is just a hack to prevent it from going too far
-  // TODO: this can be removed when we do proper ArcTurn stuff
   double row_offset_to_center = AbstractMaze::HALF_UNIT_DIST - mouse->getRowOffsetToEdge();
   double col_offset_to_center = AbstractMaze::HALF_UNIT_DIST - mouse->getColOffsetToEdge();
   Direction dir = mouse->getDir();

@@ -32,8 +32,9 @@ public:
   double dToWallRight;
   double lastLeftWallError;
   double lastRightWallError;
-  const double kPWall = 0.2;
-  const double kDWall = 80;
+  const double kPWall = 0.4;
+  const double kDWall = 50;
+  const double kPYaw = 0.5;
 };
 
 #endif

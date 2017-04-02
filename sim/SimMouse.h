@@ -87,6 +87,8 @@ public:
 
   KinematicMotorController kinematic_controller;
 
+  void informNextWalls(bool next_walls[4]);
+
 private:
 
   SimMouse();
@@ -97,9 +99,6 @@ private:
 
   static SimMouse *instance;
 
-  bool walls[4];
-  bool suggestedWalls[4];
-  bool hasSuggestion;
   double abstract_left_force;
   double abstract_right_force;
   double left_wheel_velocity_mps;

@@ -3,7 +3,7 @@
 #include "RegulatedMotor.h"
 
 const double RegulatedMotor::kP = 2.0;
-const double RegulatedMotor::kI = 0.4;
+const double RegulatedMotor::kI = 0.8;
 const double RegulatedMotor::kD = 0.08;
 const double RegulatedMotor::kFF = 2.8;
 const double RegulatedMotor::INTEGRAL_CAP = 10.0;

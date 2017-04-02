@@ -120,8 +120,6 @@ public:
   /** duh*/
   void print_dist_maze();
 
-private:
-
   bool flood_fill(char *path, int r0, int c0, int r1, int c1);
 
   Node *nodes[AbstractMaze::MAZE_SIZE][AbstractMaze::MAZE_SIZE]; // array of node pointers

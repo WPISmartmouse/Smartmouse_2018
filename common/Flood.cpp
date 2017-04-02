@@ -30,6 +30,7 @@ Direction Flood::planNextStep() {
   //check left right back and front sides
   //eventually this will return values from sensors
   SensorReading sr = mouse->checkWalls();
+  printf("%i, %i, %i, %i, %i, %i\n", mouse->getRow(), mouse->getCol(), sr.walls[0], sr.walls[1], sr.walls[2], sr.walls[3]);
 
   //update the mazes base on that reading
   no_wall_maze.update(sr);

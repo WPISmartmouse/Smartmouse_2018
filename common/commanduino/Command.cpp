@@ -1,3 +1,5 @@
+//#include <cstdio>
+
 #include "Command.h"
 
 TimerInterface *Command::timer;
@@ -6,7 +8,7 @@ void Command::setTimerImplementation(TimerInterface *timer) {
   Command::timer = timer;
 }
 
-Command::Command() : initialized(false) {}
+Command::Command() : initialized(false), name("unnamed") {}
 
 Command::Command(const char *name) : name(name),
                                      initialized(false) {}
@@ -52,6 +54,7 @@ bool Command::isRunning() {
 void Command::initialize() {}
 
 void Command::_initialize() {
+//  printf("(%s) starting\n", name);
   running = true;
   startTime = timer->programTimeMs();
 }

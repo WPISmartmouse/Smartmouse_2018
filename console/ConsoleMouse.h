@@ -15,6 +15,7 @@ public:
 private:
 
   static ConsoleMouse *instance;
+  AbstractMaze *true_maze;
 
   ConsoleMouse();
 

@@ -2,7 +2,7 @@
 
 #include "Stop.h"
 
-Stop::Stop() : mouse(SimMouse::inst()), stop_time_ms(0) {}
+Stop::Stop() : Command("STOP"), mouse(SimMouse::inst()), stop_time_ms(0) {}
 
 Stop::Stop(unsigned long stop_time) : mouse(SimMouse::inst()), stop_time_ms(stop_time) {}
 

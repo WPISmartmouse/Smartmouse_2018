@@ -1,3 +1,4 @@
+#include "WaitForStart.h"
 #include "ReturnToStart.h"
 #include "Forward.h"
 #include "Turn.h"
@@ -26,6 +27,10 @@ bool ReturnToStart::isFinished() {
       char nextDirection = pathToStart[index++];
       addSequential(new Turn(char_to_dir(nextDirection)));
       addSequential(new Forward());
+#ifdef CONSOLE
+      addSequential(new WaitForStart());
+      mouse->print_maze_mouse();
+#endif
     } else {
       return true;
     }

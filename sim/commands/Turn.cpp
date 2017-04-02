@@ -21,10 +21,12 @@ void Turn::initialize() {
 //    addSequential(new Stop(50)); // slowly stop
 //    addSequential(new Forward());
 //  }
-  addSequential(new ForwardToCenter()); // slowly stop
-  addSequential(new Stop(100)); // slowly stop
-  addSequential(new TurnInPlace(dir));
-  addSequential(new Forward());
+  if (dir != mouse->getDir()) {
+    addSequential(new ForwardToCenter()); // slowly stop
+    addSequential(new Stop(100)); // slowly stop
+    addSequential(new TurnInPlace(dir));
+    addSequential(new Forward());
+  }
 }
 
 #endif

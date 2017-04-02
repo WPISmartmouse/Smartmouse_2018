@@ -11,6 +11,7 @@
 #include "ConsoleMouse.h"
 #include "ConsoleTimer.h"
 #include <common/Flood.h>
+#include <common/WallFollow.h>
 
 int main(int argc, char *argv[]) {
 

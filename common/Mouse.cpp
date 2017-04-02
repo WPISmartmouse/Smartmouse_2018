@@ -89,10 +89,6 @@ void Mouse::mark_mouse_position_visited() {
   maze->nodes[row][col]->visited = true;
 }
 
-Node *Mouse::get_mouse_node() {
-  return maze->nodes[row][col];
-}
-
 #ifdef EMBED
 #include <Arduino.h>
 

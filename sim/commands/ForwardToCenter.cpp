@@ -3,7 +3,7 @@
 #include <SimMouse.h>
 #include "ForwardToCenter.h"
 
-ForwardToCenter::ForwardToCenter() : mouse(SimMouse::inst()) {}
+ForwardToCenter::ForwardToCenter() : Command("FwdToCenter"), mouse(SimMouse::inst()) {}
 
 void ForwardToCenter::initialize() {
   start = mouse->getEstimatedPose();

@@ -11,7 +11,7 @@ double SimMouse::abstractForceToNewtons(double x) {
   return x * MAX_FORCE / 255.0;
 }
 
-SimMouse::SimMouse() : hasSuggestion(false), kinematic_controller() {}
+SimMouse::SimMouse() {}
 
 SimMouse *SimMouse::inst() {
   if (instance == NULL) {
@@ -25,19 +25,11 @@ SensorReading SimMouse::checkWalls() {
   std::unique_lock<std::mutex> lk(dataMutex);
   dataCond.wait(lk);
   SensorReading sr(row, col);
-  std::array<bool, 4> *w = &sr.walls;
 
-  for (int i = 0; i < w->size(); i++) {
-    if (hasSuggestion) {
-      (*w)[i] = suggestedWalls[i];
-    } else {
-      (*w)[i] = this->walls[i];
-    }
-  }
-
-  if (!hasSuggestion) {
-    (*w)[0] = true; // there will always be a wall North
-  }
+  sr.walls[static_cast<int>(dir)] = range_data.front_binary;
+  sr.walls[static_cast<int>(left_of_dir(dir))] = range_data.left_binary;
+  sr.walls[static_cast<int>(right_of_dir(dir))] = range_data.right_binary;
+  sr.walls[static_cast<int>(opposite_direction(dir))] = false;
 
   return sr;
 }
@@ -142,39 +134,12 @@ void SimMouse::robotStateCallback(ConstRobotStatePtr &msg) {
   this->left_wheel_angle_rad = msg->left_wheel_angle_radians();
   this->right_wheel_angle_rad = msg->right_wheel_angle_radians();
 
-  //transform from Mouse frame to Cardinal frame;
   this->range_data.left_analog = msg->left_analog();
   this->range_data.right_analog = msg->right_analog();
   this->range_data.left_binary = msg->left_binary();
   this->range_data.right_binary = msg->right_binary();
   this->range_data.front_binary = msg->front_binary();
 
-  switch (dir) {
-    case Direction::N:
-      walls[0] = range_data.front_binary;
-      walls[1] = range_data.left_binary;
-      walls[2] = false;
-      walls[3] = range_data.right_binary;
-      break;
-    case Direction::E:
-      walls[0] = range_data.right_binary;
-      walls[1] = range_data.front_binary;
-      walls[2] = range_data.left_binary;
-      walls[3] = false;
-      break;
-    case Direction::S:
-      walls[0] = false;
-      walls[1] = range_data.right_binary;
-      walls[2] = range_data.front_binary;
-      walls[3] = range_data.left_binary;
-      break;
-    case Direction::W:
-      walls[0] = range_data.left_binary;
-      walls[1] = false;
-      walls[2] = range_data.right_binary;
-      walls[3] = range_data.front_binary;
-      break;
-  }
   dataCond.notify_all();
 }
 
@@ -190,8 +155,13 @@ void SimMouse::run(unsigned long time_ms) {
   Pose estimated_pose = kinematic_controller.getPose();
   computed_row = (int) (estimated_pose.y / AbstractMaze::UNIT_DIST);
   computed_col = (int) (estimated_pose.x / AbstractMaze::UNIT_DIST);
+
   row_offset_to_edge = fmod(estimated_pose.y, AbstractMaze::UNIT_DIST);
   col_offset_to_edge = fmod(estimated_pose.x, AbstractMaze::UNIT_DIST);
+
+  // not sure if this is a good idea
+  row = computed_row;
+  col = computed_col;
 
   // publish status information
   gzmaze::msgs::MazeLocation maze_loc_msg;
@@ -203,7 +173,7 @@ void SimMouse::run(unsigned long time_ms) {
   maze_loc_msg.set_estimated_x_meters(estimated_pose.x);
   maze_loc_msg.set_estimated_y_meters(estimated_pose.y);
   maze_loc_msg.set_estimated_yaw_rad(estimated_pose.yaw);
-  std::string dir_str(1, dir_to_char(getDir()));
+  std::string dir_str(1, dir_to_char(dir));
   maze_loc_msg.set_dir(dir_str);
 
   if (!maze_loc_msg.IsInitialized()) {
@@ -234,7 +204,7 @@ void SimMouse::simInit() {
 
   // we start in the middle of the first square
   kinematic_controller.reset_x_to(AbstractMaze::HALF_UNIT_DIST);
-  kinematic_controller.reset_y_to(AbstractMaze::HALF_UNIT_DIST);
+  kinematic_controller.reset_y_to(0.05);
   kinematic_controller.setAcceleration(1, 2);
 
 //  for (int i = 0; i < AbstractMaze::MAZE_SIZE; i++) { for (int j = 0; j < AbstractMaze::MAZE_SIZE; j++) {

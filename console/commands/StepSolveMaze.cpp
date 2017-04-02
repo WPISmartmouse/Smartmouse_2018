@@ -23,7 +23,9 @@ bool StepSolveMaze::isFinished() {
       addSequential(new Turn(solver->planNextStep()));
       addSequential(new Forward());
       addSequential(new WaitForStart());
+#ifndef EMBED
       solver->mouse->print_maze_mouse();
+#endif
     } else {
       return true;
     }

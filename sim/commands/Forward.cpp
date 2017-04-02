@@ -1,9 +1,10 @@
 #ifdef SIM
 
 #include <SimMouse.h>
+#include <sim/SimMouse.h>
 #include "Forward.h"
 
-Forward::Forward() : mouse(SimMouse::inst()) {}
+Forward::Forward() : Command("Forward"), mouse(SimMouse::inst()) {}
 
 
 void Forward::initialize() {
@@ -16,7 +17,6 @@ void Forward::execute() {
 
   double l, r;
   std::tie(l, r) = follower.compute_wheel_velocities(this->mouse, start, range_data);
-
   mouse->setSpeed(l, r);
 }
 

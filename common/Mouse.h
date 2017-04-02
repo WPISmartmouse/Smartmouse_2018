@@ -53,10 +53,6 @@ public:
 
   void mark_mouse_position_visited();
 
-  /** \brief get the node that the mouse is currently on
-   */
-  Node *get_mouse_node();
-
   void internalTurnToFace(Direction dir);
 
   void internalForward();

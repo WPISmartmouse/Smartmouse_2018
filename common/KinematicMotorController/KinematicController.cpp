@@ -88,7 +88,7 @@ KinematicMotorController::run(unsigned long time_ms, double left_angle_rad, doub
   abstract_forces.first = left_motor.runPid(dt_s, left_angle_rad, ground_truth_left_vel_rps);
   abstract_forces.second = right_motor.runPid(dt_s, right_angle_rad, ground_truth_right_vel_rps);
 
-  printf("%f, %f, %f, %f\n", left_motor.regulated_setpoint_rps, left_motor.velocity_rps, left_motor.smooth_derivative, left_motor.integral);
+//  printf("%f, %f, %f, %f\n", left_motor.regulated_setpoint_rps, left_motor.velocity_rps, left_motor.smooth_derivative, left_motor.integral);
 
   last_run_time_ms = time_ms;
 

@@ -2,7 +2,7 @@
 
 #include "TurnInPlace.h"
 
-TurnInPlace::TurnInPlace(Direction dir) : Command("SimTurn"), mouse(SimMouse::inst()), dir(dir) {}
+TurnInPlace::TurnInPlace(Direction dir) : Command("SimTurnInPlace"), mouse(SimMouse::inst()), dir(dir) {}
 
 void TurnInPlace::initialize() {
   goalYaw = toYaw(dir);
@@ -33,7 +33,9 @@ double TurnInPlace::limit(double x) {
 bool TurnInPlace::isFinished() {
   double currentYaw = mouse->getEstimatedPose().yaw;
   dYaw = yawDiff(currentYaw, goalYaw);
-  return (fabs(dYaw) < Mouse::ROT_TOLERANCE) && mouse->isStopped();
+  double vl, vr;
+  std::tie(vl, vr) = mouse->getWheelVelocities();
+  return (fabs(dYaw) < Mouse::ROT_TOLERANCE) && fabs(vl) < 0.05 && fabs(vr) < 0.05;
 }
 
 void TurnInPlace::end() {

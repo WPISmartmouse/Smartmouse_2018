@@ -15,8 +15,9 @@ bool SolveMaze::isFinished() {
     bool mazeSolved = solver->isFinished();
 
     if (!mazeSolved) {
-      Direction nextDirection = solver->planNextStep();
-      addSequential(new Turn(nextDirection));
+      Direction next_direction = solver->planNextStep();
+      printf("Next Direction: %c\n", dir_to_char(next_direction));
+      addSequential(new Turn(next_direction));
       addSequential(new Forward());
     } else {
       return true;

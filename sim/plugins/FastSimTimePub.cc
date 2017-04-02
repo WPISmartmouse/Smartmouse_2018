@@ -18,7 +18,7 @@ namespace gazebo {
       gazebo::common::Time time = this->world->GetSimTime();
       unsigned long _time_ms = time.sec * 1000ul + time.nsec / 1000000;
 
-      if (_time_ms > time_ms + 2) {
+      if (_time_ms != time_ms) {
         time_ms = _time_ms;
         ignition::msgs::UInt64 msg;
         msg.set_data(time_ms);

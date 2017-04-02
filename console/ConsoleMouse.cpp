@@ -10,7 +10,7 @@ ConsoleMouse *ConsoleMouse::inst() {
   return instance;
 }
 
-void ConsoleMouse::seedMaze(AbstractMaze *maze) { this->maze = maze; }
+void ConsoleMouse::seedMaze(AbstractMaze *maze) { this->true_maze = maze; }
 
 ConsoleMouse::ConsoleMouse() {}
 
@@ -20,7 +20,7 @@ ConsoleMouse::ConsoleMouse(int starting_row, int starting_col)
 SensorReading ConsoleMouse::checkWalls() {
   SensorReading sr(row, col);
   std::array<bool, 4> *w = &sr.walls;
-  Node *n = get_mouse_node();
+  Node *n = true_maze->nodes[row][col];
 
   for (int i = 0; i < w->size(); i++) {
     (*w)[i] = (n->neighbors[i] == 0x0);

@@ -5,6 +5,12 @@
 
 NavTestCommand::NavTestCommand() : CommandGroup("NavTestGroup") {
   addSequential(new Forward());
-  addSequential(new Turn(Direction::S));
+  addSequential(new Forward());
+  addSequential(new Forward());
+  addSequential(new Forward());
+  addSequential(new Forward());
+  addSequential(new Forward());
+  addSequential(new Forward());
+  addSequential(new Forward());
   addSequential(new Stop(250));
 }

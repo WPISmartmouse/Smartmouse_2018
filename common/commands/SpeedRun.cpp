@@ -1,3 +1,4 @@
+#include "WaitForStart.h"
 #include "SpeedRun.h"
 #include "Turn.h"
 #include "Forward.h"
@@ -20,6 +21,10 @@ bool SpeedRun::isFinished() {
       char nextDirection = path[index++];
       addSequential(new Turn(char_to_dir(nextDirection)));
       addSequential(new Forward());
+#ifdef CONSOLE
+      addSequential(new WaitForStart());
+      mouse->print_maze_mouse();
+#endif
     } else {
       return true;
     }
