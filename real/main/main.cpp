@@ -5,20 +5,22 @@
 #include <common/commands/SolveCommand.h>
 #include <common/Flood.h>
 #include <real/RealMouse.h>
+#include <real/commands/LEDBlink.h>
 
 ArduinoTimer timer;
 
 AbstractMaze maze;
-Scheduler scheduler(new SolveCommand(new Flood(RealMouse::inst())));
+//Scheduler scheduler(new SolveCommand(new Flood(RealMouse::inst())));
+Scheduler scheduler(new LEDBlink(RealMouse::LED_1, 100));
+RealMouse *mouse;
 
 void setup() {
-  pinMode(13, OUTPUT);
-  digitalWrite(13, LOW);
-  Serial.begin(0);
   Command::setTimerImplementation(&timer);
-  RealMouse::inst()->setup();
+  mouse = RealMouse::inst();
+  mouse->setup();
 }
 
 void loop() {
+  mouse->run();
   scheduler.run();
 }

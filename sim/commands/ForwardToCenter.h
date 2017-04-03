@@ -7,7 +7,7 @@
 #include <common/Mouse.h>
 
 #include "SimMouse.h"
-#include "WallFollower.h"
+#include <common/WallFollower.h>
 
 class ForwardToCenter : public Command {
 public:
@@ -26,7 +26,7 @@ private:
   Pose start;
   SimMouse *mouse;
 
-  SimMouse::RangeData range_data;
+  RangeData range_data;
   WallFollower follower;
   const double kDisp = 0.8;
 };

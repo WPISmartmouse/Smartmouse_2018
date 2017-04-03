@@ -132,13 +132,13 @@ void SensorViz::paintEvent(QPaintEvent *event) {
   }
 
   // rays for analog sensors
-  int left_analog_x = (int) (cos(SimMouse::ANALOG_ANGLE) * leftAnalogDist * meters_to_pixels);
-  int left_analog_y = (int) (sin(SimMouse::ANALOG_ANGLE) * leftAnalogDist * meters_to_pixels);
+  int left_analog_x = (int) (cos(SimMouse::CONFIG.ANALOG_ANGLE) * leftAnalogDist * meters_to_pixels);
+  int left_analog_y = (int) (sin(SimMouse::CONFIG.ANALOG_ANGLE) * leftAnalogDist * meters_to_pixels);
   painter.setPen(QPen(Qt::blue));
   painter.drawLine(mouse_x + 30, mouse_y - 10, mouse_x + 30 + left_analog_x, mouse_y - 10 - left_analog_y);
 
-  int right_analog_x = (int) (cos(SimMouse::ANALOG_ANGLE) * rightAnalogDist * meters_to_pixels);
-  int right_analog_y = (int) (sin(SimMouse::ANALOG_ANGLE) * rightAnalogDist * meters_to_pixels);
+  int right_analog_x = (int) (cos(SimMouse::CONFIG.ANALOG_ANGLE) * rightAnalogDist * meters_to_pixels);
+  int right_analog_y = (int) (sin(SimMouse::CONFIG.ANALOG_ANGLE) * rightAnalogDist * meters_to_pixels);
   painter.setPen(QPen(Qt::blue));
   painter.drawLine(mouse_x + 30, mouse_y + 10, mouse_x + 30 + right_analog_x, mouse_y + 10 + right_analog_y);
 
@@ -149,8 +149,8 @@ void SensorViz::paintEvent(QPaintEvent *event) {
     painter.setPen(QPen(Qt::darkGray));
   }
   const int bin_l = (int) (0.18 * meters_to_pixels); // fairly arbitrary
-  int left_binary_x = (int) (cos(SimMouse::BINARY_ANGLE) * bin_l);
-  int left_binary_y = (int) (sin(SimMouse::BINARY_ANGLE) * bin_l);
+  int left_binary_x = (int) (cos(SimMouse::CONFIG.BINARY_ANGLE) * bin_l);
+  int left_binary_y = (int) (sin(SimMouse::CONFIG.BINARY_ANGLE) * bin_l);
   painter.drawLine(mouse_x + 32, mouse_y - 8, mouse_x + 32 + left_binary_x, mouse_y - 8 - left_binary_y);
 
   if (this->rightBinaryState) {
@@ -158,8 +158,8 @@ void SensorViz::paintEvent(QPaintEvent *event) {
   } else {
     painter.setPen(QPen(Qt::darkGray));
   }
-  int right_binary_x = (int) (cos(SimMouse::BINARY_ANGLE) * bin_l);
-  int right_binary_y = (int) (sin(SimMouse::BINARY_ANGLE) * bin_l);
+  int right_binary_x = (int) (cos(SimMouse::CONFIG.BINARY_ANGLE) * bin_l);
+  int right_binary_y = (int) (sin(SimMouse::CONFIG.BINARY_ANGLE) * bin_l);
   painter.drawLine(mouse_x + 32, mouse_y + 8, mouse_x + 32 + right_binary_x, mouse_y + 8 + right_binary_y);
 
   if (this->frontBinaryState) {

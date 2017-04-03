@@ -3,6 +3,15 @@
 #include <math.h>
 #include "Direction.h"
 #include "AbstractMaze.h"
+#include "Pose.h"
+
+typedef struct {
+  double left_analog;
+  double right_analog;
+  bool left_binary;
+  bool right_binary;
+  bool front_binary;
+} RangeData;
 
 /** \brief depresents a mouse
  * don't ever change the row/col of a mouse directly. This prevents it from
@@ -75,6 +84,12 @@ public:
   static constexpr double WHEEL_RAD = 0.015;
   static constexpr double WHEEL_CIRC = 2 * WHEEL_RAD * M_PI;
   static constexpr double TRACK_WIDTH = 0.0626; // m
+
+  double getColOffsetToEdge();
+
+  double getRowOffsetToEdge();
+
+  Pose getPose();
 
 protected:
   int row, col;

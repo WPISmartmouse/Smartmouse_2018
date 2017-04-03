@@ -27,7 +27,7 @@ void TurnInPlace::execute() {
 }
 
 double TurnInPlace::limit(double x) {
-  return std::fmax(std::fmin(x, SimMouse::MAX_SPEED), -SimMouse::MAX_SPEED);
+  return std::fmax(std::fmin(x, SimMouse::CONFIG.MAX_SPEED), -SimMouse::CONFIG.MAX_SPEED);
 }
 
 bool TurnInPlace::isFinished() {

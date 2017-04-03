@@ -1,28 +1,26 @@
 #pragma once
 
-#ifdef SIM
-
 #include <common/Pose.h>
-#include <ignition/math.hh>
-
-#include "SimMouse.h"
+#include <common/Mouse.h>
+#include <common/Direction.h>
+#include "RobotConfig.h"
 
 class WallFollower {
 public:
-  WallFollower();
+  WallFollower(RobotConfig config);
 
   WallFollower(double goalDisp);
 
   static double forwardDisplacement(Direction dir, Pose start_pose, Pose end_pose);
 
-  static double dispToEdge(SimMouse *mouse);
+  static double dispToEdge(Mouse *mouse);
 
-  static double dispToCenter(SimMouse *mouse);
+  static double dispToCenter(Mouse *mouse);
 
   static double yawDiff(double y1, double y2);
 
   std::pair<double, double>
-  compute_wheel_velocities(SimMouse *mouse, Pose start_pose, SimMouse::RangeData range_data);
+  compute_wheel_velocities(Mouse *mouse, Pose start_pose, RangeData range_data);
 
   double disp;
   double goalDisp;
@@ -32,9 +30,10 @@ public:
   double dToWallRight;
   double lastLeftWallError;
   double lastRightWallError;
-  const double kPWall = 0.4;
+  const double kPWall = 0.1;
   const double kDWall = 50;
-  const double kPYaw = 0.5;
+  const double kPYaw = 2;
+
+  RobotConfig config;
 };
 
-#endif

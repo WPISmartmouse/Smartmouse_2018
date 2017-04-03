@@ -29,16 +29,20 @@ double RegulatedMotor::runPid(double dt_s, double angle_rad, double ground_truth
   }
 
   estimated_velocity_rps = (angle_rad - last_angle_rad) / dt_s;
+#ifdef EMBED
+  velocity_rps = estimated_velocity_rps;
+#else
   velocity_rps = Mouse::meterToRad(ground_truth_velocity_mps);
+#endif
   error = regulated_setpoint_rps - velocity_rps;
   derivative = (last_velocity_rps - velocity_rps) / dt_s;
   smooth_derivative = 0.80 * smooth_derivative + 0.2 * derivative;
   integral += error * dt_s;
-  integral = std::fmax(std::fmin(integral, INTEGRAL_CAP), -INTEGRAL_CAP);
+  integral = std::max(std::min(integral, INTEGRAL_CAP), -INTEGRAL_CAP);
 
   double sqrt_setpoint = regulated_setpoint_rps > 0 ? sqrt(regulated_setpoint_rps) : -sqrt(-regulated_setpoint_rps);
   abstract_force = (sqrt_setpoint * kFF) + (error * kP) + (integral * kI) + (smooth_derivative * kD);
-  abstract_force = std::fmax(std::fmin(255.0, abstract_force), -255.0);
+  abstract_force = std::max(std::min(255.0, abstract_force), -255.0);
 
   // limit the change in setpoint
   double acc = acceleration * dt_s;
@@ -47,9 +51,9 @@ double RegulatedMotor::runPid(double dt_s, double angle_rad, double ground_truth
   }
 
   if (regulated_setpoint_rps < setpoint_rps) {
-    regulated_setpoint_rps = std::fmin(regulated_setpoint_rps + acc, setpoint_rps);
+    regulated_setpoint_rps = std::min(regulated_setpoint_rps + acc, setpoint_rps);
   } else if (regulated_setpoint_rps > setpoint_rps) {
-    regulated_setpoint_rps = std::fmax(regulated_setpoint_rps - acc, setpoint_rps);
+    regulated_setpoint_rps = std::max(regulated_setpoint_rps - acc, setpoint_rps);
   }
 
   last_error = error;

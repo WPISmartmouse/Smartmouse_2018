@@ -89,6 +89,10 @@ void Mouse::mark_mouse_position_visited() {
   maze->nodes[row][col]->visited = true;
 }
 
+double Mouse::getColOffsetToEdge() {
+  return 0;
+}
+
 #ifdef EMBED
 #include <Arduino.h>
 
@@ -157,3 +161,16 @@ void Mouse::print_maze_mouse() {
 }
 
 #endif
+
+double Mouse::getRowOffsetToEdge() {
+  return 0;
+}
+
+
+Pose Mouse::getPose() {
+  Pose p;
+  p.x = row * AbstractMaze::UNIT_DIST + AbstractMaze::HALF_UNIT_DIST;
+  p.y = col * AbstractMaze::UNIT_DIST + AbstractMaze::HALF_UNIT_DIST;
+  p.yaw = toYaw(dir);
+  return p;
+}

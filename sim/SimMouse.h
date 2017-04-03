@@ -1,48 +1,30 @@
 #pragma once
 
-#ifdef SIM
-
 #include <mutex>
 #include <condition_variable>
 #include <gazebo/msgs/MessageTypes.hh>
 #include "msgs/msgs.h"
 #include <gazebo/common/Color.hh>
 #include <gazebo/transport/TransportTypes.hh>
-#include <ignition/math.hh>
 #include <common/Mouse.h>
 #include <common/Pose.h>
 #include <common/KinematicMotorController/KinematicController.h>
+#include <common/RobotConfig.h>
 
 class SimMouse : public Mouse {
 public:
   static double abstractForceToNewtons(double x);
 
-  static constexpr double ANALOG_ANGLE = 1.35255; // radians
-  static constexpr double BINARY_ANGLE = 0.65; // radians
   static constexpr double LEFT_BINARY_THRESHOLD = 0.18; // meters
   static constexpr double RIGHT_BINARY_THRESHOLD = 0.18; // meters
   static constexpr double FRONT_BINARY_THRESHOLD = 0.18; // meters
   static constexpr double ANALOG_MAX_DIST = 0.15; // meters
-  static constexpr double SIDE_ANALOG_X = 0.04; // meters
-  static constexpr double SIDE_ANALOG_Y = 0.024; // meters
-  static constexpr double SIDE_BINARY_X = 0.043; // meters
-  static constexpr double SIDE_BINARY_Y = 0.022; // meters
-  static constexpr double FRONT_BINARY_Y = 0.045; // meters
-  static constexpr double MAX_SPEED = 0.09; // m/sec
-  static constexpr double MIN_SPEED = 0.005; // m/sec
-  static constexpr double WALL_DIST = 0.125;
   static constexpr double MAX_FORCE = 0.016;  // 16kg/cm from datasheet
   static const gazebo::common::Color grey_color;
 
-  static SimMouse *inst();
+  static RobotConfig CONFIG;
 
-  typedef struct {
-    double left_analog;
-    double right_analog;
-    bool left_binary;
-    bool right_binary;
-    bool front_binary;
-  } RangeData;
+  static SimMouse *inst();
 
   virtual SensorReading checkWalls() override;
 
@@ -122,4 +104,3 @@ private:
   gazebo::msgs::Visual *indicators[AbstractMaze::MAZE_SIZE][AbstractMaze::MAZE_SIZE];
 };
 
-#endif

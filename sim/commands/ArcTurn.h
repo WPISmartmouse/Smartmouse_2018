@@ -4,8 +4,8 @@
 #include <ignition/math.hh>
 #include <common/commanduino/CommanDuino.h>
 #include <common/Direction.h>
+#include <common/WallFollower.h>
 
-#include "WallFollower.h"
 #include "SimMouse.h"
 
 class ArcTurn : public Command {

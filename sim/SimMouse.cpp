@@ -1,17 +1,24 @@
-#ifdef SIM
-
 #include "SimMouse.h"
 #include <gazebo/msgs/msgs.hh>
 
 SimMouse *SimMouse::instance = nullptr;
 const gazebo::common::Color SimMouse::grey_color{0.8, 0.8, 0.8, 1};
+RobotConfig SimMouse::CONFIG;
 
 double SimMouse::abstractForceToNewtons(double x) {
   // abstract force is from -255 to 255 per motor
   return x * MAX_FORCE / 255.0;
 }
 
-SimMouse::SimMouse() {}
+SimMouse::SimMouse() {
+  CONFIG.ANALOG_ANGLE = 1.35255; // radians
+  CONFIG.SIDE_ANALOG_X = 0.04; // meters
+  CONFIG.SIDE_ANALOG_Y = 0.024; // meters
+  CONFIG.MAX_SPEED = 0.09; // m/s
+  CONFIG.MIN_SPEED = 0.005; // m/s
+  CONFIG.WALL_DIST = 0.125; // meters
+  CONFIG.BINARY_ANGLE = 0.65; // radians
+}
 
 SimMouse *SimMouse::inst() {
   if (instance == NULL) {
@@ -58,7 +65,7 @@ Pose SimMouse::getExactPose() {
   return true_pose;
 }
 
-SimMouse::RangeData SimMouse::getRangeData() {
+RangeData SimMouse::getRangeData() {
   //wait for the next message to occur
   std::unique_lock<std::mutex> lk(dataMutex);
   dataCond.wait(lk);
@@ -244,4 +251,3 @@ void SimMouse::updateIndicator(int row, int col, gazebo::common::Color color) {
   gazebo::msgs::Set(visual->mutable_material()->mutable_diffuse(), color);
 }
 
-#endif

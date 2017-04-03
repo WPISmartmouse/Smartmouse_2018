@@ -5,7 +5,7 @@
 #include <common/commanduino/CommanDuino.h>
 #include <common/Direction.h>
 
-#include "WallFollower.h"
+#include <common/WallFollower.h>
 #include "SimMouse.h"
 
 class TurnInPlace : public Command {
