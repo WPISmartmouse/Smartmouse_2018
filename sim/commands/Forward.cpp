@@ -8,7 +8,7 @@ Forward::Forward() : Command("Forward"), mouse(SimMouse::inst()), follower(SimMo
 
 
 void Forward::initialize() {
-  start = mouse->getEstimatedPose();
+  start = mouse->getPose();
   follower.goalDisp = WallFollower::dispToEdge(mouse);
 }
 

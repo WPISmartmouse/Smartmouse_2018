@@ -22,6 +22,10 @@ SensorReading RealMouse::checkWalls() {
   return sr;
 }
 
+Pose RealMouse::getPose() {
+  return kinematic_controller.getPose();
+}
+
 void RealMouse::run() {
   double abstract_left_force, abstract_right_force;
   std::tie(abstract_left_force, abstract_right_force) = kinematic_controller.run(millis(),

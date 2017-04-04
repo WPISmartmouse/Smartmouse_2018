@@ -11,16 +11,17 @@ public:
 
   WallFollower(double goalDisp);
 
-  static double forwardDisplacement(Direction dir, Pose start_pose, Pose end_pose);
-
   static double dispToEdge(Mouse *mouse);
 
-  static double dispToCenter(Mouse *mouse);
+  static double fwdDispToCenter(Mouse *mouse);
+
+  static double forwardDisplacement(Direction dir, Pose start_pose, Pose end_pose);
+
+  static double sidewayDispToCenter(Mouse *mouse);
 
   static double yawDiff(double y1, double y2);
 
-  std::pair<double, double>
-  compute_wheel_velocities(Mouse *mouse, Pose start_pose, RangeData range_data);
+  std::pair<double, double> compute_wheel_velocities(Mouse *mouse, Pose start_pose, RangeData range_data);
 
   double disp;
   double goalDisp;
@@ -30,9 +31,9 @@ public:
   double dToWallRight;
   double lastLeftWallError;
   double lastRightWallError;
-  const double kPWall = 0.1;
-  const double kDWall = 50;
-  const double kPYaw = 2;
+  static const double kPWall;
+  static const double kDWall;
+  static const double kPYaw;
 
   RobotConfig config;
 };

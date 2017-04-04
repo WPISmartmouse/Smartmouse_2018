@@ -89,7 +89,7 @@ public:
 
   double getRowOffsetToEdge();
 
-  Pose getPose();
+  virtual Pose getPose() = 0;
 
 protected:
   int row, col;

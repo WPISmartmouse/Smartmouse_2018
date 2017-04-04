@@ -5,13 +5,16 @@
 #include <common/commands/SolveCommand.h>
 #include <common/Flood.h>
 #include <real/RealMouse.h>
+#include <common/commands/RepeatCommand.h>
 #include <real/commands/LEDBlink.h>
+
+Command* cmd = new RepeatCommand<LEDBlink, int, int>(10, RealMouse::SYS_LED, 1000);
 
 ArduinoTimer timer;
 
 AbstractMaze maze;
 //Scheduler scheduler(new SolveCommand(new Flood(RealMouse::inst())));
-Scheduler scheduler(new LEDBlink(RealMouse::LED_1, 100));
+Scheduler scheduler(new RepeatCommand<LEDBlink, int, int>(10, RealMouse::SYS_LED, 100)));
 RealMouse *mouse;
 
 void setup() {

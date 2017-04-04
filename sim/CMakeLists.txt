@@ -94,6 +94,7 @@ QT5_WRAP_CPP(sensor_viz_MOC plugins/SensorViz.hh)
 add_library(sensor_viz SHARED ${sensor_viz_MOC} plugins/SensorViz.cc)
 set_target_properties(sensor_viz PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh")
 target_link_libraries(sensor_viz
+        sim
         ${GAZEBO_LIBRARIES}
         ${QT_LIBRARIES}
         ${PROTOBUF_LIBRARIES})

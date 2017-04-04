@@ -31,7 +31,7 @@ double TurnInPlace::limit(double x) {
 }
 
 bool TurnInPlace::isFinished() {
-  double currentYaw = mouse->getEstimatedPose().yaw;
+  double currentYaw = mouse->getPose().yaw;
   dYaw = yawDiff(currentYaw, goalYaw);
   double vl, vr;
   std::tie(vl, vr) = mouse->getWheelVelocities();

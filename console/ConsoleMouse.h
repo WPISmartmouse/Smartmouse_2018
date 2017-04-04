@@ -2,11 +2,14 @@
 
 #include <common/Mouse.h>
 #include <common/SensorReading.h>
+#include <common/Pose.h>
 
 class ConsoleMouse : public Mouse {
 public:
 
   virtual SensorReading checkWalls() override;
+
+  virtual Pose getPose() override;
 
   static ConsoleMouse *inst();
 

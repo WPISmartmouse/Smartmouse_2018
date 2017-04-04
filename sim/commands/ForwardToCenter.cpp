@@ -6,8 +6,8 @@
 ForwardToCenter::ForwardToCenter() : Command("FwdToCenter"), mouse(SimMouse::inst()), follower(SimMouse::CONFIG) {}
 
 void ForwardToCenter::initialize() {
-  start = mouse->getEstimatedPose();
-  follower.goalDisp = WallFollower::dispToCenter(mouse);
+  start = mouse->getPose();
+  follower.goalDisp = WallFollower::fwdDispToCenter(mouse);
 }
 
 void ForwardToCenter::execute() {

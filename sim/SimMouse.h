@@ -22,7 +22,7 @@ public:
   static constexpr double MAX_FORCE = 0.016;  // 16kg/cm from datasheet
   static const gazebo::common::Color grey_color;
 
-  static RobotConfig CONFIG;
+  static const RobotConfig CONFIG;
 
   static SimMouse *inst();
 
@@ -34,7 +34,7 @@ public:
 
   int getComputedCol();
 
-  Pose getEstimatedPose();
+  Pose getPose();
 
   Pose getExactPose();
 

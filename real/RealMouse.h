@@ -3,6 +3,7 @@
 #include <Arduino.h>
 #include <Encoder.h>
 #include <common/Mouse.h>
+#include <common/Pose.h>
 #include <common/KinematicMotorController/KinematicController.h>
 
 
@@ -33,7 +34,9 @@ public:
 
   static RealMouse *inst();
 
-  virtual SensorReading checkWalls();
+  virtual SensorReading checkWalls() override;
+
+  virtual Pose getPose() override;
 
   void run();
 

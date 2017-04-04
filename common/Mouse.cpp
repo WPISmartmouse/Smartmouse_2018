@@ -167,10 +167,3 @@ double Mouse::getRowOffsetToEdge() {
 }
 
 
-Pose Mouse::getPose() {
-  Pose p;
-  p.x = row * AbstractMaze::UNIT_DIST + AbstractMaze::HALF_UNIT_DIST;
-  p.y = col * AbstractMaze::UNIT_DIST + AbstractMaze::HALF_UNIT_DIST;
-  p.yaw = toYaw(dir);
-  return p;
-}

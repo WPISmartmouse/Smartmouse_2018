@@ -3,7 +3,15 @@
 
 SimMouse *SimMouse::instance = nullptr;
 const gazebo::common::Color SimMouse::grey_color{0.8, 0.8, 0.8, 1};
-RobotConfig SimMouse::CONFIG;
+const RobotConfig SimMouse::CONFIG = {
+  1.35255, //ANALOG_ANGLE, radians
+  0.04, //SIDE_ANALOG_X, meters
+  0.024, //SIDE_ANALOG_Y, meters
+  0.09, //MAX_SPEED, m/s
+  0.005, //MIN_SPEED, m/s
+  0.125, //WALL_DIST, meters
+  0.65, //BINARY_ANGLE, radians
+};
 
 double SimMouse::abstractForceToNewtons(double x) {
   // abstract force is from -255 to 255 per motor
@@ -11,13 +19,6 @@ double SimMouse::abstractForceToNewtons(double x) {
 }
 
 SimMouse::SimMouse() {
-  CONFIG.ANALOG_ANGLE = 1.35255; // radians
-  CONFIG.SIDE_ANALOG_X = 0.04; // meters
-  CONFIG.SIDE_ANALOG_Y = 0.024; // meters
-  CONFIG.MAX_SPEED = 0.09; // m/s
-  CONFIG.MIN_SPEED = 0.005; // m/s
-  CONFIG.WALL_DIST = 0.125; // meters
-  CONFIG.BINARY_ANGLE = 0.65; // radians
 }
 
 SimMouse *SimMouse::inst() {
@@ -53,7 +54,7 @@ int SimMouse::getComputedRow() {
   return this->computed_row;
 }
 
-Pose SimMouse::getEstimatedPose() {
+Pose SimMouse::getPose() {
   Pose pose = kinematic_controller.getPose();
   return pose;
 }
@@ -211,7 +212,8 @@ void SimMouse::simInit() {
 
   // we start in the middle of the first square
   kinematic_controller.reset_x_to(AbstractMaze::HALF_UNIT_DIST);
-  kinematic_controller.reset_y_to(0.05);
+  kinematic_controller.reset_y_to(0.12);
+  kinematic_controller.reset_yaw_to(-0.15);
   kinematic_controller.setAcceleration(1, 2);
 
 //  for (int i = 0; i < AbstractMaze::MAZE_SIZE; i++) { for (int j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
