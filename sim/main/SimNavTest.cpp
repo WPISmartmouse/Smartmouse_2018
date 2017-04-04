@@ -46,15 +46,27 @@ int main(int argc, char *argv[]) {
   Scheduler scheduler(new NavTestCommand());
 
   bool done = false;
+  unsigned long last_t = timer.programTimeMs();
   while (true) {
+
+    unsigned long now = timer.programTimeMs();
+    double dt_s = (now - last_t) / 1000.0;
+
+    // minimum period of main loop
+    if (dt_s < 0.010) {
+      continue;
+    }
+
+    mouse->run(dt_s);
+
     if (!done) {
       done = scheduler.run();
       if (done) {
         printf("done\n.");
       }
     }
-    unsigned long time_ms = timer.programTimeMs();
-    mouse->run(time_ms);
+
+    last_t = now;
   }
 }
 

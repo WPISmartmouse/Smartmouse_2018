@@ -2,13 +2,13 @@
 #include <common/Mouse.h>
 #include "RegulatedMotor.h"
 
-const double RegulatedMotor::kP = 2.0;
-const double RegulatedMotor::kI = 0.8;
-const double RegulatedMotor::kD = 0.08;
-const double RegulatedMotor::kFF = 2.8;
+const double RegulatedMotor::kP = 4.2;
+const double RegulatedMotor::kI = 0.00;
+const double RegulatedMotor::kD = 0.1;
+const double RegulatedMotor::kFF = 2.0;
 const double RegulatedMotor::INTEGRAL_CAP = 10.0;
 const double RegulatedMotor::DERIV_CAP = 0.0;
-const double RegulatedMotor::MIN_ABSTRACT_FORCE = 4.5;
+const double RegulatedMotor::MIN_ABSTRACT_FORCE = 3.5;
 
 RegulatedMotor::RegulatedMotor() : initialized(false), abstract_force(0), acceleration(0), brake_acceleration(0),
                                    integral(0), last_angle_rad(0), last_error(0), last_velocity_rps(0),

@@ -55,7 +55,7 @@ public:
 
   void robotStateCallback(ConstRobotStatePtr &msg);
 
-  void run(unsigned long time_ms);
+  void run(double dt_s);
 
   void setSpeed(double left, double right);
 
@@ -68,8 +68,6 @@ public:
   gazebo::transport::PublisherPtr maze_location_pub;
 
   KinematicMotorController kinematic_controller;
-
-  void informNextWalls(bool next_walls[4]);
 
 private:
 

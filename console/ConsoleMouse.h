@@ -11,6 +11,10 @@ public:
 
   virtual Pose getPose() override;
 
+  virtual double getRowOffsetToEdge() override;
+
+  virtual double getColOffsetToEdge() override;
+
   static ConsoleMouse *inst();
 
   void seedMaze(AbstractMaze *maze);

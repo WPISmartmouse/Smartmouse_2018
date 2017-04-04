@@ -151,9 +151,10 @@ void SimMouse::robotStateCallback(ConstRobotStatePtr &msg) {
   dataCond.notify_all();
 }
 
-void SimMouse::run(unsigned long time_ms) {
+void SimMouse::run(double dt_s) {
   // handle updating of odometry and PID
-  std::tie(abstract_left_force, abstract_right_force) = kinematic_controller.run(time_ms,
+
+  std::tie(abstract_left_force, abstract_right_force) = kinematic_controller.run(dt_s,
                                                                                  this->left_wheel_angle_rad,
                                                                                  this->right_wheel_angle_rad,
                                                                                  this->left_wheel_velocity_mps,
@@ -175,8 +176,8 @@ void SimMouse::run(unsigned long time_ms) {
   gzmaze::msgs::MazeLocation maze_loc_msg;
   maze_loc_msg.set_row(getComputedRow());
   maze_loc_msg.set_col(getComputedCol());
-  maze_loc_msg.set_row_offset(getRowOffsetToEdge());
-  maze_loc_msg.set_col_offset(getColOffsetToEdge());
+  maze_loc_msg.set_row_offset(row_offset_to_edge);
+  maze_loc_msg.set_col_offset(col_offset_to_edge);
 
   maze_loc_msg.set_estimated_x_meters(estimated_pose.x);
   maze_loc_msg.set_estimated_y_meters(estimated_pose.y);
@@ -212,9 +213,9 @@ void SimMouse::simInit() {
 
   // we start in the middle of the first square
   kinematic_controller.reset_x_to(AbstractMaze::HALF_UNIT_DIST);
-  kinematic_controller.reset_y_to(0.12);
-  kinematic_controller.reset_yaw_to(-0.15);
-  kinematic_controller.setAcceleration(1, 2);
+  kinematic_controller.reset_y_to(0.09);
+  kinematic_controller.reset_yaw_to(0.0);
+  kinematic_controller.setAcceleration(0.1, 0.2);
 
 //  for (int i = 0; i < AbstractMaze::MAZE_SIZE; i++) { for (int j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
 //      indicators[i][j] = new gazebo::msgs::Visual();

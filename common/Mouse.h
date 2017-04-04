@@ -85,9 +85,9 @@ public:
   static constexpr double WHEEL_CIRC = 2 * WHEEL_RAD * M_PI;
   static constexpr double TRACK_WIDTH = 0.0626; // m
 
-  double getColOffsetToEdge();
+  virtual double getColOffsetToEdge() = 0;
 
-  double getRowOffsetToEdge();
+  virtual double getRowOffsetToEdge() = 0;
 
   virtual Pose getPose() = 0;
 

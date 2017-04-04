@@ -326,7 +326,8 @@
                     <velocity>41.88</velocity> <!-- ~400 rpm -->
                 </limit>
                 <dynamics>
-                    <friction>0.00040</friction>
+                    <damping>0.0001</damping>
+                    <!--<friction>0.00040</friction>-->
                 </dynamics>
             </axis>
             <physics>
@@ -355,7 +356,8 @@
                     <velocity>41.88</velocity> <!-- ~400 rpm -->
                 </limit>
                 <dynamics>
-                    <friction>0.00040</friction> <!-- not sure how to calculate this, or what the units are -->
+                    <damping>0.0001</damping>
+                    <!--<friction>0.00040</friction>-->
                 </dynamics>
             </axis>
             <physics>

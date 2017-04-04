@@ -19,6 +19,9 @@ namespace gazebo {
 
     virtual ~StateViz();
 
+    static constexpr int WIDTH = 340;
+    static constexpr int HEIGHT = 170;
+
   signals:
 
     void SetLeftVelocity(QString str);

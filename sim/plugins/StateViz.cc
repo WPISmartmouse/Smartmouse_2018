@@ -3,7 +3,6 @@
 #include <boost/algorithm/string/replace.hpp>
 #include "StateViz.hh"
 #include "RegenerateWidget.hh"
-#include "SensorViz.hh"
 
 using namespace gazebo;
 
@@ -131,8 +130,8 @@ StateViz::StateViz() : GUIPlugin() {
   main_layout->setContentsMargins(2, 2, 2, 2);
   this->setLayout(main_layout);
 
-  this->move(RegenerateWidget::WIDTH + SensorViz::WIDTH, 0);
-  this->setFixedSize(340, 170);
+  this->move(RegenerateWidget::WIDTH, 0);
+  this->setFixedSize(StateViz::WIDTH, StateViz::HEIGHT);
 }
 
 StateViz::~StateViz() {

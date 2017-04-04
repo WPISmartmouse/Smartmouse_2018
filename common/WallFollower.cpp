@@ -60,15 +60,7 @@ WallFollower::compute_wheel_velocities(Mouse *mouse, Pose start_pose, RangeData 
     r -= correction;
   }
 
-  static int i = 0;
-  if (i == 200) {
-    printf("%f, %f, (%f, %f)\n", yawError * 180 / M_PI, correction, l, r);
-    i = 0;
-  }
-  i += 1;
-
   return std::pair<double, double>(l, r);
-
 }
 
 double WallFollower::dispToEdge(Mouse *mouse) {

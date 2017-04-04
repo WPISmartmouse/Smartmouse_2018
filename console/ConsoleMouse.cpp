@@ -36,3 +36,11 @@ Pose ConsoleMouse::getPose() {
   p.yaw = toYaw(dir);
   return p;
 }
+
+double ConsoleMouse::getRowOffsetToEdge() {
+  return AbstractMaze::HALF_UNIT_DIST;
+}
+
+double ConsoleMouse::getColOffsetToEdge() {
+  return AbstractMaze::HALF_UNIT_DIST;
+}

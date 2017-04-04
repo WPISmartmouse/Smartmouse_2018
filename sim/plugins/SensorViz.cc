@@ -4,6 +4,7 @@
 #include <sim/SimMouse.h>
 
 #include "SensorViz.hh"
+#include "StateViz.hh"
 #include "RegenerateWidget.hh"
 
 using namespace gazebo;
@@ -20,7 +21,7 @@ SensorViz::SensorViz() : GUIPlugin(),
                          leftBinaryState(false),
                          rightBinaryState(false),
                          frontBinaryState(false) {
-  this->move(RegenerateWidget::WIDTH, 0);
+  this->move(RegenerateWidget::WIDTH + StateViz::WIDTH, 0);
   this->resize(SensorViz::WIDTH, SensorViz::HEIGHT);
 
   // set background

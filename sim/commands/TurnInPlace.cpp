@@ -20,7 +20,6 @@ double TurnInPlace::yawDiff(double y1, double y2) {
 void TurnInPlace::execute() {
   double s;
   s = dYaw * kP;
-  s = limit(s);
   mouse->setSpeed(-s, s);
 }
 
