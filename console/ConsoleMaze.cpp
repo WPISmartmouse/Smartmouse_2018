@@ -1,5 +1,3 @@
-#ifdef CONSOLE
-
 #include "ConsoleMaze.h"
 
 ConsoleMaze::ConsoleMaze(std::fstream &fs) : AbstractMaze() {
@@ -29,4 +27,3 @@ ConsoleMaze::ConsoleMaze(std::fstream &fs) : AbstractMaze() {
   printf("\n");
 }
 
-#endif

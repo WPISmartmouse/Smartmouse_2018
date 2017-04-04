@@ -1,7 +1,5 @@
 #pragma once
 
-#ifdef SIM
-
 #include <ignition/math.hh>
 #include <common/commanduino/CommanDuino.h>
 #include <common/Mouse.h>
@@ -31,4 +29,3 @@ private:
   WallFollower follower;
 };
 
-#endif

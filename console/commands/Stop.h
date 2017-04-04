@@ -1,7 +1,5 @@
 #pragma once
 
-#ifdef CONSOLE
-
 #include <common/commanduino/CommanDuino.h>
 #include <common/Mouse.h>
 
@@ -24,5 +22,3 @@ public:
 private:
   ConsoleMouse *mouse;
 };
-
-#endif

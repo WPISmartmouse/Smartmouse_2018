@@ -1,5 +1,4 @@
 #pragma once
-#ifdef SIM
 
 #include <ignition/math.hh>
 #include <common/commanduino/CommanDuino.h>
@@ -31,4 +30,3 @@ private:
   bool left; //false means right
 };
 
-#endif

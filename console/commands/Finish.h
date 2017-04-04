@@ -1,5 +1,4 @@
 #pragma once
-#ifdef CONSOLE
 
 #include <common/commanduino/CommanDuino.h>
 #include <common/AbstractMaze.h>
@@ -16,4 +15,3 @@ private:
   AbstractMaze *maze;
 };
 
-#endif

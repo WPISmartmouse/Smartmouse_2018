@@ -1,5 +1,3 @@
-#ifdef SIM
-
 #include <SimMouse.h>
 #include <sim/SimMouse.h>
 #include "Forward.h"
@@ -27,4 +25,3 @@ bool Forward::isFinished() {
 void Forward::end() {
 }
 
-#endif

@@ -1,5 +1,3 @@
-#ifdef SIM
-
 #include <gazebo/msgs/msgs.hh>
 
 #include "SimTimer.h"
@@ -25,4 +23,3 @@ void SimTimer::simTimeCallback(const ignition::msgs::UInt64 &msg) {
   }
 }
 
-#endif

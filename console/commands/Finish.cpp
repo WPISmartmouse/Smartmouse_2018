@@ -1,5 +1,3 @@
-#ifdef CONSOLE
-
 #include "Finish.h"
 
 Finish::Finish(AbstractMaze *maze) : Command("end"), maze(maze) {}
@@ -12,4 +10,3 @@ bool Finish::isFinished() {
   return true;
 }
 
-#endif

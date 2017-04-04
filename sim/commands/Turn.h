@@ -1,6 +1,4 @@
 #pragma once
-#ifdef SIM
-
 #include <common/commanduino/CommanDuino.h>
 #include "SimMouse.h"
 #include <common/Direction.h>
@@ -16,4 +14,3 @@ private:
   Direction dir;
 };
 
-#endif

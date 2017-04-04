@@ -1,5 +1,3 @@
-#ifdef CONSOLE
-
 #include <fstream>
 #include "ConsoleMouse.h"
 
@@ -29,4 +27,3 @@ int main(int argc, char *argv[]) {
   }
 }
 
-#endif

@@ -1,5 +1,3 @@
-#ifdef SIM
-
 #include <iostream>
 #include <gazebo/transport/TransportTypes.hh>
 #include <gazebo/msgs/joint_cmd.pb.h>
@@ -60,4 +58,3 @@ int main(int argc, char *argv[]) {
   }
 }
 
-#endif

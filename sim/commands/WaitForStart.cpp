@@ -1,5 +1,3 @@
-#ifdef SIM
-
 #include <stdio.h>
 #include <iostream>
 #include "WaitForStart.h"
@@ -20,4 +18,3 @@ bool WaitForStart::isFinished() {
 
 void WaitForStart::end() {}
 
-#endif

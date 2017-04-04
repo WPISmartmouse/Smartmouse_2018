@@ -1,5 +1,3 @@
-#ifdef SIM
-
 #include "TurnInPlace.h"
 
 TurnInPlace::TurnInPlace(Direction dir) : Command("SimTurnInPlace"), mouse(SimMouse::inst()), dir(dir) {}
@@ -43,4 +41,3 @@ void TurnInPlace::end() {
   mouse->internalTurnToFace(dir);
 }
 
-#endif

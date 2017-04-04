@@ -1,6 +1,4 @@
 #pragma once
-#ifdef SIM
-
 #include <ignition/math.hh>
 #include <common/commanduino/CommanDuino.h>
 #include <common/Direction.h>
@@ -33,4 +31,3 @@ private:
   const double kP = 0.06;
 };
 
-#endif

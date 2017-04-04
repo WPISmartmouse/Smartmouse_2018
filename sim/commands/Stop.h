@@ -1,7 +1,5 @@
 #pragma once
 
-#ifdef SIM
-
 #include <ignition/math.hh>
 #include <common/commanduino/CommanDuino.h>
 #include "SimMouse.h"
@@ -26,4 +24,3 @@ private:
   unsigned long stop_time_ms = 500;
 };
 
-#endif

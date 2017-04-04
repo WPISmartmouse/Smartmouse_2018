@@ -1,5 +1,3 @@
-#ifdef CONSOLE
-
 #include "ConsoleMouse.h"
 #include "ConsoleMaze.h"
 #include <iostream>
@@ -80,4 +78,3 @@ int main(int argc, char *argv[]) {
   }
 }
 
-#endif

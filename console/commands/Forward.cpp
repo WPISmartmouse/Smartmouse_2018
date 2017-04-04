@@ -1,5 +1,3 @@
-#ifdef CONSOLE
-
 #include "Forward.h"
 #include "ConsoleMouse.h"
 
@@ -22,4 +20,3 @@ bool Forward::isFinished() {
 
 void Forward::end() {}
 
-#endif

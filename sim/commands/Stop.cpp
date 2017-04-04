@@ -1,5 +1,3 @@
-#ifdef SIM
-
 #include "Stop.h"
 
 Stop::Stop() : Command("STOP"), mouse(SimMouse::inst()), stop_time_ms(0) {}
@@ -21,4 +19,3 @@ bool Stop::isFinished() {
 void Stop::end() {
 }
 
-#endif

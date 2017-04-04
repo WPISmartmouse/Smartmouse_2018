@@ -1,5 +1,3 @@
-#ifdef CONSOLE
-
 #include "Stop.h"
 
 Stop::Stop() : mouse(ConsoleMouse::inst()) {}
@@ -19,4 +17,3 @@ bool Stop::isFinished() {
 void Stop::end() {
 }
 
-#endif

@@ -1,5 +1,3 @@
-#ifdef CONSOLE
-
 #include <iostream>
 #include "WaitForStart.h"
 
@@ -18,4 +16,3 @@ bool WaitForStart::isFinished() {
 void WaitForStart::end() {
 }
 
-#endif

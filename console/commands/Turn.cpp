@@ -1,5 +1,3 @@
-#ifdef CONSOLE
-
 #include "Turn.h"
 #include "ConsoleMouse.h"
 
@@ -22,4 +20,3 @@ bool Turn::isFinished() {
 
 void Turn::end() {}
 
-#endif

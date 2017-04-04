@@ -1,5 +1,3 @@
-#ifdef SIM
-
 #include <common/commanduino/CommanDuino.h>
 #include <common/commands/SolveCommand.h>
 #include <common/Flood.h>
@@ -55,4 +53,3 @@ int main(int argc, char *argv[]) {
   }
 }
 
-#endif

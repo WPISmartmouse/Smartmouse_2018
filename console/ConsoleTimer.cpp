@@ -1,5 +1,3 @@
-#ifdef CONSOLE
-
 #include "ConsoleTimer.h"
 #include <chrono>
 
@@ -8,4 +6,3 @@ unsigned long ConsoleTimer::programTimeMs() {
           std::chrono::steady_clock::now().time_since_epoch()).count();
 }
 
-#endif

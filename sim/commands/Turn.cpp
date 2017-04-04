@@ -1,5 +1,3 @@
-#ifdef SIM
-
 #include "Turn.h"
 #include "TurnInPlace.h"
 #include "Forward.h"
@@ -29,4 +27,3 @@ void Turn::initialize() {
   }
 }
 
-#endif

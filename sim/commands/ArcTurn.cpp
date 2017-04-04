@@ -1,5 +1,3 @@
-#ifdef SIM
-
 #include "ArcTurn.h"
 
 ArcTurn::ArcTurn(Direction dir) : Command("SimArcTurn"), mouse(SimMouse::inst()), dir(dir) {}
@@ -31,6 +29,3 @@ bool ArcTurn::isFinished() {
 void ArcTurn::end() {
   mouse->internalTurnToFace(dir);
 }
-
-#endif
-
