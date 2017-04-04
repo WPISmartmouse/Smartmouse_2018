@@ -38,7 +38,11 @@ public:
 
   virtual Pose getPose() override;
 
-  void run();
+  virtual double getRowOffsetToEdge() override;
+
+  virtual double getColOffsetToEdge() override;
+
+  void run(double dt_s);
 
   /** runs setup things like pin initializes */
   void setup();
@@ -52,4 +56,6 @@ private:
   KinematicMotorController kinematic_controller;
 
   Encoder left_encoder, right_encoder;
+  double row_offset_to_edge;
+  double col_offset_to_edge;
 };

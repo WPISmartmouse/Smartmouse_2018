@@ -3,5 +3,6 @@
 #include <common/commanduino/CommanDuino.h>
 
 class ArduinoTimer : public TimerInterface {
+public:
   virtual unsigned long programTimeMs() override;
 };

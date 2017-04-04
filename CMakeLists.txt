@@ -36,6 +36,7 @@ if (NOT ${BUILD_SIM})
     import_arduino_library(SPI)
 
     add_teensy_executable(main real/main/main.cpp ${COM_SRC} ${REAL_SRC} ${REAL_LIBS_SRC})
+    set_target_properties(main PROPERTIES COMPILE_FLAGS "-include common/util.h")
 else ()
 
     include_directories(${CMAKE_SOURCE_DIR})

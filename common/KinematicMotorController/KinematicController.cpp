@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <common/Mouse.h>
+#include <common/util.h>
 #include "KinematicController.h"
 
 KinematicMotorController::KinematicMotorController() : initialized(false) {
@@ -82,7 +83,7 @@ KinematicMotorController::run(double dt_s, double left_angle_rad, double right_a
 
   static int i = 0;
   if (i == 15) {
-    printf("%f, %f, %f, %f\n", left_motor.regulated_setpoint_rps, left_motor.velocity_rps, left_motor.smooth_derivative, left_motor.integral);
+//    print("%f, %f, %f, %f\n", left_motor.regulated_setpoint_rps, left_motor.velocity_rps, left_motor.smooth_derivative, left_motor.integral);
     i = 0;
   }
   i += 1;

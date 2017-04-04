@@ -22,36 +22,44 @@ SensorReading RealMouse::checkWalls() {
   return sr;
 }
 
+double RealMouse::getColOffsetToEdge() {
+  return col_offset_to_edge;
+}
+
+double RealMouse::getRowOffsetToEdge() {
+  return row_offset_to_edge;
+}
+
 Pose RealMouse::getPose() {
   return kinematic_controller.getPose();
 }
 
-void RealMouse::run() {
+void RealMouse::run(double dt_s) {
   double abstract_left_force, abstract_right_force;
-  std::tie(abstract_left_force, abstract_right_force) = kinematic_controller.run(millis(),
-                                                                                 left_encoder.read(),
-                                                                                 right_encoder.read(),
-                                                                                 0,
-                                                                                 0);
+  std::tie(abstract_left_force, abstract_right_force) = kinematic_controller.run(dt_s, left_encoder.read(),
+                                                                                 right_encoder.read(), 0, 0);
 
   // update row/col information
   Pose estimated_pose = kinematic_controller.getPose();
   row = (int) (estimated_pose.y / AbstractMaze::UNIT_DIST);
   col = (int) (estimated_pose.x / AbstractMaze::UNIT_DIST);
 
+  row_offset_to_edge = fmod(estimated_pose.y, AbstractMaze::UNIT_DIST);
+  col_offset_to_edge = fmod(estimated_pose.x, AbstractMaze::UNIT_DIST);
+
   if (abstract_left_force < 0) {
     analogWrite(MOTOR1A, 0);
-    analogWrite(MOTOR1B, (int)abstract_left_force);
+    analogWrite(MOTOR1B, (int) abstract_left_force);
   } else {
-    analogWrite(MOTOR1A, (int)abstract_left_force);
+    analogWrite(MOTOR1A, (int) abstract_left_force);
     analogWrite(MOTOR1B, 0);
   }
 
   if (abstract_right_force < 0) {
     analogWrite(MOTOR1A, 0);
-    analogWrite(MOTOR1B, (int)abstract_right_force);
+    analogWrite(MOTOR1B, (int) abstract_right_force);
   } else {
-    analogWrite(MOTOR1A, (int)abstract_right_force);
+    analogWrite(MOTOR1A, (int) abstract_right_force);
     analogWrite(MOTOR1B, 0);
   }
 }

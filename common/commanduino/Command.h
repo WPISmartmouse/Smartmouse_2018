@@ -57,15 +57,13 @@ public:
    */
   bool cycle();
 
-  /** \brief check if the command is running. not yet implemented.
+  /** \brief check if the command is running.
    *  @return if command is still running
    */
   bool isRunning();
 
   /** \brief comparator overload for !=. used when checking if command is in list */
   bool operator!=(const Command &other);
-
-  void print();
 
   /** \brief used by command group to organize commands */
   bool inParallel;

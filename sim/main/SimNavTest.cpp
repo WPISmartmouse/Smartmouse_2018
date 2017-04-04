@@ -3,6 +3,7 @@
 #include <gazebo/msgs/joint_cmd.pb.h>
 #include <gazebo/msgs/visual.pb.h>
 #include <common/commands/NavTestCommand.h>
+#include <common/util.h>
 #include <ignition/transport.hh>
 
 #include "SimMouse.h"

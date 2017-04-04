@@ -1,4 +1,7 @@
+#include <cstring>
+#include "util.h"
 #include "Mouse.h"
+#include <cstdlib>
 
 double Mouse::meterToRad(double x) {
   return x / WHEEL_RAD;
@@ -89,44 +92,6 @@ void Mouse::mark_mouse_position_visited() {
   maze->nodes[row][col]->visited = true;
 }
 
-#ifdef EMBED
-#include <Arduino.h>
-
-void Mouse::print_maze_mouse(){
-  int i,j;
-  for (i=0;i<AbstractMaze::MAZE_SIZE;i++){
-    char *str = (char *)malloc((AbstractMaze::MAZE_SIZE * 2 + 2) * sizeof(char));
-
-    char *s=str;
-    for (j=0;j<AbstractMaze::MAZE_SIZE;j++){
-      Node *n = maze->nodes[i][j];
-      if (n->neighbor(Direction::W) == NULL){
-        strcpy(s++,"|");
-      }
-      else {
-        strcpy(s++,"_");
-      }
-
-      if (row  == i && col == j){
-        strcpy(s++,"o");
-      }
-      else if (n->neighbor(Direction::S) == NULL){
-        strcpy(s++,"_");
-      }
-      else {
-        strcpy(s++," ");
-      }
-    }
-    *(s++) = '|';
-    *s = '\0';
-    Serial1.println(str);
-    free(str);
-  }
-}
-#else
-
-#include <string.h>
-
 void Mouse::print_maze_mouse() {
   int i, j;
   for (i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
@@ -151,10 +116,8 @@ void Mouse::print_maze_mouse() {
     }
     *(s++) = '|';
     *s = '\0';
-    printf("%s\n", str);
+    print("%s\n", str);
     free(str);
   }
 }
-
-#endif
 

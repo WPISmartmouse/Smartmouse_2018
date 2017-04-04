@@ -9,11 +9,14 @@ public:
 
   void initialize();
 
+  void execute();
+
   bool isFinished();
 
   void end();
 
 private:
   const uint8_t led_pin;
+  bool off;
   unsigned long blink_time;
 };
