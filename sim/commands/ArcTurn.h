@@ -20,13 +20,12 @@ public:
   void end();
 
 private:
-  static constexpr double TURN_RAD = AbstractMaze::HALF_UNIT_DIST;
-  static constexpr double TURN_RAD_INNER = TURN_RAD - Mouse::TRACK_WIDTH / 2;
-  static constexpr double TURN_RAD_OUTER = TURN_RAD + Mouse::TRACK_WIDTH / 2;
-  static constexpr double TURN_TIME_MS = 1000;
-  static constexpr double TURN_TIME_S = TURN_TIME_MS / 1000.0;
   SimMouse *mouse;
   Direction dir;
   bool left; //false means right
+  double turn_effort;
+  double goal_x, goal_y;
+  int start_row, start_col;
+  static const double kTurn;
 };
 

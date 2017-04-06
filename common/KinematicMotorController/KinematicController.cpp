@@ -37,7 +37,8 @@ void KinematicMotorController::reset_yaw_to(double new_yaw) {
 }
 
 std::pair<double, double>
-KinematicMotorController::run(double dt_s, double left_angle_rad, double right_angle_rad, double ground_truth_left_vel_rps, double ground_truth_right_vel_rps) {
+KinematicMotorController::run(double dt_s, double left_angle_rad, double right_angle_rad,
+                              double ground_truth_left_vel_rps, double ground_truth_right_vel_rps) {
   static std::pair<double, double> abstract_forces;
 
   if (!initialized) {
@@ -83,7 +84,8 @@ KinematicMotorController::run(double dt_s, double left_angle_rad, double right_a
 
   static int i = 0;
   if (i == 15) {
-//    print("%f, %f, %f, %f\n", left_motor.regulated_setpoint_rps, left_motor.velocity_rps, left_motor.smooth_derivative, left_motor.integral);
+    print("%f, %f, %f, %f\n", left_motor.regulated_setpoint_rps, left_motor.velocity_rps,
+          right_motor.regulated_setpoint_rps, right_motor.velocity_rps);
     i = 0;
   }
   i += 1;

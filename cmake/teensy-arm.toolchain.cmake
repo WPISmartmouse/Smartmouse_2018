@@ -61,7 +61,7 @@ set(CMAKE_RANLIB "${TOOLCHAIN_ROOT}/bin/${TRIPLE}-ranlib${TOOL_OS_SUFFIX}" CACHE
 include_directories("${TEENSY_ROOT}")
 
 set(TARGET_FLAGS "-mcpu=cortex-m4 -mthumb")
-set(BASE_FLAGS "-Os -Wall -nostdlib -ffunction-sections -fdata-sections ${TARGET_FLAGS}")
+set(BASE_FLAGS "-Os -nostdlib -ffunction-sections -fdata-sections ${TARGET_FLAGS}")
 
 set(CMAKE_C_FLAGS "${BASE_FLAGS} -DTIME_T=1421620748" CACHE STRING "c flags") # XXX Generate TIME_T dynamically.
 set(CMAKE_CXX_FLAGS "${BASE_FLAGS} -fno-exceptions -fno-rtti -felide-constructors -std=gnu++0x" CACHE STRING "c++ flags")

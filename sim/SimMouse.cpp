@@ -7,7 +7,7 @@ const RobotConfig SimMouse::CONFIG = {
         1.35255, //ANALOG_ANGLE, radians
         0.04, //SIDE_ANALOG_X, meters
         0.024, //SIDE_ANALOG_Y, meters
-        0.18, //MAX_SPEED, m/s
+        0.09, //MAX_SPEED, m/s
         0.005, //MIN_SPEED, m/s
         0.125, //WALL_DIST, meters
         0.85, //BINARY_ANGLE, radians
@@ -59,8 +59,10 @@ int SimMouse::getComputedRow() {
 Pose SimMouse::getPose() {
   Pose pose = kinematic_controller.getPose();
   // TODO: remove this! It's just for testing how much yaw matters.
-  return true_pose;
-//  return pose;
+  pose.x = true_pose.x;
+  pose.y = true_pose.y;
+  pose.yaw = true_pose.yaw;
+  return pose;
 }
 
 Pose SimMouse::getExactPose() {
@@ -230,7 +232,7 @@ void SimMouse::simInit() {
   kinematic_controller.reset_x_to(0.06);
   kinematic_controller.reset_y_to(0.09);
   kinematic_controller.reset_yaw_to(0.0);
-  kinematic_controller.setAcceleration(0.1, 0.2);
+  kinematic_controller.setAcceleration(0.4, 1.2);
 
 //  for (int i = 0; i < AbstractMaze::MAZE_SIZE; i++) { for (int j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
 //      indicators[i][j] = new gazebo::msgs::Visual();

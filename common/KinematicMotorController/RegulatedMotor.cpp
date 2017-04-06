@@ -2,11 +2,11 @@
 #include <common/Mouse.h>
 #include "RegulatedMotor.h"
 
-const double RegulatedMotor::kP = 4.2;
+const double RegulatedMotor::kP = 8.0;
 const double RegulatedMotor::kI = 0.00;
-const double RegulatedMotor::kD = 0.1;
-const double RegulatedMotor::kFF = 2.0;
-const double RegulatedMotor::INTEGRAL_CAP = 10.0;
+const double RegulatedMotor::kD = 0.0;
+const double RegulatedMotor::kFF = 1.8;
+const double RegulatedMotor::INTEGRAL_CAP = 0.0;
 const double RegulatedMotor::DERIV_CAP = 0.0;
 const double RegulatedMotor::MIN_ABSTRACT_FORCE = 3.5;
 
@@ -29,6 +29,7 @@ double RegulatedMotor::runPid(double dt_s, double angle_rad, double ground_truth
   }
 
   estimated_velocity_rps = (angle_rad - last_angle_rad) / dt_s;
+//  print("(%f - %f) / %f = %f\n", angle_rad, last_angle_rad, dt_s, estimated_velocity_rps);
 #ifdef EMBED
   velocity_rps = estimated_velocity_rps;
 #else
@@ -40,8 +41,7 @@ double RegulatedMotor::runPid(double dt_s, double angle_rad, double ground_truth
   integral += error * dt_s;
   integral = std::max(std::min(integral, INTEGRAL_CAP), -INTEGRAL_CAP);
 
-  double sqrt_setpoint = regulated_setpoint_rps > 0 ? sqrt(regulated_setpoint_rps) : -sqrt(-regulated_setpoint_rps);
-  abstract_force = (sqrt_setpoint * kFF) + (error * kP) + (integral * kI) + (smooth_derivative * kD);
+  abstract_force = (regulated_setpoint_rps * kFF) + (error * kP) + (integral * kI) + (smooth_derivative * kD);
   abstract_force = std::max(std::min(255.0, abstract_force), -255.0);
 
   // limit the change in setpoint

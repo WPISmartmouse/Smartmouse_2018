@@ -39,4 +39,6 @@ void loop() {
 
   mouse->run(dt_s);
   scheduler->run();
+
+  last_t = now;
 }

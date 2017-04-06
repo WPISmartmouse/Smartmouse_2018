@@ -9,28 +9,31 @@
 
 class RealMouse : public Mouse {
 public:
-  const static int FRONT_BINARY_PIN = 0;
-  const static int LEFT_BINARY_PIN = 0;
-  const static int RIGHT_BINARY_PIN = 0;
+  static constexpr int TICKS_PER_REV = 900;
+  static constexpr double RAD_PER_TICK = 2 * M_PI / TICKS_PER_REV;
 
-  const static int ENCODER1A = 7;
-  const static int ENCODER1B = 8;
-  const static int ENCODER2A = 9;
-  const static int ENCODER2B = 10;
+  static const int FRONT_BINARY_PIN = 0;
+  static const int LEFT_BINARY_PIN = 0;
+  static const int RIGHT_BINARY_PIN = 0;
 
-  const static int MOTOR1A = 2;
-  const static int MOTOR1B = 3;
-  const static int MOTOR2A = 5;
-  const static int MOTOR2B = 4;
+  static const int ENCODER1A = 7;
+  static const int ENCODER1B = 8;
+  static const int ENCODER2A = 9;
+  static const int ENCODER2B = 10;
 
-  const static int SYS_LED = 13;
-  const static int LED_1 = 33;
-  const static int LED_2 = 34;
-  const static int LED_3 = 35;
-  const static int LED_4 = 36;
-  const static int LED_5 = 37;
-  const static int LED_6 = 38;
-  const static int LED_7 = 39;
+  static const int MOTOR1A = 5;
+  static const int MOTOR1B = 4;
+  static const int MOTOR2A = 2;
+  static const int MOTOR2B = 3;
+
+  static const int SYS_LED = 13;
+  static const int LED_1 = 33;
+  static const int LED_2 = 34;
+  static const int LED_3 = 35;
+  static const int LED_4 = 36;
+  static const int LED_5 = 37;
+  static const int LED_6 = 38;
+  static const int LED_7 = 39;
 
   static RealMouse *inst();
 
@@ -50,8 +53,9 @@ public:
 private:
   RealMouse();
 
-  static RealMouse *instance;
+  double tick_to_rad(int ticks);
 
+  static RealMouse *instance;
 
   KinematicMotorController kinematic_controller;
 
