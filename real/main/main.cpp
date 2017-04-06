@@ -21,11 +21,8 @@ void setup() {
   mouse = RealMouse::inst();
   mouse->setup();
 
-  delay(2000);
+  scheduler = new Scheduler(new RepeatCommand<LEDBlink, int, int>(20, RealMouse::LED_7, 1000));
 
-  scheduler = new Scheduler(new RepeatCommand<LEDBlink, int, int>(10, RealMouse::SYS_LED, 500));
-
-//  scheduler = new Scheduler(new LEDBlink(RealMouse::SYS_LED, 100));
   last_t = timer.programTimeMs();
 
   print("setup\n");

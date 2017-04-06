@@ -23,7 +23,8 @@ StateViz::StateViz() : GUIPlugin() {
 
   this->stop_pub = this->node->Advertise<gazebo::msgs::JointCmd>("~/mouse/joint_cmd");
 
-  QVBoxLayout *main_layout = new QVBoxLayout();
+  QHBoxLayout *main_layout = new QHBoxLayout();
+  QVBoxLayout *info_layout = new QVBoxLayout();
   QHBoxLayout *left_wheel_vel_layout = new QHBoxLayout();
   QHBoxLayout *right_wheel_vel_layout = new QHBoxLayout();
   QHBoxLayout *row_col_layout = new QHBoxLayout();
@@ -58,6 +59,9 @@ StateViz::StateViz() : GUIPlugin() {
   dir_label = new QLabel(tr("Direction:"));
   dir_edit = new QLineEdit(tr("N"));
 
+  maze_edit = new QTextEdit(tr(""));
+  maze_edit->setFont(QFont("Monospace", 6));
+
   QPushButton *clear_plot_button = new QPushButton(tr("Clear Robot Trace"));
   clear_plot_button->setStyleSheet("padding: 1px;");
   connect(clear_plot_button, SIGNAL(clicked()), this, SLOT(ClearRobotTrace()));
@@ -88,6 +92,8 @@ StateViz::StateViz() : GUIPlugin() {
           SLOT(setText(QString)), Qt::QueuedConnection);
   connect(this, SIGNAL(SetEstimatedYaw(QString)), this->estimated_yaw_edit,
           SLOT(setText(QString)), Qt::QueuedConnection);
+  connect(this, SIGNAL(SetMazeEdit(QString)), this->maze_edit,
+          SLOT(setPlainText(QString)), Qt::QueuedConnection);
 
   left_wheel_vel_layout->addWidget(left_wheel_velocity_label);
   left_wheel_vel_layout->addWidget(left_wheel_velocity_edit);
@@ -113,14 +119,16 @@ StateViz::StateViz() : GUIPlugin() {
   yaw_layout->addWidget(estimated_yaw_edit);
   buttons_layout->addWidget(clear_plot_button);
   buttons_layout->addWidget(stop_robot_button);
-  main_layout->addLayout(left_wheel_vel_layout);
-  main_layout->addLayout(right_wheel_vel_layout);
-  main_layout->addLayout(row_col_layout);
-  main_layout->addLayout(dir_layout);
-  main_layout->addLayout(x_layout);
-  main_layout->addLayout(y_layout);
-  main_layout->addLayout(yaw_layout);
-  main_layout->addLayout(buttons_layout);
+  info_layout->addLayout(left_wheel_vel_layout);
+  info_layout->addLayout(right_wheel_vel_layout);
+  info_layout->addLayout(row_col_layout);
+  info_layout->addLayout(dir_layout);
+  info_layout->addLayout(x_layout);
+  info_layout->addLayout(y_layout);
+  info_layout->addLayout(yaw_layout);
+  info_layout->addLayout(buttons_layout);
+  main_layout->addLayout(info_layout);
+  main_layout->addWidget(maze_edit);
 
   QPalette pal = palette();
   pal.setColor(QPalette::Background, Qt::darkGray);
@@ -187,6 +195,7 @@ void StateViz::MazeLocationCallback(ConstMazeLocationPtr &msg) {
   this->SetEstimatedX(x_str);
   this->SetEstimatedY(y_str);
   this->SetEstimatedYaw(yaw_str);
+  this->SetMazeEdit(msg->mouse_maze_string().c_str());
 }
 
 void StateViz::StopRobot() {

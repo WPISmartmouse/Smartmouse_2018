@@ -115,7 +115,7 @@ add_dependencies(regenerate_widget gazebo_pch)
 ##################################
 file(GLOB SIM_SRC *.cpp commands/*.cpp)
 add_library(sim ${COM_SRC} ${SIM_SRC})
-set_target_properties(sim PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh")
+set_target_properties(sim PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh -include common/util.h")
 target_include_directories(sim PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${PROTOBUF_INCLUDE_DIRS} commands)
 target_link_libraries(sim gzmaze_msgs ${GAZEBO_LIBRARIES})
 add_dependencies(sim gazebo_pch)

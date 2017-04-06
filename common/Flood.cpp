@@ -35,21 +35,13 @@ Direction Flood::planNextStep() {
   all_wall_maze->update(sr);
 
   //solve flood fill on the two mazes from mouse to goal
-  solvable = no_wall_maze.flood_fill_from_point(no_wall_path,
-                                                mouse->getRow(),
-                                                mouse->getCol(),
-                                                goal->row(),
-                                                goal->col());
+  solvable = no_wall_maze.flood_fill_from_point(no_wall_path, mouse->getRow(), mouse->getCol(), goal->row(), goal->col());
 
   //this way commands can see this
   //used to visualize in gazebo
   mouse->maze->pathToNextGoal = no_wall_path;
 
-  all_wall_maze->flood_fill_from_point(all_wall_path,
-                                       mouse->getRow(),
-                                       mouse->getCol(),
-                                       goal->row(),
-                                       goal->col());
+  all_wall_maze->flood_fill_from_point(all_wall_path, mouse->getRow(), mouse->getCol(), goal->row(), goal->col());
 
   //solve from origin to center
   //this is what tells us whether or not we need to keep searching

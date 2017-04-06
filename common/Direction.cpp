@@ -92,7 +92,7 @@ Direction operator++(Direction &dir, int) {
   return dir;
 }
 
-double toYaw(Direction d) {
+double dir_to_yaw(Direction d) {
   switch (d) {
     case Direction::N:
       return M_PI / 2;

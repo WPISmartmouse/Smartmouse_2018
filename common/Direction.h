@@ -15,7 +15,7 @@ Direction left_of_dir(Direction d);
 
 Direction right_of_dir(Direction d);
 
-double toYaw(Direction d);
+double dir_to_yaw(Direction d);
 
 char opposite_direction(char c);
 

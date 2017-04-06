@@ -19,8 +19,6 @@ public:
   void end();
 
 private:
-  double yawDiff(double y1, double y2);
-
   double limit(double x);
 
   double goalYaw;
@@ -28,6 +26,6 @@ private:
   SimMouse *mouse;
   Direction dir;
 
-  const double kP = 0.02;
+  const double kP = 0.08;
 };
 

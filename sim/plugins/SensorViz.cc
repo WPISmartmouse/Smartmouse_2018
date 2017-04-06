@@ -77,21 +77,21 @@ void SensorViz::LeftBinaryCallback(ConstLaserScanStampedPtr &msg) {
   msgs::LaserScan scan = msg->scan();
   assert(scan.ranges_size() == 1);
   double range = scan.ranges(0);
-  this->leftBinaryState = !std::isinf(range) and range < SimMouse::LEFT_BINARY_THRESHOLD;
+  this->leftBinaryState = !std::isinf(range) and range < SimMouse::CONFIG.SIDE_BINARY_THRESHOLD;
 }
 
 void SensorViz::RightBinaryCallback(ConstLaserScanStampedPtr &msg) {
   msgs::LaserScan scan = msg->scan();
   assert(scan.ranges_size() == 1);
   double range = scan.ranges(0);
-  this->rightBinaryState = !std::isinf(range) and range < SimMouse::RIGHT_BINARY_THRESHOLD;
+  this->rightBinaryState = !std::isinf(range) and range < SimMouse::CONFIG.SIDE_BINARY_THRESHOLD;
 }
 
 void SensorViz::FrontBinaryCallback(ConstLaserScanStampedPtr &msg) {
   msgs::LaserScan scan = msg->scan();
   assert(scan.ranges_size() == 1);
   double range = scan.ranges(0);
-  this->frontBinaryState = !std::isinf(range) and range < SimMouse::FRONT_BINARY_THRESHOLD;
+  this->frontBinaryState = !std::isinf(range) and range < SimMouse::CONFIG.FRONT_BINARY_THRESHOLD;
 }
 
 void SensorViz::paintEvent(QPaintEvent *event) {

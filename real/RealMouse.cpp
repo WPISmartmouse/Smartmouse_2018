@@ -36,6 +36,7 @@ Pose RealMouse::getPose() {
 
 void RealMouse::run(double dt_s) {
   double abstract_left_force, abstract_right_force;
+
   std::tie(abstract_left_force, abstract_right_force) = kinematic_controller.run(dt_s, left_encoder.read(),
                                                                                  right_encoder.read(), 0, 0);
 
@@ -48,11 +49,11 @@ void RealMouse::run(double dt_s) {
   col_offset_to_edge = fmod(estimated_pose.x, AbstractMaze::UNIT_DIST);
 
   if (abstract_left_force < 0) {
-    analogWrite(MOTOR1A, 0);
-    analogWrite(MOTOR1B, (int) abstract_left_force);
-  } else {
     analogWrite(MOTOR1A, (int) abstract_left_force);
     analogWrite(MOTOR1B, 0);
+  } else {
+    analogWrite(MOTOR1A, 0);
+    analogWrite(MOTOR1B, (int) abstract_left_force);
   }
 
   if (abstract_right_force < 0) {
@@ -84,6 +85,9 @@ void RealMouse::setup() {
 
   left_encoder.init(ENCODER1A, ENCODER1B);
   right_encoder.init(ENCODER2A, ENCODER2B);
+
+  kinematic_controller.setAcceleration(1, 1);
+  kinematic_controller.setSpeedMps(0.05, 0.05);
 
   // Teensy does USB in software, so serial rate doesn't do anything
   Serial.begin(0);

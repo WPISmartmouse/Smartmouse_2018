@@ -17,7 +17,7 @@ WallFollower::compute_wheel_velocities(Mouse *mouse, Pose start_pose, RangeData 
   disp = forwardDisplacement(mouse->getDir(), start_pose, current_pose);
 
   double currentYaw = current_pose.yaw;
-  angleError = yawDiff(toYaw(mouse->getDir()), currentYaw);
+  angleError = yawDiff(dir_to_yaw(mouse->getDir()), currentYaw);
   dToWallLeft = sin(config.ANALOG_ANGLE + angleError) * range_data.left_analog
                 + sin(angleError) * config.SIDE_ANALOG_X
                 + cos(angleError) * config.SIDE_ANALOG_Y;
@@ -36,19 +36,28 @@ WallFollower::compute_wheel_velocities(Mouse *mouse, Pose start_pose, RangeData 
   lastLeftWallError = leftWallError;
   lastRightWallError = rightWallError;
 
-  double goalYaw;
+  double errorToCenter;
+  std::string following;
 
-  if (dToWallLeft < config.WALL_DIST) { // wall is on left
-    goalYaw = -leftWallError * kPYaw;
-  } else if (dToWallRight < config.WALL_DIST) { // wall is on right
-    goalYaw = rightWallError * kPYaw;
+  if (mouse->isWallInDirection(left_of_dir(mouse->getDir()))) { // wall is on left
+    errorToCenter = -leftWallError;
+    following = "Left wall";
+  } else if (mouse->isWallInDirection(right_of_dir(mouse->getDir()))) { // wall is on right
+    errorToCenter = rightWallError;
+    following = "Right wall";
   } else { // we're too far from any walls, use our pose estimation
-    goalYaw = sidewayDispToCenter(mouse) * kPYaw;
+    errorToCenter = sidewayDispToCenter(mouse);
+    following = "Nothing";
   }
+
+  double goalYawOffset = errorToCenter * kPYaw;
+//  printf("%f %f\n", dispError, errorToCenter);
+
+  double goalYaw = dir_to_yaw(mouse->getDir()) + goalYawOffset;
 
   // The goal is to be facing straight when you wall distance is correct.
   // To achieve this, we control our yaw as a function of our error in wall distance
-  double yawError = currentYaw - goalYaw;
+  double yawError = yawDiff(goalYaw, currentYaw);
 
   double l = config.MAX_SPEED;
   double r = config.MAX_SPEED;
@@ -63,37 +72,50 @@ WallFollower::compute_wheel_velocities(Mouse *mouse, Pose start_pose, RangeData 
   return std::pair<double, double>(l, r);
 }
 
-double WallFollower::dispToEdge(Mouse *mouse) {
-  double row_offset = mouse->getRowOffsetToEdge();
-  double col_offset = mouse->getColOffsetToEdge();
+double WallFollower::dispToNextEdge(Mouse *mouse) {
+  Pose current_pose = mouse->getPose();
   Direction dir = mouse->getDir();
 
   switch (dir) {
-    case Direction::N:
-      return AbstractMaze::UNIT_DIST - row_offset;
-    case Direction::S:
-      return row_offset;
-    case Direction::E:
-      return AbstractMaze::UNIT_DIST - col_offset;
-    case Direction::W:
-      return col_offset;
+    case Direction::N: {
+      double next_row_y = mouse->getRow() * AbstractMaze::UNIT_DIST;
+      return current_pose.y - next_row_y;
+    }
+    case Direction::S: {
+      double next_row_y = (mouse->getRow() + 1) * AbstractMaze::UNIT_DIST;
+      return next_row_y - current_pose.y;
+    }
+    case Direction::E: {
+      double next_col_x = (mouse->getCol() + 1) * AbstractMaze::UNIT_DIST;
+      return next_col_x - current_pose.x;
+    }
+    case Direction::W: {
+      double next_col_x = mouse->getCol() * AbstractMaze::UNIT_DIST;
+      return current_pose.x - next_col_x;
+    }
   }
 }
 
 double WallFollower::fwdDispToCenter(Mouse *mouse) {
-  double row_offset_to_center = AbstractMaze::HALF_UNIT_DIST - mouse->getRowOffsetToEdge();
-  double col_offset_to_center = AbstractMaze::HALF_UNIT_DIST - mouse->getColOffsetToEdge();
+  Pose current_pose = mouse->getPose();
+  double next_row_y = (mouse->getRow() + 1) * AbstractMaze::UNIT_DIST;
+  double next_col_x = (mouse->getCol() + 1) * AbstractMaze::UNIT_DIST;
+  double row_offset = next_row_y - current_pose.y;
+  double col_offset = next_col_x - current_pose.x;
+
+  double row_offset_to_center = row_offset - AbstractMaze::HALF_UNIT_DIST;
+  double col_offset_to_center = col_offset - AbstractMaze::HALF_UNIT_DIST;
   Direction dir = mouse->getDir();
 
   switch (dir) {
     case Direction::S:
-      return AbstractMaze::UNIT_DIST - row_offset_to_center;
-    case Direction::N:
       return row_offset_to_center;
-    case Direction::W:
-      return AbstractMaze::UNIT_DIST - col_offset_to_center;
+    case Direction::N:
+      return -row_offset_to_center;
     case Direction::E:
       return col_offset_to_center;
+    case Direction::W:
+      return -col_offset_to_center;
   }
 }
 
@@ -117,11 +139,11 @@ double WallFollower::sidewayDispToCenter(Mouse *mouse) {
 
   switch (dir) {
     case Direction::S:
-      return AbstractMaze::UNIT_DIST - col_offset_to_center;
+      return -col_offset_to_center;
     case Direction::N:
       return col_offset_to_center;
     case Direction::W:
-      return AbstractMaze::UNIT_DIST - row_offset_to_center;
+      return -row_offset_to_center;
     case Direction::E:
       return row_offset_to_center;
   }

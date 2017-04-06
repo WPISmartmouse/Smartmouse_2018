@@ -4,13 +4,16 @@
 SimMouse *SimMouse::instance = nullptr;
 const gazebo::common::Color SimMouse::grey_color{0.8, 0.8, 0.8, 1};
 const RobotConfig SimMouse::CONFIG = {
-  1.35255, //ANALOG_ANGLE, radians
-  0.04, //SIDE_ANALOG_X, meters
-  0.024, //SIDE_ANALOG_Y, meters
-  0.09, //MAX_SPEED, m/s
-  0.005, //MIN_SPEED, m/s
-  0.125, //WALL_DIST, meters
-  0.65, //BINARY_ANGLE, radians
+        1.35255, //ANALOG_ANGLE, radians
+        0.04, //SIDE_ANALOG_X, meters
+        0.024, //SIDE_ANALOG_Y, meters
+        0.09, //MAX_SPEED, m/s
+        0.005, //MIN_SPEED, m/s
+        0.125, //WALL_DIST, meters
+        0.85, //BINARY_ANGLE, radians
+        0.045, //FRONT_BINARY_X, meters
+        0.20, //FRONT_BINARY_THRESHOLD, meters
+        0.15, //SIDE_BINARY_THRESHOLD, meters
 };
 
 double SimMouse::abstractForceToNewtons(double x) {
@@ -18,8 +21,7 @@ double SimMouse::abstractForceToNewtons(double x) {
   return x * MAX_FORCE / 255.0;
 }
 
-SimMouse::SimMouse() {
-}
+SimMouse::SimMouse() : reset_fwd_dist(false) {}
 
 SimMouse *SimMouse::inst() {
   if (instance == NULL) {
@@ -142,6 +144,12 @@ void SimMouse::robotStateCallback(ConstRobotStatePtr &msg) {
   this->left_wheel_angle_rad = msg->left_wheel_angle_radians();
   this->right_wheel_angle_rad = msg->right_wheel_angle_radians();
 
+  // check for changes in frony binary sensor
+  if (!this->reset_fwd_dist && !this->range_data.front_binary && msg->front_binary()) {
+    // interrupt!
+    this->reset_fwd_dist = true;
+  }
+
   this->range_data.left_analog = msg->left_analog();
   this->range_data.right_analog = msg->right_analog();
   this->range_data.left_binary = msg->left_binary();
@@ -185,6 +193,11 @@ void SimMouse::run(double dt_s) {
   std::string dir_str(1, dir_to_char(dir));
   maze_loc_msg.set_dir(dir_str);
 
+  std::string buff;
+  buff.resize(1024);
+  maze_mouse_string(&buff[0]);
+  maze_loc_msg.set_mouse_maze_string(buff);
+
   if (!maze_loc_msg.IsInitialized()) {
     std::cerr << "Missing fields: [" << maze_loc_msg.InitializationErrorString() << "]" << std::endl;
   }
@@ -212,7 +225,7 @@ void SimMouse::simInit() {
   setSpeed(0, 0);
 
   // we start in the middle of the first square
-  kinematic_controller.reset_x_to(AbstractMaze::HALF_UNIT_DIST);
+  kinematic_controller.reset_x_to(0.06);
   kinematic_controller.reset_y_to(0.09);
   kinematic_controller.reset_yaw_to(0.0);
   kinematic_controller.setAcceleration(0.1, 0.2);

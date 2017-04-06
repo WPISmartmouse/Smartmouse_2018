@@ -3,8 +3,8 @@
 #include <gazebo/msgs/joint_cmd.pb.h>
 #include <gazebo/msgs/visual.pb.h>
 #include <common/commands/NavTestCommand.h>
-#include <common/util.h>
 #include <ignition/transport.hh>
+#include <common/Flood.h>
 
 #include "SimMouse.h"
 #include "SimTimer.h"
@@ -32,8 +32,7 @@ int main(int argc, char *argv[]) {
     return EXIT_FAILURE;
   }
 
-  gazebo::transport::SubscriberPtr poseSub = node->Subscribe("~/mouse/state", &SimMouse::robotStateCallback,
-                                                             SimMouse::inst());
+  gazebo::transport::SubscriberPtr poseSub = node->Subscribe("~/mouse/state", &SimMouse::robotStateCallback, mouse);
 
   mouse->joint_cmd_pub = node->Advertise<gazebo::msgs::JointCmd>("~/mouse/joint_cmd");
   mouse->indicator_pub = node->Advertise<gazebo::msgs::Visual>("~/visual", AbstractMaze::MAZE_SIZE *
@@ -44,7 +43,7 @@ int main(int argc, char *argv[]) {
   while (!timer.isTimeReady());
 
   mouse->simInit();
-  Scheduler scheduler(new NavTestCommand());
+  Scheduler scheduler(new NavTestCommand(new Flood(mouse)));
 
   bool done = false;
   unsigned long last_t = timer.programTimeMs();

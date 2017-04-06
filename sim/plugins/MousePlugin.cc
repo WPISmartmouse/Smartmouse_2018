@@ -3,6 +3,7 @@
 #include <gazebo/common/Events.hh>
 #include <gazebo/gazebo_core.hh>
 #include <sim/SimMouse.h>
+#include <common/RobotConfig.h>
 
 #include "MousePlugin.hh"
 
@@ -66,21 +67,21 @@ void MousePlugin::LeftBinaryCallback(ConstLaserScanStampedPtr &msg) {
   msgs::LaserScan scan = msg->scan();
   assert(scan.ranges_size() == 1);
   double range = scan.ranges(0);
-  this->left_binary = !std::isinf(range) and range < SimMouse::LEFT_BINARY_THRESHOLD;
+  this->left_binary = !std::isinf(range) and range < SimMouse::CONFIG.SIDE_BINARY_THRESHOLD;
 }
 
 void MousePlugin::RightBinaryCallback(ConstLaserScanStampedPtr &msg) {
   msgs::LaserScan scan = msg->scan();
   assert(scan.ranges_size() == 1);
   double range = scan.ranges(0);
-  this->right_binary = !std::isinf(range) and range < SimMouse::RIGHT_BINARY_THRESHOLD;
+  this->right_binary = !std::isinf(range) and range < SimMouse::CONFIG.SIDE_BINARY_THRESHOLD;
 }
 
 void MousePlugin::FrontBinaryCallback(ConstLaserScanStampedPtr &msg) {
   msgs::LaserScan scan = msg->scan();
   assert(scan.ranges_size() == 1);
   double range = scan.ranges(0);
-  this->front_binary = !std::isinf(range) and range < SimMouse::FRONT_BINARY_THRESHOLD;
+  this->front_binary = !std::isinf(range) and range < SimMouse::CONFIG.FRONT_BINARY_THRESHOLD;
 }
 
 void MousePlugin::PublishInfo() {

@@ -9,5 +9,5 @@ message MazeLocation {
     required double estimated_x_meters = 6;
     required double estimated_y_meters = 7;
     required double estimated_yaw_rad = 8;
-
+    optional string mouse_maze_string = 9;
 }

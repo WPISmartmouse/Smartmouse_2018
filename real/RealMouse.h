@@ -13,10 +13,10 @@ public:
   const static int LEFT_BINARY_PIN = 0;
   const static int RIGHT_BINARY_PIN = 0;
 
-  const static int ENCODER1A = 0;
-  const static int ENCODER1B = 0;
-  const static int ENCODER2A = 0;
-  const static int ENCODER2B = 0;
+  const static int ENCODER1A = 7;
+  const static int ENCODER1B = 8;
+  const static int ENCODER2A = 9;
+  const static int ENCODER2B = 10;
 
   const static int MOTOR1A = 2;
   const static int MOTOR1B = 3;

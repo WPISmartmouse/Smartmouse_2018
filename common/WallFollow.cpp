@@ -35,11 +35,13 @@ Direction WallFollow::planNextStep() {
   Direction dir = left_of_dir(mouse->getDir());
   Direction nextDir;
 
-  if (!mouse->is_mouse_blocked(dir)) {
+  SensorReading sr = mouse->checkWalls();
+
+  if (!sr.isWall(dir)) {
     //if you can turn left you must
     nextDir = dir;
-  } else if (mouse->is_mouse_blocked(mouse->getDir())) {
-    if (!mouse->is_mouse_blocked(opposite_direction(dir))) {
+  } else if (!sr.isWall(mouse->getDir())) {
+    if (!sr.isWall(opposite_direction(dir))) {
       //if you can't go left or forward try right
       nextDir = opposite_direction(dir);
     } else {

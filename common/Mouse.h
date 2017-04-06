@@ -66,17 +66,17 @@ public:
 
   void internalForward();
 
-  /** prints a maze with a mouse in it
-  * @param mouse the mouse
-  * @param maze the maze
-  */
+  /** prints a maze with a mouse in it */
   void print_maze_mouse();
+
+  /** creates one long string of the mouse in the maze in ascii */
+  void maze_mouse_string(char *);
 
   virtual SensorReading checkWalls() = 0;
 
-  bool is_mouse_blocked();
 
-  bool is_mouse_blocked(Direction dir);
+  /** doesn't simply read sensors. Check the internal maze structure */
+  bool isWallInDirection(Direction d);
 
   AbstractMaze *maze;
 

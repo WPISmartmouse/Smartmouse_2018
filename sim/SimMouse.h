@@ -15,9 +15,6 @@ class SimMouse : public Mouse {
 public:
   static double abstractForceToNewtons(double x);
 
-  static constexpr double LEFT_BINARY_THRESHOLD = 0.18; // meters
-  static constexpr double RIGHT_BINARY_THRESHOLD = 0.18; // meters
-  static constexpr double FRONT_BINARY_THRESHOLD = 0.18; // meters
   static constexpr double ANALOG_MAX_DIST = 0.15; // meters
   static constexpr double MAX_FORCE = 0.016;  // 16kg/cm from datasheet
   static const gazebo::common::Color grey_color;
@@ -68,6 +65,8 @@ public:
   gazebo::transport::PublisherPtr maze_location_pub;
 
   KinematicMotorController kinematic_controller;
+
+  bool reset_fwd_dist;
 
 private:
 

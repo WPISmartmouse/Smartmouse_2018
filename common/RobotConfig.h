@@ -8,4 +8,7 @@ typedef struct {
   double MIN_SPEED;
   double WALL_DIST;
   double BINARY_ANGLE;
+  double FRONT_BINARY_X;
+  double FRONT_BINARY_THRESHOLD;
+  double SIDE_BINARY_THRESHOLD;
 } RobotConfig;

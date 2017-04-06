@@ -1,7 +1,6 @@
 #include <cstring>
 #include "util.h"
 #include "Mouse.h"
-#include <cstdlib>
 
 double Mouse::meterToRad(double x) {
   return x / WHEEL_RAD;
@@ -13,19 +12,13 @@ double Mouse::radToMeters(double x) {
 
 Mouse::Mouse() : maze(new AbstractMaze()), row(0), col(0), dir(Direction::E) {}
 
-Mouse::Mouse(int starting_row, int starting_col) :
-        maze(new AbstractMaze()),
-        row(starting_row),
-        col(starting_col),
-        dir(Direction::E) {}
+Mouse::Mouse(int starting_row, int starting_col) : maze(new AbstractMaze()), row(starting_row), col(starting_col),
+                                                   dir(Direction::E) {}
 
 Mouse::Mouse(AbstractMaze *maze) : maze(maze), row(0), col(0), dir(Direction::E) {}
 
-Mouse::Mouse(AbstractMaze *maze, int starting_row, int starting_col) :
-        maze(maze),
-        row(starting_row),
-        col(starting_col),
-        dir(Direction::E) {}
+Mouse::Mouse(AbstractMaze *maze, int starting_row, int starting_col) : maze(maze), row(starting_row), col(starting_col),
+                                                                       dir(Direction::E) {}
 
 void Mouse::reset() {
   row = 0;
@@ -78,46 +71,48 @@ void Mouse::internalForward() {
   }
 }
 
-bool Mouse::is_mouse_blocked() {
-  SensorReading sr = checkWalls();
-  return sr.isWall(dir);
+bool Mouse::isWallInDirection(Direction d) {
+  Node *mouse_node;
+  maze->get_node(&mouse_node, row, col);
+  bool is_wall = mouse_node->neighbor(d) == nullptr;
+  return is_wall;
 }
 
-bool Mouse::is_mouse_blocked(Direction dir) {
-  SensorReading sr = checkWalls();
-  return sr.isWall(dir);
-}
 
 void Mouse::mark_mouse_position_visited() {
   maze->nodes[row][col]->visited = true;
 }
 
 void Mouse::print_maze_mouse() {
+  char buff[1024];
+  maze_mouse_string(buff);
+  print(buff);
+}
+
+void Mouse::maze_mouse_string(char *buff) {
+  char *b = buff;
   int i, j;
   for (i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
-    char *str = (char *) malloc((AbstractMaze::MAZE_SIZE * 2 + 2) * sizeof(char));
-
-    char *s = str;
     for (j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
       Node *n = maze->nodes[i][j];
       if (n->neighbor(Direction::W) == NULL) {
-        strcpy(s++, "|");
+        strcpy(b++, "|");
       } else {
-        strcpy(s++, "_");
+        strcpy(b++, "_");
       }
 
       if (row == i && col == j) {
-        strcpy(s++, "o");
+        strcpy(b++, "o");
       } else if (n->neighbor(Direction::S) == NULL) {
-        strcpy(s++, "_");
+        strcpy(b++, "_");
       } else {
-        strcpy(s++, " ");
+        strcpy(b++, " ");
       }
     }
-    *(s++) = '|';
-    *s = '\0';
-    print("%s\n", str);
-    free(str);
+    *(b++) = '|';
+    *(b++) = '\n';
   }
+  b++;
+  *b = '\0';
 }
 

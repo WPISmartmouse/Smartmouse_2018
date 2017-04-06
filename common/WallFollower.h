@@ -11,7 +11,7 @@ public:
 
   WallFollower(double goalDisp);
 
-  static double dispToEdge(Mouse *mouse);
+  static double dispToNextEdge(Mouse *mouse);
 
   static double fwdDispToCenter(Mouse *mouse);
 

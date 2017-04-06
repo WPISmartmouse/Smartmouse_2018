@@ -19,8 +19,9 @@ namespace gazebo {
 
     virtual ~StateViz();
 
-    static constexpr int WIDTH = 340;
     static constexpr int HEIGHT = 170;
+    static constexpr int MAZE_S = HEIGHT - 2;
+    static constexpr int WIDTH = 340 + MAZE_S;
 
   signals:
 
@@ -45,6 +46,8 @@ namespace gazebo {
     void SetEstimatedY(QString str);
 
     void SetEstimatedYaw(QString str);
+
+    void SetMazeEdit(QString str);
 
   protected slots:
 
@@ -87,6 +90,8 @@ namespace gazebo {
     QLineEdit *estimated_x_edit;
     QLineEdit *estimated_y_edit;
     QLineEdit *estimated_yaw_edit;
+
+    QTextEdit *maze_edit;
 
     void StateCallback(ConstRobotStatePtr &msg);
 

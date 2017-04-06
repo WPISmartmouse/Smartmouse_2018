@@ -1,7 +1,6 @@
 #include "SolveMaze.h"
 #include "Forward.h"
 #include "Turn.h"
-#include "Delay.h"
 #include "WaitForStart.h"
 
 SolveMaze::SolveMaze(Solver *solver) : CommandGroup("solve"), solver(solver) {}
@@ -18,9 +17,16 @@ bool SolveMaze::isFinished() {
 
     if (!mazeSolved) {
       Direction nextDirection = solver->planNextStep();
+#ifndef CONSOLE
+      if (nextDirection == solver->mouse->getDir()) {
+        addSequential(new Forward());
+      }
+      else {
+        addSequential(new Turn(nextDirection));
+      }
+#else
       addSequential(new Turn(nextDirection));
       addSequential(new Forward());
-#ifdef CONSOLE
       addSequential(new WaitForStart());
       solver->mouse->print_maze_mouse();
 #endif
