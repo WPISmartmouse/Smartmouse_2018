@@ -3,7 +3,7 @@
 #include "Turn.h"
 #include "WaitForStart.h"
 
-SolveMaze::SolveMaze(Solver *solver) : CommandGroup("solve"), solver(solver) {}
+SolveMaze::SolveMaze(Solver *solver) : CommandGroup("solve"), solver(solver), movements(0) {}
 
 void SolveMaze::initialize() {
   solver->setup();
@@ -17,19 +17,10 @@ bool SolveMaze::isFinished() {
 
     if (!mazeSolved) {
       Direction nextDirection = solver->planNextStep();
-#ifndef CONSOLE
-      if (nextDirection == solver->mouse->getDir()) {
-        addSequential(new Forward());
-      }
-      else {
-        addSequential(new Turn(nextDirection));
-      }
-#else
       addSequential(new Turn(nextDirection));
       addSequential(new Forward());
       addSequential(new WaitForStart());
       solver->mouse->print_maze_mouse();
-#endif
     } else {
       return true;
     }

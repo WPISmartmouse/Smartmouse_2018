@@ -16,5 +16,6 @@ public:
 
 private:
   Solver *solver;
+  int movements;
 
 };
