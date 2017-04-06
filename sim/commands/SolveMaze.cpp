@@ -26,15 +26,6 @@ bool SolveMaze::isFinished() {
       }
 
       movements++;
-
-      Direction left = left_of_dir(solver->mouse->getDir());
-      Direction right = right_of_dir(solver->mouse->getDir());
-      if (movements > 10 && solver->mouse->isWallInDirection(left) && solver->mouse->isWallInDirection(right)) {
-        printf("Scheduling Re-Align!");
-        movements = 0;
-        addSequential(new AlignYaw());
-
-      }
     } else {
       return true;
     }

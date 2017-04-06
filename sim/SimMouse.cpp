@@ -7,7 +7,7 @@ const RobotConfig SimMouse::CONFIG = {
         1.35255, //ANALOG_ANGLE, radians
         0.04, //SIDE_ANALOG_X, meters
         0.024, //SIDE_ANALOG_Y, meters
-        0.09, //MAX_SPEED, m/s
+        0.18, //MAX_SPEED, m/s
         0.005, //MIN_SPEED, m/s
         0.125, //WALL_DIST, meters
         0.85, //BINARY_ANGLE, radians
@@ -58,7 +58,9 @@ int SimMouse::getComputedRow() {
 
 Pose SimMouse::getPose() {
   Pose pose = kinematic_controller.getPose();
-  return pose;
+  // TODO: remove this! It's just for testing how much yaw matters.
+  return true_pose;
+//  return pose;
 }
 
 Pose SimMouse::getExactPose() {
@@ -169,7 +171,7 @@ void SimMouse::run(double dt_s) {
                                                                                  this->right_wheel_velocity_mps);
 
   // update row/col information
-  Pose estimated_pose = kinematic_controller.getPose();
+  Pose estimated_pose = getPose();
   computed_row = (int) (estimated_pose.y / AbstractMaze::UNIT_DIST);
   computed_col = (int) (estimated_pose.x / AbstractMaze::UNIT_DIST);
 

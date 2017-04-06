@@ -51,7 +51,6 @@ WallFollower::compute_wheel_velocities(Mouse *mouse, Pose start_pose, RangeData 
   }
 
   double goalYawOffset = errorToCenter * kPYaw;
-//  printf("%f %f\n", dispError, errorToCenter);
 
   double goalYaw = dir_to_yaw(mouse->getDir()) + goalYawOffset;
 
