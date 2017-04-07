@@ -20,5 +20,4 @@ bool LEDBlink::isFinished() {
 }
 
 void LEDBlink::end() {
-  print("blink done\n");
 }

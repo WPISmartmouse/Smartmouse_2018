@@ -19,12 +19,14 @@ public:
   static const double INTEGRAL_CAP;
   static const double DERIV_CAP;
   static const double MIN_ABSTRACT_FORCE;
+  static const double kFF_LOOKUP[19];
 
   bool initialized = false;
   double abstract_force;
   double acceleration;
   double brake_acceleration;
   double regulated_setpoint_rps;
+  int rounded_setpoint_idx;
   double derivative;
   double error;
   double estimated_velocity_rps;
@@ -33,7 +35,6 @@ public:
   double last_error;
   double smooth_derivative;
   double last_velocity_rps;
-  double raw_abstract_force;
   double setpoint_rps;
   double velocity_rps;
 };

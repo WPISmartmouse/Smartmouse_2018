@@ -26,11 +26,12 @@ public:
 
   void setSpeedMps(double left_setpoint_mps, double right_setpoint_mps);
 
+  RegulatedMotor left_motor;
+  RegulatedMotor right_motor;
+
 private:
   bool initialized = false;
 
   Pose current_pose_estimate;
-  RegulatedMotor left_motor;
-  RegulatedMotor right_motor;
 
 };

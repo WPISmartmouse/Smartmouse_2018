@@ -2,6 +2,18 @@
 #include "RealMouse.h"
 
 RealMouse *RealMouse::instance = nullptr;
+const RobotConfig RealMouse::CONFIG = {
+        1.35255, //ANALOG_ANGLE, radians
+        0.04, //SIDE_ANALOG_X, meters
+        0.024, //SIDE_ANALOG_Y, meters
+        0.18, //MAX_SPEED, m/s
+        0.02, //MIN_SPEED, m/s
+        0.125, //WALL_DIST, meters
+        0.85, //BINARY_ANGLE, radians
+        0.045, //FRONT_BINARY_X, meters
+        0.20, //FRONT_BINARY_THRESHOLD, meters
+        0.15, //SIDE_BINARY_THRESHOLD, meters
+};
 
 double RealMouse::tick_to_rad(int ticks) {
   // if in quadrent I or II, it's positive
@@ -44,11 +56,7 @@ void RealMouse::run(double dt_s) {
   double abstract_left_force, abstract_right_force;
   double left_angle_rad = tick_to_rad(left_encoder.read());
   double right_angle_rad = tick_to_rad(right_encoder.read());
-  std::tie(abstract_left_force, abstract_right_force) = kinematic_controller.run(dt_s, left_angle_rad, right_angle_rad,
-                                                                                 0, 0);
-
-  abstract_left_force = 30;
-  abstract_right_force = 0;
+  std::tie(abstract_left_force, abstract_right_force) = kinematic_controller.run(dt_s, left_angle_rad, right_angle_rad, 0, 0);
 
   // update row/col information
   Pose estimated_pose = kinematic_controller.getPose();
@@ -97,8 +105,11 @@ void RealMouse::setup() {
   right_encoder.init(ENCODER2A, ENCODER2B);
 
   kinematic_controller.setAcceleration(1, 1);
-  kinematic_controller.setSpeedMps(0.05, 0.05);
 
   // Teensy does USB in software, so serial rate doesn't do anything
   Serial.begin(0);
+}
+
+void RealMouse::setSpeed(double l_mps, double r_mps) {
+  kinematic_controller.setSpeedMps(l_mps, r_mps);
 }

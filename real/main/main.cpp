@@ -25,7 +25,9 @@ void setup() {
 
   last_t = timer.programTimeMs();
 
-  print("setup\n");
+  print("setup\r\n");
+
+  mouse->setSpeed(0.16, 0.16);
 }
 
 void loop() {
@@ -33,12 +35,12 @@ void loop() {
   double dt_s = (now - last_t) / 1000.0;
 
   // minimum period of main loop
-  if (dt_s < 0.010) {
+  if (dt_s < 0.020) {
     return;
   }
 
   mouse->run(dt_s);
   scheduler->run();
-
   last_t = now;
+
 }

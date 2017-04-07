@@ -2,17 +2,37 @@
 #include <common/Mouse.h>
 #include "RegulatedMotor.h"
 
-const double RegulatedMotor::kP = 8.0;
+const double RegulatedMotor::kP = 6.0;
 const double RegulatedMotor::kI = 0.00;
-const double RegulatedMotor::kD = 0.0;
-const double RegulatedMotor::kFF = 1.8;
+const double RegulatedMotor::kD = 0.1;
 const double RegulatedMotor::INTEGRAL_CAP = 0.0;
 const double RegulatedMotor::DERIV_CAP = 0.0;
 const double RegulatedMotor::MIN_ABSTRACT_FORCE = 3.5;
+const double RegulatedMotor::kFF_LOOKUP[19] = {
+        0,  // 0.00
+        15, // 0.01
+        16, // 0.02
+        17, // 0.03
+        18, // 0.04
+        19, // 0.05
+        20, // 0.06
+        21, // 0.07
+        22, // 0.08
+        24, // 0.09
+        25, // 0.10
+        26, // 0.11
+        27, // 0.12
+        28, // 0.13
+        29, // 0.14
+        32, // 0.15
+        33, // 0.16
+        34, // 0.17
+        35, // 0.18
+};
 
 RegulatedMotor::RegulatedMotor() : initialized(false), abstract_force(0), acceleration(0), brake_acceleration(0),
                                    integral(0), last_angle_rad(0), last_error(0), last_velocity_rps(0),
-                                   raw_abstract_force(0), regulated_setpoint_rps(0), setpoint_rps(0),
+                                   regulated_setpoint_rps(0), setpoint_rps(0),
                                    smooth_derivative(0), velocity_rps(0) {}
 
 bool RegulatedMotor::isStopped() {
@@ -29,7 +49,6 @@ double RegulatedMotor::runPid(double dt_s, double angle_rad, double ground_truth
   }
 
   estimated_velocity_rps = (angle_rad - last_angle_rad) / dt_s;
-//  print("(%f - %f) / %f = %f\n", angle_rad, last_angle_rad, dt_s, estimated_velocity_rps);
 #ifdef EMBED
   velocity_rps = estimated_velocity_rps;
 #else
@@ -41,7 +60,8 @@ double RegulatedMotor::runPid(double dt_s, double angle_rad, double ground_truth
   integral += error * dt_s;
   integral = std::max(std::min(integral, INTEGRAL_CAP), -INTEGRAL_CAP);
 
-  abstract_force = (regulated_setpoint_rps * kFF) + (error * kP) + (integral * kI) + (smooth_derivative * kD);
+  rounded_setpoint_idx = (int)round(Mouse::radToMeters(regulated_setpoint_rps)/0.01);
+  abstract_force = (kFF_LOOKUP[rounded_setpoint_idx]) + (error * kP) + (integral * kI) + (smooth_derivative * kD);
   abstract_force = std::max(std::min(255.0, abstract_force), -255.0);
 
   // limit the change in setpoint

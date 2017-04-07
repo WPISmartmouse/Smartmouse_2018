@@ -5,6 +5,7 @@
 #include <common/Mouse.h>
 #include <common/Pose.h>
 #include <common/KinematicMotorController/KinematicController.h>
+#include <common/RobotConfig.h>
 
 
 class RealMouse : public Mouse {
@@ -18,13 +19,13 @@ public:
 
   static const int ENCODER1A = 7;
   static const int ENCODER1B = 8;
-  static const int ENCODER2A = 9;
-  static const int ENCODER2B = 10;
+  static const int ENCODER2A = 10;
+  static const int ENCODER2B = 9;
 
   static const int MOTOR1A = 5;
   static const int MOTOR1B = 4;
-  static const int MOTOR2A = 2;
-  static const int MOTOR2B = 3;
+  static const int MOTOR2A = 3;
+  static const int MOTOR2B = 2;
 
   static const int SYS_LED = 13;
   static const int LED_1 = 33;
@@ -36,6 +37,7 @@ public:
   static const int LED_7 = 39;
 
   static RealMouse *inst();
+  static const RobotConfig CONFIG;
 
   virtual SensorReading checkWalls() override;
 
@@ -47,8 +49,12 @@ public:
 
   void run(double dt_s);
 
+  void setSpeed(double l_mps, double r_mps);
+
   /** runs setup things like pin initializes */
   void setup();
+
+  KinematicMotorController kinematic_controller;
 
 private:
   RealMouse();
@@ -56,8 +62,6 @@ private:
   double tick_to_rad(int ticks);
 
   static RealMouse *instance;
-
-  KinematicMotorController kinematic_controller;
 
   Encoder left_encoder, right_encoder;
   double row_offset_to_edge;
