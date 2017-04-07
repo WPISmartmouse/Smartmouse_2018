@@ -34,7 +34,6 @@
                 <max_contacts>6</max_contacts>
                 <pose>0 0 0.019 0 0 0</pose>
                 <geometry>
-                        <!--<size>0.101 0.076 0.032</size>-->
                     <polyline>
                       <height>0.032</height>
                       <point>-0.0410 0.019</point>
@@ -68,11 +67,15 @@
             </collision>
             <collision name='bumper'>
                 <max_contacts>6</max_contacts>
-                <pose>0.05 0 0.002 0 0 0</pose>
+                <pose>0.052 0 0.002 0 0 0</pose>
                 <geometry>
-                    <box>
-                      <size>0.01 0.076 0.002</size>
-                    </box>
+                    <polyline>
+                        <height>0.002</height>
+                        <point>.009 -0.023</point>
+                        <point>.009 0.023</point>
+                        <point>-.009 0.038</point>
+                        <point>-.009 -0.038</point>
+                    </polyline>
                 </geometry>
                 <surface>
                     <friction>
@@ -83,7 +86,7 @@
                     </friction>
                 </surface>
             </collision>
-            <sensor name="left_analog" type="ray">
+            <sensor name="front_left_analog" type="ray">
                 <pose>0.040 0.024 0.015 0 0 0</pose>
                 <ray>
                     <scan>
@@ -96,16 +99,16 @@
                     </scan>
                     <range>
                         <min>0.02</min>
-                        <max>0.15</max>
+                        <max>0.18</max>
                         <resolution>0.015</resolution>
                     </range>
                 </ray>
-                <plugin name="left_analog_ray" filename="libRayPlugin.so"/>
+                <plugin name="front_left_analog_ray" filename="libRayPlugin.so"/>
                 <always_on>1</always_on>
                 <update_rate>20</update_rate>
                 <visualize>true</visualize>
             </sensor>
-            <sensor name="right_analog" type="ray">
+            <sensor name="front_right_analog" type="ray">
                 <pose>0.040 -0.024 0.015 0 0 0</pose>
                 <ray>
                     <scan>
@@ -118,60 +121,60 @@
                     </scan>
                     <range>
                         <min>0.02</min>
-                        <max>0.15</max>
+                        <max>0.18</max>
                         <resolution>0.015</resolution>
                     </range>
                 </ray>
-                <plugin name="right_analog_ray" filename="libRayPlugin.so"/>
+                <plugin name="front_right_analog_ray" filename="libRayPlugin.so"/>
                 <always_on>1</always_on>
                 <update_rate>20</update_rate>
                 <visualize>true</visualize>
             </sensor>
-            <sensor name="left_binary" type="ray">
-                <pose>0.043 0.022 0.015 0 0 0</pose>
+            <sensor name="back_left_analog" type="ray">
+                <pose>-0.024 0.024 0.015 0 0 0</pose>
                 <ray>
                     <scan>
                         <horizontal>
                             <samples>10</samples>
                             <resolution>0.10</resolution>
-                            <min_angle>0.81</min_angle>
-                            <max_angle>0.89</max_angle>
+                            <min_angle>1.53</min_angle>
+                            <max_angle>1.61</max_angle>
                         </horizontal>
                     </scan>
                     <range>
                         <min>0.02</min>
-                        <max>0.15</max>
+                        <max>0.18</max>
                         <resolution>0.015</resolution>
                     </range>
                 </ray>
-                <plugin name="left_binary_ray" filename="libRayPlugin.so"/>
+                <plugin name="back_left_analog_ray" filename="libRayPlugin.so"/>
                 <always_on>1</always_on>
                 <update_rate>20</update_rate>
                 <visualize>true</visualize>
             </sensor>
-            <sensor name="right_binary" type="ray">
-                <pose>0.043 -0.022 0.015 0 0 0</pose>
+            <sensor name="back_right_analog" type="ray">
+                <pose>-0.024 -0.024 0.015 0 0 0</pose>
                 <ray>
                     <scan>
                         <horizontal>
                             <samples>10</samples>
                             <resolution>0.10</resolution>
-                            <min_angle>-0.81</min_angle>
-                            <max_angle>-0.89</max_angle>
+                            <min_angle>-1.53</min_angle>
+                            <max_angle>-1.61</max_angle>
                         </horizontal>
                     </scan>
                     <range>
                         <min>0.02</min>
-                        <max>0.15</max>
+                        <max>0.18</max>
                         <resolution>0.015</resolution>
                     </range>
                 </ray>
-                <plugin name="right_binary_ray" filename="libRayPlugin.so"/>
+                <plugin name="back_right_analog_ray" filename="libRayPlugin.so"/>
                 <always_on>1</always_on>
                 <update_rate>20</update_rate>
                 <visualize>true</visualize>
             </sensor>
-            <sensor name="front_binary" type="ray">
+            <sensor name="front_analog" type="ray">
                 <pose>0.045 0 0.015 0 0 0</pose>
                 <ray>
                     <scan>
@@ -184,18 +187,18 @@
                     </scan>
                     <range>
                         <min>0.02</min>
-                        <max>0.25</max>
+                        <max>0.18</max>
                         <resolution>0.015</resolution>
                     </range>
                 </ray>
-                <plugin name="front_binary_ray" filename="libRayPlugin.so"/>
+                <plugin name="front_analog_ray" filename="libRayPlugin.so"/>
                 <always_on>1</always_on>
                 <update_rate>20</update_rate>
                 <visualize>true</visualize>
             </sensor>
         </link>
         <link name='right_wheel'>
-            <pose frame=''>0.0 -0.0313 0.019 0 1.57079 1.57079</pose>
+            <pose frame=''>0.0 -0.0313 0.021 0 1.57079 1.57079</pose>
             <inertial>
                 <mass>0.01</mass>
                 <inertia>
@@ -256,7 +259,7 @@
             </collision>
         </link>
         <link name='left_wheel'>
-            <pose frame=''>0.0 0.0313 0.019 0 1.57079 1.57079</pose>
+            <pose frame=''>0.0 0.0313 0.021 0 1.57079 1.57079</pose>
             <inertial>
                 <mass>0.01</mass>
                 <inertia>
