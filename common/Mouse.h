@@ -6,11 +6,11 @@
 #include "Pose.h"
 
 typedef struct {
-  double left_analog;
-  double right_analog;
-  bool left_binary;
-  bool right_binary;
-  bool front_binary;
+  double front_left_analog;
+  double front_right_analog;
+  double back_left_analog;
+  double back_right_analog;
+  double front_analog;
 } RangeData;
 
 /** \brief depresents a mouse

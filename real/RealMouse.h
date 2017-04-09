@@ -13,9 +13,11 @@ public:
   static constexpr int TICKS_PER_REV = 900;
   static constexpr double RAD_PER_TICK = 2 * M_PI / TICKS_PER_REV;
 
-  static const int FRONT_BINARY_PIN = 0;
-  static const int LEFT_BINARY_PIN = 0;
-  static const int RIGHT_BINARY_PIN = 0;
+  static const int FRONT_LEFT_ANALOG_PIN = 0;
+  static const int BACK_LEFT_ANALOG_PIN = 0;
+  static const int FRONT_RIGHT_ANALOG_PIN = 0;
+  static const int BACK_RIGHT_ANALOG_PIN = 0;
+  static const int FRONT_ANALOG_PIN = 0;
 
   static const int ENCODER1A = 7;
   static const int ENCODER1B = 8;
@@ -43,6 +45,8 @@ public:
 
   virtual Pose getPose() override;
 
+  RangeData getRangeData();
+
   virtual double getRowOffsetToEdge() override;
 
   virtual double getColOffsetToEdge() override;
@@ -55,6 +59,8 @@ public:
   void setup();
 
   KinematicMotorController kinematic_controller;
+
+  bool reset_fwd_dist;
 
 private:
   RealMouse();

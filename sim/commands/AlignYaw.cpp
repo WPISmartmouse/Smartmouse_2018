@@ -8,8 +8,8 @@ void AlignYaw::initialize() {
 
 void AlignYaw::execute() {
   range_data = mouse->getRangeData();
-  double s = (range_data.left_analog - range_data.right_analog) * kP;
-  printf("%f %f %f\n", range_data.left_analog, range_data.right_analog, s);
+  double s = (range_data.front_left_analog - range_data.front_right_analog) * kP;
+  printf("%f %f %f\n", range_data.front_left_analog, range_data.front_right_analog, s);
   mouse->setSpeed(-s, s);
 }
 
@@ -21,7 +21,7 @@ bool AlignYaw::isFinished() {
   double vl, vr;
   std::tie(vl, vr) = mouse->getWheelVelocities();
   range_data = mouse->getRangeData();
-  return fabs(range_data.left_analog - range_data.right_analog) < 0.001 && fabs(vl) < 0.05 && fabs(vr) < 0.05;
+  return fabs(range_data.front_left_analog - range_data.front_right_analog) < 0.001 && fabs(vl) < 0.05 && fabs(vr) < 0.05;
 }
 
 void AlignYaw::end() {

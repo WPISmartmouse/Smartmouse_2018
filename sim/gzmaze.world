@@ -16,7 +16,6 @@
 
     <gui>
       <plugin name="regenerate_widget" filename="libregenerate_widget.so"/>
-      <plugin name="sensor_viz_plugin" filename="libsensor_viz.so"/>
       <plugin name="state_viz_plugin" filename="libstate_viz.so"/>
       <camera name='user_camera'>
         <pose frame=''>0 0 1 0.0 1.5707 1.5707</pose>

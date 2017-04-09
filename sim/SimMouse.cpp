@@ -1,19 +1,24 @@
 #include "SimMouse.h"
 #include <gazebo/msgs/msgs.hh>
+#include <common/Mouse.h>
+#include <common/RobotConfig.h>
+#include <common/WallFollower.h>
 
 SimMouse *SimMouse::instance = nullptr;
+const double SimMouse::ANALOG_MAX_DIST = 0.15; // meters
+const double SimMouse::MAX_FORCE = 0.006; // experimental value
 const gazebo::common::Color SimMouse::grey_color{0.8, 0.8, 0.8, 1};
 const RobotConfig SimMouse::CONFIG = {
-        1.35255, //ANALOG_ANGLE, radians
-        0.04, //SIDE_ANALOG_X, meters
-        0.024, //SIDE_ANALOG_Y, meters
-        0.09, //MAX_SPEED, m/s
-        0.005, //MIN_SPEED, m/s
-        0.125, //WALL_DIST, meters
-        0.85, //BINARY_ANGLE, radians
-        0.045, //FRONT_BINARY_X, meters
-        0.20, //FRONT_BINARY_THRESHOLD, meters
-        0.15, //SIDE_BINARY_THRESHOLD, meters
+        1.35255, // FRONT_ANALOG_ANGLE
+        1.35255,  // BACK_ANALOG_ANGLE
+        0.04,    // FRONT_SIDE_ANALOG_X
+        0.024,    // FRONT_SIDE_ANALOG_Y
+        -0.024,  // BACK_SIDE_ANALOG_X
+        0.024,  // BACK_SIDE_ANALOG_Y
+        0.045,   // FRONT_ANALOG_X
+        0.09,    // MAX_SPEED
+        0.02,    // MIN_SPEED
+        0.15,    // WALL_THRESHOLD
 };
 
 double SimMouse::abstractForceToNewtons(double x) {
@@ -36,9 +41,11 @@ SensorReading SimMouse::checkWalls() {
   dataCond.wait(lk);
   SensorReading sr(row, col);
 
-  sr.walls[static_cast<int>(dir)] = range_data.front_binary;
-  sr.walls[static_cast<int>(left_of_dir(dir))] = range_data.left_binary;
-  sr.walls[static_cast<int>(right_of_dir(dir))] = range_data.right_binary;
+  print("%f %f %f\n", range_data.front_left_analog, range_data.front_analog, range_data.front_right_analog);
+
+  sr.walls[static_cast<int>(dir)] = range_data.front_analog < SimMouse::CONFIG.WALL_THRESHOLD;
+  sr.walls[static_cast<int>(left_of_dir(dir))] = range_data.front_left_analog < SimMouse::CONFIG.WALL_THRESHOLD;
+  sr.walls[static_cast<int>(right_of_dir(dir))] = range_data.front_right_analog < SimMouse::CONFIG.WALL_THRESHOLD;
   sr.walls[static_cast<int>(opposite_direction(dir))] = false;
 
   return sr;
@@ -57,12 +64,7 @@ int SimMouse::getComputedRow() {
 }
 
 Pose SimMouse::getPose() {
-  Pose pose = kinematic_controller.getPose();
-  // TODO: remove this! It's just for testing how much yaw matters.
-  pose.x = true_pose.x;
-  pose.y = true_pose.y;
-  pose.yaw = true_pose.yaw;
-  return pose;
+  return estimated_pose;
 }
 
 Pose SimMouse::getExactPose() {
@@ -138,6 +140,7 @@ void SimMouse::resetIndicators(gazebo::common::Color color) {
 }
 
 void SimMouse::robotStateCallback(ConstRobotStatePtr &msg) {
+  std::unique_lock<std::mutex> lk(dataMutex);
   true_pose.x = msg->true_x_meters();
   true_pose.y = msg->true_y_meters();
   true_pose.yaw = msg->true_yaw_rad();
@@ -148,41 +151,54 @@ void SimMouse::robotStateCallback(ConstRobotStatePtr &msg) {
   this->left_wheel_angle_rad = msg->left_wheel_angle_radians();
   this->right_wheel_angle_rad = msg->right_wheel_angle_radians();
 
-  // check for changes in frony binary sensor
-  if (!this->reset_fwd_dist && !this->range_data.front_binary && msg->front_binary()) {
-    // interrupt!
-    this->reset_fwd_dist = true;
-  }
-
-  this->range_data.left_analog = msg->left_analog();
-  this->range_data.right_analog = msg->right_analog();
-  this->range_data.left_binary = msg->left_binary();
-  this->range_data.right_binary = msg->right_binary();
-  this->range_data.front_binary = msg->front_binary();
+  this->range_data.front_left_analog = msg->front_left_analog();
+  this->range_data.front_right_analog = msg->front_right_analog();
+  this->range_data.back_left_analog = msg->back_left_analog();
+  this->range_data.back_right_analog = msg->back_right_analog();
+  this->range_data.front_analog = msg->front_analog();
 
   dataCond.notify_all();
 }
 
 void SimMouse::run(double dt_s) {
   // handle updating of odometry and PID
-
   std::tie(abstract_left_force, abstract_right_force) = kinematic_controller.run(dt_s,
                                                                                  this->left_wheel_angle_rad,
                                                                                  this->right_wheel_angle_rad,
                                                                                  this->left_wheel_velocity_mps,
                                                                                  this->right_wheel_velocity_mps);
 
+  Pose kc_pose = kinematic_controller.getPose();
+  double yaw, offset;
+  std::tie(yaw, offset) = WallFollower::estimate_pose(CONFIG, range_data, this);
+  estimated_pose.yaw = yaw;
+  kinematic_controller.reset_yaw_to(estimated_pose.yaw);
+
+  switch(dir) {
+    case Direction::N:
+      estimated_pose.x = (col * AbstractMaze::UNIT_DIST) + AbstractMaze::HALF_UNIT_DIST + offset;
+      kinematic_controller.reset_y_to(estimated_pose.x);
+      break;
+    case Direction::S:
+      estimated_pose.x = (col * AbstractMaze::UNIT_DIST) + AbstractMaze::HALF_UNIT_DIST - offset;
+      kinematic_controller.reset_y_to(estimated_pose.x);
+      break;
+    case Direction::E:
+      estimated_pose.y = (row * AbstractMaze::UNIT_DIST) + AbstractMaze::HALF_UNIT_DIST + offset;
+      kinematic_controller.reset_y_to(estimated_pose.y);
+      break;
+    case Direction::W:
+      estimated_pose.y = (row * AbstractMaze::UNIT_DIST) + AbstractMaze::HALF_UNIT_DIST - offset;
+      kinematic_controller.reset_y_to(estimated_pose.y);
+      break;
+  }
+
   // update row/col information
-  Pose estimated_pose = getPose();
-  computed_row = (int) (estimated_pose.y / AbstractMaze::UNIT_DIST);
-  computed_col = (int) (estimated_pose.x / AbstractMaze::UNIT_DIST);
+  row = computed_row = (int) (estimated_pose.y / AbstractMaze::UNIT_DIST);
+  col = computed_col = (int) (estimated_pose.x / AbstractMaze::UNIT_DIST);
 
   row_offset_to_edge = fmod(estimated_pose.y, AbstractMaze::UNIT_DIST);
   col_offset_to_edge = fmod(estimated_pose.x, AbstractMaze::UNIT_DIST);
-
-  // not sure if this is a good idea
-  row = computed_row;
-  col = computed_col;
 
   // publish status information
   gzmaze::msgs::MazeLocation maze_loc_msg;

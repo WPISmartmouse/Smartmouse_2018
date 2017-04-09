@@ -1,10 +1,13 @@
 #pragma once
 
 #include <common/commanduino/CommanDuino.h>
+#include <common/Mouse.h>
 #include <common/Pose.h>
+#include <common/WallFollower.h>
+
 #include "RealMouse.h"
 
-class Forward : public CommandGroup {
+class Forward : public Command {
 public:
   Forward();
 
@@ -17,5 +20,11 @@ public:
   void end();
 
 private:
+
+  Pose start;
   RealMouse *mouse;
+
+  RangeData range_data;
+  WallFollower follower;
 };
+

@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
   while (!timer.isTimeReady());
 
   mouse->simInit();
-  Scheduler scheduler(new AlignYaw());
+  Scheduler scheduler(new NavTestCommand(new Flood(mouse)));
 
   bool done = false;
   unsigned long last_t = timer.programTimeMs();

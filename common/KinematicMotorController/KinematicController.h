@@ -33,5 +33,4 @@ private:
   bool initialized = false;
 
   Pose current_pose_estimate;
-
 };

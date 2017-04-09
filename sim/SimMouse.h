@@ -15,8 +15,8 @@ class SimMouse : public Mouse {
 public:
   static double abstractForceToNewtons(double x);
 
-  static constexpr double ANALOG_MAX_DIST = 0.15; // meters
-  static constexpr double MAX_FORCE = 0.016;  // 16kg/cm from datasheet
+  static const double ANALOG_MAX_DIST; // meters
+  static const double MAX_FORCE;  // 16kg/cm from datasheet
   static const gazebo::common::Color grey_color;
 
   static const RobotConfig CONFIG;
@@ -95,6 +95,7 @@ private:
   std::mutex dataMutex;
 
   Pose true_pose;
+  Pose estimated_pose;
 
   gazebo::transport::SubscriberPtr regen_sub;
 

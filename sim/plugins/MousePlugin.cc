@@ -21,67 +21,75 @@ void MousePlugin::Load(physics::ModelPtr model, sdf::ElementPtr sdf) {
   node->Init();
   state_pub = node->Advertise<gzmaze::msgs::RobotState>("~/mouse/state");
 
-  this->left_analog_sub = node->Subscribe("~/mouse/base/left_analog/scan", &MousePlugin::LeftAnalogCallback, this);
-  this->right_analog_sub = node->Subscribe("~/mouse/base/right_analog/scan", &MousePlugin::RightAnalogCallback,
-                                           this);
-  this->left_binary_sub = node->Subscribe("~/mouse/base/left_binary/scan", &MousePlugin::LeftBinaryCallback, this);
-  this->right_binary_sub = node->Subscribe("~/mouse/base/right_binary/scan", &MousePlugin::RightBinaryCallback,
-                                           this);
-  this->front_binary_sub = node->Subscribe("~/mouse/base/front_binary/scan", &MousePlugin::FrontBinaryCallback,
-                                           this);
+  this->front_left_analog_sub = this->node->Subscribe("~/mouse/base/front_left_analog/scan", &MousePlugin::FrontLeftAnalogCallback, this);
+  this->front_right_analog_sub = this->node->Subscribe("~/mouse/base/front_right_analog/scan", &MousePlugin::FrontRightAnalogCallback, this);
+  this->back_left_analog_sub = this->node->Subscribe("~/mouse/base/back_left_analog/scan", &MousePlugin::BackLeftAnalogCallback, this);
+  this->back_right_analog_sub = this->node->Subscribe("~/mouse/base/back_right_analog/scan", &MousePlugin::BackRightAnalogCallback, this);
+  this->front_analog_sub = this->node->Subscribe("~/mouse/base/front_analog/scan", &MousePlugin::FrontAnalogCallback, this);
 
   // Connect to the world update event.
   // This will trigger the Update function every Gazebo iteration
-  updateConn = event::Events::ConnectWorldUpdateBegin(
-          boost::bind(&MousePlugin::Update, this, _1));
+  updateConn = event::Events::ConnectWorldUpdateBegin( boost::bind(&MousePlugin::Update, this, _1));
 }
 
 void MousePlugin::Update(const common::UpdateInfo &info) {
   PublishInfo();
 }
 
-void MousePlugin::LeftAnalogCallback(ConstLaserScanStampedPtr &msg) {
+void MousePlugin::FrontLeftAnalogCallback(ConstLaserScanStampedPtr &msg) {
   msgs::LaserScan scan = msg->scan();
   assert(scan.ranges_size() == 1);
   double raw_range = scan.ranges(0);
 
   if (std::isinf(raw_range)) {
-    this->left_analog = SimMouse::ANALOG_MAX_DIST;
+    this->front_left_analog = SimMouse::ANALOG_MAX_DIST;
   } else {
-    this->left_analog = raw_range;
+    this->front_left_analog = raw_range;
   }
 }
 
-void MousePlugin::RightAnalogCallback(ConstLaserScanStampedPtr &msg) {
+void MousePlugin::FrontRightAnalogCallback(ConstLaserScanStampedPtr &msg) {
   msgs::LaserScan scan = msg->scan();
   assert(scan.ranges_size() == 1);
   double raw_range = scan.ranges(0);
   if (std::isinf(raw_range)) {
-    this->right_analog = SimMouse::ANALOG_MAX_DIST;
+    this->front_right_analog = SimMouse::ANALOG_MAX_DIST;
   } else {
-    this->right_analog = raw_range;
+    this->front_right_analog = raw_range;
   }
 }
 
-void MousePlugin::LeftBinaryCallback(ConstLaserScanStampedPtr &msg) {
+void MousePlugin::BackLeftAnalogCallback(ConstLaserScanStampedPtr &msg) {
   msgs::LaserScan scan = msg->scan();
   assert(scan.ranges_size() == 1);
-  double range = scan.ranges(0);
-  this->left_binary = !std::isinf(range) and range < SimMouse::CONFIG.SIDE_BINARY_THRESHOLD;
+  double raw_range = scan.ranges(0);
+  if (std::isinf(raw_range)) {
+    this->back_left_analog = SimMouse::ANALOG_MAX_DIST;
+  } else {
+    this->back_left_analog = raw_range;
+  }
 }
 
-void MousePlugin::RightBinaryCallback(ConstLaserScanStampedPtr &msg) {
+void MousePlugin::BackRightAnalogCallback(ConstLaserScanStampedPtr &msg) {
   msgs::LaserScan scan = msg->scan();
   assert(scan.ranges_size() == 1);
-  double range = scan.ranges(0);
-  this->right_binary = !std::isinf(range) and range < SimMouse::CONFIG.SIDE_BINARY_THRESHOLD;
+  double raw_range = scan.ranges(0);
+  if (std::isinf(raw_range)) {
+    this->back_right_analog = SimMouse::ANALOG_MAX_DIST;
+  } else {
+    this->back_right_analog = raw_range;
+  }
 }
 
-void MousePlugin::FrontBinaryCallback(ConstLaserScanStampedPtr &msg) {
+void MousePlugin::FrontAnalogCallback(ConstLaserScanStampedPtr &msg) {
   msgs::LaserScan scan = msg->scan();
   assert(scan.ranges_size() == 1);
-  double range = scan.ranges(0);
-  this->front_binary = !std::isinf(range) and range < SimMouse::CONFIG.FRONT_BINARY_THRESHOLD;
+  double raw_range = scan.ranges(0);
+  if (std::isinf(raw_range)) {
+    this->front_analog = SimMouse::ANALOG_MAX_DIST;
+  } else {
+    this->front_analog = raw_range;
+  }
 }
 
 void MousePlugin::PublishInfo() {
@@ -106,12 +114,10 @@ void MousePlugin::PublishInfo() {
   float right_vel_rps = 0;
   float left_angle = 0;
   float right_angle = 0;
-  if (this->left_wheel && this->right_wheel) {
-    left_vel_rps = this->left_wheel->GetVelocity(0);
-    right_vel_rps = this->right_wheel->GetVelocity(0);
-    left_angle = this->left_wheel->GetAngle(0).Radian();
-    right_angle = this->right_wheel->GetAngle(0).Radian();
-  }
+  left_vel_rps = this->left_wheel->GetVelocity(0);
+  right_vel_rps = this->right_wheel->GetVelocity(0);
+  left_angle = this->left_wheel->GetAngle(0).Radian();
+  right_angle = this->right_wheel->GetAngle(0).Radian();
 
   double left_vel_mps = SimMouse::radToMeters(left_vel_rps);
   double right_vel_mps = SimMouse::radToMeters(right_vel_rps);
@@ -122,11 +128,11 @@ void MousePlugin::PublishInfo() {
   state.set_right_wheel_velocity_mps(right_vel_mps);
   state.set_left_wheel_angle_radians(left_angle);
   state.set_right_wheel_angle_radians(right_angle);
-  state.set_left_analog(this->left_analog);
-  state.set_right_analog(this->right_analog);
-  state.set_left_binary(this->left_binary);
-  state.set_right_binary(this->right_binary);
-  state.set_front_binary(this->front_binary);
+  state.set_front_left_analog(this->front_left_analog);
+  state.set_front_right_analog(this->front_right_analog);
+  state.set_back_left_analog(this->back_left_analog);
+  state.set_back_right_analog(this->back_right_analog);
+  state.set_front_analog(this->front_analog);
   state.set_true_x_meters(pos->x());
   state.set_true_y_meters(-pos->y());
   double yaw = relativePose.Rot().Euler()[2];

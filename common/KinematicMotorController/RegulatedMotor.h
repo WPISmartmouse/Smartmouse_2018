@@ -15,21 +15,20 @@ public:
   static const double kP;
   static const double kI;
   static const double kD;
-  static const double kFF;
+  static const double ff_offset;
   static const double INTEGRAL_CAP;
   static const double DERIV_CAP;
   static const double MIN_ABSTRACT_FORCE;
-  static const double kFF_LOOKUP[19];
 
   bool initialized = false;
   double abstract_force;
   double acceleration;
   double brake_acceleration;
   double regulated_setpoint_rps;
-  int rounded_setpoint_idx;
   double derivative;
   double error;
   double estimated_velocity_rps;
+  double feed_forward;
   double integral;
   double last_angle_rad;
   double last_error;

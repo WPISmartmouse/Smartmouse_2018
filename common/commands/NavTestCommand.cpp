@@ -7,25 +7,6 @@
 NavTestCommand::NavTestCommand(Solver *solver) : CommandGroup("NavTestGroup"), solver(solver) {
   commands.push_back(new Forward());
   commands.push_back(new Turn(Direction::S));
-  commands.push_back(new Forward());
-  commands.push_back(new Forward());
-  commands.push_back(new Turn(Direction::E));
-  commands.push_back(new Forward());
-  commands.push_back(new Turn(Direction::S));
-  commands.push_back(new Forward());
-  commands.push_back(new Turn(Direction::W));
-  commands.push_back(new Turn(Direction::S));
-  commands.push_back(new Forward());
-  commands.push_back(new Forward());
-  commands.push_back(new Turn(Direction::E));
-  commands.push_back(new Forward());
-  commands.push_back(new Turn(Direction::N));
-  commands.push_back(new Forward());
-  commands.push_back(new Turn(Direction::E));
-  commands.push_back(new Turn(Direction::N));
-  commands.push_back(new Turn(Direction::S));
-  commands.push_back(new Forward());
-  commands.push_back(new Turn(Direction::E));
   commands.push_back(new Stop(100));
   cmd_it = commands.begin();
 }

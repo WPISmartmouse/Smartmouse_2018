@@ -7,6 +7,7 @@
 #include <real/RealMouse.h>
 #include <common/commands/RepeatCommand.h>
 #include <real/commands/LEDBlink.h>
+#include "Forward.h"
 #include <common/util.h>
 
 ArduinoTimer timer;
@@ -21,13 +22,11 @@ void setup() {
   mouse = RealMouse::inst();
   mouse->setup();
 
-  scheduler = new Scheduler(new RepeatCommand<LEDBlink, int, int>(20, RealMouse::LED_7, 1000));
+  scheduler = new Scheduler(new Forward());
 
   last_t = timer.programTimeMs();
 
   print("setup\r\n");
-
-  mouse->setSpeed(0.16, 0.16);
 }
 
 void loop() {

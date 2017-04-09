@@ -1,4 +1,5 @@
 #include <tuple>
+#include <common/Mouse.h>
 #include "RealMouse.h"
 
 RealMouse *RealMouse::instance = nullptr;
@@ -21,6 +22,12 @@ double RealMouse::tick_to_rad(int ticks) {
   return rad;
 }
 
+RangeData RealMouse::getRangeData() {
+  RangeData sr;
+  sr.right_analog = analogRead(FRONT_LEFT_ANALOG_PIN);
+  return sr;
+}
+
 RealMouse *RealMouse::inst() {
   if (instance == NULL) {
     instance = new RealMouse();
@@ -32,9 +39,9 @@ RealMouse::RealMouse() {}
 
 SensorReading RealMouse::checkWalls() {
   SensorReading sr(row, col);
-  sr.walls[static_cast<int>(dir)] = digitalRead(FRONT_BINARY_PIN);
-  sr.walls[static_cast<int>(left_of_dir(dir))] = digitalRead(LEFT_BINARY_PIN);
-  sr.walls[static_cast<int>(right_of_dir(dir))] = digitalRead(RIGHT_BINARY_PIN);
+  sr.walls[static_cast<int>(dir)] = analogRead(FRONT_ANALOG_PIN) < 0.15;
+  sr.walls[static_cast<int>(left_of_dir(dir))] = analogRead(FRONT_LEFT_ANALOG_PIN) < 0.15;
+  sr.walls[static_cast<int>(right_of_dir(dir))] = analogRead(FRONT_RIGHT_ANALOG_PIN) < 0.15;
   sr.walls[static_cast<int>(opposite_direction(dir))] = false;
 
   return sr;

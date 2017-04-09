@@ -9,21 +9,15 @@ public:
 
   void Update(const common::UpdateInfo &info);
 
-  void LeftAnalogCallback(ConstLaserScanStampedPtr &msg);
+  void FrontLeftAnalogCallback(ConstLaserScanStampedPtr &msg);
 
-  void RightAnalogCallback(ConstLaserScanStampedPtr &msg);
+  void FrontRightAnalogCallback(ConstLaserScanStampedPtr &msg);
 
-  void LeftBinaryCallback(ConstLaserScanStampedPtr &msg);
+  void BackLeftAnalogCallback(ConstLaserScanStampedPtr &msg);
 
-  void RightBinaryCallback(ConstLaserScanStampedPtr &msg);
+  void BackRightAnalogCallback(ConstLaserScanStampedPtr &msg);
 
-  void FrontBinaryCallback(ConstLaserScanStampedPtr &msg);
-
-  transport::SubscriberPtr left_analog_sub;
-  transport::SubscriberPtr right_analog_sub;
-  transport::SubscriberPtr left_binary_sub;
-  transport::SubscriberPtr right_binary_sub;
-  transport::SubscriberPtr front_binary_sub;
+  void FrontAnalogCallback(ConstLaserScanStampedPtr &msg);
 
 private:
 
@@ -36,9 +30,14 @@ private:
   event::ConnectionPtr updateConn;
   transport::NodePtr node;
   transport::PublisherPtr state_pub;
-  double left_analog;
-  double right_analog;
-  bool left_binary;
-  bool right_binary;
-  bool front_binary;
+  transport::SubscriberPtr front_left_analog_sub;
+  transport::SubscriberPtr front_right_analog_sub;
+  transport::SubscriberPtr back_left_analog_sub;
+  transport::SubscriberPtr back_right_analog_sub;
+  transport::SubscriberPtr front_analog_sub;
+  double front_left_analog;
+  double front_right_analog;
+  double back_left_analog;
+  double back_right_analog;
+  double front_analog;
 };

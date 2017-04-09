@@ -90,16 +90,6 @@ target_link_libraries(state_viz
         ${PROTOBUF_LIBRARIES})
 add_dependencies(state_viz gazebo_pch)
 
-QT5_WRAP_CPP(sensor_viz_MOC plugins/SensorViz.hh)
-add_library(sensor_viz SHARED ${sensor_viz_MOC} plugins/SensorViz.cc)
-set_target_properties(sensor_viz PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh")
-target_link_libraries(sensor_viz
-        sim
-        ${GAZEBO_LIBRARIES}
-        ${QT_LIBRARIES}
-        ${PROTOBUF_LIBRARIES})
-add_dependencies(sensor_viz gazebo_pch)
-
 QT5_WRAP_CPP(regenerate_widget_MOC plugins/RegenerateWidget.hh)
 add_library(regenerate_widget SHARED ${regenerate_widget_MOC} plugins/RegenerateWidget.cc)
 set_target_properties(regenerate_widget PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh")
