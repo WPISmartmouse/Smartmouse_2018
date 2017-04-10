@@ -82,13 +82,13 @@ KinematicMotorController::run(double dt_s, double left_angle_rad, double right_a
   abstract_forces.first = left_motor.runPid(dt_s, left_angle_rad, ground_truth_left_vel_rps);
   abstract_forces.second = right_motor.runPid(dt_s, right_angle_rad, ground_truth_right_vel_rps);
 
-  static int i = 0;
-  if (i == 15) {
-    print("%f, %f, %f, %f\r\n", left_motor.regulated_setpoint_rps, left_motor.velocity_rps,
-          right_motor.regulated_setpoint_rps, right_motor.velocity_rps);
-    i = 0;
-  }
-  i += 1;
+//  static int i = 0;
+//  if (i == 15) {
+//    print("%f, %f, %f, %f\r\n", left_motor.regulated_setpoint_rps, left_motor.velocity_rps,
+//          right_motor.regulated_setpoint_rps, right_motor.velocity_rps);
+//    i = 0;
+//  }
+//  i += 1;
 
   return abstract_forces;
 }

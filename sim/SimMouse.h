@@ -66,7 +66,7 @@ public:
 
   KinematicMotorController kinematic_controller;
 
-  bool reset_fwd_dist;
+  bool ignore_sensor_pose_estimate;
 
 private:
 

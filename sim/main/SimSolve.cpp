@@ -54,8 +54,8 @@ int main(int argc, char *argv[]) {
       continue;
     }
 
-    done = scheduler.run();
     mouse->run(dt_s);
+    done = scheduler.run();
     last_t = now;
   }
 }

@@ -26,7 +26,7 @@ double SimMouse::abstractForceToNewtons(double x) {
   return x * MAX_FORCE / 255.0;
 }
 
-SimMouse::SimMouse() : reset_fwd_dist(false) {}
+SimMouse::SimMouse() : ignore_sensor_pose_estimate(false) {}
 
 SimMouse *SimMouse::inst() {
   if (instance == NULL) {
@@ -40,8 +40,6 @@ SensorReading SimMouse::checkWalls() {
   std::unique_lock<std::mutex> lk(dataMutex);
   dataCond.wait(lk);
   SensorReading sr(row, col);
-
-  print("%f %f %f\n", range_data.front_left_analog, range_data.front_analog, range_data.front_right_analog);
 
   sr.walls[static_cast<int>(dir)] = range_data.front_analog < SimMouse::CONFIG.WALL_THRESHOLD;
   sr.walls[static_cast<int>(left_of_dir(dir))] = range_data.front_left_analog < SimMouse::CONFIG.WALL_THRESHOLD;
@@ -160,6 +158,7 @@ void SimMouse::robotStateCallback(ConstRobotStatePtr &msg) {
   dataCond.notify_all();
 }
 
+bool p = false;
 void SimMouse::run(double dt_s) {
   // handle updating of odometry and PID
   std::tie(abstract_left_force, abstract_right_force) = kinematic_controller.run(dt_s,
@@ -168,29 +167,44 @@ void SimMouse::run(double dt_s) {
                                                                                  this->left_wheel_velocity_mps,
                                                                                  this->right_wheel_velocity_mps);
 
+  // given odometry estimate, improve estimate using sensors, then update odometry estimate to match our best estimate
   Pose kc_pose = kinematic_controller.getPose();
+  estimated_pose = kc_pose;
   double yaw, offset;
   std::tie(yaw, offset) = WallFollower::estimate_pose(CONFIG, range_data, this);
-  estimated_pose.yaw = yaw;
-  kinematic_controller.reset_yaw_to(estimated_pose.yaw);
 
-  switch(dir) {
-    case Direction::N:
-      estimated_pose.x = (col * AbstractMaze::UNIT_DIST) + AbstractMaze::HALF_UNIT_DIST + offset;
-      kinematic_controller.reset_y_to(estimated_pose.x);
-      break;
-    case Direction::S:
-      estimated_pose.x = (col * AbstractMaze::UNIT_DIST) + AbstractMaze::HALF_UNIT_DIST - offset;
-      kinematic_controller.reset_y_to(estimated_pose.x);
-      break;
-    case Direction::E:
-      estimated_pose.y = (row * AbstractMaze::UNIT_DIST) + AbstractMaze::HALF_UNIT_DIST + offset;
-      kinematic_controller.reset_y_to(estimated_pose.y);
-      break;
-    case Direction::W:
-      estimated_pose.y = (row * AbstractMaze::UNIT_DIST) + AbstractMaze::HALF_UNIT_DIST - offset;
-      kinematic_controller.reset_y_to(estimated_pose.y);
-      break;
+  if (!ignore_sensor_pose_estimate) {
+    if (p) {
+      print("allowing estimating pose from rangefinders\n");
+      p = false;
+    }
+    estimated_pose.yaw = yaw;
+    kinematic_controller.reset_yaw_to(estimated_pose.yaw);
+
+    switch(dir) {
+      case Direction::N:
+        estimated_pose.x = (col * AbstractMaze::UNIT_DIST) + AbstractMaze::HALF_UNIT_DIST + offset;
+        kinematic_controller.reset_x_to(estimated_pose.x);
+        break;
+      case Direction::S:
+        estimated_pose.x = (col * AbstractMaze::UNIT_DIST) + AbstractMaze::HALF_UNIT_DIST - offset;
+        kinematic_controller.reset_x_to(estimated_pose.x);
+        break;
+      case Direction::E:
+        estimated_pose.y = (row * AbstractMaze::UNIT_DIST) + AbstractMaze::HALF_UNIT_DIST + offset;
+        kinematic_controller.reset_y_to(estimated_pose.y);
+        break;
+      case Direction::W:
+        estimated_pose.y = (row * AbstractMaze::UNIT_DIST) + AbstractMaze::HALF_UNIT_DIST - offset;
+        kinematic_controller.reset_y_to(estimated_pose.y);
+        break;
+    }
+  }
+  else {
+    if (!p) {
+      print("Ignoring rangefinder pose estimate.\n");
+      p = true;
+    }
   }
 
   // update row/col information

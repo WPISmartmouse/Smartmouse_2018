@@ -20,7 +20,6 @@ std::pair<double, double> WallFollower::compute_wheel_velocities(Mouse *mouse, P
 
   double currentYaw, errorToCenter;
   std::tie(currentYaw, errorToCenter) = WallFollower::estimate_pose(config, range_data, mouse);
-  print("%f, %f\n", errorToCenter, currentYaw * 180 / M_PI);
 
   double goalYawOffset = errorToCenter * kPYaw;
 
