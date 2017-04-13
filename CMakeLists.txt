@@ -57,6 +57,7 @@ else ()
     set(CONSOLES Solve
             Animate
             ConsoleNavTest
+            GenerateMaze
             ReadAndPrint)
 
     foreach (MAIN ${CONSOLES})

@@ -84,7 +84,7 @@ void Mouse::mark_mouse_position_visited() {
 }
 
 void Mouse::print_maze_mouse() {
-  char buff[1024];
+  char buff[AbstractMaze::BUFF_SIZE];
   maze_mouse_string(buff);
   print(buff);
 }

@@ -105,6 +105,7 @@ public:
   * @param maze the maze
   */
   void print_maze();
+  void print_maze_str(char *buff);
 
   /** duh*/
   void print_pointer_maze();
@@ -122,7 +123,12 @@ public:
   /** duh*/
   void print_dist_maze();
 
+  static AbstractMaze gen_random_legal_maze();
+  static void _make_connections(AbstractMaze *maze, Node *node);
+
   bool flood_fill(char *path, int r0, int c0, int r1, int c1);
 
   Node *nodes[AbstractMaze::MAZE_SIZE][AbstractMaze::MAZE_SIZE]; // array of node pointers
+
+  static const unsigned long BUFF_SIZE = (MAZE_SIZE * 2 + 2) * MAZE_SIZE;
 };

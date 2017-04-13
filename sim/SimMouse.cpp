@@ -250,7 +250,7 @@ void SimMouse::run(double dt_s) {
   maze_loc_msg.set_dir(dir_str);
 
   std::string buff;
-  buff.resize(1024);
+  buff.resize(AbstractMaze::BUFF_SIZE);
   maze_mouse_string(&buff[0]);
   maze_loc_msg.set_mouse_maze_string(buff);
 

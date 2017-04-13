@@ -3,6 +3,7 @@
   */
 #include "AbstractMaze.h"
 #include <string.h>
+#include <algorithm>
 
 #ifdef EMBED
 #include <Arduino.h>
@@ -249,35 +250,39 @@ void AbstractMaze::mark_origin_known() {
   nodes[0][0]->known = true;
 }
 
-void AbstractMaze::print_maze() {
+void AbstractMaze::print_maze_str(char *buff) {
+  char *b = buff;
   int i, j;
   for (i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
-    char *str = (char *) malloc((AbstractMaze::MAZE_SIZE * 2 + 2) * sizeof(char));
-
-    char *s = str;
     for (j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
       Node *n = nodes[i][j];
       if (n->neighbor(Direction::W) == NULL) {
-        strcpy(s++, "|");
+        strcpy(b++, "|");
         if (n->neighbor(Direction::S) == NULL) {
-          strcpy(s++, "_");
+          strcpy(b++, "_");
         } else {
-          strcpy(s++, " ");
+          strcpy(b++, " ");
         }
       } else {
-        strcpy(s++, "_");
+        strcpy(b++, "_");
         if (n->neighbor(Direction::S) == NULL) {
-          strcpy(s++, "_");
+          strcpy(b++, "_");
         } else {
-          strcpy(s++, " ");
+          strcpy(b++, " ");
         }
       }
     }
-    *(s++) = '|';
-    *s = '\0';
-    printf("%s\n", str);
-    free(str);
+    *(b++) = '|';
+    *(b++) = '\n';
   }
+  b++;
+  *b = '\0';
+}
+
+void AbstractMaze::print_maze() {
+  char buff[BUFF_SIZE];
+  print_maze_str(buff);
+  print(buff);
 }
 
 void AbstractMaze::print_neighbor_maze() {
@@ -286,11 +291,11 @@ void AbstractMaze::print_neighbor_maze() {
     for (j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
       for (Direction d = Direction::First; d < Direction::Last; d++) {
         bool wall = (nodes[i][j]->neighbor(d) == NULL);
-        printf("%i", wall);
+        print("%i", wall);
       }
-      printf(" ");
+      print(" ");
     }
-    printf("\n");
+    print("\n");
   }
 }
 
@@ -299,9 +304,9 @@ void AbstractMaze::print_weight_maze() {
   for (i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
     for (j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
       int w = nodes[i][j]->weight;
-      printf("%03u ", w);
+      print("%03u ", w);
     }
-    printf("\n");
+    print("\n");
   }
 }
 
@@ -312,14 +317,14 @@ void AbstractMaze::print_dist_maze() {
       Node *n = nodes[i][j];
       int d = n->distance;
       if (d < 10) {
-        printf("  %d ", d);
+        print("  %d ", d);
       } else if (d < 100) {
-        printf(" %d ", d);
+        print(" %d ", d);
       } else {
-        printf("%d ", d);
+        print("%d ", d);
       }
     }
-    printf("\n");
+    print("\n");
   }
 }
 
@@ -327,8 +332,123 @@ void AbstractMaze::print_pointer_maze() {
   int i, j;
   for (i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
     for (j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
-      printf("%p ", nodes[i][j]);
+      print("%p ", nodes[i][j]);
     }
-    printf("\n");
+    print("\n");
+  }
+}
+
+AbstractMaze AbstractMaze::gen_random_legal_maze() {
+  AbstractMaze maze;
+
+  // start at center and move out, marking visited nodes as we go
+  maze.mark_position_visited(MAZE_SIZE / 2, MAZE_SIZE / 2);
+  maze.mark_position_visited(MAZE_SIZE / 2 - 1, MAZE_SIZE / 2);
+  maze.mark_position_visited(MAZE_SIZE / 2, MAZE_SIZE / 2 - 1);
+  maze.mark_position_visited(MAZE_SIZE / 2 - 1, MAZE_SIZE / 2 - 1);
+
+  // pick std::random start node of the four possible ones;
+  int starting_row = MAZE_SIZE / 2 - std::rand() % 2;
+  int starting_col = MAZE_SIZE / 2 - std::rand() % 2;
+  Node *start_node;
+  maze.get_node(&start_node, starting_row, starting_col);
+  _make_connections(&maze, start_node);
+
+  // knock down some more std::randomly
+  int i = 0;
+  while (i < 50) {
+    int row = std::rand() % 14 + 1;
+    int col = std::rand() % 14 + 1;
+    int d = std::rand() % 4;
+    Direction dir = int_to_dir(d);
+
+    // check if that's a valid wall to knock down
+    bool can_delete = false;
+
+    switch (dir) {
+      case Direction::N: {
+        Node *left, *right, *above;
+        maze.get_node(&left, row, col - 1);
+        maze.get_node(&right, row, col + 1);
+        maze.get_node(&above, row - 1, col);
+        if ((left->wall(Direction::N) || left->wall(Direction::E) || above->wall(Direction::W)) &&
+            (right->wall(Direction::N) || right->wall(Direction::W) || above->wall(Direction::E))) {
+          can_delete = true;
+        }
+      }
+        break;
+      case Direction::E: {
+        Node *below, *right, *above;
+        maze.get_node(&below, row + 1, col);
+        maze.get_node(&right, row, col + 1);
+        maze.get_node(&above, row - 1, col);
+        if ((above->wall(Direction::S) || above->wall(Direction::E) || right->wall(Direction::N)) &&
+            (below->wall(Direction::N) || below->wall(Direction::E) || right->wall(Direction::S))) {
+          can_delete = true;
+        }
+      }
+        break;
+      case Direction::S: {
+        Node *left, *right, *below;
+        maze.get_node(&left, row, col - 1);
+        maze.get_node(&right, row, col + 1);
+        maze.get_node(&below, row + 1, col);
+        if ((left->wall(Direction::S) || left->wall(Direction::E) || below->wall(Direction::W)) &&
+            (right->wall(Direction::S) || right->wall(Direction::W) || below->wall(Direction::E))) {
+          can_delete = true;
+        }
+      }
+        break;
+      case Direction::W: {
+        Node *below, *left, *above;
+        maze.get_node(&below, row + 1, col);
+        maze.get_node(&left, row, col - 1);
+        maze.get_node(&above, row - 1, col);
+        if ((above->wall(Direction::S) || above->wall(Direction::W) || left->wall(Direction::N)) &&
+            (below->wall(Direction::N) || below->wall(Direction::W) || left->wall(Direction::S))) {
+          can_delete = true;
+        }
+      }
+        break;
+    }
+
+    if (can_delete) {
+      printf("%i %i %c\n", row, col, dir_to_char(dir));
+      maze.connect_neighbor(row, col, dir);
+      i++;
+    }
+  }
+
+  // knock down center square
+  maze.connect_neighbor(MAZE_SIZE / 2, MAZE_SIZE / 2, Direction::N);
+  maze.connect_neighbor(MAZE_SIZE / 2, MAZE_SIZE / 2, Direction::W);
+  maze.connect_neighbor(MAZE_SIZE / 2 - 1, MAZE_SIZE / 2 - 1, Direction::S);
+  maze.connect_neighbor(MAZE_SIZE / 2 - 1, MAZE_SIZE / 2 - 1, Direction::E);
+
+
+  return maze;
+}
+
+void AbstractMaze::_make_connections(AbstractMaze *maze, Node *node) {
+  static std::random_device rd;
+  static std::mt19937 g(rd());
+
+  int r = node->row();
+  int c = node->col();
+  maze->mark_position_visited(r, c);
+
+  // shuffle directions
+  std::vector<Direction> dirs = {Direction::N, Direction::E, Direction::S, Direction::W};
+  std::shuffle(dirs.begin(), dirs.end(), g);
+
+  for (auto d : dirs) {
+    Node *neighbor;
+    int result = maze->get_node_in_direction(&neighbor, r, c, d);
+    if (result != Node::OUT_OF_BOUNDS && result != -1) {
+      if (!neighbor->visited) {
+        maze->connect_neighbor(r, c, d);
+        _make_connections(maze, neighbor);
+      }
+    }
   }
 }

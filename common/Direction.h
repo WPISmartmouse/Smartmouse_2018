@@ -19,6 +19,8 @@ double dir_to_yaw(Direction d);
 
 char opposite_direction(char c);
 
+Direction int_to_dir(int i);
+
 /**
  * \brief increments the direction in the order N, E, S, W, N, ...
  */

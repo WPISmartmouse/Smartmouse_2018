@@ -34,6 +34,8 @@ public:
   /** \brief get the neighbor in the given direction */
   Node *neighbor(const Direction dir);
 
+  bool wall(const Direction dir);
+
   void assign_weights_to_neighbors(Node *goal, int weight, bool *success);
 
 private:

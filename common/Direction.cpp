@@ -50,6 +50,22 @@ Direction right_of_dir(Direction dir) {
   }
 }
 
+Direction int_to_dir(int i) {
+  if (i < 0 || i > 3) {
+    return Direction::INVALID;
+  }
+  switch(i) {
+    case 0:
+      return Direction::N;
+    case 1:
+      return Direction::E;
+    case 2:
+      return Direction::S;
+    case 3:
+      return Direction::W;
+  }
+}
+
 Direction operator--(Direction &dir, int) {
   switch (dir) {
     case Direction::N:

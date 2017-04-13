@@ -56,3 +56,7 @@ void Node::assign_weights_to_neighbors(Node *goal, int weight, bool *success) {
     }
   }
 }
+
+bool Node::wall(const Direction dir) {
+  return neighbor(dir) == nullptr;
+}
