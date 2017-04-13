@@ -10,7 +10,7 @@ namespace gazebo {
   const float MazeFactory::BASE_HEIGHT = 0.005;
   const float MazeFactory::RED_HIGHLIGHT_THICKNESS = 0.01;
 
-  MazeFactory::MazeFactory() : neighbor_dist(0, 3) {}
+  MazeFactory::MazeFactory() : neighbor_dist(0, 3), remove_dist(0, 15) {}
 
   void MazeFactory::Load(physics::WorldPtr _parent, sdf::ElementPtr _sdf) {
     this->parent = _parent;
@@ -123,6 +123,8 @@ namespace gazebo {
     //start with maze "end" in the center
     InsertRandomNeighbor(MAZE_SIZE / 2, MAZE_SIZE / 2);
 
+    RemoveWalls();
+
     for (int i = 0; i < MAZE_SIZE; i++) {
       for (int j = 0; j < MAZE_SIZE; j++) {
         if (!connected[i][j][3]) { InsertWall(link, i, j, Direction::W); }
@@ -135,6 +137,26 @@ namespace gazebo {
       InsertWall(link, 0, i, Direction::N);
       InsertWall(link, MAZE_SIZE - 1, i, Direction::S);
     }
+  }
+
+  void MazeFactory::RemoveWalls() {
+    //randomly remove a bunch of walls
+    for (int i = 0; i < 40; i++) {
+      int row = remove_dist(generator);
+      int col = remove_dist(generator);
+      int n = neighbor_dist(generator);
+      connected[row][col][n] = true;
+    }
+
+    //make sure to keep center ones
+    connected[MAZE_SIZE/2][MAZE_SIZE/2][0] = true;
+    connected[MAZE_SIZE/2][MAZE_SIZE/2][3] = true;
+    connected[MAZE_SIZE/2][MAZE_SIZE/2][1] = false;
+    connected[MAZE_SIZE/2][MAZE_SIZE/2][2] = false;
+    connected[MAZE_SIZE/2-1][MAZE_SIZE/2-1][1] = true;
+    connected[MAZE_SIZE/2-1][MAZE_SIZE/2-1][2] = true;
+    connected[MAZE_SIZE/2-1][MAZE_SIZE/2-1][3] = false;
+    connected[MAZE_SIZE/2-1][MAZE_SIZE/2-1][4] = false;
   }
 
   void MazeFactory::InsertRandomNeighbor(int row, int col) {

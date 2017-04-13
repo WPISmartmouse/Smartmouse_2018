@@ -116,7 +116,7 @@
                 </surface>
             </collision>
             <visual name="front_left_analog_visual">
-                <pose>0.04 0.024 0.015 0 0 0</pose>
+                <pose>0.045 0.030 0.015 0 0 0</pose>
                 <geometry>
                     <box>
                         <size>0.004 0.004 0.004</size>
@@ -130,7 +130,7 @@
                 </material>
             </visual>
             <visual name="front_right_analog_visual">
-                <pose>0.04 -0.024 0.015 0 0 0</pose>
+                <pose>0.045 -0.030 0.015 0 0 0</pose>
                 <geometry>
                     <box>
                         <size>0.004 0.004 0.004</size>
@@ -144,7 +144,7 @@
                 </material>
             </visual>
             <visual name="back_left_analog_visual">
-                <pose>-0.024 0.024 0.015 0 0 0</pose>
+                <pose>-0.024 0.030 0.015 0 0 0</pose>
                 <geometry>
                     <box>
                         <size>0.004 0.004 0.004</size>
@@ -158,7 +158,7 @@
                 </material>
             </visual>
             <visual name="back_right_analog_visual">
-                <pose>-0.024 -0.024 0.015 0 0 0</pose>
+                <pose>-0.024 -0.030 0.015 0 0 0</pose>
                 <geometry>
                     <box>
                         <size>0.004 0.004 0.004</size>
@@ -172,7 +172,7 @@
                 </material>
             </visual>
             <visual name="front_analog_visual">
-                <pose>0.05 0 0.015 0 0 0</pose>
+                <pose>0.055 0 0.015 0 0 0</pose>
                 <geometry>
                     <box>
                         <size>0.004 0.004 0.004</size>
@@ -186,7 +186,7 @@
                 </material>
             </visual>
             <sensor name="front_left_analog" type="ray">
-                <pose>0.040 0.024 0.015 0 0 0</pose>
+                <pose>0.045 0.030 0.015 0 0 0</pose>
                 <ray>
                     <scan>
                         <horizontal>
@@ -197,7 +197,7 @@
                         </horizontal>
                     </scan>
                     <range>
-                        <min>0.02</min>
+                        <min>0.01</min>
                         <max>0.18</max>
                         <resolution>0.015</resolution>
                     </range>
@@ -208,7 +208,7 @@
                 <visualize>true</visualize>
             </sensor>
             <sensor name="front_right_analog" type="ray">
-                <pose>0.040 -0.024 0.015 0 0 0</pose>
+                <pose>0.045 -0.030 0.015 0 0 0</pose>
                 <ray>
                     <scan>
                         <horizontal>
@@ -219,7 +219,7 @@
                         </horizontal>
                     </scan>
                     <range>
-                        <min>0.02</min>
+                        <min>0.01</min>
                         <max>0.18</max>
                         <resolution>0.015</resolution>
                     </range>
@@ -230,7 +230,7 @@
                 <visualize>true</visualize>
             </sensor>
             <sensor name="back_left_analog" type="ray">
-                <pose>-0.024 0.024 0.015 0 0 0</pose>
+                <pose>-0.024 0.030 0.015 0 0 0</pose>
                 <ray>
                     <scan>
                         <horizontal>
@@ -241,7 +241,7 @@
                         </horizontal>
                     </scan>
                     <range>
-                        <min>0.02</min>
+                        <min>0.01</min>
                         <max>0.18</max>
                         <resolution>0.015</resolution>
                     </range>
@@ -252,7 +252,7 @@
                 <visualize>true</visualize>
             </sensor>
             <sensor name="back_right_analog" type="ray">
-                <pose>-0.024 -0.024 0.015 0 0 0</pose>
+                <pose>-0.024 -0.030 0.015 0 0 0</pose>
                 <ray>
                     <scan>
                         <horizontal>
@@ -263,7 +263,7 @@
                         </horizontal>
                     </scan>
                     <range>
-                        <min>0.02</min>
+                        <min>0.01</min>
                         <max>0.18</max>
                         <resolution>0.015</resolution>
                     </range>
@@ -274,7 +274,7 @@
                 <visualize>true</visualize>
             </sensor>
             <sensor name="front_analog" type="ray">
-                <pose>0.05 0 0.015 0 0 0</pose>
+                <pose>0.055 0 0.015 0 0 0</pose>
                 <ray>
                     <scan>
                         <horizontal>
@@ -285,7 +285,7 @@
                         </horizontal>
                     </scan>
                     <range>
-                        <min>0.02</min>
+                        <min>0.01</min>
                         <max>0.18</max>
                         <resolution>0.015</resolution>
                     </range>

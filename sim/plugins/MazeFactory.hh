@@ -33,6 +33,8 @@ namespace gazebo {
 
     void InsertRandomNeighbor(int row, int col);
 
+    void RemoveWalls();
+
     /// \brief insert a wall collision and visual into the given link
     // \param link the link you're inserting the models to
     void InsertWall(sdf::ElementPtr link, int row,
@@ -63,6 +65,7 @@ namespace gazebo {
 
     std::default_random_engine generator;
     std::uniform_int_distribution<int> neighbor_dist;
+    std::uniform_int_distribution<int> remove_dist;
 
     constexpr static int MAZE_SIZE = 16;
     const static float WALL_LENGTH,

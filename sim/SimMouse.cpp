@@ -178,8 +178,6 @@ void SimMouse::run(double dt_s) {
   double est_yaw, offset;
   std::tie(est_yaw, offset) = WallFollower::estimate_pose(CONFIG, range_data, this);
 
-  print("%f\n", offset);
-
   if (!ignore_sensor_pose_estimate) {
     if (p) {
       print("allowing estimating pose from rangefinders\n");
@@ -288,9 +286,12 @@ void SimMouse::update_markers() {
     estimated_pose_marker.set_layer(3);
     auto material = estimated_pose_marker.mutable_material();
     ignition::msgs::Color *red = new ignition::msgs::Color();
-    red->set_a(1); red->set_r(1); red->set_g(0); red->set_b(0);
+    red->set_a(1);
+    red->set_r(1);
+    red->set_g(0);
+    red->set_b(0);
     material->set_allocated_diffuse(red);
-    ignition::msgs::Vector3d *size= estimated_pose_marker.mutable_scale();
+    ignition::msgs::Vector3d *size = estimated_pose_marker.mutable_scale();
     size->set_x(0.02);
     size->set_y(0.002);
     size->set_z(0.002);
