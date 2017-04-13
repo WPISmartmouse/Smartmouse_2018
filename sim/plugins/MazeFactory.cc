@@ -54,7 +54,19 @@ namespace gazebo {
 
     if (maze_filename == "random") {
       //create random maze here
-      InsertRandomWalls(base_link);
+      AbstractMaze maze = AbstractMaze::gen_random_legal_maze();
+
+      std::string buff;
+      buff.resize(AbstractMaze::BUFF_SIZE);
+      maze.print_maze_str(&buff[0]);
+
+      std::fstream fs;
+      maze_filename = "/tmp/random.mz";
+      fs.open(maze_filename, std::fstream::out);
+      fs << buff << std::endl;
+      fs.close();
+
+      InsertWallsFromFile(base_link);
     } else {
       //load maze from file
       gzmsg << "loading from file " << maze_filename << std::endl;
@@ -106,101 +118,6 @@ namespace gazebo {
       }
     } else {
       gzmsg << "failed to load file " << maze_filename << std::endl;
-    }
-  }
-
-  void MazeFactory::InsertRandomWalls(sdf::ElementPtr link) {
-    //reset
-    for (int i = 0; i < MAZE_SIZE; i++) {
-      for (int j = 0; j < MAZE_SIZE; j++) {
-        visited[i][j] = false;
-        for (int k = 0; k < 4; k++) {
-          connected[i][j][k] = false;
-        }
-      }
-    }
-
-    //start with maze "end" in the center
-    InsertRandomNeighbor(MAZE_SIZE / 2, MAZE_SIZE / 2);
-
-    RemoveWalls();
-
-    for (int i = 0; i < MAZE_SIZE; i++) {
-      for (int j = 0; j < MAZE_SIZE; j++) {
-        if (!connected[i][j][3]) { InsertWall(link, i, j, Direction::W); }
-        if (!connected[i][j][2]) { InsertWall(link, i, j, Direction::S); }
-      }
-
-      //add outer walls
-      InsertWall(link, i, 0, Direction::W);
-      InsertWall(link, i, MAZE_SIZE - 1, Direction::E);
-      InsertWall(link, 0, i, Direction::N);
-      InsertWall(link, MAZE_SIZE - 1, i, Direction::S);
-    }
-  }
-
-  void MazeFactory::RemoveWalls() {
-    //randomly remove a bunch of walls
-    for (int i = 0; i < 40; i++) {
-      int row = remove_dist(generator);
-      int col = remove_dist(generator);
-      int n = neighbor_dist(generator);
-      connected[row][col][n] = true;
-    }
-
-    //make sure to keep center ones
-    connected[MAZE_SIZE/2][MAZE_SIZE/2][0] = true;
-    connected[MAZE_SIZE/2][MAZE_SIZE/2][3] = true;
-    connected[MAZE_SIZE/2][MAZE_SIZE/2][1] = false;
-    connected[MAZE_SIZE/2][MAZE_SIZE/2][2] = false;
-    connected[MAZE_SIZE/2-1][MAZE_SIZE/2-1][1] = true;
-    connected[MAZE_SIZE/2-1][MAZE_SIZE/2-1][2] = true;
-    connected[MAZE_SIZE/2-1][MAZE_SIZE/2-1][3] = false;
-    connected[MAZE_SIZE/2-1][MAZE_SIZE/2-1][4] = false;
-  }
-
-  void MazeFactory::InsertRandomNeighbor(int row, int col) {
-    //make sure it's in bounds
-    if (row >= MAZE_SIZE || row < 0 || col >= MAZE_SIZE || col < 0) return;
-
-    //mark current cell visited
-    visited[row][col] = true;
-
-    //select random neighbor
-    int neighbor = neighbor_dist(generator);
-
-    for (int i = 0; i < 4; i++) {
-      switch (neighbor) {
-        case 0:
-          if (row >= 0 && !visited[row - 1][col]) {
-            connected[row][col][neighbor] = true;
-            connected[row - 1][col][2] = true;
-            InsertRandomNeighbor(row - 1, col);
-          }
-          break;
-        case 1:
-          if (col < MAZE_SIZE && !visited[row][col + 1]) {
-            connected[row][col][neighbor] = true;
-            connected[row][col + 1][3] = true;
-            InsertRandomNeighbor(row, col + 1);
-          }
-          break;
-        case 2:
-          if (row < MAZE_SIZE && !visited[row + 1][col]) {
-            connected[row][col][neighbor] = true;
-            connected[row + 1][col][0] = true;
-            InsertRandomNeighbor(row + 1, col);
-          }
-          break;
-        case 3:
-          if (col >= 0 && !visited[row][col - 1]) {
-            connected[row][col][neighbor] = true;
-            connected[row][col - 1][1] = true;
-            InsertRandomNeighbor(row, col - 1);
-          }
-          break;
-      }
-      neighbor = (neighbor + 1) % 4;
     }
   }
 

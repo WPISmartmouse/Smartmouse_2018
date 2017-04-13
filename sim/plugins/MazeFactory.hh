@@ -29,10 +29,6 @@ namespace gazebo {
     // \param  base_link this should be the base link of the maze
     void InsertWallsFromFile(sdf::ElementPtr base_link);
 
-    void InsertRandomWalls(sdf::ElementPtr base_link);
-
-    void InsertRandomNeighbor(int row, int col);
-
     void RemoveWalls();
 
     /// \brief insert a wall collision and visual into the given link

@@ -21,6 +21,10 @@ void Flood::setup() {
   goal = no_wall_maze.center_node();
 }
 
+void Flood::setGoal(int row, int col) {
+  no_wall_maze.get_node(&goal, row, col);
+}
+
 Direction Flood::planNextStep() {
   //mark the nodes visted in both the mazes
   no_wall_maze.mark_position_visited(mouse->getRow(), mouse->getCol());
@@ -66,7 +70,7 @@ char *Flood::solve() {
 }
 
 bool Flood::isFinished() {
-  return mouse->atCenter();
+  return mouse->getRow() == goal->row() && mouse->getCol() == goal->col();
 }
 
 void Flood::teardown() {

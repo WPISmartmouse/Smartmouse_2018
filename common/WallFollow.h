@@ -23,7 +23,10 @@ public:
 
   virtual bool isFinished() override;
 
+  virtual void setGoal(int row, int col) override;
+
 private:
   int step;
+  int goal_row, goal_col;
 
 };

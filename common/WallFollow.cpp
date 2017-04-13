@@ -10,7 +10,14 @@ void WallFollow::setup() {
   mouse->reset();
   mouse->maze->reset();
   mouse->maze->mark_origin_known();
+  goal_row = AbstractMaze::MAZE_SIZE/2;
+  goal_col = AbstractMaze::MAZE_SIZE/2;
   step = 0;
+}
+
+void WallFollow::setGoal(int row, int col) {
+  goal_row = row;
+  goal_col = col;
 }
 
 char *WallFollow::solve() {
@@ -24,7 +31,7 @@ char *WallFollow::solve() {
 }
 
 bool WallFollow::isFinished() {
-  return mouse->atCenter();
+  return mouse->getRow() == goal_row && mouse->getCol() == goal_col;
 }
 
 void WallFollow::teardown() {

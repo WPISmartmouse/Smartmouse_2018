@@ -26,7 +26,7 @@ public:
 
   virtual bool isFinished() override;
 
-  void setupStep();
+  virtual void setGoal(int row, int col) override;
 
   bool done;
 

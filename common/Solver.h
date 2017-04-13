@@ -16,5 +16,7 @@ public:
 
   virtual void teardown() = 0;
 
+  virtual void setGoal(int row, int col) = 0;
+
   Mouse *mouse;
 };

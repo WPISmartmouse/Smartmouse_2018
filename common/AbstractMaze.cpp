@@ -425,7 +425,6 @@ AbstractMaze AbstractMaze::gen_random_legal_maze() {
   maze.connect_neighbor(MAZE_SIZE / 2 - 1, MAZE_SIZE / 2 - 1, Direction::S);
   maze.connect_neighbor(MAZE_SIZE / 2 - 1, MAZE_SIZE / 2 - 1, Direction::E);
 
-
   return maze;
 }
 
