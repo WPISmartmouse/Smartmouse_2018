@@ -413,7 +413,6 @@ AbstractMaze AbstractMaze::gen_random_legal_maze() {
     }
 
     if (can_delete) {
-      printf("%i %i %c\n", row, col, dir_to_char(dir));
       maze.connect_neighbor(row, col, dir);
       i++;
     }
