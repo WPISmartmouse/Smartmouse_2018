@@ -17,7 +17,7 @@ public:
 
   static double forwardDisplacement(Direction dir, Pose start_pose, Pose end_pose);
 
-  static double sidewayDispToCenter(Mouse *mouse);
+  static double dispToLeftEdge(Mouse *mouse);
 
   static double yawDiff(double y1, double y2);
 

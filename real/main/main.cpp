@@ -8,6 +8,7 @@
 #include <common/commands/RepeatCommand.h>
 #include <real/commands/LEDBlink.h>
 #include "Forward.h"
+#include "Turn.h"
 #include <common/util.h>
 
 ArduinoTimer timer;
@@ -16,13 +17,22 @@ AbstractMaze maze;
 Scheduler *scheduler;
 RealMouse *mouse;
 unsigned long last_t;
+bool done;
+
+class Hack : public CommandGroup {
+public:
+  Hack() {
+    addSequential(new Forward());
+    addSequential(new Turn(Direction::S));
+  }
+};
 
 void setup() {
   Command::setTimerImplementation(&timer);
   mouse = RealMouse::inst();
   mouse->setup();
 
-  scheduler = new Scheduler(new Forward());
+  scheduler = new Scheduler(new RepeatCommand<Forward>(3));
 
   last_t = timer.programTimeMs();
 
@@ -39,7 +49,13 @@ void loop() {
   }
 
   mouse->run(dt_s);
-  scheduler->run();
+  if (!done) {
+    done = scheduler->run();
+  }
+  else {
+    mouse->setSpeed(0, 0);
+    digitalWrite(RealMouse::SYS_LED, 1);
+  }
   last_t = now;
 
 }

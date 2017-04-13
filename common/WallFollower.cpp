@@ -4,9 +4,9 @@
 #include "Mouse.h"
 #include "util.h"
 
-const double WallFollower::kPWall = 1.0;
+const double WallFollower::kPWall = 0.8; //TODO: Should be 0.8
 const double WallFollower::kDWall = 50;
-const double WallFollower::kPYaw = 1.4;
+const double WallFollower::kPYaw = 3.0;
 
 WallFollower::WallFollower(RobotConfig config) : disp(0.0), goalDisp(AbstractMaze::UNIT_DIST), dispError(goalDisp),
                                                  config(config) {}
@@ -18,12 +18,14 @@ std::pair<double, double> WallFollower::compute_wheel_velocities(Mouse *mouse, P
   disp = forwardDisplacement(mouse->getDir(), start_pose, current_pose);
   dispError = goalDisp - disp;
 
-  double currentYaw, errorToCenter;
-  std::tie(currentYaw, errorToCenter) = WallFollower::estimate_pose(config, range_data, mouse);
+  double currentYaw, offset;
+  std::tie(currentYaw, offset) = WallFollower::estimate_pose(config, range_data, mouse);
+  double errorToCenter = offset - AbstractMaze::HALF_UNIT_DIST;
 
   double goalYawOffset = errorToCenter * kPYaw;
 
   double goalYaw = dir_to_yaw(mouse->getDir()) + goalYawOffset;
+//  print("%f, %f\n", goalYaw*180/M_PI, currentYaw*180/M_PI);
 
   // The goal is to be facing straight when you wall distance is correct.
   // To achieve this, we control our yaw as a function of our error in wall distance
@@ -65,18 +67,18 @@ std::pair<double, double> WallFollower::estimate_pose(RobotConfig config, RangeD
   bool sense_left_wall = range_data.front_left_analog < config.WALL_THRESHOLD && range_data.back_left_analog < config.WALL_THRESHOLD;
   bool sense_right_wall = range_data.front_right_analog < config.WALL_THRESHOLD && range_data.back_right_analog < config.WALL_THRESHOLD;
 
-  double leftWallError = AbstractMaze::HALF_INNER_UNIT_DIST - dToWallLeft;
-  double rightWallError = AbstractMaze::HALF_INNER_UNIT_DIST - dToWallRight;
-
   // consider the "logical" state of walls AND actual range reading
   if (sense_left_wall && mouse->isWallInDirection(left_of_dir(mouse->getDir()))) { // wall is on left
-    *offset = -leftWallError;
+//    print("wall left\n.");
+    *offset = dToWallLeft + AbstractMaze::HALF_WALL_THICKNESS;
     *yaw = dir_to_yaw(mouse->getDir()) + currentYaw_l;
   } else if (sense_right_wall && mouse->isWallInDirection(right_of_dir(mouse->getDir()))) { // wall is on right
-    *offset = -rightWallError;
+//    print("wall right\n.");
+    *offset = AbstractMaze::UNIT_DIST - dToWallRight - AbstractMaze::HALF_WALL_THICKNESS;
     *yaw = dir_to_yaw(mouse->getDir()) + currentYaw_r;
   } else { // we're too far from any walls, use our pose estimation
-    *offset = WallFollower::sidewayDispToCenter(mouse);
+//    print("no walls\n.");
+    *offset = WallFollower::dispToLeftEdge(mouse);
     *yaw = mouse->getPose().yaw;
   }
 
@@ -143,20 +145,20 @@ double WallFollower::forwardDisplacement(Direction dir, Pose start_pose, Pose en
   }
 }
 
-double WallFollower::sidewayDispToCenter(Mouse *mouse) {
-  double row_offset_to_center = AbstractMaze::HALF_UNIT_DIST - mouse->getRowOffsetToEdge();
-  double col_offset_to_center = AbstractMaze::HALF_UNIT_DIST - mouse->getColOffsetToEdge();
+double WallFollower::dispToLeftEdge(Mouse *mouse) {
+  double row_offset = mouse->getRowOffsetToEdge();
+  double col_offset = mouse->getColOffsetToEdge();
   Direction dir = mouse->getDir();
 
   switch (dir) {
     case Direction::S:
-      return -col_offset_to_center;
+      return AbstractMaze::UNIT_DIST - col_offset;
     case Direction::N:
-      return col_offset_to_center;
+      return col_offset;
     case Direction::W:
-      return -row_offset_to_center;
+      return AbstractMaze::UNIT_DIST - row_offset;
     case Direction::E:
-      return row_offset_to_center;
+      return row_offset;
   }
 }
 

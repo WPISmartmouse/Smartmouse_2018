@@ -13,7 +13,7 @@ GZ_REGISTER_MODEL_PLUGIN(MousePlugin)
 void MousePlugin::Load(physics::ModelPtr model, sdf::ElementPtr sdf) {
   this->model = model;
 
-  body = model->GetLink(sdf->Get<std::string>("body"));
+  body = model->GetLink(sdf->Get<std::string>("link"));
   right_wheel = this->model->GetJoint("right_wheel_joint");
   left_wheel = this->model->GetJoint("left_wheel_joint");
 

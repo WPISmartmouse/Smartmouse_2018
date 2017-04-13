@@ -1,10 +1,9 @@
 #pragma once
-#include <ignition/math.hh>
 #include <common/commanduino/CommanDuino.h>
 #include <common/Direction.h>
 
 #include <common/WallFollower.h>
-#include "SimMouse.h"
+#include <real/RealMouse.h>
 
 class TurnInPlace : public Command {
 public:
@@ -23,7 +22,7 @@ private:
 
   double goalYaw;
   double dYaw;
-  SimMouse *mouse;
+  RealMouse *mouse;
   Direction dir;
 
   const double kP = 0.12;

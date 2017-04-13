@@ -2,9 +2,9 @@
 #include <common/Mouse.h>
 #include "RegulatedMotor.h"
 
-const double RegulatedMotor::kP = 6.0;
+const double RegulatedMotor::kP = 4.0;
 const double RegulatedMotor::kI = 0.00;
-const double RegulatedMotor::kD = 0.1;
+const double RegulatedMotor::kD = 0.2;
 const double RegulatedMotor::ff_offset = 15;
 const double RegulatedMotor::INTEGRAL_CAP = 0.0;
 const double RegulatedMotor::DERIV_CAP = 0.0;
@@ -57,7 +57,7 @@ double RegulatedMotor::runPid(double dt_s, double angle_rad, double ground_truth
 
   // limit the change in setpoint
   double acc = acceleration * dt_s;
-  if (abstract_force == 0) {
+  if (setpoint_rps == 0) {
     acc = brake_acceleration * dt_s;
   }
 

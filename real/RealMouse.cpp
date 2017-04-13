@@ -4,16 +4,16 @@
 
 RealMouse *RealMouse::instance = nullptr;
 const RobotConfig RealMouse::CONFIG = {
-        1.35255, //ANALOG_ANGLE, radians
-        0.04, //SIDE_ANALOG_X, meters
-        0.024, //SIDE_ANALOG_Y, meters
-        0.18, //MAX_SPEED, m/s
-        0.02, //MIN_SPEED, m/s
-        0.125, //WALL_DIST, meters
-        0.85, //BINARY_ANGLE, radians
-        0.045, //FRONT_BINARY_X, meters
-        0.20, //FRONT_BINARY_THRESHOLD, meters
-        0.15, //SIDE_BINARY_THRESHOLD, meters
+        1.35255, // FRONT_ANALOG_ANGLE
+        1.22,  // BACK_ANALOG_ANGLE TODO: CHANGE THIS TO MATCH REAL ROBOT
+        0.04,    // FRONT_SIDE_ANALOG_X
+        0.024,    // FRONT_SIDE_ANALOG_Y
+        -0.024,  // BACK_SIDE_ANALOG_X
+        0.024,  // BACK_SIDE_ANALOG_Y
+        0.045,   // FRONT_ANALOG_X
+        0.09,    // MAX_SPEED
+        0.021,    // MIN_SPEED
+        0.15,    // WALL_THRESHOLD
 };
 
 double RealMouse::tick_to_rad(int ticks) {
@@ -24,7 +24,11 @@ double RealMouse::tick_to_rad(int ticks) {
 
 RangeData RealMouse::getRangeData() {
   RangeData sr;
-  sr.right_analog = analogRead(FRONT_LEFT_ANALOG_PIN);
+  sr.front_left_analog = analogRead(FRONT_LEFT_ANALOG_PIN);
+  sr.front_right_analog = analogRead(FRONT_RIGHT_ANALOG_PIN);
+  sr.back_left_analog = analogRead(BACK_LEFT_ANALOG_PIN);
+  sr.back_right_analog = analogRead(BACK_RIGHT_ANALOG_PIN);
+  sr.front_analog = analogRead(FRONT_ANALOG_PIN);
   return sr;
 }
 
@@ -35,7 +39,7 @@ RealMouse *RealMouse::inst() {
   return instance;
 }
 
-RealMouse::RealMouse() {}
+RealMouse::RealMouse() : ignore_sensor_pose_estimate(false) {}
 
 SensorReading RealMouse::checkWalls() {
   SensorReading sr(row, col);
@@ -59,6 +63,10 @@ Pose RealMouse::getPose() {
   return kinematic_controller.getPose();
 }
 
+std::pair<double, double> RealMouse::getWheelVelocities() {
+  return kinematic_controller.getWheelVelocities();
+};
+
 void RealMouse::run(double dt_s) {
   double abstract_left_force, abstract_right_force;
   double left_angle_rad = tick_to_rad(left_encoder.read());
@@ -74,7 +82,7 @@ void RealMouse::run(double dt_s) {
   col_offset_to_edge = fmod(estimated_pose.x, AbstractMaze::UNIT_DIST);
 
   if (abstract_left_force < 0) {
-    analogWrite(MOTOR1A, (int) abstract_left_force);
+    analogWrite(MOTOR1A, (int) -abstract_left_force);
     analogWrite(MOTOR1B, 0);
   } else {
     analogWrite(MOTOR1A, 0);
@@ -83,7 +91,7 @@ void RealMouse::run(double dt_s) {
 
   if (abstract_right_force < 0) {
     analogWrite(MOTOR2B, 0);
-    analogWrite(MOTOR2A, (int) abstract_right_force);
+    analogWrite(MOTOR2A, (int) -abstract_right_force);
   } else {
     analogWrite(MOTOR2B, (int) abstract_right_force);
     analogWrite(MOTOR2A, 0);
@@ -111,7 +119,10 @@ void RealMouse::setup() {
   left_encoder.init(ENCODER1A, ENCODER1B);
   right_encoder.init(ENCODER2A, ENCODER2B);
 
-  kinematic_controller.setAcceleration(1, 1);
+  kinematic_controller.reset_x_to(0.06);
+  kinematic_controller.reset_y_to(0.09);
+  kinematic_controller.reset_yaw_to(0.0);
+  kinematic_controller.setAcceleration(0.2, 1.0);
 
   // Teensy does USB in software, so serial rate doesn't do anything
   Serial.begin(0);

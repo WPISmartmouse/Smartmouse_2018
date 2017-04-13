@@ -22,9 +22,11 @@ public:
   constexpr static int PATH_SIZE = 256;
   constexpr static int CENTER = MAZE_SIZE / 2;
   constexpr static float UNIT_DIST = 0.18;
-  constexpr static float INNER_UNIT_DIST = 0.168;
-  constexpr static float HALF_UNIT_DIST = UNIT_DIST / 2;
-  constexpr static float HALF_INNER_UNIT_DIST = INNER_UNIT_DIST / 2;
+  constexpr static float WALL_THICKNESS = 0.012;
+  constexpr static float HALF_WALL_THICKNESS = WALL_THICKNESS/2.0;
+  constexpr static float INNER_UNIT_DIST = UNIT_DIST - WALL_THICKNESS;
+  constexpr static float HALF_UNIT_DIST = UNIT_DIST / 2.0;
+  constexpr static float HALF_INNER_UNIT_DIST = INNER_UNIT_DIST / 2.0;
   bool solved; //boolean for if we know the fastest route
   char *fastest_route; //a char array like NSEWNENNSNE, which means North, South, East...
   char *fastest_theoretical_route;

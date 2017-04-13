@@ -1,6 +1,35 @@
 <?xml version='1.0'?>
 <sdf version='1.6'>
     <model name='mouse'>
+        <link name="center">
+            <pose>0 0 0.01 0 0 0</pose>
+            <inertial>
+                <pose>0 0 0 0 0 0</pose>
+                <mass>1e-20</mass>
+                <inertia>
+                    <ixx>1e-20</ixx>
+                    <ixy>0</ixy>
+                    <ixz>0</ixz>
+                    <izz>1e-20</izz>
+                    <iyz>0</iyz>
+                    <iyy>1e-20</iyy>
+                </inertia>
+            </inertial>
+            <visual name="visual">
+                <pose>0 0 0 0 0 0</pose>
+                <geometry>
+                    <box>
+                        <size>0.001 0.001 0.001</size>
+                    </box>
+                </geometry>
+                <material>
+                    <script>
+                        <name>Gazebo/Blue</name>
+                        <uri>file://media/materials/scripts/gazebo.material</uri>
+                    </script>
+                </material>
+            </visual>
+        </link>
         <link name='base'>
             <pose>0 0 0.005 0 0 0</pose>
             <inertial>
@@ -32,7 +61,7 @@
             </visual>
             <collision name='main_body_collision'>
                 <max_contacts>6</max_contacts>
-                <pose>0 0 0.019 0 0 0</pose>
+                <pose>0 0 0.012 0 0 0</pose>
                 <geometry>
                     <polyline>
                       <height>0.032</height>
@@ -86,6 +115,76 @@
                     </friction>
                 </surface>
             </collision>
+            <visual name="front_left_analog_visual">
+                <pose>0.04 0.024 0.015 0 0 0</pose>
+                <geometry>
+                    <box>
+                        <size>0.004 0.004 0.004</size>
+                    </box>
+                </geometry>
+                <material>
+                    <script>
+                        <name>Gazebo/Blue</name>
+                        <uri>file://media/materials/scripts/gazebo.material</uri>
+                    </script>
+                </material>
+            </visual>
+            <visual name="front_right_analog_visual">
+                <pose>0.04 -0.024 0.015 0 0 0</pose>
+                <geometry>
+                    <box>
+                        <size>0.004 0.004 0.004</size>
+                    </box>
+                </geometry>
+                <material>
+                    <script>
+                        <name>Gazebo/Blue</name>
+                        <uri>file://media/materials/scripts/gazebo.material</uri>
+                    </script>
+                </material>
+            </visual>
+            <visual name="back_left_analog_visual">
+                <pose>-0.024 0.024 0.015 0 0 0</pose>
+                <geometry>
+                    <box>
+                        <size>0.004 0.004 0.004</size>
+                    </box>
+                </geometry>
+                <material>
+                    <script>
+                        <name>Gazebo/Blue</name>
+                        <uri>file://media/materials/scripts/gazebo.material</uri>
+                    </script>
+                </material>
+            </visual>
+            <visual name="back_right_analog_visual">
+                <pose>-0.024 -0.024 0.015 0 0 0</pose>
+                <geometry>
+                    <box>
+                        <size>0.004 0.004 0.004</size>
+                    </box>
+                </geometry>
+                <material>
+                    <script>
+                        <name>Gazebo/Blue</name>
+                        <uri>file://media/materials/scripts/gazebo.material</uri>
+                    </script>
+                </material>
+            </visual>
+            <visual name="front_analog_visual">
+                <pose>0.05 0 0.015 0 0 0</pose>
+                <geometry>
+                    <box>
+                        <size>0.004 0.004 0.004</size>
+                    </box>
+                </geometry>
+                <material>
+                    <script>
+                        <name>Gazebo/Blue</name>
+                        <uri>file://media/materials/scripts/gazebo.material</uri>
+                    </script>
+                </material>
+            </visual>
             <sensor name="front_left_analog" type="ray">
                 <pose>0.040 0.024 0.015 0 0 0</pose>
                 <ray>
@@ -175,7 +274,7 @@
                 <visualize>true</visualize>
             </sensor>
             <sensor name="front_analog" type="ray">
-                <pose>0.045 0 0.015 0 0 0</pose>
+                <pose>0.05 0 0.015 0 0 0</pose>
                 <ray>
                     <scan>
                         <horizontal>
@@ -198,7 +297,7 @@
             </sensor>
         </link>
         <link name='right_wheel'>
-            <pose frame=''>0.0 -0.0313 0.021 0 1.57079 1.57079</pose>
+            <pose>0.0 -0.0313 0.021 0 1.57079 1.57079</pose>
             <inertial>
                 <mass>0.01</mass>
                 <inertia>
@@ -209,13 +308,13 @@
                     <iyz>0</iyz>
                     <izz>1.125e-06</izz>
                 </inertia>
-                <pose frame=''>0 0 0 0 0 0</pose>
+                <pose>0 0 0 0 0 0</pose>
             </inertial>
             <visual name='right_wheel_visual'>
-                <pose frame=''>0 0 0 0 0 0</pose>
+                <pose>0 0 0 0 0 0</pose>
                 <geometry>
                     <cylinder>
-                        <radius>0.015</radius>
+                        <radius>0.0145</radius>
                         <length>0.0127</length>
                     </cylinder>
                 </geometry>
@@ -227,11 +326,11 @@
                 </material>
             </visual>
             <collision name='right_wheel_collision'>
-                <pose frame=''>0 0 0 0 0 0</pose>
+                <pose>0 0 0 0 0 0</pose>
                 <max_contacts>2</max_contacts>
                 <geometry>
                     <cylinder>
-                        <radius>0.015</radius>
+                        <radius>0.0145</radius>
                         <length>0.0127</length>
                     </cylinder>
                 </geometry>
@@ -259,7 +358,7 @@
             </collision>
         </link>
         <link name='left_wheel'>
-            <pose frame=''>0.0 0.0313 0.021 0 1.57079 1.57079</pose>
+            <pose>0.0 0.0313 0.021 0 1.57079 1.57079</pose>
             <inertial>
                 <mass>0.01</mass>
                 <inertia>
@@ -272,10 +371,10 @@
                 </inertia>
             </inertial>
             <visual name='left_wheel_visual'>
-                <pose frame=''>0 0 0 0 0 0</pose>
+                <pose>0 0 0 0 0 0</pose>
                 <geometry>
                     <cylinder>
-                        <radius>0.015</radius>
+                        <radius>0.0145</radius>
                         <length>0.0127</length>
                     </cylinder>
                 </geometry>
@@ -288,10 +387,10 @@
             </visual>
             <collision name='left_wheel_collision'>
                 <max_contacts>2</max_contacts>
-                <pose frame=''>0 0 0 0 0 0</pose>
+                <pose>0 0 0 0 0 0</pose>
                 <geometry>
                     <cylinder>
-                        <radius>0.015</radius>
+                        <radius>0.0145</radius>
                         <length>0.0127</length>
                     </cylinder>
                 </geometry>
@@ -321,7 +420,7 @@
         <joint name='left_wheel_joint' type='revolute'>
             <parent>base</parent>
             <child>left_wheel</child>
-            <pose frame=''>0 0 0 0 0 0</pose>
+            <pose>0 0 0 0 0 0</pose>
             <axis>
                 <xyz>0 0 1</xyz>
                 <limit>
@@ -329,7 +428,7 @@
                     <velocity>41.88</velocity> <!-- ~400 rpm -->
                 </limit>
                 <dynamics>
-                    <damping>0.00015</damping>
+                    <damping>0.00018</damping>
                     <!--<friction>0.00040</friction>-->
                 </dynamics>
             </axis>
@@ -350,7 +449,7 @@
         <joint name='right_wheel_joint' type='revolute'>
             <parent>base</parent>
             <child>right_wheel</child>
-            <pose frame=''>0 0 0 0 0 0</pose>
+            <pose>0 0 0 0 0 0</pose>
             <axis>
                 <xyz>0 0 1</xyz>
                 <use_parent_model_frame>0</use_parent_model_frame>
@@ -359,7 +458,7 @@
                     <velocity>41.88</velocity> <!-- ~400 rpm -->
                 </limit>
                 <dynamics>
-                    <damping>0.00015</damping>
+                    <damping>0.00018</damping>
                     <!--<friction>0.00040</friction>-->
                 </dynamics>
             </axis>
@@ -377,10 +476,15 @@
                 </ode>
             </physics>
         </joint>
+        <joint name="center_joint" type="fixed">
+           <parent>base</parent>
+            <child>center</child>
+            <pose>0 0 0 0 0 0</pose>
+        </joint>
         <plugin name="mouse_plugin" filename="libmouse_plugin.so">
             <left_wheel_joint>left_wheel_joint</left_wheel_joint>
             <right_wheel_joint>right_wheel_joint</right_wheel_joint>
-            <body>base</body>
+            <link>center</link>
         </plugin>
         <plugin name="link_plot_3d" filename="liblink_plot_3d_plugin.so">
             <minimum_distance>0.002</minimum_distance>

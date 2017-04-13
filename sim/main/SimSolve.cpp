@@ -22,8 +22,7 @@ int main(int argc, char *argv[]) {
   gazebo::transport::NodePtr node(new gazebo::transport::Node());
   node->Init();
 
-  ignition::transport::Node ign_node;
-  bool success = ign_node.Subscribe("/time_ms", &SimTimer::simTimeCallback, &timer);
+  bool success = mouse->ign_node.Subscribe("/time_ms", &SimTimer::simTimeCallback, &timer);
   if (!success) {
     printf("Failed to subscribe to /time_ms\n");
     return EXIT_FAILURE;

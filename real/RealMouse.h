@@ -13,11 +13,11 @@ public:
   static constexpr int TICKS_PER_REV = 900;
   static constexpr double RAD_PER_TICK = 2 * M_PI / TICKS_PER_REV;
 
-  static const int FRONT_LEFT_ANALOG_PIN = 0;
-  static const int BACK_LEFT_ANALOG_PIN = 0;
-  static const int FRONT_RIGHT_ANALOG_PIN = 0;
-  static const int BACK_RIGHT_ANALOG_PIN = 0;
-  static const int FRONT_ANALOG_PIN = 0;
+  static const int FRONT_ANALOG_PIN = A5;
+  static const int FRONT_LEFT_ANALOG_PIN = A3;
+  static const int BACK_LEFT_ANALOG_PIN = A4;
+  static const int FRONT_RIGHT_ANALOG_PIN = A2;
+  static const int BACK_RIGHT_ANALOG_PIN = A1;
 
   static const int ENCODER1A = 7;
   static const int ENCODER1B = 8;
@@ -51,6 +51,8 @@ public:
 
   virtual double getColOffsetToEdge() override;
 
+  std::pair<double, double> getWheelVelocities();
+
   void run(double dt_s);
 
   void setSpeed(double l_mps, double r_mps);
@@ -60,7 +62,7 @@ public:
 
   KinematicMotorController kinematic_controller;
 
-  bool reset_fwd_dist;
+  bool ignore_sensor_pose_estimate;
 
 private:
   RealMouse();

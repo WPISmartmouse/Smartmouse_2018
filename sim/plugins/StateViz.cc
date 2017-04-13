@@ -68,21 +68,33 @@ StateViz::StateViz() : GUIPlugin() {
   estimated_yaw_label = new QLabel(tr("estimated yaw:"));
 
   left_wheel_velocity_edit = new QLineEdit(tr("0.00000 m/sec"));
+  left_wheel_velocity_edit->setStyleSheet("QLineEdit {color:black;}");
   right_wheel_velocity_edit = new QLineEdit(tr("0.00000 m/sec"));
+  right_wheel_velocity_edit->setStyleSheet("QLineEdit {color:black;}");
   row_edit = new QLineEdit(tr("0"));
+  row_edit->setStyleSheet("QLineEdit {color:black;}");
   col_edit = new QLineEdit(tr("0"));
+  col_edit->setStyleSheet("QLineEdit {color:black;}");
   true_x_edit = new QLineEdit(tr("0"));
+  true_x_edit->setStyleSheet("QLineEdit {color:black;}");
   true_y_edit = new QLineEdit(tr("0"));
+  true_y_edit->setStyleSheet("QLineEdit {color:black;}");
   true_yaw_edit = new QLineEdit(tr("0"));
+  true_yaw_edit->setStyleSheet("QLineEdit {color:black;}");
   estimated_x_edit = new QLineEdit(tr("0"));
+  estimated_x_edit->setStyleSheet("QLineEdit {color:black;}");
   estimated_y_edit = new QLineEdit(tr("0"));
+  estimated_y_edit->setStyleSheet("QLineEdit {color:black;}");
   estimated_yaw_edit = new QLineEdit(tr("0"));
+  estimated_yaw_edit->setStyleSheet("QLineEdit {color:black;}");
 
   dir_label = new QLabel(tr("Direction:"));
   dir_edit = new QLineEdit(tr("N"));
+  dir_edit->setStyleSheet("QLineEdit {color:black;}");
 
   maze_edit = new QTextEdit(tr(""));
   maze_edit->setFont(QFont("Monospace", 6));
+  maze_edit->setStyleSheet("QLineEdit {color:black;}");
 
   sensor_state = new SensorState();
 
@@ -118,6 +130,12 @@ StateViz::StateViz() : GUIPlugin() {
           SLOT(setText(QString)), Qt::QueuedConnection);
   connect(this, SIGNAL(SetMazeEdit(QString)), this->maze_edit,
           SLOT(setPlainText(QString)), Qt::QueuedConnection);
+  connect(this, SIGNAL(HighlightX(QString)), this->estimated_x_edit,
+          SLOT(setStyleSheet(QString)), Qt::QueuedConnection);
+  connect(this, SIGNAL(HighlightY(QString)), this->estimated_y_edit,
+          SLOT(setStyleSheet(QString)), Qt::QueuedConnection);
+  connect(this, SIGNAL(HighlightYaw(QString)), this->estimated_yaw_edit,
+          SLOT(setStyleSheet(QString)), Qt::QueuedConnection);
 
   left_wheel_vel_layout->addWidget(left_wheel_velocity_label);
   left_wheel_vel_layout->addWidget(left_wheel_velocity_edit);
@@ -183,7 +201,6 @@ void StateViz::StateCallback(ConstRobotStatePtr &msg) {
 
   gazebo::msgs::Pose pose = msg->true_pose();
 
-  this->last_pose = pose;
 
   char x_str[14];
   snprintf(x_str, 14, "%0.1f cm", msg->true_x_meters() * 100);
@@ -193,6 +210,10 @@ void StateViz::StateCallback(ConstRobotStatePtr &msg) {
 
   char yaw_str[15];
   snprintf(yaw_str, 15, "%0.1f deg", (msg->true_yaw_rad() * 180 / M_PI));
+
+  this->true_x = msg->true_x_meters();
+  this->true_y = msg->true_y_meters();
+  this->true_yaw = msg->true_yaw_rad();
 
   this->SetLeftVelocity(left_wheel_velocity_str);
   this->SetRightVelocity(right_wheel_velocity_str);
@@ -220,6 +241,25 @@ void StateViz::MazeLocationCallback(ConstMazeLocationPtr &msg) {
 
   char yaw_str[14];
   snprintf(yaw_str, 14, "%0.1f deg", (msg->estimated_yaw_rad() * 180 / M_PI));
+
+  if (fabs(msg->estimated_x_meters() - true_x) > 0.01) {
+    this->HighlightX("QLineEdit {color:red;}");
+  }
+  else {
+    this->HighlightX("QLineEdit {color:black;}");
+  }
+  if (fabs(msg->estimated_y_meters() - true_y) > 0.01) {
+    this->HighlightY("QLineEdit {color:red;}");
+  }
+  else {
+    this->HighlightY("QLineEdit {color:black;}");
+  }
+  if (fabs(msg->estimated_yaw_rad() - true_yaw) > 0.02) {
+    this->HighlightYaw("QLineEdit {color:red;}");
+  }
+  else {
+    this->HighlightYaw("QLineEdit {color:black;}");
+  }
 
   this->SetEstimatedX(x_str);
   this->SetEstimatedY(y_str);

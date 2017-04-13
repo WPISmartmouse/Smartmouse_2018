@@ -10,6 +10,7 @@
 #include <common/Pose.h>
 #include <common/KinematicMotorController/KinematicController.h>
 #include <common/RobotConfig.h>
+#include <ignition/transport/Node.hh>
 
 class SimMouse : public Mouse {
 public:
@@ -63,6 +64,7 @@ public:
   gazebo::transport::PublisherPtr joint_cmd_pub;
   gazebo::transport::PublisherPtr indicator_pub;
   gazebo::transport::PublisherPtr maze_location_pub;
+  ignition::transport::Node ign_node;
 
   KinematicMotorController kinematic_controller;
 
@@ -100,5 +102,7 @@ private:
   gazebo::transport::SubscriberPtr regen_sub;
 
   gazebo::msgs::Visual *indicators[AbstractMaze::MAZE_SIZE][AbstractMaze::MAZE_SIZE];
+
+  void update_markers();
 };
 

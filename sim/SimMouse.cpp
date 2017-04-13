@@ -1,7 +1,5 @@
 #include "SimMouse.h"
 #include <gazebo/msgs/msgs.hh>
-#include <common/Mouse.h>
-#include <common/RobotConfig.h>
 #include <common/WallFollower.h>
 
 SimMouse *SimMouse::instance = nullptr;
@@ -15,8 +13,8 @@ const RobotConfig SimMouse::CONFIG = {
         0.024,    // FRONT_SIDE_ANALOG_Y
         -0.024,  // BACK_SIDE_ANALOG_X
         0.024,  // BACK_SIDE_ANALOG_Y
-        0.045,   // FRONT_ANALOG_X
-        0.09,    // MAX_SPEED
+        0.05,   // FRONT_ANALOG_X
+        0.12,    // MAX_SPEED
         0.02,    // MIN_SPEED
         0.15,    // WALL_THRESHOLD
 };
@@ -159,6 +157,7 @@ void SimMouse::robotStateCallback(ConstRobotStatePtr &msg) {
 }
 
 bool p = false;
+
 void SimMouse::run(double dt_s) {
   // handle updating of odometry and PID
   std::tie(abstract_left_force, abstract_right_force) = kinematic_controller.run(dt_s,
@@ -167,52 +166,77 @@ void SimMouse::run(double dt_s) {
                                                                                  this->left_wheel_velocity_mps,
                                                                                  this->right_wheel_velocity_mps);
 
+  // update row/col information. Must come first
+  row = computed_row = (int) (estimated_pose.y / AbstractMaze::UNIT_DIST);
+  col = computed_col = (int) (estimated_pose.x / AbstractMaze::UNIT_DIST);
+  row_offset_to_edge = fmod(estimated_pose.y, AbstractMaze::UNIT_DIST);
+  col_offset_to_edge = fmod(estimated_pose.x, AbstractMaze::UNIT_DIST);
+
   // given odometry estimate, improve estimate using sensors, then update odometry estimate to match our best estimate
   Pose kc_pose = kinematic_controller.getPose();
   estimated_pose = kc_pose;
-  double yaw, offset;
-  std::tie(yaw, offset) = WallFollower::estimate_pose(CONFIG, range_data, this);
+  double est_yaw, offset;
+  std::tie(est_yaw, offset) = WallFollower::estimate_pose(CONFIG, range_data, this);
+
+  print("%f\n", offset);
 
   if (!ignore_sensor_pose_estimate) {
     if (p) {
       print("allowing estimating pose from rangefinders\n");
       p = false;
     }
-    estimated_pose.yaw = yaw;
+
+    estimated_pose.yaw = est_yaw;
     kinematic_controller.reset_yaw_to(estimated_pose.yaw);
 
-    switch(dir) {
+    double d_wall_front;
+    bool wall_in_front = false;
+    if (range_data.front_analog < 0.06) {
+      double yaw_error = WallFollower::yawDiff(estimated_pose.yaw, dir_to_yaw(dir));
+      d_wall_front = cos(yaw_error) * range_data.front_analog + CONFIG.FRONT_ANALOG_X;
+      wall_in_front = true;
+    }
+
+    switch (dir) {
       case Direction::N:
-        estimated_pose.x = (col * AbstractMaze::UNIT_DIST) + AbstractMaze::HALF_UNIT_DIST + offset;
+        estimated_pose.x = (col * AbstractMaze::UNIT_DIST) + offset;
         kinematic_controller.reset_x_to(estimated_pose.x);
+        if (wall_in_front) {
+          estimated_pose.y = (row * AbstractMaze::UNIT_DIST) + d_wall_front + AbstractMaze::HALF_WALL_THICKNESS;
+          kinematic_controller.reset_y_to(estimated_pose.y);
+        }
         break;
       case Direction::S:
-        estimated_pose.x = (col * AbstractMaze::UNIT_DIST) + AbstractMaze::HALF_UNIT_DIST - offset;
+        estimated_pose.x = (col + 1) * AbstractMaze::UNIT_DIST - offset;
         kinematic_controller.reset_x_to(estimated_pose.x);
+        if (wall_in_front) {
+          estimated_pose.y = ((row + 1) * AbstractMaze::UNIT_DIST) - d_wall_front - AbstractMaze::HALF_WALL_THICKNESS;
+          kinematic_controller.reset_y_to(estimated_pose.y);
+        }
         break;
       case Direction::E:
-        estimated_pose.y = (row * AbstractMaze::UNIT_DIST) + AbstractMaze::HALF_UNIT_DIST + offset;
+        estimated_pose.y = (row * AbstractMaze::UNIT_DIST) + offset;
         kinematic_controller.reset_y_to(estimated_pose.y);
+        if (wall_in_front) {
+          estimated_pose.x = ((col + 1) * AbstractMaze::UNIT_DIST) - d_wall_front - AbstractMaze::HALF_WALL_THICKNESS;
+          kinematic_controller.reset_x_to(estimated_pose.x);
+        }
         break;
       case Direction::W:
-        estimated_pose.y = (row * AbstractMaze::UNIT_DIST) + AbstractMaze::HALF_UNIT_DIST - offset;
+        estimated_pose.y = (row + 1) * AbstractMaze::UNIT_DIST - offset;
         kinematic_controller.reset_y_to(estimated_pose.y);
+        if (wall_in_front) {
+          estimated_pose.x = (col * AbstractMaze::UNIT_DIST) + d_wall_front + AbstractMaze::HALF_WALL_THICKNESS;
+          kinematic_controller.reset_x_to(estimated_pose.x);
+        }
         break;
     }
-  }
-  else {
+  } else {
     if (!p) {
       print("Ignoring rangefinder pose estimate.\n");
       p = true;
     }
   }
-
-  // update row/col information
-  row = computed_row = (int) (estimated_pose.y / AbstractMaze::UNIT_DIST);
-  col = computed_col = (int) (estimated_pose.x / AbstractMaze::UNIT_DIST);
-
-  row_offset_to_edge = fmod(estimated_pose.y, AbstractMaze::UNIT_DIST);
-  col_offset_to_edge = fmod(estimated_pose.x, AbstractMaze::UNIT_DIST);
 
   // publish status information
   gzmaze::msgs::MazeLocation maze_loc_msg;
@@ -249,6 +273,55 @@ void SimMouse::run(double dt_s) {
   right.set_name("mouse::right_wheel_joint");
   right.set_force(right_force_newtons);
   joint_cmd_pub->Publish(right);
+
+  update_markers();
+
+}
+
+void SimMouse::update_markers() {
+  {
+    ignition::msgs::Marker estimated_pose_marker;
+    estimated_pose_marker.set_ns("estimated_pose");
+    estimated_pose_marker.set_id(1); // constant ID makes each new marker replace the previous one
+    estimated_pose_marker.set_action(ignition::msgs::Marker::ADD_MODIFY);
+    estimated_pose_marker.set_type(ignition::msgs::Marker::BOX);
+    estimated_pose_marker.set_layer(3);
+    auto material = estimated_pose_marker.mutable_material();
+    ignition::msgs::Color *red = new ignition::msgs::Color();
+    red->set_a(1); red->set_r(1); red->set_g(0); red->set_b(0);
+    material->set_allocated_diffuse(red);
+    ignition::msgs::Vector3d *size= estimated_pose_marker.mutable_scale();
+    size->set_x(0.02);
+    size->set_y(0.002);
+    size->set_z(0.002);
+    double x = estimated_pose.x;
+    double y = -estimated_pose.y;
+    double yaw = estimated_pose.yaw;
+    Set(estimated_pose_marker.mutable_pose(), ignition::math::Pose3d(x, y, 0.02, 0, 0, yaw));
+
+    ign_node.Request("/marker", estimated_pose_marker);
+  }
+
+  {
+    ignition::msgs::Marker error_marker;
+    error_marker.set_ns("pose_error");
+    error_marker.set_id(2); // constant ID makes each new marker replace the previous one
+    error_marker.set_action(ignition::msgs::Marker::ADD_MODIFY);
+    error_marker.set_type(ignition::msgs::Marker::LINE_STRIP);
+    error_marker.set_layer(3);
+    ignition::msgs::Vector3d *true_center = error_marker.add_point();
+    ignition::msgs::Vector3d *estimated_center = error_marker.add_point();
+    true_center->set_x(true_pose.x);
+    true_center->set_y(-true_pose.y);
+    true_center->set_z(.02);
+    estimated_center->set_x(estimated_pose.x);
+    estimated_center->set_y(-estimated_pose.y);
+    estimated_center->set_z(.02);
+    ignition::msgs::Material *matMsg = error_marker.mutable_material();
+    matMsg->mutable_script()->set_name("Gazebo/Black");
+
+    ign_node.Request("/marker", error_marker);
+  }
 }
 
 void SimMouse::setSpeed(double left_wheel_velocity_setpoint_mps, double right_wheel_velocity_setpoint_mps) {
@@ -259,10 +332,10 @@ void SimMouse::simInit() {
   setSpeed(0, 0);
 
   // we start in the middle of the first square
-  kinematic_controller.reset_x_to(0.06);
+  kinematic_controller.reset_x_to(0.053);
   kinematic_controller.reset_y_to(0.09);
   kinematic_controller.reset_yaw_to(0.0);
-  kinematic_controller.setAcceleration(0.4, 1.2);
+  kinematic_controller.setAcceleration(0.4, 12.2);
 
 //  for (int i = 0; i < AbstractMaze::MAZE_SIZE; i++) { for (int j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
 //      indicators[i][j] = new gazebo::msgs::Visual();

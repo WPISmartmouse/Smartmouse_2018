@@ -1,10 +1,9 @@
 #pragma once
 
-#include <ignition/math.hh>
 #include <common/commanduino/CommanDuino.h>
 #include <common/Mouse.h>
 
-#include "SimMouse.h"
+#include "RealMouse.h"
 #include <common/WallFollower.h>
 
 class ForwardToCenter : public Command {
@@ -22,7 +21,7 @@ public:
 private:
 
   Pose start;
-  SimMouse *mouse;
+  RealMouse *mouse;
 
   RangeData range_data;
   WallFollower follower;

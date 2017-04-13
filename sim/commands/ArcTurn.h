@@ -24,6 +24,7 @@ private:
   Direction dir;
   bool left; //false means right
   double turn_effort;
+  double dYaw;
   double goal_x, goal_y;
   int start_row, start_col;
   static const double kTurn;

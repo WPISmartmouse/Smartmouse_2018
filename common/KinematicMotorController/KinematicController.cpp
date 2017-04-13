@@ -84,8 +84,7 @@ KinematicMotorController::run(double dt_s, double left_angle_rad, double right_a
 
 //  static int i = 0;
 //  if (i == 15) {
-//    print("%f, %f, %f, %f\r\n", left_motor.regulated_setpoint_rps, left_motor.velocity_rps,
-//          right_motor.regulated_setpoint_rps, right_motor.velocity_rps);
+//    print("%f, %f\r\n", Mouse::radToMeters(right_motor.regulated_setpoint_rps), Mouse::radToMeters(right_motor.velocity_rps));
 //    i = 0;
 //  }
 //  i += 1;

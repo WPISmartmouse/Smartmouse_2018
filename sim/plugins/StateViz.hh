@@ -64,6 +64,10 @@ namespace gazebo {
 
     void SetMazeEdit(QString str);
 
+    void HighlightX(QString str);
+    void HighlightY(QString str);
+    void HighlightYaw(QString str);
+
   protected slots:
 
     void ClearRobotTrace();
@@ -88,7 +92,7 @@ namespace gazebo {
 
     void MazeLocationCallback(ConstMazeLocationPtr &msg);
 
-    gazebo::msgs::Pose last_pose;
+    double true_x, true_y, true_yaw;
 
     std::string topic;
 
