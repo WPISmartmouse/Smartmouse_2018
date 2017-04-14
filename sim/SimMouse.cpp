@@ -9,11 +9,11 @@ const gazebo::common::Color SimMouse::grey_color{0.8, 0.8, 0.8, 1};
 const RobotConfig SimMouse::CONFIG = {
         1.35255, // FRONT_ANALOG_ANGLE
         1.35255,  // BACK_ANALOG_ANGLE
-        0.04,    // FRONT_SIDE_ANALOG_X
-        0.024,    // FRONT_SIDE_ANALOG_Y
+        0.045,    // FRONT_SIDE_ANALOG_X
+        0.030,    // FRONT_SIDE_ANALOG_Y
         -0.024,  // BACK_SIDE_ANALOG_X
-        0.024,  // BACK_SIDE_ANALOG_Y
-        0.05,   // FRONT_ANALOG_X
+        0.030,  // BACK_SIDE_ANALOG_Y
+        0.055,   // FRONT_ANALOG_X
         0.12,    // MAX_SPEED
         0.02,    // MIN_SPEED
         0.15,    // WALL_THRESHOLD
@@ -189,7 +189,7 @@ void SimMouse::run(double dt_s) {
 
     double d_wall_front;
     bool wall_in_front = false;
-    if (range_data.front_analog < 0.06) {
+    if (range_data.front_analog < 0.08) {
       double yaw_error = WallFollower::yawDiff(estimated_pose.yaw, dir_to_yaw(dir));
       d_wall_front = cos(yaw_error) * range_data.front_analog + CONFIG.FRONT_ANALOG_X;
       wall_in_front = true;
