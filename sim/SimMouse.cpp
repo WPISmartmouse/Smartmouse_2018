@@ -180,7 +180,7 @@ void SimMouse::run(double dt_s) {
 
   if (!ignore_sensor_pose_estimate) {
     if (p) {
-      print("allowing estimating pose from rangefinders\n");
+//      print("allowing estimating pose from rangefinders\n");
       p = false;
     }
 
@@ -231,7 +231,7 @@ void SimMouse::run(double dt_s) {
     }
   } else {
     if (!p) {
-      print("Ignoring rangefinder pose estimate.\n");
+//      print("Ignoring rangefinder pose estimate.\n");
       p = true;
     }
   }
