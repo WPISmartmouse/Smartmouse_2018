@@ -1,3 +1,4 @@
+#include "Stop.h"
 #include "SolveCommand.h"
 #include "WaitForStart.h"
 #include "SolveMaze.h"
@@ -8,9 +9,13 @@
 SolveCommand::SolveCommand(Solver *solver) : CommandGroup("SolveGroup") {
   addSequential(new WaitForStart());
   solver->setup();
+
+  //repeat these two as many times as you want
   addSequential(new SolveMaze(solver));
   addSequential(new SolveMaze(solver, 0, 0));
-  addSequential(new SpeedRun(solver->mouse));
-//  addSequential(new ReturnToStart(solver->mouse));
-//  addSequential(new Finish(solver->mouse->maze));
+
+  addSequential(new SolveMaze(solver));
+  addSequential(new SolveMaze(solver, 0, 0));
+
+  addSequential(new Stop(200));
 }

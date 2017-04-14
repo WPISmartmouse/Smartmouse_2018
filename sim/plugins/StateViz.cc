@@ -2,6 +2,7 @@
 #include <cmath>
 #include <boost/algorithm/string/replace.hpp>
 #include <sim/SimMouse.h>
+#include <common/WallFollower.h>
 #include "StateViz.hh"
 #include "RegenerateWidget.hh"
 
@@ -254,7 +255,7 @@ void StateViz::MazeLocationCallback(ConstMazeLocationPtr &msg) {
   else {
     this->HighlightY("QLineEdit {color:black;}");
   }
-  if (fabs(msg->estimated_yaw_rad() - true_yaw) > 0.02) {
+  if (WallFollower::yawDiff(msg->estimated_yaw_rad(), true_yaw) > 0.02) {
     this->HighlightYaw("QLineEdit {color:red;}");
   }
   else {
