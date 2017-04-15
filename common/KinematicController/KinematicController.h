@@ -2,11 +2,12 @@
 
 #include <utility>
 #include <common/Pose.h>
+#include <common/RobotConfig.h>
 #include "RegulatedMotor.h"
 
-class KinematicMotorController {
+class KinematicController {
 public:
-  KinematicMotorController();
+  KinematicController(const RobotConfig config, Mouse *mouse);
 
   Pose getPose();
 
@@ -20,7 +21,9 @@ public:
 
   void reset_yaw_to(double new_yaw);
 
-  std::pair<double, double> run(double dt_s, double left_angle_rad, double right_angle_rad, double ground_truth_left_vel_rps, double ground_truth_right_vel_rps);
+  std::pair<double, double>
+  run(double dt_s, double left_angle_rad, double right_angle_rad, double ground_truth_left_vel_rps,
+      double ground_truth_right_vel_rps, RangeData range_data);
 
   void setAcceleration(double acceleration, double break_acceleration);
 
@@ -29,8 +32,16 @@ public:
   RegulatedMotor left_motor;
   RegulatedMotor right_motor;
 
+  bool ignore_sensor_pose_estimate;
+  double row_offset_to_edge;
+  double col_offset_to_edge;
+  int row;
+  int col;
+
 private:
   bool initialized = false;
 
   Pose current_pose_estimate;
+  Mouse *parent;
+  const RobotConfig config;
 };

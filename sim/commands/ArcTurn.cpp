@@ -6,7 +6,7 @@ const double ArcTurn::kTurn = 9.5;
 ArcTurn::ArcTurn(Direction dir) : Command("SimArcTurn"), mouse(SimMouse::inst()), goal_dir(dir) {}
 
 void ArcTurn::initialize() {
-  mouse->ignore_sensor_pose_estimate = true;
+  mouse->kinematic_controller.ignore_sensor_pose_estimate = true;
   start_dir = mouse->getDir();
   left = (goal_dir == left_of_dir(mouse->getDir()));
   // if we're further into the square, turn harder
@@ -19,8 +19,8 @@ void ArcTurn::initialize() {
 void ArcTurn::execute() {
   // when we get close to aligned, there might be a wall we can use to better estimate our angle
   // this allows us to use that
-  if (fabs(dYaw) < 0.1 && mouse->ignore_sensor_pose_estimate) {
-    mouse->ignore_sensor_pose_estimate = false;
+  if (fabs(dYaw) < 0.1 && mouse->kinematic_controller.ignore_sensor_pose_estimate) {
+    mouse->kinematic_controller.ignore_sensor_pose_estimate = false;
     // FIXME: this is kind of a hack. It's needed because WallFollower checks dir in order to compute
     // FIXME: the correct yaw. it adds dir_to_yaw(getDir()), so we must assume we're close enough
     mouse->internalTurnToFace(goal_dir);

@@ -4,7 +4,7 @@
 #include <Encoder.h>
 #include <common/Mouse.h>
 #include <common/Pose.h>
-#include <common/KinematicMotorController/KinematicController.h>
+#include <common/KinematicController/KinematicController.h>
 #include <common/RobotConfig.h>
 
 
@@ -61,7 +61,7 @@ public:
   /** runs setup things like pin initializes */
   void setup();
 
-  KinematicMotorController kinematic_controller;
+  KinematicController kinematic_controller;
 
   bool ignore_sensor_pose_estimate;
 
@@ -78,6 +78,7 @@ private:
 
   Encoder left_encoder, right_encoder;
   Pose estimated_pose;
+  RangeData range_data;
   double row_offset_to_edge;
   double col_offset_to_edge;
 };

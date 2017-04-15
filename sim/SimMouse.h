@@ -8,7 +8,7 @@
 #include <gazebo/transport/TransportTypes.hh>
 #include <common/Mouse.h>
 #include <common/Pose.h>
-#include <common/KinematicMotorController/KinematicController.h>
+#include <common/KinematicController/KinematicController.h>
 #include <common/RobotConfig.h>
 #include <ignition/transport/Node.hh>
 
@@ -17,7 +17,7 @@ public:
   static double abstractForceToNewtons(double x);
 
   static const double ANALOG_MAX_DIST; // meters
-  static const double MAX_FORCE;  // 16kg/cm from datasheet
+  static const double MAX_FORCE;
   static const gazebo::common::Color grey_color;
 
   static const RobotConfig CONFIG;
@@ -27,10 +27,6 @@ public:
   virtual SensorReading checkWalls() override;
 
   double getColOffsetToEdge();
-
-  int getComputedRow();
-
-  int getComputedCol();
 
   Pose getPose();
 
@@ -66,9 +62,7 @@ public:
   gazebo::transport::PublisherPtr maze_location_pub;
   ignition::transport::Node ign_node;
 
-  KinematicMotorController kinematic_controller;
-
-  bool ignore_sensor_pose_estimate;
+  KinematicController kinematic_controller;
 
 private:
 
@@ -86,10 +80,6 @@ private:
   double right_wheel_velocity_mps;
   double left_wheel_angle_rad;
   double right_wheel_angle_rad;
-  double row_offset_to_edge;
-  double col_offset_to_edge;
-  int computed_row;
-  int computed_col;
 
   RangeData range_data;
 
@@ -97,9 +87,6 @@ private:
   std::mutex dataMutex;
 
   Pose true_pose;
-  Pose estimated_pose;
-
-  gazebo::transport::SubscriberPtr regen_sub;
 
   gazebo::msgs::Visual *indicators[AbstractMaze::MAZE_SIZE][AbstractMaze::MAZE_SIZE];
 

@@ -79,14 +79,21 @@ RangeData RealMouse::getRangeData() {
     return instance;
   }
 
-  RealMouse::RealMouse() : ignore_sensor_pose_estimate(false) {}
+  RealMouse::RealMouse() : kinematic_controller(RealMouse::CONFIG, this) {}
 
   SensorReading RealMouse::checkWalls() {
     SensorReading sr(row, col);
+    range_data.front_left_analog = analogRead(FRONT_LEFT_ANALOG_PIN);
+    range_data.front_right_analog = analogRead(FRONT_RIGHT_ANALOG_PIN);
+    range_data.back_left_analog = analogRead(BACK_LEFT_ANALOG_PIN);
+    range_data.back_right_analog = analogRead(BACK_RIGHT_ANALOG_PIN);
+    range_data.front_analog =  analogRead(FRONT_ANALOG_PIN);
+
     sr.walls[static_cast<int>(dir)] = analogRead(FRONT_ANALOG_PIN) < 0.15;
     sr.walls[static_cast<int>(left_of_dir(dir))] = analogRead(FRONT_LEFT_ANALOG_PIN) < 0.15;
     sr.walls[static_cast<int>(right_of_dir(dir))] = analogRead(FRONT_RIGHT_ANALOG_PIN) < 0.15;
     sr.walls[static_cast<int>(opposite_direction(dir))] = false;
+
 
     return sr;
   }
@@ -112,7 +119,7 @@ RangeData RealMouse::getRangeData() {
     double left_angle_rad = tick_to_rad(left_encoder.read());
     double right_angle_rad = tick_to_rad(right_encoder.read());
     std::tie(abstract_left_force, abstract_right_force) = kinematic_controller.run(dt_s, left_angle_rad,
-                                                                                   right_angle_rad, 0, 0);
+                                                                                   right_angle_rad, 0, 0, range_data);
 
     // update row/col information
     row = (int) (estimated_pose.y / AbstractMaze::UNIT_DIST);

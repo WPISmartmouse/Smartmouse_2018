@@ -25,7 +25,7 @@ double SimMouse::abstractForceToNewtons(double x) {
   return x * MAX_FORCE / 255.0;
 }
 
-SimMouse::SimMouse() : ignore_sensor_pose_estimate(false) {}
+SimMouse::SimMouse() : kinematic_controller(SimMouse::CONFIG, this) {}
 
 SimMouse *SimMouse::inst() {
   if (instance == NULL) {
@@ -49,19 +49,11 @@ SensorReading SimMouse::checkWalls() {
 }
 
 double SimMouse::getColOffsetToEdge() {
-  return this->col_offset_to_edge;
-}
-
-int SimMouse::getComputedCol() {
-  return this->computed_col;
-}
-
-int SimMouse::getComputedRow() {
-  return this->computed_row;
+  return kinematic_controller.col_offset_to_edge;
 }
 
 Pose SimMouse::getPose() {
-  return estimated_pose;
+  return kinematic_controller.getPose();
 }
 
 Pose SimMouse::getExactPose() {
@@ -79,7 +71,7 @@ RangeData SimMouse::getRangeData() {
 }
 
 double SimMouse::getRowOffsetToEdge() {
-  return this->row_offset_to_edge;
+  return kinematic_controller.row_offset_to_edge;
 }
 
 std::pair<double, double> SimMouse::getWheelVelocities() {
@@ -157,96 +149,29 @@ void SimMouse::robotStateCallback(ConstRobotStatePtr &msg) {
   dataCond.notify_all();
 }
 
-bool p = false;
-
 void SimMouse::run(double dt_s) {
   // handle updating of odometry and PID
   std::tie(abstract_left_force, abstract_right_force) = kinematic_controller.run(dt_s,
                                                                                  this->left_wheel_angle_rad,
                                                                                  this->right_wheel_angle_rad,
                                                                                  this->left_wheel_velocity_mps,
-                                                                                 this->right_wheel_velocity_mps);
+                                                                                 this->right_wheel_velocity_mps,
+                                                                                 range_data);
 
-  // update row/col information. Must come first
-  row = computed_row = (int) (estimated_pose.y / AbstractMaze::UNIT_DIST);
-  col = computed_col = (int) (estimated_pose.x / AbstractMaze::UNIT_DIST);
-  row_offset_to_edge = fmod(estimated_pose.y, AbstractMaze::UNIT_DIST);
-  col_offset_to_edge = fmod(estimated_pose.x, AbstractMaze::UNIT_DIST);
-
-  // given odometry estimate, improve estimate using sensors, then update odometry estimate to match our best estimate
-  Pose kc_pose = kinematic_controller.getPose();
-  estimated_pose = kc_pose;
-  double est_yaw, offset;
-  std::tie(est_yaw, offset) = WallFollower::estimate_pose(CONFIG, range_data, this);
-
-  if (!ignore_sensor_pose_estimate) {
-    if (p) {
-//      print("allowing estimating pose from rangefinders\n");
-      p = false;
-    }
-
-    estimated_pose.yaw = est_yaw;
-    kinematic_controller.reset_yaw_to(estimated_pose.yaw);
-
-    double d_wall_front;
-    bool wall_in_front = false;
-    if (range_data.front_analog < 0.08) {
-      double yaw_error = WallFollower::yawDiff(estimated_pose.yaw, dir_to_yaw(dir));
-      d_wall_front = cos(yaw_error) * range_data.front_analog + CONFIG.FRONT_ANALOG_X;
-      wall_in_front = true;
-    }
-
-    switch (dir) {
-      case Direction::N:
-        estimated_pose.x = (col * AbstractMaze::UNIT_DIST) + offset;
-        kinematic_controller.reset_x_to(estimated_pose.x);
-        if (wall_in_front) {
-          estimated_pose.y = (row * AbstractMaze::UNIT_DIST) + d_wall_front + AbstractMaze::HALF_WALL_THICKNESS;
-          kinematic_controller.reset_y_to(estimated_pose.y);
-        }
-        break;
-      case Direction::S:
-        estimated_pose.x = (col + 1) * AbstractMaze::UNIT_DIST - offset;
-        kinematic_controller.reset_x_to(estimated_pose.x);
-        if (wall_in_front) {
-          estimated_pose.y = ((row + 1) * AbstractMaze::UNIT_DIST) - d_wall_front - AbstractMaze::HALF_WALL_THICKNESS;
-          kinematic_controller.reset_y_to(estimated_pose.y);
-        }
-        break;
-      case Direction::E:
-        estimated_pose.y = (row * AbstractMaze::UNIT_DIST) + offset;
-        kinematic_controller.reset_y_to(estimated_pose.y);
-        if (wall_in_front) {
-          estimated_pose.x = ((col + 1) * AbstractMaze::UNIT_DIST) - d_wall_front - AbstractMaze::HALF_WALL_THICKNESS;
-          kinematic_controller.reset_x_to(estimated_pose.x);
-        }
-        break;
-      case Direction::W:
-        estimated_pose.y = (row + 1) * AbstractMaze::UNIT_DIST - offset;
-        kinematic_controller.reset_y_to(estimated_pose.y);
-        if (wall_in_front) {
-          estimated_pose.x = (col * AbstractMaze::UNIT_DIST) + d_wall_front + AbstractMaze::HALF_WALL_THICKNESS;
-          kinematic_controller.reset_x_to(estimated_pose.x);
-        }
-        break;
-    }
-  } else {
-    if (!p) {
-//      print("Ignoring rangefinder pose estimate.\n");
-      p = true;
-    }
-  }
+  // THIS IS SUPER IMPORTANT!
+  row = kinematic_controller.row;
+  col = kinematic_controller.col;
 
   // publish status information
   gzmaze::msgs::MazeLocation maze_loc_msg;
-  maze_loc_msg.set_row(getComputedRow());
-  maze_loc_msg.set_col(getComputedCol());
-  maze_loc_msg.set_row_offset(row_offset_to_edge);
-  maze_loc_msg.set_col_offset(col_offset_to_edge);
+  maze_loc_msg.set_row(row);
+  maze_loc_msg.set_col(col);
+  maze_loc_msg.set_row_offset(kinematic_controller.row_offset_to_edge);
+  maze_loc_msg.set_col_offset(kinematic_controller.col_offset_to_edge);
 
-  maze_loc_msg.set_estimated_x_meters(estimated_pose.x);
-  maze_loc_msg.set_estimated_y_meters(estimated_pose.y);
-  maze_loc_msg.set_estimated_yaw_rad(estimated_pose.yaw);
+  maze_loc_msg.set_estimated_x_meters(getPose().x);
+  maze_loc_msg.set_estimated_y_meters(getPose().y);
+  maze_loc_msg.set_estimated_yaw_rad(getPose().yaw);
   std::string dir_str(1, dir_to_char(dir));
   maze_loc_msg.set_dir(dir_str);
 
@@ -296,9 +221,9 @@ void SimMouse::update_markers() {
     size->set_x(0.02);
     size->set_y(0.002);
     size->set_z(0.002);
-    double x = estimated_pose.x;
-    double y = -estimated_pose.y;
-    double yaw = estimated_pose.yaw;
+    double x = getPose().x;
+    double y = -getPose().y;
+    double yaw = getPose().yaw;
     Set(estimated_pose_marker.mutable_pose(), ignition::math::Pose3d(x, y, 0.02, 0, 0, yaw));
 
     ign_node.Request("/marker", estimated_pose_marker);
@@ -316,8 +241,8 @@ void SimMouse::update_markers() {
     true_center->set_x(true_pose.x);
     true_center->set_y(-true_pose.y);
     true_center->set_z(.02);
-    estimated_center->set_x(estimated_pose.x);
-    estimated_center->set_y(-estimated_pose.y);
+    estimated_center->set_x(getPose().x);
+    estimated_center->set_y(-getPose().y);
     estimated_center->set_z(.02);
     ignition::msgs::Material *matMsg = error_marker.mutable_material();
     matMsg->mutable_script()->set_name("Gazebo/Black");
