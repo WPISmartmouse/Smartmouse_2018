@@ -3,11 +3,12 @@
 
 const double ArcTurn::kTurn = 9.5;
 
-ArcTurn::ArcTurn(Direction dir) : Command("SimArcTurn"), mouse(SimMouse::inst()), dir(dir) {}
+ArcTurn::ArcTurn(Direction dir) : Command("SimArcTurn"), mouse(SimMouse::inst()), goal_dir(dir) {}
 
 void ArcTurn::initialize() {
   mouse->ignore_sensor_pose_estimate = true;
-  left = (dir == left_of_dir(mouse->getDir()));
+  start_dir = mouse->getDir();
+  left = (goal_dir == left_of_dir(mouse->getDir()));
   // if we're further into the square, turn harder
   double disp_from_last_edge = AbstractMaze::UNIT_DIST - WallFollower::dispToNextEdge(mouse);
   turn_effort = disp_from_last_edge * kTurn;
@@ -22,32 +23,58 @@ void ArcTurn::execute() {
     mouse->ignore_sensor_pose_estimate = false;
     // FIXME: this is kind of a hack. It's needed because WallFollower checks dir in order to compute
     // FIXME: the correct yaw. it adds dir_to_yaw(getDir()), so we must assume we're close enough
-    mouse->internalTurnToFace(dir);
+    mouse->internalTurnToFace(goal_dir);
   }
 
-  double goalYaw = dir_to_yaw(dir);
-  double currentYaw = mouse->getPose().yaw;
+  double goalYaw = dir_to_yaw(goal_dir);
+  Pose pose = mouse->getPose();
+  double currentYaw = pose.yaw;
   double dYaw = WallFollower::yawDiff(currentYaw, goalYaw);
 
+  double theta;
+  switch(start_dir) {
+    case Direction::N: {
+      if (left) {
+        theta = atan2(pose.y, pose.x);
+      } else {
+        theta = atan2(pose.y, -pose.x);
+      }
+      break;
+    }
+    case Direction::E: {
+      if (left) {
+        theta = atan2(-pose.y, pose.x);
+      } else {
+        theta = atan2(pose.y, pose.x);
+      }
+      break;
+    }
+    case Direction::S: {
+      break;
+    }
+    case Direction::W: {
+      break;
+    }
+  }
 
   if (fabs(dYaw) < Mouse::ROT_TOLERANCE) {
     mouse->setSpeed(0.07, 0.07);
   }
   else if (left) {
-    mouse->setSpeed(0.0, std::max(0.07 + turn_effort, SimMouse::CONFIG.MAX_SPEED));
+    mouse->setSpeed(0.0, std::max(0.09 + turn_effort, SimMouse::CONFIG.MAX_SPEED));
   } else {
-    mouse->setSpeed(std::max(0.07 + turn_effort, SimMouse::CONFIG.MAX_SPEED), 0.0);
+    mouse->setSpeed(std::max(0.09 + turn_effort, SimMouse::CONFIG.MAX_SPEED), 0.0);
   }
 }
 
 bool ArcTurn::isFinished() {
-  double goalYaw = dir_to_yaw(dir);
+  double goalYaw = dir_to_yaw(goal_dir);
   Pose current_pose = mouse->getPose();
   double currentYaw = current_pose.yaw;
   dYaw = WallFollower::yawDiff(currentYaw, goalYaw);
   double edgeDisp;
 
-  switch (dir) {
+  switch (goal_dir) {
     case Direction::N: {
       double next_row_y = start_row * AbstractMaze::UNIT_DIST;
       edgeDisp = current_pose.y - next_row_y;
@@ -70,10 +97,12 @@ bool ArcTurn::isFinished() {
     }
   }
 
-  return (fabs(dYaw) < Mouse::ROT_TOLERANCE) && (edgeDisp <= 0);
+  print("%f\n", edgeDisp);
+
+  return (fabs(dYaw) < Mouse::ROT_TOLERANCE) && (edgeDisp <= 0.0);
 }
 
 void ArcTurn::end() {
-  print("turning done.\n");
-  mouse->internalTurnToFace(dir);
+  print("arc turn done.\n");
+  mouse->internalTurnToFace(goal_dir);
 }

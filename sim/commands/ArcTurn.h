@@ -21,7 +21,7 @@ public:
 
 private:
   SimMouse *mouse;
-  Direction dir;
+  Direction start_dir, goal_dir;
   bool left; //false means right
   double turn_effort;
   double dYaw;

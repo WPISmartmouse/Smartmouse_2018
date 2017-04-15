@@ -59,41 +59,6 @@
                     </script>
                 </material>
             </visual>
-            <collision name='main_body_collision'>
-                <max_contacts>6</max_contacts>
-                <pose>0 0 0.012 0 0 0</pose>
-                <geometry>
-                    <polyline>
-                      <height>0.032</height>
-                      <point>-0.0410 0.019</point>
-                      <point>-0.0220 0.038</point>
-                      <point>0.0410 0.038</point>
-                      <point>0.0600 0.019</point>
-                      <point>0.0600 -0.019</point>
-                      <point>0.0410 -0.038</point>
-                      <point>-0.0220 -0.038</point>
-                      <point>-0.0410 -0.019</point>
-                    </polyline>
-                </geometry>
-                <surface>
-                    <friction>
-                        <ode>
-                            <mu>0.01</mu>
-                            <mu2>0.01</mu2>
-                        </ode>
-                    </friction>
-                    <contact>
-                        <ode>
-                            <soft_cfm>1.7e-10</soft_cfm>
-                            <soft_erp>0.17</soft_erp>
-                            <kp>1e9</kp>
-                            <kd>5e10</kd>
-                            <max_vel>0.01</max_vel>
-                            <min_depth>0</min_depth>
-                        </ode>
-                    </contact>
-                </surface>
-            </collision>
             <collision name='bumper'>
                 <max_contacts>6</max_contacts>
                 <pose>0.052 0 0.002 0 0 0</pose>

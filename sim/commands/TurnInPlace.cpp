@@ -35,7 +35,6 @@ bool TurnInPlace::isFinished() {
 }
 
 void TurnInPlace::end() {
-  printf("done turning in place.\n");
   mouse->internalTurnToFace(dir);
 }
 

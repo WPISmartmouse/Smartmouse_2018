@@ -8,11 +8,6 @@ Forward::Forward() : Command("Forward"), mouse(RealMouse::inst()), follower(Real
 void Forward::initialize() {
   start = mouse->getPose();
   follower.goalDisp = WallFollower::dispToNextEdge(mouse);
-  digitalWrite(RealMouse::LED_4, 1);
-  delay(300);
-  digitalWrite(RealMouse::LED_4, 0);
-  delay(300);
-
   digitalWrite(RealMouse::LED_1, 1);
 }
 

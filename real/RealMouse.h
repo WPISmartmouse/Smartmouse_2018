@@ -39,6 +39,7 @@ public:
   static const int LED_7 = 39;
 
   static RealMouse *inst();
+
   static const RobotConfig CONFIG;
 
   virtual SensorReading checkWalls() override;
@@ -71,7 +72,12 @@ private:
 
   static RealMouse *instance;
 
+  static double adcToMeters(int adc);
+
+  static const int ir_lookup[18];
+
   Encoder left_encoder, right_encoder;
+  Pose estimated_pose;
   double row_offset_to_edge;
   double col_offset_to_edge;
 };

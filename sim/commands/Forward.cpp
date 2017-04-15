@@ -16,8 +16,6 @@ void Forward::execute() {
   double l, r;
   std::tie(l, r) = follower.compute_wheel_velocities(this->mouse, start, range_data);
   mouse->setSpeed(l, r);
-
-  // TODO: reset distance based on front sensor?
 }
 
 bool Forward::isFinished() {

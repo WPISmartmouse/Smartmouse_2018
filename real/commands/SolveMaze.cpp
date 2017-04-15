@@ -41,5 +41,5 @@ bool SolveMaze::isFinished() {
 }
 
 void SolveMaze::end() {
-//  solver->teardown();
+  solver->teardown();
 }
