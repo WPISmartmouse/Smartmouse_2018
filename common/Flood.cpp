@@ -6,7 +6,6 @@
 
 Flood::Flood(Mouse *mouse) : Solver(mouse),
                              done(false),
-                             solvable(true),
                              solved(false) {
   no_wall_path = (char *) calloc(AbstractMaze::PATH_SIZE, sizeof(char));
   all_wall_path = (char *) calloc(AbstractMaze::PATH_SIZE, sizeof(char));

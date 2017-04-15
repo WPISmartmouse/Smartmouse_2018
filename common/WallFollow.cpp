@@ -23,15 +23,18 @@ void WallFollow::setGoal(int row, int col) {
 char *WallFollow::solve() {
   //run till you find the goal
   while (!isFinished()) {
-    mouse->internalTurnToFace(planNextStep());
-    mouse->internalForward();
+    Direction nextDir = planNextStep();
+    if (nextDir != Direction::INVALID) {
+      mouse->internalTurnToFace(nextDir);
+      mouse->internalForward();
+    }
   }
   teardown();
   return mouse->maze->fastest_route;
 }
 
 bool WallFollow::isFinished() {
-  return mouse->getRow() == goal_row && mouse->getCol() == goal_col;
+  return !solvable || (mouse->getRow() == goal_row && mouse->getCol() == goal_col);
 }
 
 void WallFollow::teardown() {
@@ -48,15 +51,17 @@ Direction WallFollow::planNextStep() {
     //if you can turn left you must
     nextDir = dir;
   } else if (!sr.isWall(mouse->getDir())) {
-    if (!sr.isWall(opposite_direction(dir))) {
-      //if you can't go left or forward try right
-      nextDir = opposite_direction(dir);
-    } else {
-      //you must do a 180
-      nextDir = opposite_direction(mouse->getDir());
-    }
-  } else {
     nextDir = mouse->getDir();
+  } else if (!sr.isWall(opposite_direction(dir))) {
+    //if you can't go left or forward try right
+    nextDir = opposite_direction(dir);
+  } else if (!sr.isWall(opposite_direction(mouse->getDir()))){
+    //you must do a 180
+    nextDir = opposite_direction(mouse->getDir());
+  }
+  else {
+    solvable = false;
+    return Direction::INVALID;
   }
 
   mouse->maze->fastest_route[step++] = dir_to_char(nextDir);

@@ -17,3 +17,6 @@ void print(const char *fmt, ... ){
   printf("%s", buf);
 #endif
 }
+
+global_program_settings_t GlobalProgramSettings;
+

@@ -26,7 +26,7 @@ int AbstractMaze::get_node(Node **out, int row, int col) {
     return Node::OUT_OF_BOUNDS;
   }
 
-  if (nodes[row][col] == NULL) {
+  if (nodes[row][col] == nullptr) {
     return -1;
   }
   (*out) = nodes[row][col];
@@ -78,7 +78,7 @@ void AbstractMaze::update(SensorReading sr) {
 }
 
 Node *AbstractMaze::maze_diff(AbstractMaze *maze2) {
-  Node *new_goal = NULL;
+  Node *new_goal = nullptr;
 
   int i, j, max = -1;
   for (i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
@@ -95,8 +95,8 @@ Node *AbstractMaze::maze_diff(AbstractMaze *maze2) {
 
         Direction d;
         for (d = Direction::First; d < Direction::Last; d++) {
-          if (n1->neighbor(d) == NULL) count1++;
-          if (n2->neighbor(d) == NULL) count2++;
+          if (n1->neighbor(d) == nullptr) count1++;
+          if (n2->neighbor(d) == nullptr) count2++;
         }
 
         int diff = abs(count2 - count1);
@@ -161,7 +161,7 @@ bool AbstractMaze::flood_fill(char *path, int r0, int c0, int r1, int c1) {
     Direction d;
     bool deadend = true;
     for (d = Direction::First; d < Direction::Last; d++) {
-      if (n->neighbor(d) != NULL) {
+      if (n->neighbor(d) != nullptr) {
         if (n->neighbor(d)->weight < min_node->weight) {
           min_node = n->neighbor(d);
           min_dir = d;
@@ -205,14 +205,27 @@ void AbstractMaze::remove_neighbor(int row, int col, const Direction dir) {
   int n2_status = get_node_in_direction(&n2, row, col, dir);
 
   if (n1_status != Node::OUT_OF_BOUNDS) {
-    n1->neighbors[static_cast<int>(dir)] = NULL;
+    n1->neighbors[static_cast<int>(dir)] = nullptr;
   }
 
   if (n2_status != Node::OUT_OF_BOUNDS) {
-    n2->neighbors[static_cast<int>(opposite_direction(dir))] = NULL;
+    n2->neighbors[static_cast<int>(opposite_direction(dir))] = nullptr;
   }
 }
 
+void AbstractMaze::disconnect_neighbor(int row, int col, const Direction dir) {
+  Node *n1;
+  int n1_status = get_node(&n1, row, col);
+  Node *n2;
+  int n2_status = get_node_in_direction(&n2, row, col, dir);
+
+  Direction opposite = opposite_direction(dir);
+
+  if ((n1_status != Node::OUT_OF_BOUNDS) && (n2_status != Node::OUT_OF_BOUNDS)) {
+    n1->neighbors[static_cast<int>(dir)] = nullptr;
+    n2->neighbors[static_cast<int>(opposite)] = nullptr;
+  }
+}
 void AbstractMaze::connect_neighbor(int row, int col, const Direction dir) {
   Node *n1;
   int n1_status = get_node(&n1, row, col);
@@ -256,16 +269,16 @@ void AbstractMaze::print_maze_str(char *buff) {
   for (i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
     for (j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
       Node *n = nodes[i][j];
-      if (n->neighbor(Direction::W) == NULL) {
+      if (n->neighbor(Direction::W) == nullptr) {
         strcpy(b++, "|");
-        if (n->neighbor(Direction::S) == NULL) {
+        if (n->neighbor(Direction::S) == nullptr) {
           strcpy(b++, "_");
         } else {
           strcpy(b++, " ");
         }
       } else {
         strcpy(b++, "_");
-        if (n->neighbor(Direction::S) == NULL) {
+        if (n->neighbor(Direction::S) == nullptr) {
           strcpy(b++, "_");
         } else {
           strcpy(b++, " ");
@@ -290,7 +303,7 @@ void AbstractMaze::print_neighbor_maze() {
   for (i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
     for (j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
       for (Direction d = Direction::First; d < Direction::Last; d++) {
-        bool wall = (nodes[i][j]->neighbor(d) == NULL);
+        bool wall = (nodes[i][j]->neighbor(d) == nullptr);
         print("%i", wall);
       }
       print(" ");
@@ -423,6 +436,10 @@ AbstractMaze AbstractMaze::gen_random_legal_maze() {
   maze.connect_neighbor(MAZE_SIZE / 2, MAZE_SIZE / 2, Direction::W);
   maze.connect_neighbor(MAZE_SIZE / 2 - 1, MAZE_SIZE / 2 - 1, Direction::S);
   maze.connect_neighbor(MAZE_SIZE / 2 - 1, MAZE_SIZE / 2 - 1, Direction::E);
+
+  // TODO: make a legal start. This right now might make the maze unsolvable...
+//  maze.connect_neighbor(0, 0, Direction::E);
+//  maze.disconnect_neighbor(0, 0, Direction::S);
 
   return maze;
 }

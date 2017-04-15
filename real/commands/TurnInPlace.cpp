@@ -40,7 +40,7 @@ bool TurnInPlace::isFinished() {
   double vl, vr;
   std::tie(vl, vr) = mouse->getWheelVelocities();
   print("%f %f %f\n", vl, vr, dYaw);
-  return (fabs(dYaw) < Mouse::ROT_TOLERANCE) && fabs(vl) < 0.05 && fabs(vr) < 0.05;
+  return (fabs(dYaw) < RealMouse::CONFIG.ROT_TOLERANCE) && fabs(vl) < 0.05 && fabs(vr) < 0.05;
 }
 
 void TurnInPlace::end() {

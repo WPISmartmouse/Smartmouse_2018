@@ -18,5 +18,8 @@ public:
 
   virtual void setGoal(int row, int col) = 0;
 
+  bool isSolvable();
+
+  bool solvable;
   Mouse *mouse;
 };

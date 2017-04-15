@@ -42,5 +42,5 @@ private:
   char *all_wall_path;
   Node *goal;
 
-  bool solvable, solved;
+  bool solved;
 };

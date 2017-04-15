@@ -57,7 +57,7 @@ void ArcTurn::execute() {
     }
   }
 
-  if (fabs(dYaw) < Mouse::ROT_TOLERANCE) {
+  if (fabs(dYaw) < SimMouse::CONFIG.ROT_TOLERANCE) {
     mouse->setSpeed(0.07, 0.07);
   }
   else if (left) {
@@ -99,7 +99,7 @@ bool ArcTurn::isFinished() {
 
   print("%f\n", edgeDisp);
 
-  return (fabs(dYaw) < Mouse::ROT_TOLERANCE) && (edgeDisp <= 0.0);
+  return (fabs(dYaw) < SimMouse::CONFIG.ROT_TOLERANCE) && (edgeDisp <= 0.0);
 }
 
 void ArcTurn::end() {

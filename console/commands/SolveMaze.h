@@ -19,4 +19,5 @@ private:
   Solver *solver;
   int movements, goal_row, goal_col;
 
+  bool solved;
 };

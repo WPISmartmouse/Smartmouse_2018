@@ -7,16 +7,17 @@ const double SimMouse::ANALOG_MAX_DIST = 0.15; // meters
 const double SimMouse::MAX_FORCE = 0.006; // experimental value
 const gazebo::common::Color SimMouse::grey_color{0.8, 0.8, 0.8, 1};
 const RobotConfig SimMouse::CONFIG = {
-        1.35255, // FRONT_ANALOG_ANGLE
-        1.35255,  // BACK_ANALOG_ANGLE
-        0.045,    // FRONT_SIDE_ANALOG_X
-        0.030,    // FRONT_SIDE_ANALOG_Y
-        -0.024,  // BACK_SIDE_ANALOG_X
-        0.030,  // BACK_SIDE_ANALOG_Y
-        0.055,   // FRONT_ANALOG_X
-        0.12,    // MAX_SPEED
-        0.02,    // MIN_SPEED
-        0.15,    // WALL_THRESHOLD
+        1.35255, // FRONT_ANALOG_ANGLE (radians)
+        1.35255,  // BACK_ANALOG_ANGLE (radians)
+        0.045,    // FRONT_SIDE_ANALOG_X (meters)
+        0.030,    // FRONT_SIDE_ANALOG_Y (meters)
+        -0.024,  // BACK_SIDE_ANALOG_X (meters)
+        0.030,  // BACK_SIDE_ANALOG_Y (meters)
+        0.055,   // FRONT_ANALOG_X (meters)
+        0.12,    // MAX_SPEED (meters/second)
+        0.02,    // MIN_SPEED (meters/second)
+        0.15,    // WALL_THRESHOLD (meters)
+        0.08,    // ROT_TOLERANCE (radians)
 };
 
 double SimMouse::abstractForceToNewtons(double x) {

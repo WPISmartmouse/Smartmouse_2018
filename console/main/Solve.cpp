@@ -7,6 +7,8 @@
 #include "ConsoleMouse.h"
 #include "ConsoleTimer.h"
 #include <common/Flood.h>
+#include <cstring>
+#include <common/util.h>
 
 int main(int argc, char *argv[]) {
 
@@ -17,8 +19,18 @@ int main(int argc, char *argv[]) {
     rand = true;
     printf("Using random maze\n");
   }
-  if (argc == 2) {
-    maze_file = std::string(argv[1]);
+  else if (argc == 2) {
+    if (strncmp(argv[1], "-q", 2) == 0) {
+      GlobalProgramSettings.q = true;
+      rand = true;
+    }
+    else {
+      maze_file= std::string(argv[1]);
+    }
+  }
+  else if (argc == 3) {
+    maze_file = std::string(argv[2]);
+    GlobalProgramSettings.q = true;
   }
 
   std::fstream fs;
@@ -32,7 +44,7 @@ int main(int argc, char *argv[]) {
       ConsoleMaze m(fs);
       ConsoleMouse::inst()->seedMaze(&m);
     } else {
-      printf("error opening maze file!\n");
+        printf("error opening maze file!\n");
       fs.close();
       return EXIT_FAILURE;
     }
@@ -41,10 +53,15 @@ int main(int argc, char *argv[]) {
   Command::setTimerImplementation(&timer);
 
   Scheduler *scheduler;
-  scheduler = new Scheduler(new SolveCommand(new Flood(ConsoleMouse::inst())));
+  Flood *flood = new Flood(ConsoleMouse::inst());
+  scheduler = new Scheduler(new SolveCommand(flood));
 
   while (!scheduler->run());
 
-  return EXIT_SUCCESS;
+  if (flood->isSolvable()) {
+    return EXIT_SUCCESS;
+  } else {
+    return EXIT_FAILURE;
+  }
 }
 

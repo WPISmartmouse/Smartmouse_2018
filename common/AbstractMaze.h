@@ -47,6 +47,7 @@ public:
    * \param dir direction connect in
    */
   void connect_neighbor(int row, int col, const Direction dir);
+  void disconnect_neighbor(int row, int col, const Direction dir);
 
   void reset();
 

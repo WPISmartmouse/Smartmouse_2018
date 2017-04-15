@@ -11,6 +11,7 @@ SolveMaze::SolveMaze(Solver *solver, int goal_row, int goal_col) : CommandGroup(
                                                                    movements(0) {}
 
 void SolveMaze::initialize() {
+  solved = false;
   solver->setGoal(goal_row, goal_col);
 }
 
@@ -22,11 +23,20 @@ bool SolveMaze::isFinished() {
 
     if (!mazeSolved) {
       Direction nextDirection = solver->planNextStep();
+
+      if (!solver->isSolvable()) {
+        solved = false;
+        return true;
+      }
+
       addSequential(new Turn(nextDirection));
       addSequential(new Forward());
-      addSequential(new WaitForStart());
-      solver->mouse->print_maze_mouse();
+      if (!GlobalProgramSettings.q) {
+        addSequential(new WaitForStart());
+        solver->mouse->print_maze_mouse();
+      }
     } else {
+      solved = true;
       return true;
     }
 

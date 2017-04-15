@@ -244,6 +244,20 @@ TEST(SolveMazeTest, FloodSolve) {
   fs.close();
 }
 
+TEST(SolveMazeTest, RandSolve) {
+  for (int i=0; i < 100; i++) {
+    AbstractMaze maze = AbstractMaze::gen_random_legal_maze();
+    ConsoleMouse::inst()->seedMaze(&maze);
+
+    Flood solver(ConsoleMouse::inst());
+    solver.setup();
+    char *solution = solver.solve();
+    solver.teardown();
+
+    ASSERT_TRUE(solver.isSolvable());
+  }
+}
+
 TEST(DirectionTest, DirectionLogic) {
   EXPECT_TRUE(Direction::W > Direction::S);
   EXPECT_TRUE(Direction::W > Direction::E);
@@ -257,6 +271,7 @@ TEST(DirectionTest, DirectionLogic) {
   EXPECT_TRUE(Direction::E < Direction::W);
   EXPECT_TRUE(Direction::E < Direction::S);
 }
+
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);

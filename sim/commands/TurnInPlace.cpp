@@ -31,7 +31,7 @@ bool TurnInPlace::isFinished() {
   dYaw = WallFollower::yawDiff(currentYaw, goalYaw);
   double vl, vr;
   std::tie(vl, vr) = mouse->getWheelVelocities();
-  return (fabs(dYaw) < Mouse::ROT_TOLERANCE) && fabs(vl) < 0.05 && fabs(vr) < 0.05;
+  return (fabs(dYaw) < SimMouse::CONFIG.ROT_TOLERANCE) && fabs(vl) < 0.05 && fabs(vr) < 0.05;
 }
 
 void TurnInPlace::end() {
