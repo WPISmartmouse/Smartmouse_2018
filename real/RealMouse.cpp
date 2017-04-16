@@ -5,15 +5,16 @@
 RealMouse *RealMouse::instance = nullptr;
 const RobotConfig RealMouse::CONFIG = {
         1.35255, // FRONT_ANALOG_ANGLE
-        1.22,  // BACK_ANALOG_ANGLE TODO: CHANGE THIS TO MATCH REAL ROBOT
+        1.22,    // BACK_ANALOG_ANGLE TODO: CHANGE THIS TO MATCH REAL ROBOT
         0.04,    // FRONT_SIDE_ANALOG_X
-        0.024,    // FRONT_SIDE_ANALOG_Y
+        0.024,   // FRONT_SIDE_ANALOG_Y
         -0.024,  // BACK_SIDE_ANALOG_X
-        0.024,  // BACK_SIDE_ANALOG_Y
+        0.024,   // BACK_SIDE_ANALOG_Y
         0.045,   // FRONT_ANALOG_X
         0.09,    // MAX_SPEED
-        0.021,    // MIN_SPEED
+        0.021,   // MIN_SPEED
         0.15,    // WALL_THRESHOLD
+        0.0633,  // TRACK_WIDTH (meters)
 };
 const int RealMouse::ir_lookup[18] = {
         751, // .01

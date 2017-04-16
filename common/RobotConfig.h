@@ -12,4 +12,5 @@ typedef struct {
   double MIN_SPEED;
   double WALL_THRESHOLD;
   double ROT_TOLERANCE;
+  double TRACK_WIDTH;
 } RobotConfig;

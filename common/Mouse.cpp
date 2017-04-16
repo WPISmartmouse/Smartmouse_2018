@@ -12,12 +12,12 @@ double Mouse::radToMeters(double x) {
 
 Mouse::Mouse() : maze(new AbstractMaze()), row(0), col(0), dir(Direction::E) {}
 
-Mouse::Mouse(int starting_row, int starting_col) : maze(new AbstractMaze()), row(starting_row), col(starting_col),
+Mouse::Mouse(unsigned int starting_row, unsigned int starting_col) : maze(new AbstractMaze()), row(starting_row), col(starting_col),
                                                    dir(Direction::E) {}
 
 Mouse::Mouse(AbstractMaze *maze) : maze(maze), row(0), col(0), dir(Direction::E) {}
 
-Mouse::Mouse(AbstractMaze *maze, int starting_row, int starting_col) : maze(maze), row(starting_row), col(starting_col),
+Mouse::Mouse(AbstractMaze *maze, unsigned int starting_row, unsigned int starting_col) : maze(maze), row(starting_row), col(starting_col),
                                                                        dir(Direction::E) {}
 
 void Mouse::reset() {
@@ -26,11 +26,11 @@ void Mouse::reset() {
   dir = Direction::E;
 }
 
-int Mouse::getRow() {
+unsigned int Mouse::getRow() {
   return row;
 }
 
-int Mouse::getCol() {
+unsigned int Mouse::getCol() {
   return col;
 }
 
@@ -91,7 +91,7 @@ void Mouse::print_maze_mouse() {
 
 void Mouse::maze_mouse_string(char *buff) {
   char *b = buff;
-  int i, j;
+  unsigned int i, j;
   for (i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
     for (j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
       Node *n = maze->nodes[i][j];

@@ -23,13 +23,13 @@ public:
   static const int OUT_OF_BOUNDS;
 
   /** \brief intializes a node */
-  Node(int row, int col);
+  Node(unsigned int row, unsigned int col);
 
   Node();
 
-  int row();
+  unsigned int row();
 
-  int col();
+  unsigned int col();
 
   /** \brief get the neighbor in the given direction */
   Node *neighbor(const Direction dir);
@@ -39,6 +39,6 @@ public:
   void assign_weights_to_neighbors(Node *goal, int weight, bool *success);
 
 private:
-  int r;
-  int c;
+  unsigned int r;
+  unsigned int c;
 };

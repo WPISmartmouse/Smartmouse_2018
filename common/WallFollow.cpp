@@ -15,7 +15,7 @@ void WallFollow::setup() {
   step = 0;
 }
 
-void WallFollow::setGoal(int row, int col) {
+void WallFollow::setGoal(unsigned int row, unsigned int col) {
   goal_row = row;
   goal_col = col;
 }

@@ -5,7 +5,9 @@
 #include <tuple>
 #include "KinematicController.h"
 
-KinematicController::KinematicController(const RobotConfig config, Mouse *parent) : ignore_sensor_pose_estimate(false),
+KinematicController::KinematicController(const RobotConfig config, Mouse *parent) : left_motor(config),
+                                                                                    right_motor(config),
+                                                                                    ignore_sensor_pose_estimate(false),
                                                                                     initialized(false), config(config),
                                                                                     parent(parent) {
   current_pose_estimate.x = 0;
@@ -57,8 +59,8 @@ KinematicController::run(double dt_s, double left_angle_rad, double right_angle_
   double vl = Mouse::radToMeters(left_motor.velocity_rps);
   double vr = Mouse::radToMeters(right_motor.velocity_rps);
 
-  double w = (vr - vl) / Mouse::TRACK_WIDTH;
-  double r = Mouse::TRACK_WIDTH / 2 * (vl + vr) / (vr - vl);
+  double w = (vr - vl) / config.TRACK_WIDTH;
+  double r = config.TRACK_WIDTH / 2 * (vl + vr) / (vr - vl);
   double x = current_pose_estimate.x;
   double y = current_pose_estimate.y;
   double yaw = current_pose_estimate.yaw;
@@ -153,7 +155,8 @@ KinematicController::run(double dt_s, double left_angle_rad, double right_angle_
 
 //  static int i = 0;
 //  if (i == 15) {
-//    print("%f, %f\r\n", Mouse::radToMeters(right_motor.regulated_setpoint_rps), Mouse::radToMeters(right_motor.velocity_rps));
+//  print("%f, %f\r\n", Mouse::radToMeters(right_motor.regulated_setpoint_rps),
+//        Mouse::radToMeters(right_motor.velocity_rps));
 //    i = 0;
 //  }
 //  i += 1;

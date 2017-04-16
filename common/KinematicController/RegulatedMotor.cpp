@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <common/Mouse.h>
+#include <common/RobotConfig.h>
 #include "RegulatedMotor.h"
 
 const double RegulatedMotor::kP = 4.0;
@@ -10,10 +11,12 @@ const double RegulatedMotor::INTEGRAL_CAP = 0.0;
 const double RegulatedMotor::DERIV_CAP = 0.0;
 const double RegulatedMotor::MIN_ABSTRACT_FORCE = 3.5;
 
-RegulatedMotor::RegulatedMotor() : initialized(false), abstract_force(0), acceleration(0), brake_acceleration(0),
-                                   integral(0), last_angle_rad(0), last_error(0), last_velocity_rps(0),
-                                   regulated_setpoint_rps(0), setpoint_rps(0),
-                                   smooth_derivative(0), velocity_rps(0) {}
+RegulatedMotor::RegulatedMotor(RobotConfig config) : config(config), initialized(false), abstract_force(0),
+                                                     acceleration(0), brake_acceleration(0),
+                                                     integral(0), last_angle_rad(0), last_error(0),
+                                                     last_velocity_rps(0),
+                                                     regulated_setpoint_rps(0), setpoint_rps(0),
+                                                     smooth_derivative(0), velocity_rps(0) {}
 
 bool RegulatedMotor::isStopped() {
   bool stopped =
@@ -40,14 +43,12 @@ double RegulatedMotor::runPid(double dt_s, double angle_rad, double ground_truth
   integral += error * dt_s;
   integral = std::max(std::min(integral, INTEGRAL_CAP), -INTEGRAL_CAP);
 
-  if (fabs(regulated_setpoint_rps) <= Mouse::meterToRad(0.02)) {
-    abstract_force = (error * kP) + (integral * kI) + (smooth_derivative * kD);
-  }
-  else {
+  if (fabs(regulated_setpoint_rps) <= config.MIN_SPEED) {
+    abstract_force = 0;
+  } else {
     if (regulated_setpoint_rps < 0) {
       feed_forward = Mouse::radToMeters(regulated_setpoint_rps) * 100 - ff_offset;
-    }
-    else {
+    } else {
       feed_forward = Mouse::radToMeters(regulated_setpoint_rps) * 100 + ff_offset;
     }
     abstract_force = (feed_forward) + (error * kP) + (integral * kI) + (smooth_derivative * kD);

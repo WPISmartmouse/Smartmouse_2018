@@ -20,7 +20,7 @@ void Flood::setup() {
   goal = no_wall_maze.center_node();
 }
 
-void Flood::setGoal(int row, int col) {
+void Flood::setGoal(unsigned int row, unsigned int col) {
   no_wall_maze.get_node(&goal, row, col);
 }
 
@@ -42,7 +42,7 @@ Direction Flood::planNextStep() {
 
   //this way commands can see this
   //used to visualize in gazebo
-  mouse->maze->pathToNextGoal = no_wall_path;
+  mouse->maze->path_to_next_goal = no_wall_path;
 
   all_wall_maze->flood_fill_from_point(all_wall_path, mouse->getRow(), mouse->getCol(), goal->row(), goal->col());
 

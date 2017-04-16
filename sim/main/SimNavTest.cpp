@@ -36,8 +36,6 @@ int main(int argc, char *argv[]) {
   gazebo::transport::SubscriberPtr poseSub = node->Subscribe("~/mouse/state", &SimMouse::robotStateCallback, mouse);
 
   mouse->joint_cmd_pub = node->Advertise<gazebo::msgs::JointCmd>("~/mouse/joint_cmd");
-  mouse->indicator_pub = node->Advertise<gazebo::msgs::Visual>("~/visual", AbstractMaze::MAZE_SIZE *
-                                                                           AbstractMaze::MAZE_SIZE);
   mouse->maze_location_pub = node->Advertise<gzmaze::msgs::MazeLocation>("~/maze_location");
 
   // wait for time messages to come

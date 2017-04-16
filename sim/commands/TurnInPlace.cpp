@@ -9,7 +9,7 @@ void TurnInPlace::initialize() {
 
 void TurnInPlace::execute() {
   double s;
-  s = dYaw * kP;
+  s = limit(dYaw * kP);
   mouse->setSpeed(-s, s);
 
   // when we get close to aligned, there might be a wall we can use to better estimate our angle

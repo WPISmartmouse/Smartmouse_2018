@@ -16,7 +16,7 @@ public:
 
   virtual void teardown() = 0;
 
-  virtual void setGoal(int row, int col) = 0;
+  virtual void setGoal(unsigned int row, unsigned int col) = 0;
 
   bool isSolvable();
 

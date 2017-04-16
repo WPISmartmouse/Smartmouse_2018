@@ -31,9 +31,9 @@ public:
 
   Mouse(AbstractMaze *maze);
 
-  Mouse(int starting_row, int starting_col);
+  Mouse(unsigned int starting_row, unsigned int starting_col);
 
-  Mouse(AbstractMaze *maze, int starting_row, int starting_col);
+  Mouse(AbstractMaze *maze, unsigned int starting_row, unsigned int starting_col);
 
   void reset();
 
@@ -41,13 +41,13 @@ public:
    * Guaranteed to be between 0 and MAZE_SIZE
    * \return current column
    */
-  int getCol();
+  unsigned int getCol();
 
   /** \brief return the current row.
    * Guaranteed to be between 0 and MAZE_SIZE
    * \return current row
    */
-  int getRow();
+  unsigned int getRow();
 
   /** \brief return the current direction.
    * \return current direction
@@ -80,10 +80,7 @@ public:
 
   AbstractMaze *maze;
 
-  static constexpr double ROT_TOLERANCE = 0.03;
   static constexpr double WHEEL_RAD = 0.0145;
-  static constexpr double WHEEL_CIRC = 2 * WHEEL_RAD * M_PI;
-  static constexpr double TRACK_WIDTH = 0.0633; // m, TODO: Measure on new chassis
 
   virtual double getColOffsetToEdge() = 0;
 
@@ -92,6 +89,6 @@ public:
   virtual Pose getPose() = 0;
 
 protected:
-  int row, col;
+  unsigned int row, col;
   Direction dir;
 };

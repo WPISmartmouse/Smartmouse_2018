@@ -73,8 +73,8 @@ TEST(ConnectMazeTest, ConnectAllNeighbors) {
   AbstractMaze maze;
   maze.connect_all_neighbors_in_maze();
 
-  for (int i=0;i<AbstractMaze::MAZE_SIZE;i++){
-    for (int j=0;j<AbstractMaze::MAZE_SIZE;j++){
+  for (unsigned int i=0;i<AbstractMaze::MAZE_SIZE;i++){
+    for (unsigned int j=0;j<AbstractMaze::MAZE_SIZE;j++){
       Node *n;
       int status = maze.get_node(&n, i, j);
 
@@ -155,15 +155,15 @@ TEST(FloodFillTest, EmptyMaze){
   origin->assign_weights_to_neighbors(center, 0, &success);
 
 
-  for (int i=0;i<AbstractMaze::MAZE_SIZE;i++){
-    for (int j=0;j<AbstractMaze::MAZE_SIZE;j++){
+  for (unsigned int i=0;i<AbstractMaze::MAZE_SIZE;i++){
+    for (unsigned int j=0;j<AbstractMaze::MAZE_SIZE;j++){
       Node *n;
-      int status = maze.get_node(&n, i, j);
+      status = maze.get_node(&n, i, j);
 
       ASSERT_EQ(status, 0);
       ASSERT_NE(n, (Node *)NULL);
 
-      EXPECT_EQ(i+j, n->weight);
+      EXPECT_EQ((signed int)(i+j), n->weight);
     }
   }
 }
@@ -191,15 +191,15 @@ TEST(FloodFillTest, StripedMaze){
   origin->assign_weights_to_neighbors(center, 0, &success);
 
 
-  for (int i=0;i<AbstractMaze::MAZE_SIZE;i++){
-    for (int j=0;j<AbstractMaze::MAZE_SIZE;j++){
+  for (unsigned int i=0;i<AbstractMaze::MAZE_SIZE;i++){
+    for (unsigned int j=0;j<AbstractMaze::MAZE_SIZE;j++){
       Node *n;
-      int status = maze.get_node(&n, i, j);
+      status = maze.get_node(&n, i, j);
 
       ASSERT_EQ(status, 0);
       ASSERT_NE(n, (Node *)NULL);
 
-      EXPECT_EQ(i+j, n->weight);
+      EXPECT_EQ((signed int)(i+j), n->weight);
     }
   }
 }

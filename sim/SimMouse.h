@@ -4,7 +4,6 @@
 #include <condition_variable>
 #include <gazebo/msgs/MessageTypes.hh>
 #include "msgs/msgs.h"
-#include <gazebo/common/Color.hh>
 #include <gazebo/transport/TransportTypes.hh>
 #include <common/Mouse.h>
 #include <common/Pose.h>
@@ -18,7 +17,10 @@ public:
 
   static const double ANALOG_MAX_DIST; // meters
   static const double MAX_FORCE;
-  static const gazebo::common::Color grey_color;
+  static const std::string grey_color;
+  static const std::string red_color;
+  static const std::string green_color;
+  static const std::string blue_color;
 
   static const RobotConfig CONFIG;
 
@@ -38,14 +40,12 @@ public:
 
   std::pair<double, double> getWheelVelocities();
 
-  void indicatePath(int starting_row, int starting_col,
-                    std::string path, gazebo::common::Color);
+  void indicatePath(unsigned int starting_row, unsigned int starting_col,
+                    std::string path, std::string);
 
   bool isStopped();
 
   void publishIndicators();
-
-  void resetIndicators(gazebo::common::Color color);
 
   void robotStateCallback(ConstRobotStatePtr &msg);
 
@@ -55,10 +55,7 @@ public:
 
   void simInit();
 
-  void updateIndicator(int row, int col, gazebo::common::Color);
-
   gazebo::transport::PublisherPtr joint_cmd_pub;
-  gazebo::transport::PublisherPtr indicator_pub;
   gazebo::transport::PublisherPtr maze_location_pub;
   ignition::transport::Node ign_node;
 
@@ -88,7 +85,7 @@ private:
 
   Pose true_pose;
 
-  gazebo::msgs::Visual *indicators[AbstractMaze::MAZE_SIZE][AbstractMaze::MAZE_SIZE];
+  ignition::msgs::Marker *indicators[AbstractMaze::MAZE_SIZE][AbstractMaze::MAZE_SIZE];
 
   void update_markers();
 };

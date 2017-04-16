@@ -35,8 +35,8 @@ public:
   bool ignore_sensor_pose_estimate;
   double row_offset_to_edge;
   double col_offset_to_edge;
-  int row;
-  int col;
+  unsigned int row;
+  unsigned int col;
 
 private:
   bool initialized = false;

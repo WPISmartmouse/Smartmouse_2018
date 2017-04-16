@@ -17,18 +17,19 @@ Node *Node::neighbor(const Direction dir) {
   }
 }
 
-Node::Node() : weight(32767), distance(0), known(false), visited(false), neighbors({0, 0, 0, 0}) {
+Node::Node() : weight(32767), distance(0), known(false), visited(false), neighbors({}) {
 }
 
-Node::Node(int row, int col) : weight(-1), distance(0), known(false), visited(false), neighbors({0, 0, 0, 0}), r(row),
-                               c(col) {
+Node::Node(unsigned int row, unsigned int col) : weight(-1), distance(0), known(false), visited(false), neighbors({}),
+                                                 r(row),
+                                                 c(col) {
 }
 
-int Node::row() {
+unsigned int Node::row() {
   return r;
 }
 
-int Node::col() {
+unsigned int Node::col() {
   return c;
 }
 

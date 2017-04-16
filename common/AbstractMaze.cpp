@@ -10,10 +10,11 @@
 #endif
 
 AbstractMaze::AbstractMaze() : solved(false) {
-  fastest_route = (char *) malloc(PATH_SIZE * sizeof(char));
-  fastest_theoretical_route = (char *) malloc(PATH_SIZE * sizeof(char));
-  pathToNextGoal = (char *) malloc(PATH_SIZE * sizeof(char));
-  int i, j;
+  fastest_route = (char *) calloc(PATH_SIZE, sizeof(char));
+  fastest_theoretical_route = (char *) calloc(PATH_SIZE, sizeof(char));
+  path_to_next_goal = (char *) calloc(PATH_SIZE, sizeof(char));
+
+  unsigned int i, j;
   for (i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
     for (j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
       nodes[i][j] = new Node(i, j);
@@ -21,7 +22,7 @@ AbstractMaze::AbstractMaze() : solved(false) {
   }
 }
 
-int AbstractMaze::get_node(Node **out, int row, int col) {
+int AbstractMaze::get_node(Node **out, unsigned int row, unsigned int col) {
   if (col < 0 || col >= MAZE_SIZE || row < 0 || row >= MAZE_SIZE) {
     return Node::OUT_OF_BOUNDS;
   }
@@ -33,7 +34,7 @@ int AbstractMaze::get_node(Node **out, int row, int col) {
   return 0;
 }
 
-int AbstractMaze::get_node_in_direction(Node **out, int row, int col, const Direction dir) {
+int AbstractMaze::get_node_in_direction(Node **out, unsigned int row, unsigned int col, const Direction dir) {
   switch (dir) {
     case Direction::N:
       return get_node(out, row - 1, col);
@@ -53,7 +54,7 @@ int AbstractMaze::get_node_in_direction(Node **out, int row, int col, const Dire
 }
 
 void AbstractMaze::reset() {
-  int i, j;
+  unsigned int i, j;
   for (i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
     for (j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
       nodes[i][j]->weight = -1;
@@ -80,7 +81,8 @@ void AbstractMaze::update(SensorReading sr) {
 Node *AbstractMaze::maze_diff(AbstractMaze *maze2) {
   Node *new_goal = nullptr;
 
-  int i, j, max = -1;
+  unsigned int i, j;
+  int max = -1;
   for (i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
     for (j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
 
@@ -117,11 +119,11 @@ Node *AbstractMaze::center_node() {
   return nodes[AbstractMaze::CENTER][AbstractMaze::CENTER];
 }
 
-bool AbstractMaze::flood_fill_from_point(char *path, int r0, int c0, int r1, int c1) {
+bool AbstractMaze::flood_fill_from_point(char *path, unsigned int r0, unsigned int c0, unsigned int r1, unsigned int c1) {
   return flood_fill(path, r0, c0, r1, c1);
 }
 
-bool AbstractMaze::flood_fill_from_origin(char *path, int r1, int c1) {
+bool AbstractMaze::flood_fill_from_origin(char *path, unsigned int r1, unsigned int c1) {
   return flood_fill(path, 0, 0, r1, c1);
 }
 
@@ -129,7 +131,7 @@ bool AbstractMaze::flood_fill_from_origin_to_center(char *path) {
   return flood_fill(path, 0, 0, AbstractMaze::MAZE_SIZE / 2, AbstractMaze::MAZE_SIZE / 2);
 }
 
-bool AbstractMaze::flood_fill(char *path, int r0, int c0, int r1, int c1) {
+bool AbstractMaze::flood_fill(char *path, unsigned int r0, unsigned int c0, unsigned int r1, unsigned int c1) {
   Node *n;
   Node *goal = nodes[r1][c1];
 
@@ -198,7 +200,7 @@ bool AbstractMaze::flood_fill(char *path, int r0, int c0, int r1, int c1) {
   return solvable;
 }
 
-void AbstractMaze::remove_neighbor(int row, int col, const Direction dir) {
+void AbstractMaze::remove_neighbor(unsigned int row, unsigned int col, const Direction dir) {
   Node *n1 = nullptr;
   int n1_status = get_node(&n1, row, col);
   Node *n2 = nullptr;
@@ -213,7 +215,7 @@ void AbstractMaze::remove_neighbor(int row, int col, const Direction dir) {
   }
 }
 
-void AbstractMaze::disconnect_neighbor(int row, int col, const Direction dir) {
+void AbstractMaze::disconnect_neighbor(unsigned int row, unsigned int col, const Direction dir) {
   Node *n1 = nullptr;
   int n1_status = get_node(&n1, row, col);
   Node *n2 = nullptr;
@@ -226,7 +228,7 @@ void AbstractMaze::disconnect_neighbor(int row, int col, const Direction dir) {
     n2->neighbors[static_cast<int>(opposite)] = nullptr;
   }
 }
-void AbstractMaze::connect_neighbor(int row, int col, const Direction dir) {
+void AbstractMaze::connect_neighbor(unsigned int row, unsigned int col, const Direction dir) {
   Node *n1 = nullptr;
   int n1_status = get_node(&n1, row, col);
   Node *n2 = nullptr;
@@ -240,14 +242,14 @@ void AbstractMaze::connect_neighbor(int row, int col, const Direction dir) {
   }
 }
 
-void AbstractMaze::connect_all_neighbors(int row, int col) {
+void AbstractMaze::connect_all_neighbors(unsigned int row, unsigned int col) {
   for (Direction d = Direction::First; d < Direction::Last; d++) {
     connect_neighbor(row, col, d);
   }
 }
 
 void AbstractMaze::connect_all_neighbors_in_maze() {
-  int i, j;
+  unsigned int i, j;
   for (i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
     for (j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
       connect_all_neighbors(i, j);
@@ -255,7 +257,7 @@ void AbstractMaze::connect_all_neighbors_in_maze() {
   }
 }
 
-void AbstractMaze::mark_position_visited(int row, int col) {
+void AbstractMaze::mark_position_visited(unsigned int row, unsigned int col) {
   nodes[row][col]->visited = true;
 }
 
@@ -265,7 +267,7 @@ void AbstractMaze::mark_origin_known() {
 
 void AbstractMaze::print_maze_str(char *buff) {
   char *b = buff;
-  int i, j;
+  unsigned int i, j;
   for (i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
     for (j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
       Node *n = nodes[i][j];
@@ -299,7 +301,7 @@ void AbstractMaze::print_maze() {
 }
 
 void AbstractMaze::print_neighbor_maze() {
-  int i, j;
+  unsigned int i, j;
   for (i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
     for (j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
       for (Direction d = Direction::First; d < Direction::Last; d++) {
@@ -313,7 +315,7 @@ void AbstractMaze::print_neighbor_maze() {
 }
 
 void AbstractMaze::print_weight_maze() {
-  int i, j;
+  unsigned int i, j;
   for (i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
     for (j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
       int w = nodes[i][j]->weight;
@@ -324,7 +326,7 @@ void AbstractMaze::print_weight_maze() {
 }
 
 void AbstractMaze::print_dist_maze() {
-  int i, j;
+  unsigned int i, j;
   for (i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
     for (j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
       Node *n = nodes[i][j];
@@ -342,7 +344,7 @@ void AbstractMaze::print_dist_maze() {
 }
 
 void AbstractMaze::print_pointer_maze() {
-  int i, j;
+  unsigned int i, j;
   for (i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
     for (j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
       print("%p ", nodes[i][j]);
@@ -458,8 +460,8 @@ void AbstractMaze::_make_connections(AbstractMaze *maze, Node *node) {
   static std::random_device rd;
   static std::mt19937 g(rd());
 
-  int r = node->row();
-  int c = node->col();
+  unsigned int r = node->row();
+  unsigned int c = node->col();
   maze->mark_position_visited(r, c);
 
   // shuffle directions

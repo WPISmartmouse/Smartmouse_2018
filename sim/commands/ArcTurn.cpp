@@ -31,39 +31,13 @@ void ArcTurn::execute() {
   double currentYaw = pose.yaw;
   double dYaw = WallFollower::yawDiff(currentYaw, goalYaw);
 
-  double theta;
-  switch(start_dir) {
-    case Direction::N: {
-      if (left) {
-        theta = atan2(pose.y, pose.x);
-      } else {
-        theta = atan2(pose.y, -pose.x);
-      }
-      break;
-    }
-    case Direction::E: {
-      if (left) {
-        theta = atan2(-pose.y, pose.x);
-      } else {
-        theta = atan2(pose.y, pose.x);
-      }
-      break;
-    }
-    case Direction::S: {
-      break;
-    }
-    case Direction::W: {
-      break;
-    }
-  }
-
   if (fabs(dYaw) < SimMouse::CONFIG.ROT_TOLERANCE) {
     mouse->setSpeed(0.07, 0.07);
   }
   else if (left) {
-    mouse->setSpeed(0.0, std::max(0.09 + turn_effort, SimMouse::CONFIG.MAX_SPEED));
+    mouse->setSpeed(0.0, std::max(0.10 + turn_effort, SimMouse::CONFIG.MAX_SPEED));
   } else {
-    mouse->setSpeed(std::max(0.09 + turn_effort, SimMouse::CONFIG.MAX_SPEED), 0.0);
+    mouse->setSpeed(std::max(0.10 + turn_effort, SimMouse::CONFIG.MAX_SPEED), 0.0);
   }
 }
 
@@ -95,6 +69,8 @@ bool ArcTurn::isFinished() {
       edgeDisp =  current_pose.x - next_col_x;
       break;
     }
+    default:
+      break;
   }
 
   print("%f\n", edgeDisp);

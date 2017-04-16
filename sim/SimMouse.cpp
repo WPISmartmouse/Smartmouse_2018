@@ -1,23 +1,26 @@
 #include "SimMouse.h"
 #include <gazebo/msgs/msgs.hh>
-#include <common/WallFollower.h>
 
 SimMouse *SimMouse::instance = nullptr;
 const double SimMouse::ANALOG_MAX_DIST = 0.15; // meters
-const double SimMouse::MAX_FORCE = 0.006; // experimental value
-const gazebo::common::Color SimMouse::grey_color{0.8, 0.8, 0.8, 1};
+const double SimMouse::MAX_FORCE = 0.012; // experimental value
+const std::string SimMouse::grey_color = "Gazebo/Grey";
+const std::string SimMouse::red_color = "Gazebo/Red";
+const std::string SimMouse::green_color = "Gazebo/Green";
+const std::string SimMouse::blue_color = "Gazebo/Blue";
 const RobotConfig SimMouse::CONFIG = {
         1.35255, // FRONT_ANALOG_ANGLE (radians)
-        1.35255,  // BACK_ANALOG_ANGLE (radians)
-        0.045,    // FRONT_SIDE_ANALOG_X (meters)
-        0.030,    // FRONT_SIDE_ANALOG_Y (meters)
+        1.35255, // BACK_ANALOG_ANGLE (radians)
+        0.045,   // FRONT_SIDE_ANALOG_X (meters)
+        0.030,   // FRONT_SIDE_ANALOG_Y (meters)
         -0.024,  // BACK_SIDE_ANALOG_X (meters)
-        0.030,  // BACK_SIDE_ANALOG_Y (meters)
+        0.030,   // BACK_SIDE_ANALOG_Y (meters)
         0.055,   // FRONT_ANALOG_X (meters)
         0.12,    // MAX_SPEED (meters/second)
         0.02,    // MIN_SPEED (meters/second)
         0.15,    // WALL_THRESHOLD (meters)
         0.08,    // ROT_TOLERANCE (radians)
+        0.0633,  // TRACK_WIDTH (meters)
 };
 
 double SimMouse::abstractForceToNewtons(double x) {
@@ -78,7 +81,7 @@ std::pair<double, double> SimMouse::getWheelVelocities() {
   return kinematic_controller.getWheelVelocities();
 };
 
-void SimMouse::indicatePath(int row, int col, std::string path, gazebo::common::Color color) {
+void SimMouse::indicatePath(unsigned int row, unsigned int col, std::string path, std::string color) {
   for (char &c : path) {
     switch (c) {
       case 'N':
@@ -96,9 +99,8 @@ void SimMouse::indicatePath(int row, int col, std::string path, gazebo::common::
       default:
         break;
     }
-    updateIndicator(row, col, color);
+    indicators[row][col]->mutable_material()->mutable_script()->set_name(color);
   }
-  publishIndicators();
 }
 
 bool SimMouse::isStopped() {
@@ -107,23 +109,9 @@ bool SimMouse::isStopped() {
 }
 
 void SimMouse::publishIndicators() {
-  for (int i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
-    for (int j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
-      indicator_pub->Publish(*indicators[i][j]);
-    }
-  }
-}
-
-void SimMouse::resetIndicators(gazebo::common::Color color) {
-  for (int i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
-    for (int j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
-      gazebo::msgs::Color c = indicators[i][j]->material().diffuse();
-      if ((color.r == c.r())
-          & (color.g == c.g())
-          & (color.b == c.b())
-          & (color.a == c.a())) {
-        updateIndicator(i, j, grey_color);
-      }
+  for (unsigned int i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
+    for (unsigned int j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
+      ign_node.Request("/marker", *indicators[i][j]);
     }
   }
 }
@@ -203,6 +191,26 @@ void SimMouse::run(double dt_s) {
 }
 
 void SimMouse::update_markers() {
+//  static unsigned int last_row = 0, last_col = 0;
+//
+//  if (last_col != col || last_row != row) {
+//    for (unsigned int i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
+//      for (unsigned int j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
+//        indicators[i][j]->mutable_material()->mutable_script()->set_name(grey_color);
+//      }
+//    }
+//    indicatePath(row, col, maze->path_to_next_goal, red_color);
+//    indicatePath(0, 0, maze->fastest_theoretical_route, green_color);
+//    if (maze->solved) {
+//      indicatePath(0, 0, maze->fastest_route, blue_color);
+//    }
+//
+//    publishIndicators();
+//
+//    last_row = row;
+//    last_col = col;
+//  }
+
   {
     ignition::msgs::Marker estimated_pose_marker;
     estimated_pose_marker.set_ns("estimated_pose");
@@ -210,13 +218,7 @@ void SimMouse::update_markers() {
     estimated_pose_marker.set_action(ignition::msgs::Marker::ADD_MODIFY);
     estimated_pose_marker.set_type(ignition::msgs::Marker::BOX);
     estimated_pose_marker.set_layer(3);
-    auto material = estimated_pose_marker.mutable_material();
-    ignition::msgs::Color *red = new ignition::msgs::Color();
-    red->set_a(1);
-    red->set_r(1);
-    red->set_g(0);
-    red->set_b(0);
-    material->set_allocated_diffuse(red);
+    estimated_pose_marker.mutable_material()->mutable_script()->set_name(red_color);
     ignition::msgs::Vector3d *size = estimated_pose_marker.mutable_scale();
     size->set_x(0.02);
     size->set_y(0.002);
@@ -225,7 +227,6 @@ void SimMouse::update_markers() {
     double y = -getPose().y;
     double yaw = getPose().yaw;
     Set(estimated_pose_marker.mutable_pose(), ignition::math::Pose3d(x, y, 0.02, 0, 0, yaw));
-
     ign_node.Request("/marker", estimated_pose_marker);
   }
 
@@ -244,9 +245,7 @@ void SimMouse::update_markers() {
     estimated_center->set_x(getPose().x);
     estimated_center->set_y(-getPose().y);
     estimated_center->set_z(.02);
-    ignition::msgs::Material *matMsg = error_marker.mutable_material();
-    matMsg->mutable_script()->set_name("Gazebo/Black");
-
+    error_marker.mutable_material()->mutable_script()->set_name("Gazebo/Black");
     ign_node.Request("/marker", error_marker);
   }
 }
@@ -264,40 +263,24 @@ void SimMouse::simInit() {
   kinematic_controller.reset_yaw_to(0.0);
   kinematic_controller.setAcceleration(0.4, 12.2);
 
-//  for (int i = 0; i < AbstractMaze::MAZE_SIZE; i++) { for (int j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
-//      indicators[i][j] = new gazebo::msgs::Visual();
-//      updateIndicator(i, j, grey_color);
-//    }
-//  }
-//  publishIndicators();
+  for (unsigned int i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
+    for (unsigned int j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
+      indicators[i][j] = new ignition::msgs::Marker();
+      ignition::msgs::Marker *marker = indicators[i][j];
+      marker->set_layer(2);
+      marker->set_id(i * AbstractMaze::MAZE_SIZE + j); // constant ID makes each new marker replace the previous one
+      marker->set_action(ignition::msgs::Marker::ADD_MODIFY);
+      marker->set_type(ignition::msgs::Marker::CYLINDER);
+      ignition::msgs::Material *matMsg = marker->mutable_material();
+      matMsg->mutable_script()->set_name("Gazebo/Grey");
+      ignition::msgs::Vector3d *size = marker->mutable_scale();
+      size->set_x(INDICATOR_RAD);
+      size->set_y(INDICATOR_RAD);
+      size->set_z(INDICATOR_LEN);
+      double y = -(i * AbstractMaze::UNIT_DIST + AbstractMaze::HALF_UNIT_DIST);
+      double x = j * AbstractMaze::UNIT_DIST + AbstractMaze::HALF_UNIT_DIST;
+      Set(marker->mutable_pose(), ignition::math::Pose3d(x, y, INDICATOR_Z, 0, 0, 0));
+    }
+  }
+  publishIndicators();
 }
-
-void SimMouse::updateIndicator(int row, int col, gazebo::common::Color color) {
-  gazebo::msgs::Visual *visual = indicators[row][col];
-
-  gazebo::msgs::Visual::Meta *meta = visual->mutable_meta();
-  meta->set_layer(2);
-
-  std::string visual_name = "my_maze::base::indicator_"
-                            + std::to_string(row)
-                            + "_" + std::to_string(col);
-  visual->set_name(visual_name);
-  visual->set_visible(true);
-  visual->set_parent_name("my_maze::base");
-  visual->set_cast_shadows(false);
-
-  gazebo::msgs::Geometry *geomMsg = visual->mutable_geometry();
-  geomMsg->set_type(gazebo::msgs::Geometry::CYLINDER);
-  geomMsg->mutable_cylinder()->set_radius(INDICATOR_RAD);
-  geomMsg->mutable_cylinder()->set_length(INDICATOR_LEN);
-
-  double zero_offset = (AbstractMaze::UNIT_DIST * (AbstractMaze::MAZE_SIZE - 1) / 2);
-  double y = zero_offset - row * AbstractMaze::UNIT_DIST;
-  double x = -zero_offset + col * AbstractMaze::UNIT_DIST;
-
-  gazebo::msgs::Set(visual->mutable_pose(),
-                    ignition::math::Pose3d(x, y, INDICATOR_Z, 0, 0, 0));
-
-  gazebo::msgs::Set(visual->mutable_material()->mutable_diffuse(), color);
-}
-
