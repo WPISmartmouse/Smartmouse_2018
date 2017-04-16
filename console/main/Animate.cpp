@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
     ConsoleMaze maze(fs);
     ConsoleMouse::inst()->seedMaze(&maze);
 
-    int i = 0;
+    unsigned int i = 0;
     while (ConsoleMouse::inst()->inBounds() && i < path.length()) {
       ConsoleMouse::inst()->print_maze_mouse();
       ConsoleMouse::inst()->internalTurnToFace(char_to_dir(path.at(i++)));

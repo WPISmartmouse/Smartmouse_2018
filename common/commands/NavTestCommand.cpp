@@ -19,11 +19,11 @@ bool NavTestCommand::isFinished() {
   bool groupFinished = CommandGroup::isFinished();
 
   if (groupFinished) {
-    bool mazeSolved = solver->isFinished();
+    solver->isFinished();
 
     if (cmd_it != commands.end()) {
       // update maze, but ignore the planned result
-      Direction nextDirection = solver->planNextStep();
+      solver->planNextStep();
       addSequential(*cmd_it);
       cmd_it++;
 #ifdef CONSOLE

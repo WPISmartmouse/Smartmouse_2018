@@ -5,9 +5,9 @@
 #include <tuple>
 #include "KinematicController.h"
 
-KinematicController::KinematicController(const RobotConfig config, Mouse *parent) : initialized(false), config(config),
-                                                                                    parent(parent),
-                                                                                    ignore_sensor_pose_estimate(false) {
+KinematicController::KinematicController(const RobotConfig config, Mouse *parent) : ignore_sensor_pose_estimate(false),
+                                                                                    initialized(false), config(config),
+                                                                                    parent(parent) {
   current_pose_estimate.x = 0;
   current_pose_estimate.y = 0;
   current_pose_estimate.yaw = 0;
@@ -102,7 +102,7 @@ KinematicController::run(double dt_s, double left_angle_rad, double right_angle_
 
     current_pose_estimate.yaw = est_yaw;
 
-    double d_wall_front;
+    double d_wall_front = 0;
     bool wall_in_front = false;
     if (range_data.front_analog < 0.08) {
       double yaw_error = WallFollower::yawDiff(current_pose_estimate.yaw, dir_to_yaw(parent->getDir()));
@@ -136,6 +136,8 @@ KinematicController::run(double dt_s, double left_angle_rad, double right_angle_
         if (wall_in_front) {
           current_pose_estimate.x = (col * AbstractMaze::UNIT_DIST) + d_wall_front + AbstractMaze::HALF_WALL_THICKNESS;
         }
+        break;
+      default:
         break;
     }
   } else {

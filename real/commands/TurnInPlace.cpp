@@ -4,7 +4,7 @@
 TurnInPlace::TurnInPlace(Direction dir) : Command("RealTurnInPlace"), mouse(RealMouse::inst()), dir(dir) {}
 
 void TurnInPlace::initialize() {
-  mouse->ignore_sensor_pose_estimate = true;
+  mouse->kinematic_controller.ignore_sensor_pose_estimate = true;
   goalYaw = dir_to_yaw(dir);
   digitalWrite(RealMouse::LED_2, 1);
 }
@@ -17,8 +17,8 @@ void TurnInPlace::execute() {
 
   // when we get close to aligned, there might be a wall we can use to better estimate our angle
   // this allows us to use that
-  if (fabs(dYaw) < 0.1 && mouse->ignore_sensor_pose_estimate) {
-    mouse->ignore_sensor_pose_estimate = false;
+  if (fabs(dYaw) < 0.1 && mouse->kinematic_controller.ignore_sensor_pose_estimate) {
+    mouse->kinematic_controller.ignore_sensor_pose_estimate = false;
     // FIXME: this is kind of a hack. It's needed because WallFollower checks dir in order to compute
     // FIXME: the correct yaw. it adds dir_to_yaw(getDir()), so we must assume we're close enough
     mouse->internalTurnToFace(dir);
@@ -32,6 +32,7 @@ double TurnInPlace::limit(double x) {
   else if (x < 0) {
     return fmin(fmax(x, -RealMouse::CONFIG.MAX_SPEED), -RealMouse::CONFIG.MIN_SPEED);
   }
+  else return 0;
 }
 
 bool TurnInPlace::isFinished() {

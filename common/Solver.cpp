@@ -1,6 +1,6 @@
 #include "Solver.h"
 
-Solver::Solver(Mouse *mouse) : mouse(mouse), solvable(true) {}
+Solver::Solver(Mouse *mouse) : solvable(true), mouse(mouse) {}
 
 bool Solver::isSolvable() {
   return solvable;

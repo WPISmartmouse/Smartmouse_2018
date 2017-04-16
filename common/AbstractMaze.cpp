@@ -84,9 +84,9 @@ Node *AbstractMaze::maze_diff(AbstractMaze *maze2) {
   for (i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
     for (j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
 
-      Node *n1;
+      Node *n1 = nullptr;
       this->get_node(&n1, i, j);
-      Node *n2;
+      Node *n2 = nullptr;
       maze2->get_node(&n2, i, j);
 
       //don't look at nodes you've already actually visited
@@ -199,9 +199,9 @@ bool AbstractMaze::flood_fill(char *path, int r0, int c0, int r1, int c1) {
 }
 
 void AbstractMaze::remove_neighbor(int row, int col, const Direction dir) {
-  Node *n1;
+  Node *n1 = nullptr;
   int n1_status = get_node(&n1, row, col);
-  Node *n2;
+  Node *n2 = nullptr;
   int n2_status = get_node_in_direction(&n2, row, col, dir);
 
   if (n1_status != Node::OUT_OF_BOUNDS) {
@@ -214,9 +214,9 @@ void AbstractMaze::remove_neighbor(int row, int col, const Direction dir) {
 }
 
 void AbstractMaze::disconnect_neighbor(int row, int col, const Direction dir) {
-  Node *n1;
+  Node *n1 = nullptr;
   int n1_status = get_node(&n1, row, col);
-  Node *n2;
+  Node *n2 = nullptr;
   int n2_status = get_node_in_direction(&n2, row, col, dir);
 
   Direction opposite = opposite_direction(dir);
@@ -227,9 +227,9 @@ void AbstractMaze::disconnect_neighbor(int row, int col, const Direction dir) {
   }
 }
 void AbstractMaze::connect_neighbor(int row, int col, const Direction dir) {
-  Node *n1;
+  Node *n1 = nullptr;
   int n1_status = get_node(&n1, row, col);
-  Node *n2;
+  Node *n2 = nullptr;
   int n2_status = get_node_in_direction(&n2, row, col, dir);
 
   Direction opposite = opposite_direction(dir);
@@ -363,7 +363,7 @@ AbstractMaze AbstractMaze::gen_random_legal_maze() {
   // pick std::random start node of the four possible ones;
   int starting_row = MAZE_SIZE / 2 - std::rand() % 2;
   int starting_col = MAZE_SIZE / 2 - std::rand() % 2;
-  Node *start_node;
+  Node *start_node = nullptr;
   maze.get_node(&start_node, starting_row, starting_col);
   _make_connections(&maze, start_node);
 
@@ -380,7 +380,9 @@ AbstractMaze AbstractMaze::gen_random_legal_maze() {
 
     switch (dir) {
       case Direction::N: {
-        Node *left, *right, *above;
+        Node *left = nullptr;
+        Node *right = nullptr;
+        Node *above = nullptr;
         maze.get_node(&left, row, col - 1);
         maze.get_node(&right, row, col + 1);
         maze.get_node(&above, row - 1, col);
@@ -391,7 +393,9 @@ AbstractMaze AbstractMaze::gen_random_legal_maze() {
       }
         break;
       case Direction::E: {
-        Node *below, *right, *above;
+        Node *below = nullptr;
+        Node *right = nullptr;
+        Node *above = nullptr;
         maze.get_node(&below, row + 1, col);
         maze.get_node(&right, row, col + 1);
         maze.get_node(&above, row - 1, col);
@@ -402,7 +406,9 @@ AbstractMaze AbstractMaze::gen_random_legal_maze() {
       }
         break;
       case Direction::S: {
-        Node *left, *right, *below;
+        Node *left = nullptr;
+        Node *right = nullptr;
+        Node *below = nullptr;
         maze.get_node(&left, row, col - 1);
         maze.get_node(&right, row, col + 1);
         maze.get_node(&below, row + 1, col);
@@ -413,7 +419,9 @@ AbstractMaze AbstractMaze::gen_random_legal_maze() {
       }
         break;
       case Direction::W: {
-        Node *below, *left, *above;
+        Node *below = nullptr;
+        Node*left = nullptr;
+        Node *above = nullptr;
         maze.get_node(&below, row + 1, col);
         maze.get_node(&left, row, col - 1);
         maze.get_node(&above, row - 1, col);
@@ -423,6 +431,8 @@ AbstractMaze AbstractMaze::gen_random_legal_maze() {
         }
       }
         break;
+      default:
+          break;
     }
 
     if (can_delete) {

@@ -1,8 +1,6 @@
 #include <tuple>
+#include <limits>
 #include "WallFollower.h"
-#include "RobotConfig.h"
-#include "Mouse.h"
-#include "util.h"
 
 const double WallFollower::kPWall = 0.8; //TODO: Should be 0.8
 const double WallFollower::kDWall = 50;
@@ -106,6 +104,8 @@ double WallFollower::dispToNextEdge(Mouse *mouse) {
       double next_col_x = mouse->getCol() * AbstractMaze::UNIT_DIST;
       return current_pose.x - next_col_x;
     }
+    default:
+      return std::numeric_limits<double>::quiet_NaN();
   }
 }
 
@@ -129,6 +129,8 @@ double WallFollower::fwdDispToCenter(Mouse *mouse) {
       return col_offset_to_center;
     case Direction::W:
       return -col_offset_to_center;
+    default:
+      return std::numeric_limits<double>::quiet_NaN();
   }
 }
 
@@ -142,6 +144,8 @@ double WallFollower::forwardDisplacement(Direction dir, Pose start_pose, Pose en
       return end_pose.y - start_pose.y;
     case Direction::W:
       return start_pose.x - end_pose.x;
+    default:
+      return std::numeric_limits<double>::quiet_NaN();
   }
 }
 
@@ -159,6 +163,8 @@ double WallFollower::dispToLeftEdge(Mouse *mouse) {
       return AbstractMaze::UNIT_DIST - row_offset;
     case Direction::E:
       return row_offset;
+    default:
+      return std::numeric_limits<double>::quiet_NaN();
   }
 }
 

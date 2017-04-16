@@ -14,7 +14,6 @@
 int main(int argc, char *argv[]) {
 
   std::string maze_file;
-  bool step = false;
   if (argc <= 1) {
     maze_file = "../mazes/16x16.mz";
     printf("Using default maze ../mazes/16x16.mz\n");

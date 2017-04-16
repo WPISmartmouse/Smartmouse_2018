@@ -42,11 +42,11 @@ namespace gazebo {
     sdf::ElementPtr CreateWallCollision(int row,
                                         int col, Direction dir);
 
-    msgs::Geometry *CreateBoxGeometry(float x, float y, float z);
+    msgs::Geometry *CreateBoxGeometry(double x, double y, double z);
 
-    msgs::Geometry *CreateCylinderGeometry(float r, float h);
+    msgs::Geometry *CreateCylinderGeometry(double r, double h);
 
-    msgs::Pose *CreatePose(int row, int col, float z, Direction dir);
+    msgs::Pose *CreatePose(int row, int col, double z, Direction dir);
 
     std::list<sdf::ElementPtr> all_wall_elements;
 
@@ -64,7 +64,7 @@ namespace gazebo {
     std::uniform_int_distribution<int> remove_dist;
 
     constexpr static int MAZE_SIZE = 16;
-    const static float WALL_LENGTH,
+    const static double WALL_LENGTH,
             WALL_HEIGHT,
             WALL_THICKNESS,
             RED_HIGHLIGHT_THICKNESS,

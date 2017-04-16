@@ -251,7 +251,7 @@ TEST(SolveMazeTest, RandSolve) {
 
     Flood solver(ConsoleMouse::inst());
     solver.setup();
-    char *solution = solver.solve();
+    solver.solve();
     solver.teardown();
 
     ASSERT_TRUE(solver.isSolvable());

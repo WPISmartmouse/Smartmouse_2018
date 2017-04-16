@@ -15,8 +15,8 @@ public:
   void simTimeCallback(const ignition::msgs::UInt64 &msg);
 
 private:
-  unsigned long sim_time_ms;
   bool ready;
+  unsigned long sim_time_ms;
   std::mutex timeReadyMutex;
 
 };

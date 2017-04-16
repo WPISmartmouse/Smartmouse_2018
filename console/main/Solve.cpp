@@ -13,7 +13,6 @@
 int main(int argc, char *argv[]) {
 
   std::string maze_file;
-  bool step = false;
   bool rand = false;
   if (argc <= 1) {
     rand = true;

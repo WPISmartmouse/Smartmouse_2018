@@ -6,4 +6,5 @@
 class WaitForStart : public CommandGroup {
 public:
   WaitForStart();
+  bool isFinished();
 };

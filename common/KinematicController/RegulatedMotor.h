@@ -24,7 +24,6 @@ public:
   double abstract_force;
   double acceleration;
   double brake_acceleration;
-  double regulated_setpoint_rps;
   double derivative;
   double error;
   double estimated_velocity_rps;
@@ -32,8 +31,9 @@ public:
   double integral;
   double last_angle_rad;
   double last_error;
-  double smooth_derivative;
   double last_velocity_rps;
+  double regulated_setpoint_rps;
   double setpoint_rps;
+  double smooth_derivative;
   double velocity_rps;
 };

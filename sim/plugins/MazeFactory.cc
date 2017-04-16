@@ -3,12 +3,12 @@
 
 namespace gazebo {
 
-  const float MazeFactory::UNIT = 0.18; //distance between centers of squares
-  const float MazeFactory::WALL_HEIGHT = 0.05;
-  const float MazeFactory::WALL_LENGTH = 0.192;
-  const float MazeFactory::WALL_THICKNESS = 0.012;
-  const float MazeFactory::BASE_HEIGHT = 0.005;
-  const float MazeFactory::RED_HIGHLIGHT_THICKNESS = 0.01;
+  const double MazeFactory::UNIT = 0.18; //distance between centers of squares
+  const double MazeFactory::WALL_HEIGHT = 0.05;
+  const double MazeFactory::WALL_LENGTH = 0.192;
+  const double MazeFactory::WALL_THICKNESS = 0.012;
+  const double MazeFactory::BASE_HEIGHT = 0.005;
+  const double MazeFactory::RED_HIGHLIGHT_THICKNESS = 0.01;
 
   MazeFactory::MazeFactory() : neighbor_dist(0, 3), remove_dist(0, 15) {}
 
@@ -195,9 +195,9 @@ namespace gazebo {
     return collisionElem;
   }
 
-  msgs::Pose *MazeFactory::CreatePose(int row, int col, float z, Direction dir) {
-    float x_offset = 0, y_offset = 0;
-    float z_rot = 0;
+  msgs::Pose *MazeFactory::CreatePose(int row, int col, double z, Direction dir) {
+    double x_offset = 0, y_offset = 0;
+    double z_rot = 0;
 
     switch (dir) {
       case Direction::N:
@@ -214,11 +214,13 @@ namespace gazebo {
         x_offset = -UNIT / 2;
         z_rot = M_PI / 2;
         break;
+      default:
+        break;
     }
 
-    float zero_offset = (UNIT * (MAZE_SIZE - 1) / 2);
-    float x = -zero_offset + x_offset + col * UNIT;
-    float y = zero_offset + y_offset - row * UNIT;
+    double zero_offset = (UNIT * (MAZE_SIZE - 1) / 2);
+    double x = -zero_offset + x_offset + col * UNIT;
+    double y = zero_offset + y_offset - row * UNIT;
 
     msgs::Vector3d *position = new msgs::Vector3d();
     position->set_x(x);
@@ -232,9 +234,11 @@ namespace gazebo {
     msgs::Pose *pose = new msgs::Pose;
     pose->set_allocated_orientation(orientation);
     pose->set_allocated_position(position);
+
+    return pose;
   }
 
-  msgs::Geometry *MazeFactory::CreateBoxGeometry(float x, float y, float z) {
+  msgs::Geometry *MazeFactory::CreateBoxGeometry(double x, double y, double z) {
     msgs::Vector3d *size = new msgs::Vector3d();
     size->set_x(x);
     size->set_y(y);

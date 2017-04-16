@@ -22,7 +22,7 @@ SensorReading ConsoleMouse::checkWalls() {
   std::array<bool, 4> *w = &sr.walls;
   Node *n = true_maze->nodes[row][col];
 
-  for (int i = 0; i < w->size(); i++) {
+  for (unsigned int i = 0; i < w->size(); i++) {
     (*w)[i] = (n->neighbors[i] == 0x0);
   }
 

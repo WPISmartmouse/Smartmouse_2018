@@ -8,10 +8,10 @@ void Command::setTimerImplementation(TimerInterface *timer) {
   Command::timer = timer;
 }
 
-Command::Command() : initialized(false), name("unnamed") {}
+Command::Command() : name("unnamed"), initialized(false), running(false) {}
 
 Command::Command(const char *name) : name(name),
-                                     initialized(false) {}
+                                     initialized(false), running(false) {}
 
 Command::~Command() {}
 

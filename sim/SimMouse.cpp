@@ -118,10 +118,10 @@ void SimMouse::resetIndicators(gazebo::common::Color color) {
   for (int i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
     for (int j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
       gazebo::msgs::Color c = indicators[i][j]->material().diffuse();
-      if (color.r == c.r()
-          & color.g == c.g()
-          & color.b == c.b()
-          & color.a == c.a()) {
+      if ((color.r == c.r())
+          & (color.g == c.g())
+          & (color.b == c.b())
+          & (color.a == c.a())) {
         updateIndicator(i, j, grey_color);
       }
     }
@@ -159,6 +159,7 @@ void SimMouse::run(double dt_s) {
                                                                                  range_data);
 
   // THIS IS SUPER IMPORTANT!
+  // update row/col information
   row = kinematic_controller.row;
   col = kinematic_controller.col;
 
@@ -199,7 +200,6 @@ void SimMouse::run(double dt_s) {
   joint_cmd_pub->Publish(right);
 
   update_markers();
-
 }
 
 void SimMouse::update_markers() {

@@ -63,12 +63,9 @@ RangeData RealMouse::getRangeData() {
     RangeData sr;
     sr.front_left_analog = adcToMeters(analogRead(FRONT_LEFT_ANALOG_PIN));
     sr.back_left_analog = adcToMeters(analogRead(BACK_LEFT_ANALOG_PIN));
-//    sr.front_right_analog = adcToMeters(analogRead(FRONT_RIGHT_ANALOG_PIN));
-    sr.front_right_analog = .18;
-//    sr.back_right_analog = adcToMeters(analogRead(BACK_RIGHT_ANALOG_PIN));
-    sr.back_right_analog = .18;
-//    sr.front_analog = adcToMeters(analogRead(FRONT_ANALOG_PIN));
-    sr.front_analog = .18;
+    sr.front_right_analog = adcToMeters(analogRead(FRONT_RIGHT_ANALOG_PIN));
+    sr.back_right_analog = adcToMeters(analogRead(BACK_RIGHT_ANALOG_PIN));
+    sr.front_analog = adcToMeters(analogRead(FRONT_ANALOG_PIN));
     return sr;
   }
 
@@ -94,20 +91,19 @@ RangeData RealMouse::getRangeData() {
     sr.walls[static_cast<int>(right_of_dir(dir))] = analogRead(FRONT_RIGHT_ANALOG_PIN) < 0.15;
     sr.walls[static_cast<int>(opposite_direction(dir))] = false;
 
-
     return sr;
   }
 
   double RealMouse::getColOffsetToEdge() {
-    return col_offset_to_edge;
+    return kinematic_controller.col_offset_to_edge;
   }
 
   double RealMouse::getRowOffsetToEdge() {
-    return row_offset_to_edge;
+    return kinematic_controller.row_offset_to_edge;
   }
 
   Pose RealMouse::getPose() {
-    return estimated_pose;
+    return kinematic_controller.getPose();
   }
 
   std::pair<double, double> RealMouse::getWheelVelocities() {
@@ -121,11 +117,10 @@ RangeData RealMouse::getRangeData() {
     std::tie(abstract_left_force, abstract_right_force) = kinematic_controller.run(dt_s, left_angle_rad,
                                                                                    right_angle_rad, 0, 0, range_data);
 
+    // THIS IS SUPER IMPORTANT!
     // update row/col information
-    row = (int) (estimated_pose.y / AbstractMaze::UNIT_DIST);
-    col = (int) (estimated_pose.x / AbstractMaze::UNIT_DIST);
-    row_offset_to_edge = fmod(estimated_pose.y, AbstractMaze::UNIT_DIST);
-    col_offset_to_edge = fmod(estimated_pose.x, AbstractMaze::UNIT_DIST);
+    row = kinematic_controller.row;
+    col = kinematic_controller.col;
 
     if (abstract_left_force < 0) {
       analogWrite(MOTOR1A, (int) -abstract_left_force);
@@ -161,6 +156,8 @@ RangeData RealMouse::getRangeData() {
     pinMode(ENCODER1B, INPUT_PULLUP);
     pinMode(ENCODER2A, INPUT_PULLUP);
     pinMode(ENCODER2B, INPUT_PULLUP);
+    pinMode(RESET_PIN, INPUT_PULLUP);
+    pinMode(BUTTON_PIN, INPUT_PULLUP);
 
     left_encoder.init(ENCODER1A, ENCODER1B);
     right_encoder.init(ENCODER2A, ENCODER2B);

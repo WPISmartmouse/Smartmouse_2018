@@ -63,6 +63,8 @@ Direction int_to_dir(int i) {
       return Direction::S;
     case 3:
       return Direction::W;
+    default:
+      return Direction::INVALID;
   }
 }
 
