@@ -28,7 +28,7 @@ bool SolveCommand::isFinished() {
     }
 
     to_center = new SolveMaze(solver);
-    to_start  = new SolveMaze(solver);
+    to_start  = new SolveMaze(solver, 0, 0);
     addSequential(to_center);
     addSequential(to_start);
     return false;
