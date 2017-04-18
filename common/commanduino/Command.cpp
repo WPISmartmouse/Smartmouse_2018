@@ -54,7 +54,6 @@ bool Command::isRunning() {
 void Command::initialize() {}
 
 void Command::_initialize() {
-//  printf("(%s) starting\n", name);
   running = true;
   startTime = timer->programTimeMs();
 }
@@ -62,7 +61,6 @@ void Command::_initialize() {
 void Command::execute() {}
 
 void Command::_execute() {}
-
 
 void Command::end() {}
 

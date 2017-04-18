@@ -8,6 +8,7 @@ Stop::Stop(unsigned long stop_time) : Command("end"), stop_time(stop_time) {}
 void Stop::initialize() {
   setTimeout(stop_time);
   RealMouse::inst()->setSpeed(0, 0);
+  digitalWrite(RealMouse::LED_7, 1);
 }
 
 bool Stop::isFinished() {
@@ -15,4 +16,5 @@ bool Stop::isFinished() {
 }
 
 void Stop::end() {
+  digitalWrite(RealMouse::LED_7, 0);
 }

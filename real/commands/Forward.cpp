@@ -32,8 +32,6 @@ bool Forward::isFinished() {
 }
 
 void Forward::end() {
-  auto p = mouse->getPose();
-  print("done: %f, %f, %f\n", p.x, p.y, p.yaw);
   digitalWrite(RealMouse::LED_1, 0);
 }
 

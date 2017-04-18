@@ -27,10 +27,10 @@ void TurnInPlace::execute() {
 
 double TurnInPlace::limit(double x) {
   if (x > 0) {
-    return fmax(fmin(x, RealMouse::config.MAX_SPEED), RealMouse::config.MIN_SPEED);
+    return fmax(fmin(x, config.MAX_SPEED), config.MIN_SPEED);
   }
   else if (x < 0) {
-    return fmin(fmax(x, -RealMouse::config.MAX_SPEED), -RealMouse::config.MIN_SPEED);
+    return fmin(fmax(x, -config.MAX_SPEED), -config.MIN_SPEED);
   }
   else return 0;
 }
@@ -40,13 +40,12 @@ bool TurnInPlace::isFinished() {
   dYaw = WallFollower::yawDiff(currentYaw, goalYaw);
   double vl, vr;
   std::tie(vl, vr) = mouse->getWheelVelocities();
-  print("%f %f %f\n", vl, vr, dYaw);
-  return (fabs(dYaw) < RealMouse::config.ROT_TOLERANCE) && fabs(vl) < 0.05 && fabs(vr) < 0.05;
+  return (fabs(dYaw) < config.ROT_TOLERANCE) && fabs(vl) < 0.05 && fabs(vr) < 0.05;
 }
 
 void TurnInPlace::end() {
   digitalWrite(RealMouse::LED_2, 0);
-  printf("done turning in place.\n");
+  print("done turning in place.\n");
   mouse->internalTurnToFace(dir);
 }
 

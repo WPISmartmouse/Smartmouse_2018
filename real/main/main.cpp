@@ -17,15 +17,16 @@ AbstractMaze maze;
 Scheduler *scheduler;
 RealMouse *mouse;
 unsigned long last_t;
-bool done;
+bool done = false;
 
 void setup() {
   Command::setTimerImplementation(&timer);
   mouse = RealMouse::inst();
   mouse->setup();
 
-  scheduler = new Scheduler(new RepeatCommand<Forward>(3));
-//  scheduler = new Scheduler(new SolveCommand(new Flood(mouse)));
+//  scheduler = new Scheduler(new RepeatCommand<Forward>(3));
+//  scheduler = new Scheduler(new Turn(Direction::N));
+  scheduler = new Scheduler(new SolveCommand(new Flood(mouse)));
 
   last_t = timer.programTimeMs();
 
@@ -44,6 +45,8 @@ void loop() {
   }
 
   mouse->run(dt_s);
+
+  print(".. %i\n", done);
   if (!done) {
     done = scheduler->run();
   }

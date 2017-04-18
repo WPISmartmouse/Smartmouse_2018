@@ -22,7 +22,6 @@ void CommandGroup::_initialize() {
 void CommandGroup::execute() {}
 
 void CommandGroup::_execute() {
-
   Command *executingCommand = 0;
   bool done = false;
 

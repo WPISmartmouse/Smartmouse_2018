@@ -2,7 +2,7 @@
 #include <limits>
 #include "WallFollower.h"
 
-const double WallFollower::kPWall = 0.1; //TODO: Should be 0.8
+const double WallFollower::kPWall = 0.15; //TODO: Should be 0.8
 const double WallFollower::kDWall = 50;
 const double WallFollower::kPYaw = 3.0;
 

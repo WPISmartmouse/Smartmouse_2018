@@ -16,7 +16,8 @@ const RobotConfig config = {
         TRACK_WIDTH : 0.0633,
 };
 #elif defined(CONSOLE)
-#else
+
+#else // REAL
 const RobotConfig config = {
         FRONT_ANALOG_ANGLE : 1.35255,
         BACK_ANALOG_ANGLE : 1.22,
@@ -28,7 +29,7 @@ const RobotConfig config = {
         MAX_SPEED : 0.09,
         MIN_SPEED : 0.021,
         WALL_THRESHOLD : 0.15,
-        ROT_TOLERANCE : 0.08,
+        ROT_TOLERANCE : 0.14,
         TRACK_WIDTH : 0.0633,
 };
 #endif
