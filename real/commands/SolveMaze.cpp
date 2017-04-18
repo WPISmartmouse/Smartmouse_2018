@@ -22,6 +22,7 @@ bool SolveMaze::isFinished() {
 
     if (!mazeSolved) {
       Direction nextDirection = solver->planNextStep();
+      print("dest dir: %c\n", dir_to_char(nextDirection));
       if (nextDirection == solver->mouse->getDir()) {
         addSequential(new Forward());
       } else {

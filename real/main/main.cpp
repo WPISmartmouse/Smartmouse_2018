@@ -13,11 +13,27 @@
 
 ArduinoTimer timer;
 AbstractMaze maze;
-//Scheduler scheduler(new SolveCommand(new Flood(RealMouse::inst())));
 Scheduler *scheduler;
 RealMouse *mouse;
 unsigned long last_t;
 bool done = false;
+
+class Hack : public CommandGroup {
+public:
+  Hack() {
+    addSequential(new Forward());
+    addSequential(new Forward());
+    addSequential(new Forward());
+    addSequential(new Forward());
+    addSequential(new Forward());
+    addSequential(new Turn(Direction::W));
+    addSequential(new Turn(Direction::S));
+    addSequential(new Turn(Direction::E));
+    addSequential(new Turn(Direction::W));
+    addSequential(new Forward());
+    addSequential(new Turn(Direction::S));
+  }
+};
 
 void setup() {
   Command::setTimerImplementation(&timer);
@@ -25,12 +41,13 @@ void setup() {
   mouse->setup();
 
 //  scheduler = new Scheduler(new RepeatCommand<Forward>(3));
+//  scheduler = new Scheduler(new Hack());
 //  scheduler = new Scheduler(new Turn(Direction::N));
   scheduler = new Scheduler(new SolveCommand(new Flood(mouse)));
 
   last_t = timer.programTimeMs();
 
-  delay(1000);
+  delay(3000);
 
   print("setup\r\n");
 }
@@ -46,7 +63,6 @@ void loop() {
 
   mouse->run(dt_s);
 
-  print(".. %i\n", done);
   if (!done) {
     done = scheduler->run();
   }

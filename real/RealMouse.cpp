@@ -63,7 +63,10 @@ RealMouse::RealMouse() : kinematic_controller(this) {}
 SensorReading RealMouse::checkWalls() {
   SensorReading sr(row, col);
 
-  sr.walls[static_cast<int>(dir)] = range_data.front_analog < 0.15;
+  print(">>>>> %f, %f, %f, %f, %f\n", range_data.front_left_analog, range_data.back_left_analog,
+        range_data.front_right_analog, range_data.back_right_analog, range_data.front_analog);
+
+  sr.walls[static_cast<int>(dir)] = range_data.front_analog < 0.11;
   sr.walls[static_cast<int>(left_of_dir(dir))] = range_data.front_left_analog < 0.15;
   sr.walls[static_cast<int>(right_of_dir(dir))] = range_data.front_right_analog < 0.15;
   sr.walls[static_cast<int>(opposite_direction(dir))] = false;
@@ -98,7 +101,8 @@ void RealMouse::run(double dt_s) {
   range_data.back_right_analog = adcToMeters(analogRead(BACK_RIGHT_ANALOG_PIN));
   range_data.front_analog = adcToMeters(analogRead(FRONT_ANALOG_PIN));
 
-//  print("%f, %f, %f, %f, %f\n", range_data.front_left_analog, range_data.back_left_analog, range_data.front_right_analog, range_data.back_right_analog, range_data.front_analog);
+  print("%f, %f, %f, %f, %f\n", range_data.front_left_analog, range_data.back_left_analog,
+        range_data.front_right_analog, range_data.back_right_analog, range_data.front_analog);
 
   std::tie(abstract_left_force, abstract_right_force) = kinematic_controller.run(dt_s, left_angle_rad,
                                                                                  right_angle_rad, 0, 0, range_data);
@@ -108,21 +112,21 @@ void RealMouse::run(double dt_s) {
   row = kinematic_controller.row;
   col = kinematic_controller.col;
 
-    if (abstract_left_force < 0) {
-      analogWrite(MOTOR1A, (int) -abstract_left_force);
-      analogWrite(MOTOR1B, 0);
-    } else {
-      analogWrite(MOTOR1A, 0);
-      analogWrite(MOTOR1B, (int) abstract_left_force);
-    }
+  if (abstract_left_force < 0) {
+    analogWrite(MOTOR1A, (int) -abstract_left_force);
+    analogWrite(MOTOR1B, 0);
+  } else {
+    analogWrite(MOTOR1A, 0);
+    analogWrite(MOTOR1B, (int) abstract_left_force);
+  }
 
-    if (abstract_right_force < 0) {
-      analogWrite(MOTOR2B, 0);
-      analogWrite(MOTOR2A, (int) -abstract_right_force);
-    } else {
-      analogWrite(MOTOR2B, (int) abstract_right_force);
-      analogWrite(MOTOR2A, 0);
-    }
+  if (abstract_right_force < 0) {
+    analogWrite(MOTOR2B, 0);
+    analogWrite(MOTOR2A, (int) -abstract_right_force);
+  } else {
+    analogWrite(MOTOR2B, (int) abstract_right_force);
+    analogWrite(MOTOR2A, 0);
+  }
 }
 
 void RealMouse::setup() {
