@@ -2,12 +2,11 @@
 #include <limits>
 #include "WallFollower.h"
 
-const double WallFollower::kPWall = 0.8; //TODO: Should be 0.8
+const double WallFollower::kPWall = 0.1; //TODO: Should be 0.8
 const double WallFollower::kDWall = 50;
 const double WallFollower::kPYaw = 3.0;
 
-WallFollower::WallFollower(RobotConfig config) : disp(0.0), goalDisp(AbstractMaze::UNIT_DIST), dispError(goalDisp),
-                                                 config(config) {}
+WallFollower::WallFollower() : disp(0.0), goalDisp(AbstractMaze::UNIT_DIST), dispError(goalDisp) {}
 
 WallFollower::WallFollower(double goalDisp) : disp(0.0), goalDisp(goalDisp), dispError(goalDisp) {}
 
@@ -17,13 +16,12 @@ std::pair<double, double> WallFollower::compute_wheel_velocities(Mouse *mouse, P
   dispError = goalDisp - disp;
 
   double currentYaw, offset;
-  std::tie(currentYaw, offset) = WallFollower::estimate_pose(config, range_data, mouse);
+  std::tie(currentYaw, offset) = WallFollower::estimate_pose(range_data, mouse);
   double errorToCenter = offset - AbstractMaze::HALF_UNIT_DIST;
 
   double goalYawOffset = errorToCenter * kPYaw;
 
   double goalYaw = dir_to_yaw(mouse->getDir()) + goalYawOffset;
-//  print("%f, %f\n", goalYaw*180/M_PI, currentYaw*180/M_PI);
 
   // The goal is to be facing straight when you wall distance is correct.
   // To achieve this, we control our yaw as a function of our error in wall distance
@@ -42,7 +40,7 @@ std::pair<double, double> WallFollower::compute_wheel_velocities(Mouse *mouse, P
   return std::pair<double, double>(l, r);
 }
 
-std::pair<double, double> WallFollower::estimate_pose(RobotConfig config, RangeData range_data, Mouse *mouse) {
+std::pair<double, double> WallFollower::estimate_pose(RangeData range_data, Mouse *mouse) {
   std::pair<double, double> out;
   double *yaw = &out.first;
   double *offset = &out.second;

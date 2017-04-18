@@ -19,22 +19,17 @@ RealMouse *mouse;
 unsigned long last_t;
 bool done;
 
-class Hack : public CommandGroup {
-public:
-  Hack() {
-    addSequential(new Forward());
-    addSequential(new Turn(Direction::S));
-  }
-};
-
 void setup() {
   Command::setTimerImplementation(&timer);
   mouse = RealMouse::inst();
   mouse->setup();
 
   scheduler = new Scheduler(new RepeatCommand<Forward>(3));
+//  scheduler = new Scheduler(new SolveCommand(new Flood(mouse)));
 
   last_t = timer.programTimeMs();
+
+  delay(1000);
 
   print("setup\r\n");
 }
@@ -57,5 +52,4 @@ void loop() {
     digitalWrite(RealMouse::SYS_LED, 1);
   }
   last_t = now;
-
 }

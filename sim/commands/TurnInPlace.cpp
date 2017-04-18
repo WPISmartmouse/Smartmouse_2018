@@ -23,7 +23,7 @@ void TurnInPlace::execute() {
 }
 
 double TurnInPlace::limit(double x) {
-  return std::fmax(std::fmin(x, SimMouse::CONFIG.MAX_SPEED), -SimMouse::CONFIG.MAX_SPEED);
+  return std::fmax(std::fmin(x, config.MAX_SPEED), -config.MAX_SPEED);
 }
 
 bool TurnInPlace::isFinished() {
@@ -31,7 +31,7 @@ bool TurnInPlace::isFinished() {
   dYaw = WallFollower::yawDiff(currentYaw, goalYaw);
   double vl, vr;
   std::tie(vl, vr) = mouse->getWheelVelocities();
-  return (fabs(dYaw) < SimMouse::CONFIG.ROT_TOLERANCE) && fabs(vl) < 0.05 && fabs(vr) < 0.05;
+  return (fabs(dYaw) < config.ROT_TOLERANCE) && fabs(vl) < 0.05 && fabs(vr) < 0.05;
 }
 
 void TurnInPlace::end() {

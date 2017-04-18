@@ -3,19 +3,6 @@
 #include "RealMouse.h"
 
 RealMouse *RealMouse::instance = nullptr;
-const RobotConfig RealMouse::CONFIG = {
-        1.35255, // FRONT_ANALOG_ANGLE
-        1.22,    // BACK_ANALOG_ANGLE TODO: CHANGE THIS TO MATCH REAL ROBOT
-        0.04,    // FRONT_SIDE_ANALOG_X
-        0.024,   // FRONT_SIDE_ANALOG_Y
-        -0.024,  // BACK_SIDE_ANALOG_X
-        0.024,   // BACK_SIDE_ANALOG_Y
-        0.045,   // FRONT_ANALOG_X
-        0.09,    // MAX_SPEED
-        0.021,   // MIN_SPEED
-        0.15,    // WALL_THRESHOLD
-        0.0633,  // TRACK_WIDTH (meters)
-};
 const int RealMouse::ir_lookup[18] = {
         751, // .01
         653, // .02
@@ -61,67 +48,65 @@ double RealMouse::adcToMeters(int adc) {
 }
 
 RangeData RealMouse::getRangeData() {
-    RangeData sr;
-    sr.front_left_analog = adcToMeters(analogRead(FRONT_LEFT_ANALOG_PIN));
-    sr.back_left_analog = adcToMeters(analogRead(BACK_LEFT_ANALOG_PIN));
-    sr.front_right_analog = adcToMeters(analogRead(FRONT_RIGHT_ANALOG_PIN));
-    sr.back_right_analog = adcToMeters(analogRead(BACK_RIGHT_ANALOG_PIN));
-    sr.front_analog = adcToMeters(analogRead(FRONT_ANALOG_PIN));
-    return sr;
+  return range_data;
+}
+
+RealMouse *RealMouse::inst() {
+  if (instance == NULL) {
+    instance = new RealMouse();
   }
+  return instance;
+}
 
-  RealMouse *RealMouse::inst() {
-    if (instance == NULL) {
-      instance = new RealMouse();
-    }
-    return instance;
-  }
+RealMouse::RealMouse() : kinematic_controller(this) {}
 
-  RealMouse::RealMouse() : kinematic_controller(RealMouse::CONFIG, this) {}
+SensorReading RealMouse::checkWalls() {
+  SensorReading sr(row, col);
 
-  SensorReading RealMouse::checkWalls() {
-    SensorReading sr(row, col);
-    range_data.front_left_analog = analogRead(FRONT_LEFT_ANALOG_PIN);
-    range_data.front_right_analog = analogRead(FRONT_RIGHT_ANALOG_PIN);
-    range_data.back_left_analog = analogRead(BACK_LEFT_ANALOG_PIN);
-    range_data.back_right_analog = analogRead(BACK_RIGHT_ANALOG_PIN);
-    range_data.front_analog =  analogRead(FRONT_ANALOG_PIN);
+  sr.walls[static_cast<int>(dir)] = range_data.front_analog < 0.15;
+  sr.walls[static_cast<int>(left_of_dir(dir))] = range_data.front_left_analog< 0.15;
+  sr.walls[static_cast<int>(right_of_dir(dir))] = range_data.front_right_analog < 0.15;
+  sr.walls[static_cast<int>(opposite_direction(dir))] = false;
 
-    sr.walls[static_cast<int>(dir)] = analogRead(FRONT_ANALOG_PIN) < 0.15;
-    sr.walls[static_cast<int>(left_of_dir(dir))] = analogRead(FRONT_LEFT_ANALOG_PIN) < 0.15;
-    sr.walls[static_cast<int>(right_of_dir(dir))] = analogRead(FRONT_RIGHT_ANALOG_PIN) < 0.15;
-    sr.walls[static_cast<int>(opposite_direction(dir))] = false;
+  return sr;
+}
 
-    return sr;
-  }
+double RealMouse::getColOffsetToEdge() {
+  return kinematic_controller.col_offset_to_edge;
+}
 
-  double RealMouse::getColOffsetToEdge() {
-    return kinematic_controller.col_offset_to_edge;
-  }
+double RealMouse::getRowOffsetToEdge() {
+  return kinematic_controller.row_offset_to_edge;
+}
 
-  double RealMouse::getRowOffsetToEdge() {
-    return kinematic_controller.row_offset_to_edge;
-  }
+Pose RealMouse::getPose() {
+  return kinematic_controller.getPose();
+}
 
-  Pose RealMouse::getPose() {
-    return kinematic_controller.getPose();
-  }
+std::pair<double, double> RealMouse::getWheelVelocities() {
+  return kinematic_controller.getWheelVelocities();
+};
 
-  std::pair<double, double> RealMouse::getWheelVelocities() {
-    return kinematic_controller.getWheelVelocities();
-  };
+void RealMouse::run(double dt_s) {
+  double abstract_left_force, abstract_right_force;
+  double left_angle_rad = tick_to_rad(left_encoder.read());
+  double right_angle_rad = tick_to_rad(right_encoder.read());
 
-  void RealMouse::run(double dt_s) {
-    double abstract_left_force, abstract_right_force;
-    double left_angle_rad = tick_to_rad(left_encoder.read());
-    double right_angle_rad = tick_to_rad(right_encoder.read());
-    std::tie(abstract_left_force, abstract_right_force) = kinematic_controller.run(dt_s, left_angle_rad,
-                                                                                   right_angle_rad, 0, 0, range_data);
+  range_data.front_left_analog = adcToMeters(analogRead(FRONT_LEFT_ANALOG_PIN));
+  range_data.back_left_analog = adcToMeters(analogRead(BACK_LEFT_ANALOG_PIN));
+  range_data.front_right_analog = adcToMeters(analogRead(FRONT_RIGHT_ANALOG_PIN));
+  range_data.back_right_analog = adcToMeters(analogRead(BACK_RIGHT_ANALOG_PIN));
+  range_data.front_analog = adcToMeters(analogRead(FRONT_ANALOG_PIN));
 
-    // THIS IS SUPER IMPORTANT!
-    // update row/col information
-    row = kinematic_controller.row;
-    col = kinematic_controller.col;
+//  print("%f, %f, %f, %f, %f\n", range_data.front_left_analog, range_data.back_left_analog, range_data.front_right_analog, range_data.back_right_analog, range_data.front_analog);
+
+  std::tie(abstract_left_force, abstract_right_force) = kinematic_controller.run(dt_s, left_angle_rad,
+                                                                                 right_angle_rad, 0, 0, range_data);
+
+  // THIS IS SUPER IMPORTANT!
+  // update row/col information
+  row = kinematic_controller.row;
+  col = kinematic_controller.col;
 
     if (abstract_left_force < 0) {
       analogWrite(MOTOR1A, (int) -abstract_left_force);
@@ -138,40 +123,40 @@ RangeData RealMouse::getRangeData() {
       analogWrite(MOTOR2B, (int) abstract_right_force);
       analogWrite(MOTOR2A, 0);
     }
-  }
+}
 
-  void RealMouse::setup() {
-    pinMode(LED_1, OUTPUT);
-    pinMode(LED_2, OUTPUT);
-    pinMode(LED_3, OUTPUT);
-    pinMode(LED_4, OUTPUT);
-    pinMode(LED_5, OUTPUT);
-    pinMode(LED_6, OUTPUT);
-    pinMode(LED_7, OUTPUT);
-    pinMode(SYS_LED, OUTPUT);
-    pinMode(MOTOR1A, OUTPUT);
-    pinMode(MOTOR1B, OUTPUT);
-    pinMode(MOTOR2A, OUTPUT);
-    pinMode(MOTOR2B, OUTPUT);
-    pinMode(ENCODER1A, INPUT_PULLUP);
-    pinMode(ENCODER1B, INPUT_PULLUP);
-    pinMode(ENCODER2A, INPUT_PULLUP);
-    pinMode(ENCODER2B, INPUT_PULLUP);
-    pinMode(RESET_PIN, INPUT_PULLUP);
-    pinMode(BUTTON_PIN, INPUT_PULLUP);
+void RealMouse::setup() {
+  pinMode(LED_1, OUTPUT);
+  pinMode(LED_2, OUTPUT);
+  pinMode(LED_3, OUTPUT);
+  pinMode(LED_4, OUTPUT);
+  pinMode(LED_5, OUTPUT);
+  pinMode(LED_6, OUTPUT);
+  pinMode(LED_7, OUTPUT);
+  pinMode(SYS_LED, OUTPUT);
+  pinMode(MOTOR1A, OUTPUT);
+  pinMode(MOTOR1B, OUTPUT);
+  pinMode(MOTOR2A, OUTPUT);
+  pinMode(MOTOR2B, OUTPUT);
+  pinMode(ENCODER1A, INPUT_PULLUP);
+  pinMode(ENCODER1B, INPUT_PULLUP);
+  pinMode(ENCODER2A, INPUT_PULLUP);
+  pinMode(ENCODER2B, INPUT_PULLUP);
+  pinMode(RESET_PIN, INPUT_PULLUP);
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
 
-    left_encoder.init(ENCODER1A, ENCODER1B);
-    right_encoder.init(ENCODER2A, ENCODER2B);
+  left_encoder.init(ENCODER1A, ENCODER1B);
+  right_encoder.init(ENCODER2A, ENCODER2B);
 
-    kinematic_controller.reset_x_to(0.06);
-    kinematic_controller.reset_y_to(0.09);
-    kinematic_controller.reset_yaw_to(0.0);
-    kinematic_controller.setAcceleration(0.2, 1.0);
+  kinematic_controller.reset_x_to(0.06);
+  kinematic_controller.reset_y_to(0.09);
+  kinematic_controller.reset_yaw_to(0.0);
+  kinematic_controller.setAcceleration(0.2, 1.0);
 
-    // Teensy does USB in software, so serial rate doesn't do anything
-    Serial.begin(0);
-  }
+  // Teensy does USB in software, so serial rate doesn't do anything
+  Serial.begin(0);
+}
 
-  void RealMouse::setSpeed(double l_mps, double r_mps) {
-    kinematic_controller.setSpeedMps(l_mps, r_mps);
-  }
+void RealMouse::setSpeed(double l_mps, double r_mps) {
+  kinematic_controller.setSpeedMps(l_mps, r_mps);
+}

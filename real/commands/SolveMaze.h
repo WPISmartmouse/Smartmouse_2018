@@ -7,7 +7,7 @@
 class SolveMaze : public CommandGroup {
 public:
   SolveMaze(Solver *solver);
-  SolveMaze(Solver *solver, int goal_row, int goal_col);
+  SolveMaze(Solver *solver, unsigned int goal_row, unsigned int goal_col);
 
   void initialize();
 
@@ -17,6 +17,7 @@ public:
 
 private:
   Solver *solver;
-  int movements, goal_row, goal_col;
+  int movements;
+  unsigned int goal_row, goal_col;
 
 };

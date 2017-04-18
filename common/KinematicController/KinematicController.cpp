@@ -5,11 +5,8 @@
 #include <tuple>
 #include "KinematicController.h"
 
-KinematicController::KinematicController(const RobotConfig config, Mouse *parent) : left_motor(config),
-                                                                                    right_motor(config),
-                                                                                    ignore_sensor_pose_estimate(false),
-                                                                                    initialized(false), config(config),
-                                                                                    parent(parent) {
+KinematicController::KinematicController(Mouse *mouse) : ignore_sensor_pose_estimate(false),
+                                                         initialized(false), mouse(mouse) {
   current_pose_estimate.x = 0;
   current_pose_estimate.y = 0;
   current_pose_estimate.yaw = 0;
@@ -85,8 +82,8 @@ KinematicController::run(double dt_s, double left_angle_rad, double right_angle_
     current_pose_estimate.yaw = yaw;
   }
 
-  row = (int) (current_pose_estimate.y / AbstractMaze::UNIT_DIST);
-  col = (int) (current_pose_estimate.x / AbstractMaze::UNIT_DIST);
+  row = (unsigned int) (current_pose_estimate.y / AbstractMaze::UNIT_DIST);
+  col = (unsigned int) (current_pose_estimate.x / AbstractMaze::UNIT_DIST);
   row_offset_to_edge = fmod(current_pose_estimate.y, AbstractMaze::UNIT_DIST);
   col_offset_to_edge = fmod(current_pose_estimate.x, AbstractMaze::UNIT_DIST);
 
@@ -94,7 +91,7 @@ KinematicController::run(double dt_s, double left_angle_rad, double right_angle_
   Pose kc_pose = getPose();
   current_pose_estimate = kc_pose;
   double est_yaw, offset;
-  std::tie(est_yaw, offset) = WallFollower::estimate_pose(config, range_data, parent);
+  std::tie(est_yaw, offset) = WallFollower::estimate_pose(range_data, mouse);
 
   if (!ignore_sensor_pose_estimate) {
     if (p) {
@@ -107,12 +104,12 @@ KinematicController::run(double dt_s, double left_angle_rad, double right_angle_
     double d_wall_front = 0;
     bool wall_in_front = false;
     if (range_data.front_analog < 0.08) {
-      double yaw_error = WallFollower::yawDiff(current_pose_estimate.yaw, dir_to_yaw(parent->getDir()));
+      double yaw_error = WallFollower::yawDiff(current_pose_estimate.yaw, dir_to_yaw(mouse->getDir()));
       d_wall_front = cos(yaw_error) * range_data.front_analog + config.FRONT_ANALOG_X;
-      wall_in_front = true;
+//      wall_in_front = true;
     }
 
-    switch (parent->getDir()) {
+    switch (mouse->getDir()) {
       case Direction::N:
         current_pose_estimate.x = (col * AbstractMaze::UNIT_DIST) + offset;
         if (wall_in_front) {
@@ -155,7 +152,8 @@ KinematicController::run(double dt_s, double left_angle_rad, double right_angle_
 
 //  static int i = 0;
 //  if (i == 15) {
-//  print("%f, %f\r\n", Mouse::radToMeters(right_motor.regulated_setpoint_rps),
+//  print("%f, %f, %f, %f\r\n", Mouse::radToMeters(left_motor.regulated_setpoint_rps),
+//        Mouse::radToMeters(left_motor.velocity_rps), Mouse::radToMeters(right_motor.regulated_setpoint_rps),
 //        Mouse::radToMeters(right_motor.velocity_rps));
 //    i = 0;
 //  }

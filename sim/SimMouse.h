@@ -8,7 +8,6 @@
 #include <common/Mouse.h>
 #include <common/Pose.h>
 #include <common/KinematicController/KinematicController.h>
-#include <common/RobotConfig.h>
 #include <ignition/transport/Node.hh>
 
 class SimMouse : public Mouse {
@@ -21,8 +20,6 @@ public:
   static const std::string red_color;
   static const std::string green_color;
   static const std::string blue_color;
-
-  static const RobotConfig CONFIG;
 
   static SimMouse *inst();
 

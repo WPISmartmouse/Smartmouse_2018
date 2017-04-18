@@ -7,7 +7,7 @@
 
 class KinematicController {
 public:
-  KinematicController(const RobotConfig config, Mouse *parent);
+  KinematicController(Mouse *mouse);
 
   Pose getPose();
 
@@ -42,6 +42,5 @@ private:
   bool initialized = false;
 
   Pose current_pose_estimate;
-  const RobotConfig config;
-  Mouse *parent;
+  Mouse *mouse;
 };

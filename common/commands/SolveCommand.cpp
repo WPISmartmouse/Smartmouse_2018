@@ -7,9 +7,9 @@ SolveCommand::SolveCommand(Solver *solver) : CommandGroup("SolveGroup"), solver(
 
 void SolveCommand::initialize() {
   runs = 0;
-  if (!GlobalProgramSettings.q) {
-    addSequential(new WaitForStart());
-  }
+//  if (!GlobalProgramSettings.q) {
+//    addSequential(new WaitForStart());
+//  }
   solver->setup();
   addSequential(new Stop(200));
   addSequential(new SolveMaze(solver));

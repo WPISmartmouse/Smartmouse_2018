@@ -2,7 +2,7 @@
 #include <sim/SimMouse.h>
 #include "Forward.h"
 
-Forward::Forward() : Command("Forward"), mouse(SimMouse::inst()), follower(SimMouse::CONFIG) {}
+Forward::Forward() : Command("Forward"), mouse(SimMouse::inst()) {}
 
 
 void Forward::initialize() {

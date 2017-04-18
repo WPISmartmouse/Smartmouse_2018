@@ -2,7 +2,7 @@
 #include <tuple>
 #include "ForwardToCenter.h"
 
-ForwardToCenter::ForwardToCenter() : Command("FwdToCenter"), mouse(RealMouse::inst()), follower(RealMouse::CONFIG) {}
+ForwardToCenter::ForwardToCenter() : Command("FwdToCenter"), mouse(RealMouse::inst()) {}
 
 void ForwardToCenter::initialize() {
   start = mouse->getPose();

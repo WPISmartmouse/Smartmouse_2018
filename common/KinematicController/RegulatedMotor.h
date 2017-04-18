@@ -4,7 +4,7 @@
 
 class RegulatedMotor {
 public:
-  RegulatedMotor(RobotConfig config);
+  RegulatedMotor();
 
   bool isStopped();
 
@@ -21,8 +21,6 @@ public:
   static const double INTEGRAL_CAP;
   static const double DERIV_CAP;
   static const double MIN_ABSTRACT_FORCE;
-
-  RobotConfig config;
 
   bool initialized = false;
   double abstract_force;

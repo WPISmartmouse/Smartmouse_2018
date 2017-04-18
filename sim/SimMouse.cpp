@@ -8,27 +8,13 @@ const std::string SimMouse::grey_color = "Gazebo/Grey";
 const std::string SimMouse::red_color = "Gazebo/Red";
 const std::string SimMouse::green_color = "Gazebo/Green";
 const std::string SimMouse::blue_color = "Gazebo/Blue";
-const RobotConfig SimMouse::CONFIG = {
-        1.35255, // FRONT_ANALOG_ANGLE (radians)
-        1.35255, // BACK_ANALOG_ANGLE (radians)
-        0.045,   // FRONT_SIDE_ANALOG_X (meters)
-        0.030,   // FRONT_SIDE_ANALOG_Y (meters)
-        -0.024,  // BACK_SIDE_ANALOG_X (meters)
-        0.030,   // BACK_SIDE_ANALOG_Y (meters)
-        0.055,   // FRONT_ANALOG_X (meters)
-        0.12,    // MAX_SPEED (meters/second)
-        0.02,    // MIN_SPEED (meters/second)
-        0.15,    // WALL_THRESHOLD (meters)
-        0.08,    // ROT_TOLERANCE (radians)
-        0.0633,  // TRACK_WIDTH (meters)
-};
 
 double SimMouse::abstractForceToNewtons(double x) {
   // abstract force is from -255 to 255 per motor
   return x * MAX_FORCE / 255.0;
 }
 
-SimMouse::SimMouse() : kinematic_controller(SimMouse::CONFIG, this) {}
+SimMouse::SimMouse() : kinematic_controller(this) {}
 
 SimMouse *SimMouse::inst() {
   if (instance == NULL) {
@@ -43,9 +29,9 @@ SensorReading SimMouse::checkWalls() {
   dataCond.wait(lk);
   SensorReading sr(row, col);
 
-  sr.walls[static_cast<int>(dir)] = range_data.front_analog < SimMouse::CONFIG.WALL_THRESHOLD;
-  sr.walls[static_cast<int>(left_of_dir(dir))] = range_data.front_left_analog < SimMouse::CONFIG.WALL_THRESHOLD;
-  sr.walls[static_cast<int>(right_of_dir(dir))] = range_data.front_right_analog < SimMouse::CONFIG.WALL_THRESHOLD;
+  sr.walls[static_cast<int>(dir)] = range_data.front_analog < config.WALL_THRESHOLD;
+  sr.walls[static_cast<int>(left_of_dir(dir))] = range_data.front_left_analog < config.WALL_THRESHOLD;
+  sr.walls[static_cast<int>(right_of_dir(dir))] = range_data.front_right_analog < config.WALL_THRESHOLD;
   sr.walls[static_cast<int>(opposite_direction(dir))] = false;
 
   return sr;

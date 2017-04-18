@@ -3,7 +3,6 @@
 #include <gazebo/common/Events.hh>
 #include <gazebo/gazebo_core.hh>
 #include <sim/SimMouse.h>
-#include <common/RobotConfig.h>
 
 #include "MousePlugin.hh"
 

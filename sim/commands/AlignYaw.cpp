@@ -14,7 +14,7 @@ void AlignYaw::execute() {
 }
 
 double AlignYaw::limit(double x) {
-  return std::fmax(std::fmin(x, SimMouse::CONFIG.MAX_SPEED), -SimMouse::CONFIG.MAX_SPEED);
+  return std::fmax(std::fmin(x, config.MAX_SPEED), -config.MAX_SPEED);
 }
 
 bool AlignYaw::isFinished() {

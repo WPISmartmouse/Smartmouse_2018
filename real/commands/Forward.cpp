@@ -1,8 +1,9 @@
 #include <real/RealMouse.h>
 #include <tuple>
+#include <common/Mouse.h>
 #include "Forward.h"
 
-Forward::Forward() : Command("Forward"), mouse(RealMouse::inst()), follower(RealMouse::CONFIG) {}
+Forward::Forward() : Command("Forward"), mouse(RealMouse::inst()) {}
 
 
 void Forward::initialize() {
@@ -14,6 +15,13 @@ void Forward::initialize() {
 void Forward::execute() {
   range_data = mouse->getRangeData();
 
+  if (range_data.front_analog < 0.08) {
+    digitalWrite(RealMouse::LED_6, 1);
+  }
+  else {
+    digitalWrite(RealMouse::LED_6, 0);
+  }
+
   double l, r;
   std::tie(l, r) = follower.compute_wheel_velocities(this->mouse, start, range_data);
   mouse->setSpeed(l, r);
@@ -24,6 +32,8 @@ bool Forward::isFinished() {
 }
 
 void Forward::end() {
+  auto p = mouse->getPose();
+  print("done: %f, %f, %f\n", p.x, p.y, p.yaw);
   digitalWrite(RealMouse::LED_1, 0);
 }
 

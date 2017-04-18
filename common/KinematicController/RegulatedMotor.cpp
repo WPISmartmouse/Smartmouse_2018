@@ -11,7 +11,7 @@ const double RegulatedMotor::INTEGRAL_CAP = 0.0;
 const double RegulatedMotor::DERIV_CAP = 0.0;
 const double RegulatedMotor::MIN_ABSTRACT_FORCE = 3.5;
 
-RegulatedMotor::RegulatedMotor(RobotConfig config) : config(config), initialized(false), abstract_force(0),
+RegulatedMotor::RegulatedMotor() : initialized(false), abstract_force(0),
                                                      acceleration(0), brake_acceleration(0),
                                                      integral(0), last_angle_rad(0), last_error(0),
                                                      last_velocity_rps(0),

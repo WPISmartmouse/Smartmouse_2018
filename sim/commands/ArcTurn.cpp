@@ -1,4 +1,3 @@
-#include <common/RobotConfig.h>
 #include "ArcTurn.h"
 
 const double ArcTurn::kTurn = 9.5;
@@ -31,13 +30,13 @@ void ArcTurn::execute() {
   double currentYaw = pose.yaw;
   double dYaw = WallFollower::yawDiff(currentYaw, goalYaw);
 
-  if (fabs(dYaw) < SimMouse::CONFIG.ROT_TOLERANCE) {
+  if (fabs(dYaw) < config.ROT_TOLERANCE) {
     mouse->setSpeed(0.07, 0.07);
   }
   else if (left) {
-    mouse->setSpeed(0.0, std::max(0.10 + turn_effort, SimMouse::CONFIG.MAX_SPEED));
+    mouse->setSpeed(0.0, std::max(0.10 + turn_effort, config.MAX_SPEED));
   } else {
-    mouse->setSpeed(std::max(0.10 + turn_effort, SimMouse::CONFIG.MAX_SPEED), 0.0);
+    mouse->setSpeed(std::max(0.10 + turn_effort, config.MAX_SPEED), 0.0);
   }
 }
 
@@ -75,7 +74,7 @@ bool ArcTurn::isFinished() {
 
   print("%f\n", edgeDisp);
 
-  return (fabs(dYaw) < SimMouse::CONFIG.ROT_TOLERANCE) && (edgeDisp <= 0.0);
+  return (fabs(dYaw) < config.ROT_TOLERANCE) && (edgeDisp <= 0.0);
 }
 
 void ArcTurn::end() {

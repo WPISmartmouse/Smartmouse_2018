@@ -1,7 +1,7 @@
 #include <SimMouse.h>
 #include "ForwardToCenter.h"
 
-ForwardToCenter::ForwardToCenter() : Command("FwdToCenter"), mouse(SimMouse::inst()), follower(SimMouse::CONFIG) {}
+ForwardToCenter::ForwardToCenter() : Command("FwdToCenter") {}
 
 void ForwardToCenter::initialize() {
   start = mouse->getPose();

@@ -5,7 +5,6 @@
 #include <common/Mouse.h>
 #include <common/Pose.h>
 #include <common/KinematicController/KinematicController.h>
-#include <common/RobotConfig.h>
 
 
 class RealMouse : public Mouse {
@@ -16,8 +15,8 @@ public:
   static const unsigned int FRONT_ANALOG_PIN = A5;
   static const unsigned int FRONT_LEFT_ANALOG_PIN = A3;
   static const unsigned int BACK_LEFT_ANALOG_PIN = A4;
-  static const unsigned int FRONT_RIGHT_ANALOG_PIN = A2;
-  static const unsigned int BACK_RIGHT_ANALOG_PIN = A1;
+  static const unsigned int FRONT_RIGHT_ANALOG_PIN = A1;
+  static const unsigned int BACK_RIGHT_ANALOG_PIN = A2;
 
   static const unsigned int ENCODER1A = 7;
   static const unsigned int ENCODER1B = 8;
@@ -43,7 +42,7 @@ public:
 
   static RealMouse *inst();
 
-  static const RobotConfig CONFIG;
+  static const RobotConfig config;
 
   virtual SensorReading checkWalls() override;
 
