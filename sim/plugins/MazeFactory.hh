@@ -3,11 +3,12 @@
 #include <gazebo/gazebo_core.hh>
 #include <gazebo/msgs/gz_string.pb.h>
 #include <common/Direction.h>
+#include <common/AbstractMaze.h>
 
 namespace gazebo {
 
-  static constexpr double X_OFFSET = -8 * AbstractMaze::UNIT_DIST; // meters
-  static constexpr double Y_OFFSET= 8 * AbstractMaze::UNIT_DIST; // meters
+  static constexpr double X_OFFSET = -(AbstractMaze::MAZE_SIZE * AbstractMaze::UNIT_DIST / 2); // meters
+  static constexpr double Y_OFFSET= AbstractMaze::MAZE_SIZE * AbstractMaze::UNIT_DIST / 2; // meters
 
   class MazeFactory : public WorldPlugin {
 
@@ -63,7 +64,6 @@ namespace gazebo {
     std::uniform_int_distribution<int> neighbor_dist;
     std::uniform_int_distribution<int> remove_dist;
 
-    constexpr static int MAZE_SIZE = 16;
     const static double WALL_LENGTH,
             WALL_HEIGHT,
             WALL_THICKNESS,
@@ -72,13 +72,13 @@ namespace gazebo {
             UNIT,
             BASE_HEIGHT;
 
-    bool visited[MAZE_SIZE][MAZE_SIZE];
+    bool visited[AbstractMaze::MAZE_SIZE][AbstractMaze::MAZE_SIZE];
 
     /// \brief matrix of bool arrays of size four.
     // [0][0][0] represents the connection of 0,0 to the north
     // [2][1][3] represents the connection of 2,1 to the west
     // ect...
-    bool connected[MAZE_SIZE][MAZE_SIZE][4];//order N, E, S, W
+    bool connected[AbstractMaze::MAZE_SIZE][AbstractMaze::MAZE_SIZE][4];//order N, E, S, W
 
   };
 }

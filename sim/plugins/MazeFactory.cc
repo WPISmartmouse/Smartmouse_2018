@@ -3,10 +3,8 @@
 
 namespace gazebo {
 
-  const double MazeFactory::UNIT = 0.18; //distance between centers of squares
   const double MazeFactory::WALL_HEIGHT = 0.05;
   const double MazeFactory::WALL_LENGTH = 0.192;
-  const double MazeFactory::WALL_THICKNESS = 0.012;
   const double MazeFactory::BASE_HEIGHT = 0.005;
   const double MazeFactory::RED_HIGHLIGHT_THICKNESS = 0.01;
 
@@ -37,8 +35,12 @@ namespace gazebo {
     sdf::ElementPtr visual_box_size = base_visual->AddElement("box")->GetElement("size");
     base_collision_pose->Set("0 0 " + std::to_string(BASE_HEIGHT / 2) + " 0 0 0");
     base_visual_pose->Set("0 0 " + std::to_string(BASE_HEIGHT / 2) + " 0 0 0");
-    collision_box_size->Set("2.98 2.98 " + std::to_string(BASE_HEIGHT));
-    visual_box_size->Set("2.98 2.98 " + std::to_string(BASE_HEIGHT));
+    char base_size_str[40];
+    snprintf(base_size_str, 40, "%f %f %f",
+             AbstractMaze::MAZE_SIZE * AbstractMaze::UNIT_DIST + AbstractMaze::HALF_UNIT_DIST,
+             AbstractMaze::MAZE_SIZE * AbstractMaze::UNIT_DIST + AbstractMaze::HALF_UNIT_DIST, BASE_HEIGHT);
+    collision_box_size->Set(base_size_str);
+    visual_box_size->Set(base_size_str);
 
     // Add interia values
     sdf::ElementPtr inertial = base_link->AddElement("inertial");
@@ -88,7 +90,7 @@ namespace gazebo {
       std::string line;
 
       //look West and North to connect any nodes
-      for (int i = 0; i < MAZE_SIZE; i++) { //read in each line
+      for (unsigned int i = 0; i < AbstractMaze::MAZE_SIZE; i++) { //read in each line
         std::getline(fs, line);
 
         if (!fs) {
@@ -97,7 +99,7 @@ namespace gazebo {
         }
 
         unsigned int charPos = 0;
-        for (int j = 0; j < MAZE_SIZE; j++) {
+        for (unsigned int j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
           if (line.at(charPos) == '|') {
             //add a wall on the west
             InsertWall(base_link, i, j, Direction::W);
@@ -112,8 +114,8 @@ namespace gazebo {
       }
 
       //add east and north walls
-      for (int i = 0; i < MAZE_SIZE; i++) {
-        InsertWall(base_link, i, MAZE_SIZE - 1, Direction::E);
+      for (unsigned int i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
+        InsertWall(base_link, i, AbstractMaze::MAZE_SIZE - 1, Direction::E);
         InsertWall(base_link, 0, i, Direction::N);
       }
     } else {
@@ -123,14 +125,18 @@ namespace gazebo {
 
   void MazeFactory::InsertWall(sdf::ElementPtr link, int row, int col, Direction dir) {
     //ignore requests to insert center wall
-    if ((row == MAZE_SIZE / 2 && col == MAZE_SIZE / 2 && (dir == Direction::N || dir == Direction::W))
-        || (row == MAZE_SIZE / 2 && col == MAZE_SIZE / 2 - 1 && (dir == Direction::N || dir == Direction::E))
-        || (row == MAZE_SIZE / 2 - 1 && col == MAZE_SIZE / 2 && (dir == Direction::S || dir == Direction::W))
-        || (row == MAZE_SIZE / 2 - 1 && col == MAZE_SIZE / 2 - 1 && (dir == Direction::S || dir == Direction::E))) {
+    if ((row == AbstractMaze::MAZE_SIZE / 2 && col == AbstractMaze::MAZE_SIZE / 2 &&
+         (dir == Direction::N || dir == Direction::W))
+        || (row == AbstractMaze::MAZE_SIZE / 2 && col == AbstractMaze::MAZE_SIZE / 2 - 1 &&
+            (dir == Direction::N || dir == Direction::E))
+        || (row == AbstractMaze::MAZE_SIZE / 2 - 1 && col == AbstractMaze::MAZE_SIZE / 2 &&
+            (dir == Direction::S || dir == Direction::W))
+        || (row == AbstractMaze::MAZE_SIZE / 2 - 1 && col == AbstractMaze::MAZE_SIZE / 2 - 1 &&
+            (dir == Direction::S || dir == Direction::E))) {
       return;
     }
 
-    std::list<sdf::ElementPtr> walls_visuals = CreateWallVisual(row, col, dir);
+    std::list <sdf::ElementPtr> walls_visuals = CreateWallVisual(row, col, dir);
     sdf::ElementPtr walls_collision = CreateWallCollision(row, col, dir);
 
     //insert all the visuals
@@ -142,12 +148,14 @@ namespace gazebo {
     link->InsertElement(walls_collision);
   }
 
-  std::list<sdf::ElementPtr> MazeFactory::CreateWallVisual(int row, int col, Direction dir) {
+  std::list <sdf::ElementPtr> MazeFactory::CreateWallVisual(int row, int col, Direction dir) {
     msgs::Pose *visual_pose = CreatePose(row, col, BASE_HEIGHT + (WALL_HEIGHT - RED_HIGHLIGHT_THICKNESS) / 2, dir);
     msgs::Pose *paint_visual_pose = CreatePose(row, col, BASE_HEIGHT + WALL_HEIGHT - RED_HIGHLIGHT_THICKNESS / 2, dir);
 
-    msgs::Geometry *visual_geo = CreateBoxGeometry(WALL_LENGTH, WALL_THICKNESS, WALL_HEIGHT - RED_HIGHLIGHT_THICKNESS);
-    msgs::Geometry *paint_visual_geo = CreateBoxGeometry(WALL_LENGTH, WALL_THICKNESS, RED_HIGHLIGHT_THICKNESS);
+    msgs::Geometry *visual_geo = CreateBoxGeometry(WALL_LENGTH, AbstractMaze::WALL_THICKNESS,
+                                                   WALL_HEIGHT - RED_HIGHLIGHT_THICKNESS);
+    msgs::Geometry *paint_visual_geo = CreateBoxGeometry(WALL_LENGTH, AbstractMaze::WALL_THICKNESS,
+                                                         RED_HIGHLIGHT_THICKNESS);
 
     msgs::Visual visual;
     std::string visual_name = "v_" + std::to_string(row)
@@ -174,7 +182,7 @@ namespace gazebo {
 
     sdf::ElementPtr visualElem = msgs::VisualToSDF(visual);
     sdf::ElementPtr visualPaintElem = msgs::VisualToSDF(paint_visual);
-    std::list<sdf::ElementPtr> visuals;
+    std::list <sdf::ElementPtr> visuals;
     visuals.push_front(visualElem);
     visuals.push_front(visualPaintElem);
     return visuals;
@@ -183,7 +191,7 @@ namespace gazebo {
   sdf::ElementPtr MazeFactory::CreateWallCollision(int row, int col, Direction dir) {
     msgs::Pose *collision_pose = CreatePose(row, col, BASE_HEIGHT + WALL_HEIGHT / 2, dir);
 
-    msgs::Geometry *collision_geo = CreateBoxGeometry(WALL_LENGTH, WALL_THICKNESS, WALL_HEIGHT);
+    msgs::Geometry *collision_geo = CreateBoxGeometry(WALL_LENGTH, AbstractMaze::WALL_THICKNESS, WALL_HEIGHT);
 
     msgs::Collision collision;
     std::string collision_name = "p_" + std::to_string(row) + "_" + std::to_string(col) + "_" + to_char(dir);
@@ -201,26 +209,26 @@ namespace gazebo {
 
     switch (dir) {
       case Direction::N:
-        y_offset = UNIT / 2;
+        y_offset = AbstractMaze::UNIT_DIST / 2;
         break;
       case Direction::E:
-        x_offset = UNIT / 2;
+        x_offset = AbstractMaze::UNIT_DIST / 2;
         z_rot = M_PI / 2;
         break;
       case Direction::S:
-        y_offset = -UNIT / 2;
+        y_offset = -AbstractMaze::UNIT_DIST / 2;
         break;
       case Direction::W:
-        x_offset = -UNIT / 2;
+        x_offset = -AbstractMaze::UNIT_DIST / 2;
         z_rot = M_PI / 2;
         break;
       default:
         break;
     }
 
-    double zero_offset = (UNIT * (MAZE_SIZE - 1) / 2);
-    double x = -zero_offset + x_offset + col * UNIT;
-    double y = zero_offset + y_offset - row * UNIT;
+    double zero_offset = (AbstractMaze::UNIT_DIST * (AbstractMaze::MAZE_SIZE - 1) / 2);
+    double x = -zero_offset + x_offset + col * AbstractMaze::UNIT_DIST;
+    double y = zero_offset + y_offset - row * AbstractMaze::UNIT_DIST;
 
     msgs::Vector3d *position = new msgs::Vector3d();
     position->set_x(x);

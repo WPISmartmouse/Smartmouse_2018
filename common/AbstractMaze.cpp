@@ -363,17 +363,17 @@ AbstractMaze AbstractMaze::gen_random_legal_maze() {
   maze.mark_position_visited(MAZE_SIZE / 2 - 1, MAZE_SIZE / 2 - 1);
 
   // pick std::random start node of the four possible ones;
-  int starting_row = MAZE_SIZE / 2 - std::rand() % 2;
-  int starting_col = MAZE_SIZE / 2 - std::rand() % 2;
+  unsigned int starting_row = MAZE_SIZE / 2 - std::rand() % 2;
+  unsigned int starting_col = MAZE_SIZE / 2 - std::rand() % 2;
   Node *start_node = nullptr;
   maze.get_node(&start_node, starting_row, starting_col);
   _make_connections(&maze, start_node);
 
-  // knock down some more std::randomly
-  int i = 0;
-  while (i < 50) {
-    int row = std::rand() % 14 + 1;
-    int col = std::rand() % 14 + 1;
+  // knock down some more randomly
+  unsigned int i = 0;
+  while (i < AbstractMaze::MAZE_SIZE * AbstractMaze::MAZE_SIZE / 5) {
+    unsigned int row = std::rand() % (AbstractMaze::MAZE_SIZE - 2) + 1;
+    unsigned int col = std::rand() % (AbstractMaze::MAZE_SIZE - 2) + 1;
     int d = std::rand() % 4;
     Direction dir = int_to_dir(d);
 

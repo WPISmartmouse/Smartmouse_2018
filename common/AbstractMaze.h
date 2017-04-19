@@ -18,15 +18,15 @@ class AbstractMaze {
 
 public:
 
-  constexpr static unsigned int MAZE_SIZE = 16;
+  constexpr static unsigned int MAZE_SIZE = 5;
   constexpr static unsigned int PATH_SIZE = 256;
   constexpr static unsigned int CENTER = MAZE_SIZE / 2;
-  constexpr static float UNIT_DIST = 0.18;
-  constexpr static float WALL_THICKNESS = 0.012;
-  constexpr static float HALF_WALL_THICKNESS = WALL_THICKNESS/2.0;
-  constexpr static float INNER_UNIT_DIST = UNIT_DIST - WALL_THICKNESS;
-  constexpr static float HALF_UNIT_DIST = UNIT_DIST / 2.0;
-  constexpr static float HALF_INNER_UNIT_DIST = INNER_UNIT_DIST / 2.0;
+  constexpr static double UNIT_DIST = 0.18;
+  constexpr static double WALL_THICKNESS = 0.012;
+  constexpr static double HALF_WALL_THICKNESS = WALL_THICKNESS/2.0;
+  constexpr static double INNER_UNIT_DIST = UNIT_DIST - WALL_THICKNESS;
+  constexpr static double HALF_UNIT_DIST = UNIT_DIST / 2.0;
+  constexpr static double HALF_INNER_UNIT_DIST = INNER_UNIT_DIST / 2.0;
   bool solved; //boolean for if we know the fastest route
   char *fastest_route; //a char array like NSEWNENNSNE, which means North, South, East...
   char *fastest_theoretical_route;

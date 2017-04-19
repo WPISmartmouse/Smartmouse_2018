@@ -1,6 +1,7 @@
 #include <tuple>
 #include <limits>
 #include "WallFollower.h"
+#include "Mouse.h"
 
 const double WallFollower::kPWall = 0.25; //TODO: Should be 0.8
 const double WallFollower::kDWall = 50;
@@ -41,7 +42,9 @@ std::pair<double, double> WallFollower::compute_wheel_velocities(Mouse *mouse, P
 }
 
 std::pair<double, double> WallFollower::estimate_pose(RangeData range_data, Mouse *mouse) {
+  static double last_left_analog_dist, last_right_analog_dist;
   std::pair<double, double> out;
+
   double *yaw = &out.first;
   double *offset = &out.second;
 
@@ -59,24 +62,30 @@ std::pair<double, double> WallFollower::estimate_pose(RangeData range_data, Mous
 
   double dToWallLeft = (d2x_l * d1y_l - d2y_l * d1x_l) / sqrt(pow(d2y_l - d1y_l, 2) + pow(d2x_l-d1x_l, 2));
   double dToWallRight = (d2x_r * d1y_r - d2y_r * d1x_r) / sqrt(pow(d2y_r - d1y_r, 2) + pow(d2x_r-d1x_r, 2));
+  double sense_left_wall = range_data.front_left_analog < config.SIDE_WALL_THRESHOLD && range_data.back_left_analog < config.SIDE_WALL_THRESHOLD;
+  double sense_right_wall = range_data.front_right_analog < config.SIDE_WALL_THRESHOLD && range_data.back_right_analog < config.SIDE_WALL_THRESHOLD;
 
-  bool sense_left_wall = range_data.front_left_analog < config.WALL_THRESHOLD && range_data.back_left_analog < config.WALL_THRESHOLD;
-  bool sense_right_wall = range_data.front_right_analog < config.WALL_THRESHOLD && range_data.back_right_analog < config.WALL_THRESHOLD;
+//  if (sense_left_wall && (range_data.front_left_analog  - last_left_analog_dist) > config.WALL_CHANGE_THRESHOLD) {
+//    sense_left_wall = false;
+//  }
+//  else if (sense_right_wall && (range_data.front_right_analog  - last_right_analog_dist) > config.WALL_CHANGE_THRESHOLD) {
+//    sense_right_wall = false;
+//  }
 
   // consider the "logical" state of walls AND actual range reading
   if (sense_left_wall && mouse->isWallInDirection(left_of_dir(mouse->getDir()))) { // wall is on left
-//    print("wall left\n.");
     *offset = dToWallLeft + AbstractMaze::HALF_WALL_THICKNESS;
     *yaw = dir_to_yaw(mouse->getDir()) + currentYaw_l;
   } else if (sense_right_wall && mouse->isWallInDirection(right_of_dir(mouse->getDir()))) { // wall is on right
-//    print("wall right\n.");
     *offset = AbstractMaze::UNIT_DIST - dToWallRight - AbstractMaze::HALF_WALL_THICKNESS;
     *yaw = dir_to_yaw(mouse->getDir()) + currentYaw_r;
   } else { // we're too far from any walls, use our pose estimation
-//    print("no walls\n.");
     *offset = WallFollower::dispToLeftEdge(mouse);
     *yaw = mouse->getPose().yaw;
   }
+
+  last_left_analog_dist = dToWallLeft;
+  last_right_analog_dist = dToWallRight;
 
   return out;
 };

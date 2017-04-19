@@ -1,3 +1,4 @@
+#include "Turn.h"
 #include "Stop.h"
 #include "SolveCommand.h"
 #include "WaitForStart.h"
@@ -7,13 +8,13 @@ SolveCommand::SolveCommand(Solver *solver) : CommandGroup("SolveGroup"), solver(
 
 void SolveCommand::initialize() {
   runs = 0;
-//  if (!GlobalProgramSettings.q) {
-//    addSequential(new WaitForStart());
-//  }
+  if (!GlobalProgramSettings.q) {
+    addSequential(new WaitForStart());
+  }
   solver->setup();
-  addSequential(new Stop(200));
   addSequential(new SolveMaze(solver));
   addSequential(new SolveMaze(solver, 0, 0));
+  addSequential(new Turn(Direction::E));
 }
 
 bool SolveCommand::isFinished() {
@@ -27,10 +28,14 @@ bool SolveCommand::isFinished() {
       return true;
     }
 
+    if (!GlobalProgramSettings.q) {
+      addSequential(new WaitForStart());
+    }
     to_center = new SolveMaze(solver);
     to_start  = new SolveMaze(solver, 0, 0);
     addSequential(to_center);
     addSequential(to_start);
+    addSequential(new Turn(Direction::E));
     return false;
   }
 

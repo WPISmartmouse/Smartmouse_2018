@@ -3,10 +3,6 @@
 #include "Forward.h"
 #include "Turn.h"
 
-#ifdef EMBED
-#include <Arduino.h>
-#endif
-
 ReturnToStart::ReturnToStart(Mouse *mouse) : CommandGroup("return"), mouse(mouse) {
   pathToStart = (char *) malloc(sizeof(char) * AbstractMaze::PATH_SIZE);
 }

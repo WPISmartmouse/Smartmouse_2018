@@ -13,5 +13,5 @@ public:
 
   const bool isWall(Direction dir);
 
-  const int row, col;
+  const unsigned int row, col;
 };

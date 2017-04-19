@@ -40,55 +40,75 @@ void MousePlugin::FrontLeftAnalogCallback(ConstLaserScanStampedPtr &msg) {
   assert(scan.ranges_size() == 1);
   double raw_range = scan.ranges(0);
 
+  double front_left_analog;
   if (std::isinf(raw_range)) {
-    this->front_left_analog = SimMouse::ANALOG_MAX_DIST;
+    front_left_analog = config.ANALOG_MAX_DIST;
   } else {
-    this->front_left_analog = raw_range;
+    front_left_analog = raw_range;
   }
+
+  // to simulate the gradual drop-off of real sensors, use a cheap accumulator
+  this->front_left_analog = 0.5 * this->front_left_analog + 0.5 * front_left_analog;
 }
 
 void MousePlugin::FrontRightAnalogCallback(ConstLaserScanStampedPtr &msg) {
   msgs::LaserScan scan = msg->scan();
   assert(scan.ranges_size() == 1);
   double raw_range = scan.ranges(0);
+
+  double front_right_analog;
   if (std::isinf(raw_range)) {
-    this->front_right_analog = SimMouse::ANALOG_MAX_DIST;
+    front_right_analog = config.ANALOG_MAX_DIST;
   } else {
-    this->front_right_analog = raw_range;
+    front_right_analog = raw_range;
   }
+
+  this->front_right_analog = 0.5 * this->front_right_analog + 0.5 * front_right_analog;
 }
 
 void MousePlugin::BackLeftAnalogCallback(ConstLaserScanStampedPtr &msg) {
   msgs::LaserScan scan = msg->scan();
   assert(scan.ranges_size() == 1);
   double raw_range = scan.ranges(0);
+
+  double back_left_analog;
   if (std::isinf(raw_range)) {
-    this->back_left_analog = SimMouse::ANALOG_MAX_DIST;
+    back_left_analog = config.ANALOG_MAX_DIST;
   } else {
-    this->back_left_analog = raw_range;
+    back_left_analog = raw_range;
   }
+
+  this->back_left_analog = 0.5 * this->back_left_analog + 0.5 * back_left_analog;
 }
 
 void MousePlugin::BackRightAnalogCallback(ConstLaserScanStampedPtr &msg) {
   msgs::LaserScan scan = msg->scan();
   assert(scan.ranges_size() == 1);
   double raw_range = scan.ranges(0);
+
+  double back_right_analog;
   if (std::isinf(raw_range)) {
-    this->back_right_analog = SimMouse::ANALOG_MAX_DIST;
+    back_right_analog = config.ANALOG_MAX_DIST;
   } else {
-    this->back_right_analog = raw_range;
+    back_right_analog = raw_range;
   }
+
+  this->back_right_analog = 0.5 * this->back_right_analog + 0.5 * back_right_analog;
 }
 
 void MousePlugin::FrontAnalogCallback(ConstLaserScanStampedPtr &msg) {
   msgs::LaserScan scan = msg->scan();
   assert(scan.ranges_size() == 1);
   double raw_range = scan.ranges(0);
+
+  double front_analog;
   if (std::isinf(raw_range)) {
-    this->front_analog = SimMouse::ANALOG_MAX_DIST;
+    front_analog = config.ANALOG_MAX_DIST;
   } else {
-    this->front_analog = raw_range;
+    front_analog = raw_range;
   }
+
+  this->front_analog = 0.5 * this->front_analog + 0.5 * front_analog;
 }
 
 void MousePlugin::PublishInfo() {

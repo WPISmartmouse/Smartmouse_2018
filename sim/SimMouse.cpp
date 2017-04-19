@@ -1,9 +1,8 @@
 #include "SimMouse.h"
 #include <gazebo/msgs/msgs.hh>
+#include <common/Mouse.h>
 
 SimMouse *SimMouse::instance = nullptr;
-const double SimMouse::ANALOG_MAX_DIST = 0.15; // meters
-const double SimMouse::MAX_FORCE = 0.012; // experimental value
 const std::string SimMouse::grey_color = "Gazebo/Grey";
 const std::string SimMouse::red_color = "Gazebo/Red";
 const std::string SimMouse::green_color = "Gazebo/Green";
@@ -11,10 +10,10 @@ const std::string SimMouse::blue_color = "Gazebo/Blue";
 
 double SimMouse::abstractForceToNewtons(double x) {
   // abstract force is from -255 to 255 per motor
-  return x * MAX_FORCE / 255.0;
+  return x * config.MAX_FORCE / 255.0;
 }
 
-SimMouse::SimMouse() : kinematic_controller(this) {}
+SimMouse::SimMouse() : kinematic_controller(this), range_data({}) {}
 
 SimMouse *SimMouse::inst() {
   if (instance == NULL) {
@@ -29,9 +28,9 @@ SensorReading SimMouse::checkWalls() {
   dataCond.wait(lk);
   SensorReading sr(row, col);
 
-  sr.walls[static_cast<int>(dir)] = range_data.front_analog < config.WALL_THRESHOLD;
-  sr.walls[static_cast<int>(left_of_dir(dir))] = range_data.front_left_analog < config.WALL_THRESHOLD;
-  sr.walls[static_cast<int>(right_of_dir(dir))] = range_data.front_right_analog < config.WALL_THRESHOLD;
+  sr.walls[static_cast<int>(dir)] = range_data.front_analog < config.FRONT_WALL_THRESHOLD;
+  sr.walls[static_cast<int>(left_of_dir(dir))] = range_data.front_left_analog < config.SIDE_WALL_THRESHOLD;
+  sr.walls[static_cast<int>(right_of_dir(dir))] = range_data.front_right_analog < config.SIDE_WALL_THRESHOLD;
   sr.walls[static_cast<int>(opposite_direction(dir))] = false;
 
   return sr;
@@ -268,5 +267,5 @@ void SimMouse::simInit() {
       Set(marker->mutable_pose(), ignition::math::Pose3d(x, y, INDICATOR_Z, 0, 0, 0));
     }
   }
-  publishIndicators();
+//  publishIndicators();
 }

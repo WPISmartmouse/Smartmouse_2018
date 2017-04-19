@@ -47,10 +47,6 @@ double RealMouse::adcToMeters(int adc) {
   }
 }
 
-RangeData RealMouse::getRangeData() {
-  return range_data;
-}
-
 RealMouse *RealMouse::inst() {
   if (instance == NULL) {
     instance = new RealMouse();
@@ -58,15 +54,16 @@ RealMouse *RealMouse::inst() {
   return instance;
 }
 
-RealMouse::RealMouse() : kinematic_controller(this) {}
+RealMouse::RealMouse() : kinematic_controller(this), range_data({0.18, 0.18, 0.18, 0.18, 0.18}) {}
+
+RangeData RealMouse::getRangeData() {
+  return range_data;
+}
 
 SensorReading RealMouse::checkWalls() {
   SensorReading sr(row, col);
 
-  print(">>>>> %f, %f, %f, %f, %f\n", range_data.front_left_analog, range_data.back_left_analog,
-        range_data.front_right_analog, range_data.back_right_analog, range_data.front_analog);
-
-  sr.walls[static_cast<int>(dir)] = range_data.front_analog < 0.11;
+  sr.walls[static_cast<int>(dir)] = range_data.front_analog < 0.15;
   sr.walls[static_cast<int>(left_of_dir(dir))] = range_data.front_left_analog < 0.15;
   sr.walls[static_cast<int>(right_of_dir(dir))] = range_data.front_right_analog < 0.15;
   sr.walls[static_cast<int>(opposite_direction(dir))] = false;
@@ -99,7 +96,14 @@ void RealMouse::run(double dt_s) {
   range_data.back_left_analog = adcToMeters(analogRead(BACK_LEFT_ANALOG_PIN));
   range_data.front_right_analog = adcToMeters(analogRead(FRONT_RIGHT_ANALOG_PIN));
   range_data.back_right_analog = adcToMeters(analogRead(BACK_RIGHT_ANALOG_PIN));
-  range_data.front_analog = adcToMeters(analogRead(FRONT_ANALOG_PIN));
+  range_data.front_analog = 0.1 * adcToMeters(analogRead(FRONT_ANALOG_PIN)) + 0.9 * range_data.front_analog;
+
+  if (range_data.front_analog < 0.15) {
+    digitalWrite(SYS_LED, 1);
+  }
+  else {
+    digitalWrite(SYS_LED, 0);
+  }
 
   print("%f, %f, %f, %f, %f\n", range_data.front_left_analog, range_data.back_left_analog,
         range_data.front_right_analog, range_data.back_right_analog, range_data.front_analog);
