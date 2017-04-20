@@ -46,6 +46,8 @@ void setup() {
   scheduler = new Scheduler(new SolveCommand(new Flood(mouse)));
 
   last_t = timer.programTimeMs();
+
+  delay(1000);
 }
 
 void loop() {

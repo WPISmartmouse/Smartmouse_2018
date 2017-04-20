@@ -1,4 +1,8 @@
 #include "Turn.h"
+#ifndef CONSOLE
+#include "ForwardToCenter.h"
+#include "TurnInPlace.h"
+#endif
 #include "Stop.h"
 #include "SolveCommand.h"
 #include "WaitForStart.h"
@@ -14,7 +18,10 @@ void SolveCommand::initialize() {
   solver->setup();
   addSequential(new SolveMaze(solver));
   addSequential(new SolveMaze(solver, 0, 0));
-  addSequential(new Turn(Direction::E));
+#ifndef CONSOLE
+  addSequential(new ForwardToCenter());
+  addSequential(new TurnInPlace(Direction::E));
+#endif
 }
 
 bool SolveCommand::isFinished() {
@@ -35,7 +42,10 @@ bool SolveCommand::isFinished() {
     to_start  = new SolveMaze(solver, 0, 0);
     addSequential(to_center);
     addSequential(to_start);
-    addSequential(new Turn(Direction::E));
+#ifndef CONSOLE
+    addSequential(new ForwardToCenter());
+    addSequential(new TurnInPlace(Direction::E));
+#endif
     return false;
   }
 

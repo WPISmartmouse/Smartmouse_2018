@@ -98,15 +98,8 @@ void RealMouse::run(double dt_s) {
   range_data.back_right_analog = adcToMeters(analogRead(BACK_RIGHT_ANALOG_PIN));
   range_data.front_analog = 0.1 * adcToMeters(analogRead(FRONT_ANALOG_PIN)) + 0.9 * range_data.front_analog;
 
-  if (range_data.front_analog < 0.15) {
-    digitalWrite(SYS_LED, 1);
-  }
-  else {
-    digitalWrite(SYS_LED, 0);
-  }
-
-  print("%f, %f, %f, %f, %f\n", range_data.front_left_analog, range_data.back_left_analog,
-        range_data.front_right_analog, range_data.back_right_analog, range_data.front_analog);
+//  print("%f, %f, %f, %f, %f\n", range_data.front_left_analog, range_data.back_left_analog,
+//        range_data.front_right_analog, range_data.back_right_analog, range_data.front_analog);
 
   std::tie(abstract_left_force, abstract_right_force) = kinematic_controller.run(dt_s, left_angle_rad,
                                                                                  right_angle_rad, 0, 0, range_data);

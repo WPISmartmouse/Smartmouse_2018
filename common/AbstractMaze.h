@@ -18,7 +18,7 @@ class AbstractMaze {
 
 public:
 
-  constexpr static unsigned int MAZE_SIZE = 5;
+  constexpr static unsigned int MAZE_SIZE = 12;
   constexpr static unsigned int PATH_SIZE = 256;
   constexpr static unsigned int CENTER = MAZE_SIZE / 2;
   constexpr static double UNIT_DIST = 0.18;
