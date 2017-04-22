@@ -18,8 +18,9 @@ class AbstractMaze {
 
 public:
 
-  constexpr static unsigned int MAZE_SIZE = 12;
+  constexpr static unsigned int MAZE_SIZE = 11;
   constexpr static unsigned int PATH_SIZE = 256;
+  static const unsigned long BUFF_SIZE = (MAZE_SIZE * 2 + 3) * MAZE_SIZE;
   constexpr static unsigned int CENTER = MAZE_SIZE / 2;
   constexpr static double UNIT_DIST = 0.18;
   constexpr static double WALL_THICKNESS = 0.012;
@@ -130,6 +131,4 @@ public:
   bool flood_fill(char *path, unsigned int r0, unsigned int c0, unsigned int r1, unsigned int c1);
 
   Node *nodes[AbstractMaze::MAZE_SIZE][AbstractMaze::MAZE_SIZE]; // array of node pointers
-
-  static const unsigned long BUFF_SIZE = (MAZE_SIZE * 2 + 2) * MAZE_SIZE;
 };

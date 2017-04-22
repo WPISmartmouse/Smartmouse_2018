@@ -4,6 +4,7 @@
 #include <common/AbstractMaze.h>
 #include <common/commands/SolveCommand.h>
 #include <common/Flood.h>
+#include "Finish.h"
 #include <real/RealMouse.h>
 #include <common/commands/RepeatCommand.h>
 #include <real/commands/LEDBlink.h>
@@ -40,14 +41,14 @@ void setup() {
   mouse = RealMouse::inst();
   mouse->setup();
 
+  digitalWrite(RealMouse::SYS_LED, 1);
+
 //  scheduler = new Scheduler(new RepeatCommand<Forward>(3));
-//  scheduler = new Scheduler(new Hack());
+//  scheduler = new Scheduler(new Finish(mouse->maze));
 //  scheduler = new Scheduler(new Turn(Direction::N));
   scheduler = new Scheduler(new SolveCommand(new Flood(mouse)));
 
   last_t = timer.programTimeMs();
-
-  delay(1000);
 }
 
 void loop() {

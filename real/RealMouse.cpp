@@ -4,24 +4,24 @@
 
 RealMouse *RealMouse::instance = nullptr;
 const int RealMouse::ir_lookup[18] = {
-        751, // .01
-        653, // .02
-        522, // .03
-        411, // .04
-        313, // .05
-        277, // .06
-        227, // .07
-        206, // .08
-        160, // .09
-        148, // .10
-        125, // .11
-        106, // .12
-        98,  // .13
-        86,  // .14
-        77,  // .15
-        71,  // .16
-        60,  // .17
-        53,  // .18
+        755, // .01
+        648, // .02
+        492, // .03
+        409, // .04
+        315, // .05
+        268, // .06
+        224, // .07
+        192, // .08
+        165, // .09
+        147, // .10
+        134, // .11
+        115, // .12
+        105,  // .13
+        93,  // .14
+        86,  // .15
+        75,  // .16
+        68,  // .17
+        58,  // .18
 };
 
 double RealMouse::tick_to_rad(int ticks) {
@@ -96,7 +96,7 @@ void RealMouse::run(double dt_s) {
   range_data.back_left_analog = adcToMeters(analogRead(BACK_LEFT_ANALOG_PIN));
   range_data.front_right_analog = adcToMeters(analogRead(FRONT_RIGHT_ANALOG_PIN));
   range_data.back_right_analog = adcToMeters(analogRead(BACK_RIGHT_ANALOG_PIN));
-  range_data.front_analog = 0.1 * adcToMeters(analogRead(FRONT_ANALOG_PIN)) + 0.9 * range_data.front_analog;
+  range_data.front_analog = adcToMeters(analogRead(FRONT_ANALOG_PIN));
 
 //  print("%f, %f, %f, %f, %f\n", range_data.front_left_analog, range_data.back_left_analog,
 //        range_data.front_right_analog, range_data.back_right_analog, range_data.front_analog);
@@ -110,19 +110,19 @@ void RealMouse::run(double dt_s) {
   col = kinematic_controller.col;
 
   if (abstract_left_force < 0) {
-    analogWrite(MOTOR1A, (int) -abstract_left_force);
-    analogWrite(MOTOR1B, 0);
+    analogWrite(MOTOR_LEFT_A, (int) -abstract_left_force);
+    analogWrite(MOTOR_LEFT_B, 0);
   } else {
-    analogWrite(MOTOR1A, 0);
-    analogWrite(MOTOR1B, (int) abstract_left_force);
+    analogWrite(MOTOR_LEFT_A, 0);
+    analogWrite(MOTOR_LEFT_B, (int) abstract_left_force);
   }
 
   if (abstract_right_force < 0) {
-    analogWrite(MOTOR2B, 0);
-    analogWrite(MOTOR2A, (int) -abstract_right_force);
+    analogWrite(MOTOR_RIGHT_B, 0);
+    analogWrite(MOTOR_RIGHT_A, (int) -abstract_right_force);
   } else {
-    analogWrite(MOTOR2B, (int) abstract_right_force);
-    analogWrite(MOTOR2A, 0);
+    analogWrite(MOTOR_RIGHT_B, (int) abstract_right_force);
+    analogWrite(MOTOR_RIGHT_A, 0);
   }
 }
 
@@ -134,20 +134,20 @@ void RealMouse::setup() {
   pinMode(LED_5, OUTPUT);
   pinMode(LED_6, OUTPUT);
   pinMode(LED_7, OUTPUT);
+  pinMode(LED_8, OUTPUT);
   pinMode(SYS_LED, OUTPUT);
-  pinMode(MOTOR1A, OUTPUT);
-  pinMode(MOTOR1B, OUTPUT);
-  pinMode(MOTOR2A, OUTPUT);
-  pinMode(MOTOR2B, OUTPUT);
-  pinMode(ENCODER1A, INPUT_PULLUP);
-  pinMode(ENCODER1B, INPUT_PULLUP);
-  pinMode(ENCODER2A, INPUT_PULLUP);
-  pinMode(ENCODER2B, INPUT_PULLUP);
-  pinMode(RESET_PIN, INPUT_PULLUP);
+  pinMode(MOTOR_LEFT_A, OUTPUT);
+  pinMode(MOTOR_LEFT_B, OUTPUT);
+  pinMode(MOTOR_RIGHT_A, OUTPUT);
+  pinMode(MOTOR_RIGHT_B, OUTPUT);
+  pinMode(ENCODER_LEFT_A, INPUT_PULLUP);
+  pinMode(ENCODER_LEFT_B, INPUT_PULLUP);
+  pinMode(ENCODER_RIGHT_A, INPUT_PULLUP);
+  pinMode(ENCODER_RIGHT_B, INPUT_PULLUP);
   pinMode(BUTTON_PIN, INPUT_PULLUP);
 
-  left_encoder.init(ENCODER1A, ENCODER1B);
-  right_encoder.init(ENCODER2A, ENCODER2B);
+  left_encoder.init(ENCODER_LEFT_A, ENCODER_LEFT_B);
+  right_encoder.init(ENCODER_RIGHT_A, ENCODER_RIGHT_B);
 
   kinematic_controller.reset_x_to(0.06);
   kinematic_controller.reset_y_to(0.09);

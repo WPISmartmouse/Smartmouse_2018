@@ -24,12 +24,12 @@ const RobotConfig config = {
 #else // REAL
 const RobotConfig config = {
         FRONT_ANALOG_ANGLE : 1.35255,
-        BACK_ANALOG_ANGLE : 1.22,
-        FRONT_SIDE_ANALOG_X : 0.0416,
-        FRONT_SIDE_ANALOG_Y : 0.0371,
-        BACK_SIDE_ANALOG_X : -0.0361,
-        BACK_SIDE_ANALOG_Y : 0.0361,
-        FRONT_ANALOG_X : 0.072,
+        BACK_ANALOG_ANGLE : 1.35255,
+        FRONT_SIDE_ANALOG_X : 0.042,
+        FRONT_SIDE_ANALOG_Y : 0.0350,
+        BACK_SIDE_ANALOG_X : -0.0206,
+        BACK_SIDE_ANALOG_Y : 0.0335,
+        FRONT_ANALOG_X : 0.056,
         MAX_SPEED : 0.10,
         MIN_SPEED : 0.021,
         FRONT_WALL_THRESHOLD : 0.15,

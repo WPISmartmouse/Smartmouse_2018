@@ -106,7 +106,7 @@ KinematicController::run(double dt_s, double left_angle_rad, double right_angle_
     if (range_data.front_analog < 0.08) {
       double yaw_error = WallFollower::yawDiff(current_pose_estimate.yaw, dir_to_yaw(mouse->getDir()));
       d_wall_front = cos(yaw_error) * range_data.front_analog + config.FRONT_ANALOG_X;
-//      wall_in_front = true; // FIXME put this back
+      wall_in_front = true; // FIXME put this back
     }
 
     switch (mouse->getDir()) {

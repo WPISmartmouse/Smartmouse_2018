@@ -25,6 +25,6 @@ private:
 
   RangeData range_data;
   WallFollower follower;
-  const double kDisp = 0.4;
+  const double kDisp = 0.8;
 };
 

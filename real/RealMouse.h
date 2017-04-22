@@ -12,33 +12,33 @@ public:
   static constexpr int TICKS_PER_REV = 900;
   static constexpr double RAD_PER_TICK = 2 * M_PI / TICKS_PER_REV;
 
-  static const unsigned int FRONT_ANALOG_PIN = A1;
-  static const unsigned int FRONT_LEFT_ANALOG_PIN = A3;
-  static const unsigned int BACK_LEFT_ANALOG_PIN = A4;
-  static const unsigned int FRONT_RIGHT_ANALOG_PIN = A5;
-  static const unsigned int BACK_RIGHT_ANALOG_PIN = A2;
+  static const unsigned int FRONT_RIGHT_ANALOG_PIN = A14;
+  static const unsigned int BACK_RIGHT_ANALOG_PIN = A15;
+  static const unsigned int FRONT_ANALOG_PIN = A16;
+  static const unsigned int FRONT_LEFT_ANALOG_PIN = A17;
+  static const unsigned int BACK_LEFT_ANALOG_PIN = A18;
 
-  static const unsigned int ENCODER1A = 7;
-  static const unsigned int ENCODER1B = 8;
-  static const unsigned int ENCODER2A = 10;
-  static const unsigned int ENCODER2B = 9;
+  static const unsigned int ENCODER_LEFT_A = 9;
+  static const unsigned int ENCODER_LEFT_B = 10;
+  static const unsigned int ENCODER_RIGHT_A = 12;
+  static const unsigned int ENCODER_RIGHT_B = 11;
 
-  static const unsigned int MOTOR1A = 5;
-  static const unsigned int MOTOR1B = 4;
-  static const unsigned int MOTOR2A = 3;
-  static const unsigned int MOTOR2B = 2;
+  static const unsigned int MOTOR_LEFT_A = 5;
+  static const unsigned int MOTOR_LEFT_B = 6;
+  static const unsigned int MOTOR_RIGHT_A = 8;
+  static const unsigned int MOTOR_RIGHT_B = 7;
 
   static const unsigned int SYS_LED = 13;
-  static const unsigned int LED_1 = 33;
-  static const unsigned int LED_2 = 34;
-  static const unsigned int LED_3 = 35;
-  static const unsigned int LED_4 = 36;
-  static const unsigned int LED_5 = 37;
-  static const unsigned int LED_6 = 38;
-  static const unsigned int LED_7 = 39;
+  static const unsigned int LED_1 = 25;
+  static const unsigned int LED_2 = 26;
+  static const unsigned int LED_3 = 27;
+  static const unsigned int LED_4 = 28;
+  static const unsigned int LED_5 = 29;
+  static const unsigned int LED_6 = 30;
+  static const unsigned int LED_7 = 31;
+  static const unsigned int LED_8 = 32;
 
-  static const unsigned int RESET_PIN = 0;
-  static const unsigned int BUTTON_PIN = 0;
+  static const unsigned int BUTTON_PIN = 23;
 
   static RealMouse *inst();
 
