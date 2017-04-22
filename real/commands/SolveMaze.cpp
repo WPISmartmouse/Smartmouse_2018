@@ -1,12 +1,15 @@
 #include "SolveMaze.h"
 #include "Forward.h"
 #include "Turn.h"
+#include "ForwardToCenter.h"
+#include "TurnInPlace.h"
 
 SolveMaze::SolveMaze(Solver *solver, Solver::Goal goal) : CommandGroup("solve"), solver(solver), movements(0),
                                                           goal(goal) {}
 
 void SolveMaze::initialize() {
   solved = false;
+  atCenter = false;
   solver->setGoal(goal);
 }
 
@@ -31,8 +34,15 @@ bool SolveMaze::isFinished() {
       }
 
       movements++;
-    } else {
+    } else if (!atCenter){
+      addSequential(new ForwardToCenter());
+      if (goal == Solver::Goal::START) {
+        addSequential(new TurnInPlace(Direction::E));
+      }
+      atCenter = true;
       solved = true;
+      return false;
+    } else {
       return true;
     }
 

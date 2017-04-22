@@ -196,7 +196,7 @@
                     <noise>
                         <type>gaussian</type>
                         <mean>0.0</mean>
-                        <stddev>0.002</stddev>
+                        <stddev>0.001</stddev>
                     </noise>
                 </ray>
                 <plugin name="front_right_analog_ray" filename="libRayPlugin.so"/>
@@ -223,7 +223,7 @@
                     <noise>
                         <type>gaussian</type>
                         <mean>0.0</mean>
-                        <stddev>0.002</stddev>
+                        <stddev>0.001</stddev>
                     </noise>
                 </ray>
                 <plugin name="back_left_analog_ray" filename="libRayPlugin.so"/>

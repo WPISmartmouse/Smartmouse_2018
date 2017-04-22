@@ -16,6 +16,6 @@ bool WaitForStart::isFinished() {
 }
 
 void WaitForStart::end() {
-  SimMouse::inst()->resetToStartPose();
+//  SimMouse::inst()->resetToStartPose();
 }
 

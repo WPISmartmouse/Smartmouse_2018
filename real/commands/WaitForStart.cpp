@@ -6,7 +6,6 @@ WaitForStart::WaitForStart() : Command("wait_calibrate"), mouse(RealMouse::inst(
 }
 
 void WaitForStart::initialize() {
-  mouse->resetToStartPose();
 }
 
 void WaitForStart::execute() {
@@ -17,5 +16,6 @@ bool WaitForStart::isFinished() {
 }
 
 void WaitForStart::end() {
+//  mouse->resetToStartPose();
   digitalWrite(RealMouse::SYS_LED, 0);
 }

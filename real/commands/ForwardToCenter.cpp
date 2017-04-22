@@ -13,10 +13,12 @@ void ForwardToCenter::initialize() {
 void ForwardToCenter::execute() {
   range_data = mouse->getRangeData();
 
-  double l, r;
-  std::tie(l, r) = follower.compute_wheel_velocities(this->mouse, start, range_data);
-  l -= follower.disp * kDisp;
-  r -= follower.disp * kDisp;
+  double l_adjust, r_adjust;
+  std::tie(l_adjust, r_adjust) = follower.compute_wheel_velocities(this->mouse, start, range_data);
+  l_adjust = config.MAX_SPEED - l_adjust;
+  r_adjust = config.MAX_SPEED - r_adjust;
+  double l = follower.dispError * kDisp - l_adjust;
+  double r = follower.dispError * kDisp - r_adjust;
   mouse->setSpeed(l, r);
 }
 
