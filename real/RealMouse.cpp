@@ -98,8 +98,8 @@ void RealMouse::run(double dt_s) {
   range_data.back_right_analog = adcToMeters(analogRead(BACK_RIGHT_ANALOG_PIN));
   range_data.front_analog = adcToMeters(analogRead(FRONT_ANALOG_PIN));
 
-//  print("%f, %f, %f, %f, %f\n", range_data.front_left_analog, range_data.back_left_analog,
-//        range_data.front_right_analog, range_data.back_right_analog, range_data.front_analog);
+  print("%f, %f, %f, %f, %f\n", range_data.front_left_analog, range_data.back_left_analog,
+        range_data.front_right_analog, range_data.back_right_analog, range_data.front_analog);
 
   std::tie(abstract_left_force, abstract_right_force) = kinematic_controller.run(dt_s, left_angle_rad,
                                                                                  right_angle_rad, 0, 0, range_data);
@@ -146,16 +146,29 @@ void RealMouse::setup() {
   pinMode(ENCODER_RIGHT_B, INPUT_PULLUP);
   pinMode(BUTTON_PIN, INPUT_PULLUP);
 
+//  analogWriteFrequency(MOTOR_LEFT_A, 1831.055);
+//  analogWriteFrequency(MOTOR_LEFT_B, 1831.055);
+//  analogWriteFrequency(MOTOR_RIGHT_A, 1831.055);
+//  analogWriteFrequency(MOTOR_RIGHT_B, 1831.055);
+//  analogReadResolution(13); TODO: get more bits baby
+
   left_encoder.init(ENCODER_LEFT_A, ENCODER_LEFT_B);
   right_encoder.init(ENCODER_RIGHT_A, ENCODER_RIGHT_B);
 
-  kinematic_controller.reset_x_to(0.06);
-  kinematic_controller.reset_y_to(0.09);
-  kinematic_controller.reset_yaw_to(0.0);
-  kinematic_controller.setAcceleration(0.2, 1.0);
+  kinematic_controller.setAcceleration(0.4, 4.0);
+
+  resetToStartPose();
 
   // Teensy does USB in software, so serial rate doesn't do anything
   Serial.begin(0);
+  Serial1.begin(115200);
+}
+
+void RealMouse::resetToStartPose() {
+  reset(); // resets row, col, and dir
+  kinematic_controller.reset_x_to(0.06);
+  kinematic_controller.reset_y_to(0.09);
+  kinematic_controller.reset_yaw_to(0.0);
 }
 
 void RealMouse::setSpeed(double l_mps, double r_mps) {

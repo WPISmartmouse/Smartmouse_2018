@@ -23,10 +23,9 @@ public:
 
   virtual bool isFinished() override;
 
-  virtual void setGoal(unsigned int row, unsigned int col) override;
+  virtual void setGoal(Solver::Goal goal) override;
 
 private:
   int step;
-  unsigned int goal_row, goal_col;
-
+  Solver::Goal goal;
 };

@@ -2,8 +2,14 @@
 
 #include "Mouse.h"
 
+
 class Solver {
 public:
+  enum class Goal {
+    CENTER,
+    START
+  };
+
   Solver(Mouse *mouse);
 
   virtual void setup() = 0;
@@ -16,7 +22,7 @@ public:
 
   virtual void teardown() = 0;
 
-  virtual void setGoal(unsigned int row, unsigned int col) = 0;
+  virtual void setGoal(Goal goal) = 0;
 
   bool isSolvable();
 

@@ -3,21 +3,20 @@
 #include <real/ArduinoTimer.h>
 #include <common/AbstractMaze.h>
 #include <common/commands/SolveCommand.h>
+#include <common/util.h>
 #include <common/Flood.h>
 #include "Finish.h"
-#include <real/RealMouse.h>
-#include <common/commands/RepeatCommand.h>
-#include <real/commands/LEDBlink.h>
 #include "Forward.h"
 #include "Turn.h"
-#include <common/util.h>
 
 ArduinoTimer timer;
 AbstractMaze maze;
 Scheduler *scheduler;
 RealMouse *mouse;
-unsigned long last_t;
+unsigned long last_t, last_blink;
 bool done = false;
+bool on = true;
+
 
 class Hack : public CommandGroup {
 public:
@@ -41,6 +40,7 @@ void setup() {
   mouse = RealMouse::inst();
   mouse->setup();
 
+  GlobalProgramSettings.q = false;
   digitalWrite(RealMouse::SYS_LED, 1);
 
 //  scheduler = new Scheduler(new RepeatCommand<Forward>(3));
@@ -49,11 +49,18 @@ void setup() {
   scheduler = new Scheduler(new SolveCommand(new Flood(mouse)));
 
   last_t = timer.programTimeMs();
+  last_blink = timer.programTimeMs();
 }
 
 void loop() {
   unsigned long now = timer.programTimeMs();
   double dt_s = (now - last_t) / 1000.0;
+
+  if (now - last_blink > 100) {
+    last_blink = now;
+    digitalWrite(RealMouse::SYS_LED, on);
+    on = !on;
+  }
 
   // minimum period of main loop
   if (dt_s < 0.020) {

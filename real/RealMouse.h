@@ -56,6 +56,8 @@ public:
 
   std::pair<double, double> getWheelVelocities();
 
+  void resetToStartPose();
+
   void run(double dt_s);
 
   void setSpeed(double l_mps, double r_mps);

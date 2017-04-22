@@ -1,15 +1,16 @@
 #include "SolveMaze.h"
 #include "Forward.h"
+#include "ForwardToCenter.h"
 #include "Turn.h"
+#include "TurnInPlace.h"
 
-SolveMaze::SolveMaze(Solver *solver) : CommandGroup("solve"), solver(solver), movements(0),
-                                       goal_row(AbstractMaze::MAZE_SIZE / 2), goal_col(AbstractMaze::MAZE_SIZE / 2) {}
-
-SolveMaze::SolveMaze(Solver *solver, unsigned int goal_row, unsigned int goal_col) : CommandGroup("solve"), solver(solver), movements(0),
-                                                                   goal_row(goal_row), goal_col(goal_col) {}
+SolveMaze::SolveMaze(Solver *solver, Solver::Goal goal) : CommandGroup("solve"), solver(solver), movements(0),
+                                                          goal(goal) {}
 
 void SolveMaze::initialize() {
-  solver->setGoal(goal_row, goal_col);
+  solved = false;
+  atCenter = false;
+  solver->setGoal(goal);
 }
 
 bool SolveMaze::isFinished() {
@@ -20,6 +21,12 @@ bool SolveMaze::isFinished() {
 
     if (!mazeSolved) {
       Direction nextDirection = solver->planNextStep();
+
+      if (!solver->isSolvable()) {
+        solved = false;
+        return true;
+      }
+
       if (nextDirection == solver->mouse->getDir()) {
         addSequential(new Forward());
       } else {
@@ -27,6 +34,14 @@ bool SolveMaze::isFinished() {
       }
 
       movements++;
+    } else if (!atCenter){
+      addSequential(new ForwardToCenter());
+      if (goal == Solver::Goal::START) {
+        addSequential(new TurnInPlace(Direction::E));
+      }
+      atCenter = true;
+      solved = true;
+      return false;
     } else {
       return true;
     }

@@ -9,7 +9,7 @@ void TurnInPlace::initialize() {
 
 void TurnInPlace::execute() {
   double s;
-  s = limit(dYaw * kP);
+  s = dYaw * kP;
   mouse->setSpeed(-s, s);
 
   // when we get close to aligned, there might be a wall we can use to better estimate our angle
@@ -20,10 +20,6 @@ void TurnInPlace::execute() {
     // FIXME: the correct yaw. it adds dir_to_yaw(getDir()), so we must assume we're close enough
     mouse->internalTurnToFace(dir);
   }
-}
-
-double TurnInPlace::limit(double x) {
-  return std::fmax(std::fmin(x, config.MAX_SPEED), -config.MAX_SPEED);
 }
 
 bool TurnInPlace::isFinished() {

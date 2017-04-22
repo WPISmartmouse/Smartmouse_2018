@@ -3,7 +3,7 @@
 #include <common/RobotConfig.h>
 #include "RegulatedMotor.h"
 
-const double RegulatedMotor::kP = 4.0;
+const double RegulatedMotor::kP = 6.5;
 const double RegulatedMotor::kI = 0.00;
 const double RegulatedMotor::kD = 0.2;
 const double RegulatedMotor::ff_offset = 15;
@@ -81,5 +81,12 @@ void RegulatedMotor::setAcceleration(double acceleration, double brake_accelerat
 }
 
 void RegulatedMotor::setSetpointMps(double setpoint_mps) {
-  this->setpoint_rps = Mouse::meterToRad(setpoint_mps);
+  double s = 0;
+  if (setpoint_mps > 0) {
+    s = fmax(fmin(setpoint_mps, config.MAX_SPEED), config.MIN_SPEED);
+  }
+  else if (setpoint_mps < 0) {
+    s = fmin(fmax(setpoint_mps, -config.MAX_SPEED), -config.MIN_SPEED);
+  }
+  this->setpoint_rps = Mouse::meterToRad(s);
 }

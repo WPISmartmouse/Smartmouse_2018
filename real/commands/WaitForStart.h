@@ -10,8 +10,8 @@ public:
   void initialize();
   void execute();
   bool isFinished();
+  void end();
 
 private:
   RealMouse *mouse;
-//  std::list<RangeData> data;
 };

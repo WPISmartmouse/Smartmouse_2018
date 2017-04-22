@@ -25,6 +25,6 @@ private:
   RealMouse *mouse;
   Direction dir;
 
-  const double kP = 0.04;
+  const double kP = 0.12;
 };
 

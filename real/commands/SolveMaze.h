@@ -6,8 +6,7 @@
 
 class SolveMaze : public CommandGroup {
 public:
-  SolveMaze(Solver *solver);
-  SolveMaze(Solver *solver, unsigned int goal_row, unsigned int goal_col);
+  SolveMaze(Solver *solver, Solver::Goal goal);
 
   void initialize();
 
@@ -18,6 +17,7 @@ public:
 private:
   Solver *solver;
   int movements;
-  unsigned int goal_row, goal_col;
+  Solver::Goal goal;
+  bool solved;
 
 };

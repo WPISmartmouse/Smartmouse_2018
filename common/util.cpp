@@ -13,6 +13,7 @@ void print(const char *fmt, ... ){
   va_end(args);
 #ifdef ARDUINO
   Serial.print(buf);
+  Serial1.print(buf);
 #else
   printf("%s", buf);
 #endif

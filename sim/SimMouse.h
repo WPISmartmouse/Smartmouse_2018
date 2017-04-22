@@ -58,6 +58,8 @@ public:
 
   KinematicController kinematic_controller;
 
+  void resetToStartPose();
+
 private:
 
   SimMouse();

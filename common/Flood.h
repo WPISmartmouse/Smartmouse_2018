@@ -26,7 +26,7 @@ public:
 
   virtual bool isFinished() override;
 
-  virtual void setGoal(unsigned int row, unsigned int col) override;
+  virtual void setGoal(Solver::Goal goal) override;
 
   bool done;
 
@@ -40,7 +40,7 @@ private:
 
   char *no_wall_path;
   char *all_wall_path;
-  Node *goal;
+  Solver::Goal goal;
 
   bool solved;
 };

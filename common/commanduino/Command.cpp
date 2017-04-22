@@ -1,5 +1,3 @@
-//#include <cstdio>
-
 #include "Command.h"
 
 TimerInterface *Command::timer;
@@ -8,10 +6,10 @@ void Command::setTimerImplementation(TimerInterface *timer) {
   Command::timer = timer;
 }
 
-Command::Command() : name("unnamed"), initialized(false), running(false) {}
+Command::Command() : name("unnamed"), initialized(false), running(false), timeout(0), startTime(0) {}
 
 Command::Command(const char *name) : name(name),
-                                     initialized(false), running(false) {}
+                                     initialized(false), running(false), timeout(0), startTime(0) {}
 
 Command::~Command() {}
 

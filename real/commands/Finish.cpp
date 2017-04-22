@@ -1,15 +1,14 @@
 #include "Finish.h"
-#include <Arduino.h>
 
-Finish::Finish(AbstractMaze *maze) : Command("end"), maze(maze) {}
+Finish::Finish(AbstractMaze *maze) : Command("finish"), maze(maze), mouse(RealMouse::inst()) {
+}
 
 void Finish::initialize() {
-  print(maze->fastest_route);
-  setTimeout(2000);
+  mouse->setSpeed(0, 0);
+  setTimeout(1000);
   t = getTime();
   pin_id = RealMouse::LED_1;
   on = true;
-  mouse->setSpeed(0, 0);
 }
 
 void Finish::execute() {
@@ -27,7 +26,7 @@ void Finish::execute() {
         pin_id = RealMouse::LED_1;
       }
     }
-}
+  }
 }
 
 bool Finish::isFinished() {

@@ -2,6 +2,7 @@
 #include <common/commands/SolveCommand.h>
 #include <common/Flood.h>
 #include <ignition/transport/Node.hh>
+#include <common/util.h>
 
 #include "SimMouse.h"
 #include "SimTimer.h"
@@ -10,7 +11,7 @@ int main(int argc, char *argv[]) {
   // Load gazebo
   bool connected = gazebo::client::setup(argc, argv);
   if (!connected) {
-    printf("failed to connect to gazebo. Is it running?\n");
+    print("failed to connect to gazebo. Is it running?\n");
     exit(0);
   }
 
@@ -24,7 +25,7 @@ int main(int argc, char *argv[]) {
 
   bool success = mouse->ign_node.Subscribe("/time_ms", &SimTimer::simTimeCallback, &timer);
   if (!success) {
-    printf("Failed to subscribe to /time_ms\n");
+    print("Failed to subscribe to /time_ms\n");
     return EXIT_FAILURE;
   }
 

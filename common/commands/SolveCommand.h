@@ -9,12 +9,10 @@ public:
   SolveCommand(Solver *solver);
 
   void initialize();
-
   bool isFinished();
 
 private:
   Solver *solver;
-  static constexpr int MAX_RUNS = 2;
-  SolveMaze *to_center, *to_start;
+  static constexpr int MAX_RUNS = 4;
   int runs;
 };

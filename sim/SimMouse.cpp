@@ -242,11 +242,10 @@ void SimMouse::setSpeed(double left_wheel_velocity_setpoint_mps, double right_wh
 void SimMouse::simInit() {
   setSpeed(0, 0);
 
-  // we start in the middle of the first square
-  kinematic_controller.reset_x_to(0.053);
-  kinematic_controller.reset_y_to(0.09);
-  kinematic_controller.reset_yaw_to(0.0);
   kinematic_controller.setAcceleration(0.4, 12.2);
+
+  // we start in the middle of the first square
+  resetToStartPose();
 
   for (unsigned int i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
     for (unsigned int j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
@@ -267,5 +266,13 @@ void SimMouse::simInit() {
       Set(marker->mutable_pose(), ignition::math::Pose3d(x, y, INDICATOR_Z, 0, 0, 0));
     }
   }
+
 //  publishIndicators();
+}
+
+void SimMouse::resetToStartPose() {
+  reset(); // resets row, col, and dir
+  kinematic_controller.reset_x_to(0.053);
+  kinematic_controller.reset_y_to(0.09);
+  kinematic_controller.reset_yaw_to(0.0);
 }

@@ -4,9 +4,7 @@
 #include <Arduino.h>
 #endif
 
-Flood::Flood(Mouse *mouse) : Solver(mouse),
-                             done(false),
-                             solved(false) {
+Flood::Flood(Mouse *mouse) : Solver(mouse), done(false), solved(false) {
   no_wall_path = (char *) calloc(AbstractMaze::PATH_SIZE, sizeof(char));
   all_wall_path = (char *) calloc(AbstractMaze::PATH_SIZE, sizeof(char));
 }
@@ -17,11 +15,11 @@ void Flood::setup() {
   mouse->maze->reset();
   all_wall_maze = mouse->maze;
   no_wall_maze.connect_all_neighbors_in_maze();
-  goal = no_wall_maze.center_node();
+  goal = Solver::Goal::CENTER;
 }
 
-void Flood::setGoal(unsigned int row, unsigned int col) {
-  no_wall_maze.get_node(&goal, row, col);
+void Flood::setGoal(Solver::Goal goal) {
+  this->goal = goal;
 }
 
 Direction Flood::planNextStep() {
@@ -38,13 +36,22 @@ Direction Flood::planNextStep() {
   all_wall_maze->update(sr);
 
   //solve flood fill on the two mazes from mouse to goal
-  solvable = no_wall_maze.flood_fill_from_point(no_wall_path, mouse->getRow(), mouse->getCol(), goal->row(), goal->col());
-
-  //this way commands can see this
-  //used to visualize in gazebo
-  mouse->maze->path_to_next_goal = no_wall_path;
-
-  all_wall_maze->flood_fill_from_point(all_wall_path, mouse->getRow(), mouse->getCol(), goal->row(), goal->col());
+  switch (goal) {
+    case Solver::Goal::CENTER:
+      solvable = no_wall_maze.flood_fill_from_point(no_wall_path, mouse->getRow(), mouse->getCol(),
+                                                    AbstractMaze::CENTER, AbstractMaze::CENTER);
+      //this way commands can see this used to visualize in gazebo
+      mouse->maze->path_to_next_goal = no_wall_path;
+      all_wall_maze->flood_fill_from_point(all_wall_path, mouse->getRow(), mouse->getCol(), AbstractMaze::CENTER,
+                                           AbstractMaze::CENTER);
+      break;
+    case Solver::Goal::START:
+      solvable = no_wall_maze.flood_fill_from_point(no_wall_path, mouse->getRow(), mouse->getCol(), 0, 0);
+      //this way commands can see this used to visualize in gazebo
+      mouse->maze->path_to_next_goal = no_wall_path;
+      all_wall_maze->flood_fill_from_point(all_wall_path, mouse->getRow(), mouse->getCol(), 0, 0);
+      break;
+  }
 
   //solve from origin to center
   //this is what tells us whether or not we need to keep searching
@@ -69,12 +76,20 @@ char *Flood::solve() {
 }
 
 bool Flood::isFinished() {
-  return mouse->getRow() == goal->row() && mouse->getCol() == goal->col();
+  unsigned int r = mouse->getRow();
+  unsigned int c = mouse->getCol();
+  const unsigned int C = AbstractMaze::MAZE_SIZE / 2;
+  switch (goal) {
+    case Solver::Goal::CENTER:
+      return !solvable || ((r >= C - 1 && r <= C) && (c >= C - 1 && c <= C));
+    case Solver::Goal::START:
+      return !solvable || (r == 0 && c == 0);
+  }
 }
 
 void Flood::teardown() {
   //this is the final solution which represents how the mouse should travel from start to finish
-  mouse->maze->fastest_route = all_wall_maze->fastest_route;
-//  free(no_wall_path);
-//  free(all_wall_path);
+  if (goal == Solver::Goal::CENTER) {
+    mouse->maze->fastest_route = all_wall_maze->fastest_route;
+  }
 }

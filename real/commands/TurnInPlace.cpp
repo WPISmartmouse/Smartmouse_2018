@@ -12,7 +12,6 @@ void TurnInPlace::initialize() {
 void TurnInPlace::execute() {
   double s;
   s = dYaw * kP;
-  s = limit(s);
   mouse->setSpeed(-s, s);
 
   // when we get close to aligned, there might be a wall we can use to better estimate our angle
@@ -25,16 +24,6 @@ void TurnInPlace::execute() {
   }
 }
 
-double TurnInPlace::limit(double x) {
-  if (x > 0) {
-    return fmax(fmin(x, config.MAX_SPEED), config.MIN_SPEED);
-  }
-  else if (x < 0) {
-    return fmin(fmax(x, -config.MAX_SPEED), -config.MIN_SPEED);
-  }
-  else return 0;
-}
-
 bool TurnInPlace::isFinished() {
   double currentYaw = mouse->getPose().yaw;
   dYaw = WallFollower::yawDiff(currentYaw, goalYaw);
@@ -45,7 +34,6 @@ bool TurnInPlace::isFinished() {
 
 void TurnInPlace::end() {
   digitalWrite(RealMouse::LED_2, 0);
-  print("done turning in place.\n");
   mouse->internalTurnToFace(dir);
 }
 

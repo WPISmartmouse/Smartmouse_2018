@@ -3,9 +3,9 @@
 #include "ForwardToCenter.h"
 #include "TurnInPlace.h"
 #endif
-#include "Stop.h"
 #include "SolveCommand.h"
 #include "WaitForStart.h"
+#include "Stop.h"
 #include "Finish.h"
 
 SolveCommand::SolveCommand(Solver *solver) : CommandGroup("SolveGroup"), solver(solver) {}
@@ -17,14 +17,9 @@ void SolveCommand::initialize() {
     addSequential(new WaitForStart());
   }
   solver->setup();
-  addSequential(new WaitForStart());
-  addSequential(new SolveMaze(solver));
+  addSequential(new SolveMaze(solver, Solver::Goal::CENTER));
   addSequential(new Finish(solver->mouse->maze));
-  addSequential(new SolveMaze(solver, 0, 0));
-#ifndef CONSOLE
-  addSequential(new ForwardToCenter());
-  addSequential(new TurnInPlace(Direction::E));
-#endif
+  addSequential(new SolveMaze(solver, Solver::Goal::START));
 }
 
 bool SolveCommand::isFinished() {
@@ -39,18 +34,14 @@ bool SolveCommand::isFinished() {
     }
 
     if (!GlobalProgramSettings.q) {
+      addSequential(new Stop(200));
       addSequential(new WaitForStart());
     }
-    addSequential(new SolveMaze(solver));
+    addSequential(new SolveMaze(solver, Solver::Goal::CENTER));
     addSequential(new Finish(solver->mouse->maze));
-    addSequential(new SolveMaze(solver, 0, 0));
-#ifndef CONSOLE
-    addSequential(new ForwardToCenter());
-    addSequential(new TurnInPlace(Direction::E));
-#endif
+    addSequential(new SolveMaze(solver, Solver::Goal::START));
     return false;
   }
 
   return false;
-
 }

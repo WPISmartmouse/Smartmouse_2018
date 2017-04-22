@@ -102,7 +102,23 @@ void Mouse::maze_mouse_string(char *buff) {
       }
 
       if (row == i && col == j) {
-        strcpy(b++, "o");
+        switch(dir) {
+          case Direction::N:
+            strcpy(b++, "^");
+            break;
+          case Direction::S:
+            strcpy(b++, "v");
+            break;
+          case Direction::E:
+            strcpy(b++, ">");
+            break;
+          case Direction::W:
+            strcpy(b++, "<");
+            break;
+          default:
+            strcpy(b++, "o");
+            break;
+        }
       } else if (n->neighbor(Direction::S) == NULL) {
         strcpy(b++, "_");
       } else {
