@@ -18,8 +18,6 @@ public:
   void end();
 
 private:
-  double limit(double x);
-
   double goalYaw;
   double dYaw;
   RealMouse *mouse;

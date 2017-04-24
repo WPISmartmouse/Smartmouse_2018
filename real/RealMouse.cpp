@@ -63,6 +63,8 @@ RangeData RealMouse::getRangeData() {
 SensorReading RealMouse::checkWalls() {
   SensorReading sr(row, col);
 
+  print("Checking walls now\r\n");
+
   sr.walls[static_cast<int>(dir)] = range_data.front_analog < 0.15;
   sr.walls[static_cast<int>(left_of_dir(dir))] = range_data.front_left_analog < 0.15;
   sr.walls[static_cast<int>(right_of_dir(dir))] = range_data.front_right_analog < 0.15;

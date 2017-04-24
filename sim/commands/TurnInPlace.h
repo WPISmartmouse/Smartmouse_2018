@@ -25,6 +25,6 @@ private:
   SimMouse *mouse;
   Direction dir;
 
-  const double kP = 20;
+  const double kP = 0.12;
 };
 

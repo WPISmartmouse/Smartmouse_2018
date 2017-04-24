@@ -9,15 +9,15 @@ const RobotConfig config = {
         BACK_SIDE_ANALOG_X : -0.024,
         BACK_SIDE_ANALOG_Y : 0.030,
         FRONT_ANALOG_X : 0.055,
-        MAX_SPEED : 0.18,
-        MIN_SPEED : 0.018,
+        MAX_SPEED : 0.25,
+        MIN_SPEED : 0.013,
         FRONT_WALL_THRESHOLD : 0.15,
         SIDE_WALL_THRESHOLD : 0.08,
-        WALL_CHANGED_THRESHOLD : 0.02,
+        WALL_CHANGED_THRESHOLD : 0.01,
         ROT_TOLERANCE : 0.14,
         TRACK_WIDTH : 0.0633,
         ANALOG_MAX_DIST : 0.18,
-        MAX_FORCE : 0.013,
+        MAX_FORCE : 0.014,
 };
 #elif defined(CONSOLE)
 
@@ -34,7 +34,7 @@ const RobotConfig config = {
         MIN_SPEED : 0.013,
         FRONT_WALL_THRESHOLD : 0.15,
         SIDE_WALL_THRESHOLD : 0.08,
-        WALL_CHANGED_THRESHOLD : 0.01,
+        WALL_CHANGED_THRESHOLD : 0.02,
         ROT_TOLERANCE : 0.14,
         TRACK_WIDTH : 0.0633,
         ANALOG_MAX_DIST : 0.18,

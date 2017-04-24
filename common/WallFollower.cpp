@@ -2,6 +2,9 @@
 #include <limits>
 #include "WallFollower.h"
 #include "Mouse.h"
+#ifdef ARDUINO
+#include <Arduino.h>
+#endif
 
 const double WallFollower::kPWall = 0.35; //TODO: Should be 0.8
 const double WallFollower::kDWall = 50;
@@ -100,14 +103,6 @@ std::pair<double, double> WallFollower::estimate_pose(RangeData range_data, Mous
   last_front_right_analog_dist = range_data.front_right_analog;
   last_back_left_analog_dist = range_data.back_left_analog;
   last_back_right_analog_dist = range_data.back_right_analog;
-
-  static int i = 0;
-  if (i > 10) {
-    print("%i %i %f\r\n", mouse->getRow(), mouse->getCol(), *offset);
-    i=0;
-  }
-  i++;
-
 
   return out;
 };

@@ -97,7 +97,7 @@ KinematicController::run(double dt_s, double left_angle_rad, double right_angle_
 
     double d_wall_front = 0;
     bool wall_in_front = false;
-    if (range_data.front_analog < 0.10) {
+    if (range_data.front_analog < 0.07) {
       double yaw_error = WallFollower::yawDiff(current_pose_estimate.yaw, dir_to_yaw(mouse->getDir()));
       d_wall_front = cos(yaw_error) * range_data.front_analog + config.FRONT_ANALOG_X;
       wall_in_front = true;
