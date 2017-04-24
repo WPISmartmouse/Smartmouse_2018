@@ -17,11 +17,11 @@ StateViz::StateViz() : GUIPlugin() {
   this->node->Init();
   this->state_sub = this->node->Subscribe("~/mouse/state", &StateViz::StateCallback, this);
   this->maze_loc_sub = this->node->Subscribe("~/maze_location", &StateViz::MazeLocationCallback, this);
-  this->front_left_analog_sub = this->node->Subscribe("~/mouse/base/front_left_analog/scan", &StateViz::FrontLeftAnalogCallback, this);
-  this->front_right_analog_sub = this->node->Subscribe("~/mouse/base/front_right_analog/scan", &StateViz::FrontRightAnalogCallback, this);
-  this->back_left_analog_sub = this->node->Subscribe("~/mouse/base/back_left_analog/scan", &StateViz::BackLeftAnalogCallback, this);
-  this->back_right_analog_sub = this->node->Subscribe("~/mouse/base/back_right_analog/scan", &StateViz::BackRightAnalogCallback, this);
-  this->front_analog_sub = this->node->Subscribe("~/mouse/base/front_analog/scan", &StateViz::FrontAnalogCallback, this);
+  this->front_left_analog_sub = this->node->Subscribe("~/mouse/base/front_left/scan", &StateViz::FrontLeftAnalogCallback, this);
+  this->front_right_analog_sub = this->node->Subscribe("~/mouse/base/front_right/scan", &StateViz::FrontRightAnalogCallback, this);
+  this->back_left_analog_sub = this->node->Subscribe("~/mouse/base/back_left/scan", &StateViz::BackLeftAnalogCallback, this);
+  this->back_right_analog_sub = this->node->Subscribe("~/mouse/base/back_right/scan", &StateViz::BackRightAnalogCallback, this);
+  this->front_analog_sub = this->node->Subscribe("~/mouse/base/front/scan", &StateViz::FrontAnalogCallback, this);
   this->statsSub = this->node->Subscribe("~/world_stats", &StateViz::OnStats, this);
 
   this->reset_trace_pub = this->ign_node.Advertise<ignition::msgs::Empty>("/delete_plot");

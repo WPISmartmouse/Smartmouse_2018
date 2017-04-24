@@ -30,7 +30,7 @@ const RobotConfig config = {
         BACK_SIDE_ANALOG_X : -0.0206,
         BACK_SIDE_ANALOG_Y : 0.0335,
         FRONT_ANALOG_X : 0.056,
-        MAX_SPEED : 0.25,
+        MAX_SPEED : 0.30,
         MIN_SPEED : 0.013,
         FRONT_WALL_THRESHOLD : 0.15,
         SIDE_WALL_THRESHOLD : 0.08,

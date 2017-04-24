@@ -16,6 +16,7 @@ RealMouse *mouse;
 unsigned long last_t, last_blink;
 bool done = false;
 bool on = true;
+bool paused = false;
 
 
 class Hack : public CommandGroup {
@@ -53,6 +54,20 @@ void setup() {
 }
 
 void loop() {
+  if (Serial1.available()) {
+    Serial1.clear();
+    analogWrite(RealMouse::MOTOR_LEFT_A, 0);
+    analogWrite(RealMouse::MOTOR_RIGHT_A, 0);
+    analogWrite(RealMouse::MOTOR_LEFT_B, 0);
+    analogWrite(RealMouse::MOTOR_RIGHT_B, 0);
+    paused = !paused;
+  }
+
+  if (paused) {
+    digitalWrite(RealMouse::SYS_LED, 1);
+    return;
+  }
+
   unsigned long now = timer.programTimeMs();
   double dt_s = (now - last_t) / 1000.0;
 

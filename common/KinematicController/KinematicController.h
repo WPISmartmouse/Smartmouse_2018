@@ -1,6 +1,8 @@
 #pragma once
 
+#include <list>
 #include <utility>
+#include <common/util.h>
 #include <common/Pose.h>
 #include <common/RobotConfig.h>
 #include "RegulatedMotor.h"
@@ -8,6 +10,8 @@
 class KinematicController {
 public:
   KinematicController(Mouse *mouse);
+
+  std::pair<double, double> estimate_pose(RangeData range_data, Mouse *mouse);
 
   Pose getPose();
 

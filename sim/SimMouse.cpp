@@ -28,9 +28,9 @@ SensorReading SimMouse::checkWalls() {
   dataCond.wait(lk);
   SensorReading sr(row, col);
 
-  sr.walls[static_cast<int>(dir)] = range_data.front_analog < config.FRONT_WALL_THRESHOLD;
-  sr.walls[static_cast<int>(left_of_dir(dir))] = range_data.front_left_analog < config.SIDE_WALL_THRESHOLD;
-  sr.walls[static_cast<int>(right_of_dir(dir))] = range_data.front_right_analog < config.SIDE_WALL_THRESHOLD;
+  sr.walls[static_cast<int>(dir)] = range_data.front < config.FRONT_WALL_THRESHOLD;
+  sr.walls[static_cast<int>(left_of_dir(dir))] = range_data.front_left < config.SIDE_WALL_THRESHOLD;
+  sr.walls[static_cast<int>(right_of_dir(dir))] = range_data.front_right < config.SIDE_WALL_THRESHOLD;
   sr.walls[static_cast<int>(opposite_direction(dir))] = false;
 
   return sr;
@@ -113,11 +113,11 @@ void SimMouse::robotStateCallback(ConstRobotStatePtr &msg) {
   this->left_wheel_angle_rad = msg->left_wheel_angle_radians();
   this->right_wheel_angle_rad = msg->right_wheel_angle_radians();
 
-  this->range_data.front_left_analog = msg->front_left_analog();
-  this->range_data.front_right_analog = msg->front_right_analog();
-  this->range_data.back_left_analog = msg->back_left_analog();
-  this->range_data.back_right_analog = msg->back_right_analog();
-  this->range_data.front_analog = msg->front_analog();
+  this->range_data.front_left = msg->front_left_analog();
+  this->range_data.front_right = msg->front_right_analog();
+  this->range_data.back_left = msg->back_left_analog();
+  this->range_data.back_right = msg->back_right_analog();
+  this->range_data.front = msg->front_analog();
 
   dataCond.notify_all();
 }

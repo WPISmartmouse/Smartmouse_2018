@@ -24,7 +24,7 @@ void ForwardToCenter::execute() {
 }
 
 bool ForwardToCenter::isFinished() {
-  return follower.dispError <= 0 || isTimedOut();
+  return fabs(follower.dispError) <= 0.002 || isTimedOut();
 }
 
 void ForwardToCenter::end() {

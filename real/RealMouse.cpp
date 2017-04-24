@@ -16,7 +16,7 @@ const int RealMouse::ir_lookup[18] = {
         147, // .10
         134, // .11
         115, // .12
-        105,  // .13
+        105, // .13
         93,  // .14
         86,  // .15
         75,  // .16
@@ -25,7 +25,7 @@ const int RealMouse::ir_lookup[18] = {
 };
 
 double RealMouse::tick_to_rad(int ticks) {
-  // if in quadrent I or II, it's positive
+  // if in quadrant I or II, it's positive
   double rad = ticks * RAD_PER_TICK;
   return rad;
 }
@@ -63,11 +63,9 @@ RangeData RealMouse::getRangeData() {
 SensorReading RealMouse::checkWalls() {
   SensorReading sr(row, col);
 
-  print("Checking walls now\r\n");
-
-  sr.walls[static_cast<int>(dir)] = range_data.front_analog < 0.15;
-  sr.walls[static_cast<int>(left_of_dir(dir))] = range_data.front_left_analog < 0.15;
-  sr.walls[static_cast<int>(right_of_dir(dir))] = range_data.front_right_analog < 0.15;
+  sr.walls[static_cast<int>(dir)] = range_data.front < 0.15;
+  sr.walls[static_cast<int>(left_of_dir(dir))] = range_data.front_left < 0.15;
+  sr.walls[static_cast<int>(right_of_dir(dir))] = range_data.front_right < 0.15;
   sr.walls[static_cast<int>(opposite_direction(dir))] = false;
 
   return sr;
@@ -94,14 +92,22 @@ void RealMouse::run(double dt_s) {
   double left_angle_rad = tick_to_rad(left_encoder.read());
   double right_angle_rad = tick_to_rad(right_encoder.read());
 
-  range_data.front_left_analog = adcToMeters(analogRead(FRONT_LEFT_ANALOG_PIN));
-  range_data.back_left_analog = adcToMeters(analogRead(BACK_LEFT_ANALOG_PIN));
-  range_data.front_right_analog = adcToMeters(analogRead(FRONT_RIGHT_ANALOG_PIN));
-  range_data.back_right_analog = adcToMeters(analogRead(BACK_RIGHT_ANALOG_PIN));
-  range_data.front_analog = adcToMeters(analogRead(FRONT_ANALOG_PIN));
+  range_data.gerald_left = adcToMeters(analogRead(GERALD_LEFT_ANALOG_PIN));
+  range_data.gerald_right = adcToMeters(analogRead(GERALD_RIGHT_ANALOG_PIN));
+  range_data.front_left = adcToMeters(analogRead(FRONT_LEFT_ANALOG_PIN));
+  range_data.back_left = adcToMeters(analogRead(BACK_LEFT_ANALOG_PIN));
+  range_data.front_right = adcToMeters(analogRead(FRONT_RIGHT_ANALOG_PIN));
+  range_data.back_right = adcToMeters(analogRead(BACK_RIGHT_ANALOG_PIN));
+  range_data.front = adcToMeters(analogRead(FRONT_ANALOG_PIN));
 
-//  print("%f, %f, %f, %f, %f\n", range_data.front_left_analog, range_data.back_left_analog,
-//        range_data.front_right_analog, range_data.back_right_analog, range_data.front_analog);
+//  static int i=0;
+//  if (i > 4) {
+//    i = 0;
+//    print("%f, %f, %f, %f, %f, %f, %f\n", range_data.front_left, range_data.back_left,
+//          range_data.gerald_left, range_data.gerald_right,
+//          range_data.front_right, range_data.back_right, range_data.front);
+//  }
+//  i++;
 
   std::tie(abstract_left_force, abstract_right_force) = kinematic_controller.run(dt_s, left_angle_rad,
                                                                                  right_angle_rad, 0, 0, range_data);
@@ -157,12 +163,13 @@ void RealMouse::setup() {
   left_encoder.init(ENCODER_LEFT_A, ENCODER_LEFT_B);
   right_encoder.init(ENCODER_RIGHT_A, ENCODER_RIGHT_B);
 
-  kinematic_controller.setAcceleration(1.2, 4.0);
+  kinematic_controller.setAcceleration(2.0, 4.0);
 
   resetToStartPose();
 
   // Teensy does USB in software, so serial rate doesn't do anything
   Serial.begin(0);
+  // But it does here because it's not the USB serial
   Serial1.begin(115200);
 }
 

@@ -150,7 +150,7 @@
                     </script>
                 </material>
             </visual>
-            <sensor name="front_left_analog" type="ray">
+            <sensor name="front_left" type="ray">
                 <pose>0.045 0.030 0.015 0 0 0</pose>
                 <ray>
                     <scan>
@@ -177,7 +177,7 @@
                 <update_rate>20</update_rate>
                 <visualize>true</visualize>
             </sensor>
-            <sensor name="front_right_analog" type="ray">
+            <sensor name="front_right" type="ray">
                 <pose>0.045 -0.030 0.015 0 0 0</pose>
                 <ray>
                     <scan>
@@ -204,7 +204,7 @@
                 <update_rate>20</update_rate>
                 <visualize>true</visualize>
             </sensor>
-            <sensor name="back_left_analog" type="ray">
+            <sensor name="back_left" type="ray">
                 <pose>-0.024 0.030 0.015 0 0 0</pose>
                 <ray>
                     <scan>
@@ -231,7 +231,7 @@
                 <update_rate>20</update_rate>
                 <visualize>true</visualize>
             </sensor>
-            <sensor name="back_right_analog" type="ray">
+            <sensor name="back_right" type="ray">
                 <pose>-0.024 -0.030 0.015 0 0 0</pose>
                 <ray>
                     <scan>
@@ -258,7 +258,7 @@
                 <update_rate>20</update_rate>
                 <visualize>true</visualize>
             </sensor>
-            <sensor name="front_analog" type="ray">
+            <sensor name="front" type="ray">
                 <pose>0.055 0 0.015 0 0 0</pose>
                 <ray>
                     <scan>

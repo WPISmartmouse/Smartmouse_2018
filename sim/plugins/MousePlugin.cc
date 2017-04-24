@@ -20,11 +20,11 @@ void MousePlugin::Load(physics::ModelPtr model, sdf::ElementPtr sdf) {
   node->Init();
   state_pub = node->Advertise<gzmaze::msgs::RobotState>("~/mouse/state");
 
-  this->front_left_analog_sub = this->node->Subscribe("~/mouse/base/front_left_analog/scan", &MousePlugin::FrontLeftAnalogCallback, this);
-  this->front_right_analog_sub = this->node->Subscribe("~/mouse/base/front_right_analog/scan", &MousePlugin::FrontRightAnalogCallback, this);
-  this->back_left_analog_sub = this->node->Subscribe("~/mouse/base/back_left_analog/scan", &MousePlugin::BackLeftAnalogCallback, this);
-  this->back_right_analog_sub = this->node->Subscribe("~/mouse/base/back_right_analog/scan", &MousePlugin::BackRightAnalogCallback, this);
-  this->front_analog_sub = this->node->Subscribe("~/mouse/base/front_analog/scan", &MousePlugin::FrontAnalogCallback, this);
+  this->front_left_analog_sub = this->node->Subscribe("~/mouse/base/front_left/scan", &MousePlugin::FrontLeftAnalogCallback, this);
+  this->front_right_analog_sub = this->node->Subscribe("~/mouse/base/front_right/scan", &MousePlugin::FrontRightAnalogCallback, this);
+  this->back_left_analog_sub = this->node->Subscribe("~/mouse/base/back_left/scan", &MousePlugin::BackLeftAnalogCallback, this);
+  this->back_right_analog_sub = this->node->Subscribe("~/mouse/base/back_right/scan", &MousePlugin::BackRightAnalogCallback, this);
+  this->front_analog_sub = this->node->Subscribe("~/mouse/base/front/scan", &MousePlugin::FrontAnalogCallback, this);
 
   // Connect to the world update event.
   // This will trigger the Update function every Gazebo iteration

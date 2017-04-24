@@ -17,6 +17,8 @@ public:
   static const unsigned int FRONT_ANALOG_PIN = A16;
   static const unsigned int FRONT_LEFT_ANALOG_PIN = A17;
   static const unsigned int BACK_LEFT_ANALOG_PIN = A18;
+  static const unsigned int GERALD_LEFT_ANALOG_PIN = A20;
+  static const unsigned int GERALD_RIGHT_ANALOG_PIN = A19;
 
   static const unsigned int ENCODER_LEFT_A = 9;
   static const unsigned int ENCODER_LEFT_B = 10;
