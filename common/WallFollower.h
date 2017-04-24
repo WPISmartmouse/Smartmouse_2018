@@ -19,6 +19,8 @@ public:
 
   static double dispToLeftEdge(Mouse *mouse);
 
+  static double sidewaysDispToCenter(Mouse *mouse);
+
   static double yawDiff(double y1, double y2);
 
   static std::pair<double, double> estimate_pose(RangeData range_data, Mouse *mouse);

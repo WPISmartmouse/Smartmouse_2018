@@ -1,10 +1,11 @@
 #include <tuple>
 #include <limits>
 #include "WallFollower.h"
+#include "Mouse.h"
 
 const double WallFollower::kPWall = 0.35; //TODO: Should be 0.8
 const double WallFollower::kDWall = 50;
-const double WallFollower::kPYaw = 3.0;
+const double WallFollower::kPYaw = 18.0;
 
 WallFollower::WallFollower() : disp(0.0), goalDisp(AbstractMaze::UNIT_DIST), dispError(goalDisp) {}
 
@@ -15,17 +16,12 @@ std::pair<double, double> WallFollower::compute_wheel_velocities(Mouse *mouse, P
   disp = forwardDisplacement(mouse->getDir(), start_pose, current_pose);
   dispError = goalDisp - disp;
 
-  double currentYaw, offset;
-  std::tie(currentYaw, offset) = WallFollower::estimate_pose(range_data, mouse);
-  double errorToCenter = offset - AbstractMaze::HALF_UNIT_DIST;
-
-  double goalYawOffset = errorToCenter * kPYaw;
-
-  double goalYaw = dir_to_yaw(mouse->getDir()) + goalYawOffset;
+  double errorToCenter = sidewaysDispToCenter(mouse);
+  double goalYaw = dir_to_yaw(mouse->getDir()) + errorToCenter * kPYaw;
 
   // The goal is to be facing straight when you wall distance is correct.
   // To achieve this, we control our yaw as a function of our error in wall distance
-  double yawError = yawDiff(goalYaw, currentYaw);
+  double yawError = yawDiff(goalYaw, current_pose.yaw);
 
   double l = config.MAX_SPEED;
   double r = config.MAX_SPEED;
@@ -74,13 +70,17 @@ std::pair<double, double> WallFollower::estimate_pose(RangeData range_data, Mous
   // so we don't yet follow the wall
   if (fabs(range_data.back_left_analog - last_back_left_analog_dist) > config.WALL_CHANGED_THRESHOLD) {
     sense_left_wall = false;
-  } else if (fabs(range_data.back_right_analog - last_back_right_analog_dist) > config.WALL_CHANGED_THRESHOLD) {
+  }
+  if (fabs(range_data.back_right_analog - last_back_right_analog_dist) > config.WALL_CHANGED_THRESHOLD) {
     sense_right_wall = false;
   }
 
-  if (fabs(range_data.front_left_analog - last_front_left_analog_dist) > config.WALL_CHANGED_THRESHOLD) {
+  double d_front_left = fabs(range_data.front_left_analog - last_front_left_analog_dist);
+  double d_front_right = fabs(range_data.front_right_analog - last_front_right_analog_dist);
+  if (d_front_left > config.WALL_CHANGED_THRESHOLD) {
     sense_left_wall = false;
-  } else if (fabs(range_data.front_right_analog - last_front_right_analog_dist) > config.WALL_CHANGED_THRESHOLD) {
+  }
+  if (d_front_right > config.WALL_CHANGED_THRESHOLD) {
     sense_right_wall = false;
   }
 
@@ -98,8 +98,16 @@ std::pair<double, double> WallFollower::estimate_pose(RangeData range_data, Mous
 
   last_front_left_analog_dist = range_data.front_left_analog;
   last_front_right_analog_dist = range_data.front_right_analog;
-  last_back_left_analog_dist = range_data.front_left_analog;
-  last_back_right_analog_dist = range_data.front_right_analog;
+  last_back_left_analog_dist = range_data.back_left_analog;
+  last_back_right_analog_dist = range_data.back_right_analog;
+
+  static int i = 0;
+  if (i > 10) {
+    print("%i %i %f\r\n", mouse->getRow(), mouse->getCol(), *offset);
+    i=0;
+  }
+  i++;
+
 
   return out;
 };
@@ -125,6 +133,26 @@ double WallFollower::dispToNextEdge(Mouse *mouse) {
       double next_col_x = mouse->getCol() * AbstractMaze::UNIT_DIST;
       return current_pose.x - next_col_x;
     }
+    default:
+      return std::numeric_limits<double>::quiet_NaN();
+  }
+}
+
+double WallFollower::sidewaysDispToCenter(Mouse *mouse) {
+  Pose current_pose = mouse->getPose();
+  double row_offset_to_center = mouse->getRow() * AbstractMaze::UNIT_DIST + AbstractMaze::HALF_UNIT_DIST;
+  double col_offset_to_center = mouse->getCol() * AbstractMaze::UNIT_DIST + AbstractMaze::HALF_UNIT_DIST;
+  Direction dir = mouse->getDir();
+
+  switch (dir) {
+    case Direction::N:
+      return current_pose.x - col_offset_to_center;
+    case Direction::S:
+      return col_offset_to_center - current_pose.x;
+    case Direction::W:
+      return row_offset_to_center - current_pose.y;
+    case Direction::E:
+      return current_pose.y - row_offset_to_center;
     default:
       return std::numeric_limits<double>::quiet_NaN();
   }

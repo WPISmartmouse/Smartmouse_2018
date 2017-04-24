@@ -5,6 +5,7 @@
 ForwardToCenter::ForwardToCenter() : Command("FwdToCenter"), mouse(RealMouse::inst()) {}
 
 void ForwardToCenter::initialize() {
+  setTimeout(2000);
   start = mouse->getPose();
   follower.goalDisp = WallFollower::fwdDispToCenter(mouse);
   digitalWrite(RealMouse::LED_3, 1);
@@ -23,7 +24,7 @@ void ForwardToCenter::execute() {
 }
 
 bool ForwardToCenter::isFinished() {
-  return follower.dispError <= 0;
+  return follower.dispError <= 0 || isTimedOut();
 }
 
 void ForwardToCenter::end() {

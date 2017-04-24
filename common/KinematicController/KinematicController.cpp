@@ -43,7 +43,6 @@ std::pair<double, double>
 KinematicController::run(double dt_s, double left_angle_rad, double right_angle_rad, double ground_truth_left_vel_rps,
                          double ground_truth_right_vel_rps, RangeData range_data) {
   static std::pair<double, double> abstract_forces;
-  static bool p = true; // FIXME: remove
 
   if (!initialized) {
     initialized = true;
@@ -94,19 +93,14 @@ KinematicController::run(double dt_s, double left_angle_rad, double right_angle_
   std::tie(est_yaw, offset) = WallFollower::estimate_pose(range_data, mouse);
 
   if (!ignore_sensor_pose_estimate) {
-    if (p) {
-//      print("allowing estimating pose from rangefinders\n");
-      p = false;
-    }
-
     current_pose_estimate.yaw = est_yaw;
 
     double d_wall_front = 0;
     bool wall_in_front = false;
-    if (range_data.front_analog < 0.08) {
+    if (range_data.front_analog < 0.10) {
       double yaw_error = WallFollower::yawDiff(current_pose_estimate.yaw, dir_to_yaw(mouse->getDir()));
       d_wall_front = cos(yaw_error) * range_data.front_analog + config.FRONT_ANALOG_X;
-      wall_in_front = true; // FIXME put this back
+      wall_in_front = true;
     }
 
     switch (mouse->getDir()) {
@@ -138,11 +132,6 @@ KinematicController::run(double dt_s, double left_angle_rad, double right_angle_
         break;
       default:
         break;
-    }
-  } else {
-    if (!p) {
-//      print("Ignoring rangefinder pose estimate.\n");
-      p = true;
     }
   }
 

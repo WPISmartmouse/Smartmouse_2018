@@ -19,13 +19,12 @@ public:
   void end();
 
 private:
-  double limit(double x);
 
   double goalYaw;
   double dYaw;
   SimMouse *mouse;
   Direction dir;
 
-  const double kP = 0.12;
+  const double kP = 20;
 };
 

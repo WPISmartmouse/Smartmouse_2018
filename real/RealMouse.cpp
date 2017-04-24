@@ -98,8 +98,8 @@ void RealMouse::run(double dt_s) {
   range_data.back_right_analog = adcToMeters(analogRead(BACK_RIGHT_ANALOG_PIN));
   range_data.front_analog = adcToMeters(analogRead(FRONT_ANALOG_PIN));
 
-  print("%f, %f, %f, %f, %f\n", range_data.front_left_analog, range_data.back_left_analog,
-        range_data.front_right_analog, range_data.back_right_analog, range_data.front_analog);
+//  print("%f, %f, %f, %f, %f\n", range_data.front_left_analog, range_data.back_left_analog,
+//        range_data.front_right_analog, range_data.back_right_analog, range_data.front_analog);
 
   std::tie(abstract_left_force, abstract_right_force) = kinematic_controller.run(dt_s, left_angle_rad,
                                                                                  right_angle_rad, 0, 0, range_data);
@@ -155,7 +155,7 @@ void RealMouse::setup() {
   left_encoder.init(ENCODER_LEFT_A, ENCODER_LEFT_B);
   right_encoder.init(ENCODER_RIGHT_A, ENCODER_RIGHT_B);
 
-  kinematic_controller.setAcceleration(0.4, 4.0);
+  kinematic_controller.setAcceleration(1.2, 4.0);
 
   resetToStartPose();
 
