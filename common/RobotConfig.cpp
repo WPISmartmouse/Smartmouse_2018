@@ -41,7 +41,7 @@ const RobotConfig config = {
         MIN_SPEED : 0.013,
         FRONT_WALL_THRESHOLD : 0.15,
         SIDE_WALL_THRESHOLD : 0.08,
-        GERALD_WALL_THRESHOLD : 0.015,
+        GERALD_WALL_THRESHOLD : 0.15,
         WALL_CHANGED_THRESHOLD : 0.02,
         ROT_TOLERANCE : 0.14,
         TRACK_WIDTH : 0.0633,

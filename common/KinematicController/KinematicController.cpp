@@ -4,6 +4,10 @@
 #include <tuple>
 #include "KinematicController.h"
 
+#ifdef EMBED
+#include <Arduino.h>
+#endif
+
 const double KinematicController::DROP_SAFETY = 0.8;
 const double KinematicController::POST_DROP_DIST = 0.05;
 
@@ -72,6 +76,9 @@ std::pair<double, double>
 KinematicController::run(double dt_s, double left_angle_rad, double right_angle_rad, double ground_truth_left_vel_rps,
                          double ground_truth_right_vel_rps, RangeData range_data) {
   static std::pair<double, double> abstract_forces;
+
+  static int IGN_ = 0;
+  static int T_ = 0;
 
   if (!initialized) {
     initialized = true;
@@ -162,7 +169,11 @@ KinematicController::run(double dt_s, double left_angle_rad, double right_angle_
       default:
         break;
     }
+  } else {
+    IGN_++;
+    print("%i / %i\r\n", IGN_, T_);
   }
+  T_++;
 
   // run PID, which will update the velocities of the wheels
   abstract_forces.first = left_motor.runPid(dt_s, left_angle_rad, ground_truth_left_vel_rps);
@@ -212,12 +223,15 @@ std::tuple<double, double, bool> KinematicController::estimate_pose(RangeData ra
 
 
   // check for walls that will fall off in the near future (geralds!)
+
   if (range_data.gerald_left > config.GERALD_WALL_THRESHOLD) {
     d_until_left_drop = DROP_SAFETY * tan(config.GERALD_ANGLE) * d_to_wall_left;
+    sense_left_wall = false;
   }
 
   if (range_data.gerald_right > config.GERALD_WALL_THRESHOLD) {
     d_until_right_drop = DROP_SAFETY * tan(config.GERALD_ANGLE) * d_to_wall_right;
+    sense_right_wall = false;
   }
 
   // this logic checks for walls that are "falling off" or "falling on"
