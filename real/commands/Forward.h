@@ -21,7 +21,7 @@ public:
 
 private:
 
-  LocalPose start;
+  GlobalPose start;
   RealMouse *mouse;
 
   RangeData range_data;

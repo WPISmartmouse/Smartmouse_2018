@@ -82,7 +82,8 @@ double RealMouse::getRowOffsetToEdge() {
 GlobalPose RealMouse::getGlobalPose() {
   return kinematic_controller.getGlobalPose();
 }
-GlobalPose RealMouse::getLocalPose() {
+
+LocalPose RealMouse::getLocalPose() {
   return kinematic_controller.getLocalPose();
 }
 

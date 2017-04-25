@@ -7,8 +7,8 @@ Forward::Forward() : Command("Forward"), mouse(RealMouse::inst()) {}
 
 
 void Forward::initialize() {
-  start = mouse->getLocalPose();
-  follower.goalDisp = DriveStraight::dispToNextEdge(mouse);
+  start = mouse->getGlobalPose();
+  follower.start(start, DriveStraight::dispToNextEdge(mouse));
   digitalWrite(RealMouse::LED_1, 1);
 }
 
@@ -23,7 +23,7 @@ void Forward::execute() {
   }
 
   double l, r;
-  std::tie(l, r) = follower.compute_wheel_velocities(this->mouse, start);
+  std::tie(l, r) = follower.compute_wheel_velocities(this->mouse);
   mouse->setSpeed(l, r);
 }
 

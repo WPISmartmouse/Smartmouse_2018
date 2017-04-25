@@ -1,6 +1,5 @@
 #include <tuple>
 #include "TurnInPlace.h"
-#include "KinematicController.h"
 
 TurnInPlace::TurnInPlace(Direction dir) : Command("RealTurnInPlace"), mouse(RealMouse::inst()), dir(dir) {}
 
