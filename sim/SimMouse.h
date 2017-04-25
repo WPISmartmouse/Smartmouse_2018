@@ -27,11 +27,9 @@ public:
 
   double getColOffsetToEdge();
 
-  Pose getPose();
+  GlobalPose getGlobalPose();
 
-  Pose getExactPose();
-
-  RangeData getRangeData();
+  LocalPose getLocalPose();
 
   double getRowOffsetToEdge();
 
@@ -82,7 +80,7 @@ private:
   std::condition_variable dataCond;
   std::mutex dataMutex;
 
-  Pose true_pose;
+  GlobalPose true_pose;
 
   ignition::msgs::Marker *indicators[AbstractMaze::MAZE_SIZE][AbstractMaze::MAZE_SIZE];
 

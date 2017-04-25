@@ -3,7 +3,7 @@
 #include <common/commanduino/CommanDuino.h>
 #include <common/Mouse.h>
 #include <common/Pose.h>
-#include <common/WallFollower.h>
+#include <common/DriveStraight.h>
 
 #include "RealMouse.h"
 
@@ -21,10 +21,10 @@ public:
 
 private:
 
-  Pose start;
+  LocalPose start;
   RealMouse *mouse;
 
   RangeData range_data;
-  WallFollower follower;
+  DriveStraight follower;
 };
 

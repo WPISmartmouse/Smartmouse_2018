@@ -4,7 +4,7 @@
 #include <common/commanduino/CommanDuino.h>
 #include <common/Mouse.h>
 #include <common/Pose.h>
-#include <common/WallFollower.h>
+#include <common/DriveStraight.h>
 
 #include "SimMouse.h"
 
@@ -22,10 +22,10 @@ public:
 
 private:
 
-  Pose start;
+  GlobalPose start;
   SimMouse *mouse;
 
   RangeData range_data;
-  WallFollower follower;
+  DriveStraight follower;
 };
 

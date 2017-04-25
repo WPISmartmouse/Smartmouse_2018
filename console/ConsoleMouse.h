@@ -9,7 +9,9 @@ public:
 
   virtual SensorReading checkWalls() override;
 
-  virtual Pose getPose() override;
+  virtual GlobalPose getGlobalPose() override;
+
+  virtual LocalPose getLocalPose() override;
 
   virtual double getRowOffsetToEdge() override;
 

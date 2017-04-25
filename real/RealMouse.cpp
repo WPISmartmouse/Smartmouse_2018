@@ -79,8 +79,11 @@ double RealMouse::getRowOffsetToEdge() {
   return kinematic_controller.row_offset_to_edge;
 }
 
-Pose RealMouse::getPose() {
-  return kinematic_controller.getPose();
+GlobalPose RealMouse::getGlobalPose() {
+  return kinematic_controller.getGlobalPose();
+}
+GlobalPose RealMouse::getLocalPose() {
+  return kinematic_controller.getLocalPose();
 }
 
 std::pair<double, double> RealMouse::getWheelVelocities() {

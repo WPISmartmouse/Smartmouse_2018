@@ -88,7 +88,8 @@ public:
 
   virtual double getRowOffsetToEdge() = 0;
 
-  virtual Pose getPose() = 0;
+  virtual GlobalPose getGlobalPose() = 0;
+  virtual LocalPose getLocalPose() = 0;
 
 protected:
   unsigned int row, col;

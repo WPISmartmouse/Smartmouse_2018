@@ -8,6 +8,7 @@
 
 GZ_REGISTER_MODEL_PLUGIN(MousePlugin)
 
+const double MousePlugin::DECAY = 0.1;
 
 void MousePlugin::Load(physics::ModelPtr model, sdf::ElementPtr sdf) {
   this->model = model;
@@ -20,11 +21,13 @@ void MousePlugin::Load(physics::ModelPtr model, sdf::ElementPtr sdf) {
   node->Init();
   state_pub = node->Advertise<gzmaze::msgs::RobotState>("~/mouse/state");
 
-  this->front_left_analog_sub = this->node->Subscribe("~/mouse/base/front_left/scan", &MousePlugin::FrontLeftAnalogCallback, this);
-  this->front_right_analog_sub = this->node->Subscribe("~/mouse/base/front_right/scan", &MousePlugin::FrontRightAnalogCallback, this);
-  this->back_left_analog_sub = this->node->Subscribe("~/mouse/base/back_left/scan", &MousePlugin::BackLeftAnalogCallback, this);
-  this->back_right_analog_sub = this->node->Subscribe("~/mouse/base/back_right/scan", &MousePlugin::BackRightAnalogCallback, this);
-  this->front_analog_sub = this->node->Subscribe("~/mouse/base/front/scan", &MousePlugin::FrontAnalogCallback, this);
+  this->front_left_sub = this->node->Subscribe("~/mouse/base/front_left/scan", &MousePlugin::FrontLeftCallback, this);
+  this->front_right_sub = this->node->Subscribe("~/mouse/base/front_right/scan", &MousePlugin::FrontRightCallback, this);
+  this->gerald_left_sub = this->node->Subscribe("~/mouse/base/gerald_left/scan", &MousePlugin::GeraldLeftCallback, this);
+  this->gerald_right_sub = this->node->Subscribe("~/mouse/base/gerald_right/scan", &MousePlugin::GeraldRightCallback, this);
+  this->back_left_sub = this->node->Subscribe("~/mouse/base/back_left/scan", &MousePlugin::BackLeftCallback, this);
+  this->back_right_sub = this->node->Subscribe("~/mouse/base/back_right/scan", &MousePlugin::BackRightCallback, this);
+  this->front_sub = this->node->Subscribe("~/mouse/base/front/scan", &MousePlugin::FrontCallback, this);
 
   // Connect to the world update event.
   // This will trigger the Update function every Gazebo iteration
@@ -35,80 +38,111 @@ void MousePlugin::Update(const common::UpdateInfo &info) {
   PublishInfo();
 }
 
-void MousePlugin::FrontLeftAnalogCallback(ConstLaserScanStampedPtr &msg) {
+void MousePlugin::FrontLeftCallback(ConstLaserScanStampedPtr &msg) {
   msgs::LaserScan scan = msg->scan();
   assert(scan.ranges_size() == 1);
   double raw_range = scan.ranges(0);
 
-  double front_left_analog;
+  double front_left;
   if (std::isinf(raw_range)) {
-    front_left_analog = config.ANALOG_MAX_DIST;
+    front_left = config.ANALOG_MAX_DIST;
   } else {
-    front_left_analog = raw_range;
+    front_left = raw_range;
   }
 
   // to simulate the gradual drop-off of real sensors, use a cheap accumulator
-  this->front_left_analog = 0.5 * this->front_left_analog + 0.5 * front_left_analog;
+  this->front_left = DECAY * this->front_left + (1 - DECAY) * front_left;
 }
 
-void MousePlugin::FrontRightAnalogCallback(ConstLaserScanStampedPtr &msg) {
+void MousePlugin::FrontRightCallback(ConstLaserScanStampedPtr &msg) {
   msgs::LaserScan scan = msg->scan();
   assert(scan.ranges_size() == 1);
   double raw_range = scan.ranges(0);
 
-  double front_right_analog;
+  double front_right;
   if (std::isinf(raw_range)) {
-    front_right_analog = config.ANALOG_MAX_DIST;
+    front_right = config.ANALOG_MAX_DIST;
   } else {
-    front_right_analog = raw_range;
+    front_right = raw_range;
   }
 
-  this->front_right_analog = 0.5 * this->front_right_analog + 0.5 * front_right_analog;
+  this->front_right = DECAY * this->front_right + (1 - DECAY) * front_right;
 }
 
-void MousePlugin::BackLeftAnalogCallback(ConstLaserScanStampedPtr &msg) {
+void MousePlugin::GeraldLeftCallback(ConstLaserScanStampedPtr &msg) {
   msgs::LaserScan scan = msg->scan();
   assert(scan.ranges_size() == 1);
   double raw_range = scan.ranges(0);
 
-  double back_left_analog;
+  double gerald_left;
   if (std::isinf(raw_range)) {
-    back_left_analog = config.ANALOG_MAX_DIST;
+    gerald_left = config.ANALOG_MAX_DIST;
   } else {
-    back_left_analog = raw_range;
+    gerald_left = raw_range;
   }
 
-  this->back_left_analog = 0.5 * this->back_left_analog + 0.5 * back_left_analog;
+  // to simulate the gradual drop-off of real sensors, use a cheap accumulator
+  this->gerald_left = DECAY * this->gerald_left + (1 - DECAY) * gerald_left;
 }
 
-void MousePlugin::BackRightAnalogCallback(ConstLaserScanStampedPtr &msg) {
+void MousePlugin::GeraldRightCallback(ConstLaserScanStampedPtr &msg) {
   msgs::LaserScan scan = msg->scan();
   assert(scan.ranges_size() == 1);
   double raw_range = scan.ranges(0);
 
-  double back_right_analog;
+  double gerald_right;
   if (std::isinf(raw_range)) {
-    back_right_analog = config.ANALOG_MAX_DIST;
+    gerald_right = config.ANALOG_MAX_DIST;
   } else {
-    back_right_analog = raw_range;
+    gerald_right = raw_range;
   }
 
-  this->back_right_analog = 0.5 * this->back_right_analog + 0.5 * back_right_analog;
+  this->gerald_right = DECAY * this->gerald_right + (1 - DECAY) * gerald_right;
 }
 
-void MousePlugin::FrontAnalogCallback(ConstLaserScanStampedPtr &msg) {
+void MousePlugin::BackLeftCallback(ConstLaserScanStampedPtr &msg) {
   msgs::LaserScan scan = msg->scan();
   assert(scan.ranges_size() == 1);
   double raw_range = scan.ranges(0);
 
-  double front_analog;
+  double back_left;
   if (std::isinf(raw_range)) {
-    front_analog = config.ANALOG_MAX_DIST;
+    back_left = config.ANALOG_MAX_DIST;
   } else {
-    front_analog = raw_range;
+    back_left = raw_range;
   }
 
-  this->front_analog = 0.5 * this->front_analog + 0.5 * front_analog;
+  this->back_left = DECAY * this->back_left + (1 - DECAY) * back_left;
+}
+
+void MousePlugin::BackRightCallback(ConstLaserScanStampedPtr &msg) {
+  msgs::LaserScan scan = msg->scan();
+  assert(scan.ranges_size() == 1);
+  double raw_range = scan.ranges(0);
+
+  double back_right;
+  if (std::isinf(raw_range)) {
+    back_right = config.ANALOG_MAX_DIST;
+  } else {
+    back_right = raw_range;
+  }
+
+  this->back_right = DECAY * this->back_right + (1 - DECAY) * back_right;
+}
+
+void MousePlugin::FrontCallback(ConstLaserScanStampedPtr &msg) {
+  msgs::LaserScan scan = msg->scan();
+  assert(scan.ranges_size() == 1);
+  double raw_range = scan.ranges(0);
+
+  double front;
+  if (std::isinf(raw_range)) {
+    front = config.ANALOG_MAX_DIST;
+  } else {
+    front = raw_range;
+  }
+
+  this->front = DECAY * this->front + (1 - DECAY) * front;
 }
 
 void MousePlugin::PublishInfo() {
@@ -147,11 +181,13 @@ void MousePlugin::PublishInfo() {
   state.set_right_wheel_velocity_mps(right_vel_mps);
   state.set_left_wheel_angle_radians(left_angle);
   state.set_right_wheel_angle_radians(right_angle);
-  state.set_front_left_analog(this->front_left_analog);
-  state.set_front_right_analog(this->front_right_analog);
-  state.set_back_left_analog(this->back_left_analog);
-  state.set_back_right_analog(this->back_right_analog);
-  state.set_front_analog(this->front_analog);
+  state.set_front_left(this->front_left);
+  state.set_front_right(this->front_right);
+  state.set_gerald_left(this->gerald_left);
+  state.set_gerald_right(this->gerald_right);
+  state.set_back_left(this->back_left);
+  state.set_back_right(this->back_right);
+  state.set_front(this->front);
   state.set_true_x_meters(pos->x());
   state.set_true_y_meters(-pos->y());
   double yaw = relativePose.Rot().Euler()[2];

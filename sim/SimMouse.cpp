@@ -40,22 +40,11 @@ double SimMouse::getColOffsetToEdge() {
   return kinematic_controller.col_offset_to_edge;
 }
 
-Pose SimMouse::getPose() {
-  return kinematic_controller.getPose();
+GlobalPose SimMouse::getGlobalPose() {
+  return kinematic_controller.getGlobalPose();
 }
-
-Pose SimMouse::getExactPose() {
-  //wait for the next message to occur
-  std::unique_lock<std::mutex> lk(dataMutex);
-  dataCond.wait(lk);
-  return true_pose;
-}
-
-RangeData SimMouse::getRangeData() {
-  //wait for the next message to occur
-  std::unique_lock<std::mutex> lk(dataMutex);
-  dataCond.wait(lk);
-  return this->range_data;
+LocalPose SimMouse::getLocalPose() {
+  return kinematic_controller.getLocalPose();
 }
 
 double SimMouse::getRowOffsetToEdge() {
@@ -113,16 +102,21 @@ void SimMouse::robotStateCallback(ConstRobotStatePtr &msg) {
   this->left_wheel_angle_rad = msg->left_wheel_angle_radians();
   this->right_wheel_angle_rad = msg->right_wheel_angle_radians();
 
-  this->range_data.front_left = msg->front_left_analog();
-  this->range_data.front_right = msg->front_right_analog();
-  this->range_data.back_left = msg->back_left_analog();
-  this->range_data.back_right = msg->back_right_analog();
-  this->range_data.front = msg->front_analog();
+  this->range_data.front_left = msg->front_left();
+  this->range_data.front_right = msg->front_right();
+  this->range_data.gerald_left = msg->gerald_left();
+  this->range_data.gerald_right = msg->gerald_right();
+  this->range_data.back_left = msg->back_left();
+  this->range_data.back_right = msg->back_right();
+  this->range_data.front = msg->front();
 
   dataCond.notify_all();
 }
 
 void SimMouse::run(double dt_s) {
+  std::unique_lock<std::mutex> lk(dataMutex);
+  dataCond.wait(lk);
+
   // handle updating of odometry and PID
   std::tie(abstract_left_force, abstract_right_force) = kinematic_controller.run(dt_s,
                                                                                  this->left_wheel_angle_rad,
@@ -143,9 +137,9 @@ void SimMouse::run(double dt_s) {
   maze_loc_msg.set_row_offset(kinematic_controller.row_offset_to_edge);
   maze_loc_msg.set_col_offset(kinematic_controller.col_offset_to_edge);
 
-  maze_loc_msg.set_estimated_x_meters(getPose().x);
-  maze_loc_msg.set_estimated_y_meters(getPose().y);
-  maze_loc_msg.set_estimated_yaw_rad(getPose().yaw);
+  maze_loc_msg.set_estimated_x_meters(getGlobalPose().x);
+  maze_loc_msg.set_estimated_y_meters(getGlobalPose().y);
+  maze_loc_msg.set_estimated_yaw_rad(getGlobalPose().yaw);
   std::string dir_str(1, dir_to_char(dir));
   maze_loc_msg.set_dir(dir_str);
 
@@ -208,9 +202,9 @@ void SimMouse::update_markers() {
     size->set_x(0.02);
     size->set_y(0.002);
     size->set_z(0.002);
-    double x = getPose().x;
-    double y = -getPose().y;
-    double yaw = getPose().yaw;
+    double x = getGlobalPose().x;
+    double y = -getGlobalPose().y;
+    double yaw = getGlobalPose().yaw;
     Set(estimated_pose_marker.mutable_pose(), ignition::math::Pose3d(x, y, 0.02, 0, 0, yaw));
     ign_node.Request("/marker", estimated_pose_marker);
   }
@@ -227,8 +221,8 @@ void SimMouse::update_markers() {
     true_center->set_x(true_pose.x);
     true_center->set_y(-true_pose.y);
     true_center->set_z(.02);
-    estimated_center->set_x(getPose().x);
-    estimated_center->set_y(-getPose().y);
+    estimated_center->set_x(getGlobalPose().x);
+    estimated_center->set_y(-getGlobalPose().y);
     estimated_center->set_z(.02);
     error_marker.mutable_material()->mutable_script()->set_name("Gazebo/Black");
     ign_node.Request("/marker", error_marker);
@@ -242,7 +236,7 @@ void SimMouse::setSpeed(double left_wheel_velocity_setpoint_mps, double right_wh
 void SimMouse::simInit() {
   setSpeed(0, 0);
 
-  kinematic_controller.setAcceleration(0.4, 12.2);
+  kinematic_controller.setAcceleration(2.0, 4.0);
 
   // we start in the middle of the first square
   resetToStartPose();

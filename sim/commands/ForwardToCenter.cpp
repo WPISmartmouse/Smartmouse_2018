@@ -4,15 +4,13 @@
 ForwardToCenter::ForwardToCenter() : Command("FwdToCenter"), mouse(SimMouse::inst()) {}
 
 void ForwardToCenter::initialize() {
-  start = mouse->getPose();
-  follower.goalDisp = WallFollower::fwdDispToCenter(mouse);
+  start = mouse->getGlobalPose();
+  follower.start(start, DriveStraight::fwdDispToCenter(mouse));
 }
 
 void ForwardToCenter::execute() {
-  range_data = mouse->getRangeData();
-
   double l_adjust, r_adjust;
-  std::tie(l_adjust, r_adjust) = follower.compute_wheel_velocities(this->mouse, start, range_data);
+  std::tie(l_adjust, r_adjust) = follower.compute_wheel_velocities(this->mouse);
   l_adjust = config.MAX_SPEED - l_adjust;
   r_adjust = config.MAX_SPEED - r_adjust;
   double l = follower.dispError * kDisp - l_adjust;

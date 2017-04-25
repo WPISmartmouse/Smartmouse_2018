@@ -6,15 +6,13 @@ Forward::Forward() : Command("Forward"), mouse(SimMouse::inst()) {}
 
 
 void Forward::initialize() {
-  start = mouse->getPose();
-  follower.goalDisp = WallFollower::dispToNextEdge(mouse);
+  start = mouse->getGlobalPose();
+  follower.start(start, DriveStraight::dispToNextEdge(mouse));
 }
 
 void Forward::execute() {
-  range_data = mouse->getRangeData();
-
   double l, r;
-  std::tie(l, r) = follower.compute_wheel_velocities(this->mouse, start, range_data);
+  std::tie(l, r) = follower.compute_wheel_velocities(this->mouse);
   mouse->setSpeed(l, r);
 }
 

@@ -1,5 +1,6 @@
 #include <tuple>
 #include "TurnInPlace.h"
+#include "KinematicController.h"
 
 TurnInPlace::TurnInPlace(Direction dir) : Command("RealTurnInPlace"), mouse(RealMouse::inst()), dir(dir) {}
 
@@ -20,15 +21,15 @@ void TurnInPlace::execute() {
   // this allows us to use that
   if (fabs(dYaw) < 0.1 && mouse->kinematic_controller.ignore_sensor_pose_estimate) {
     mouse->kinematic_controller.ignore_sensor_pose_estimate = false;
-    // FIXME: this is kind of a hack. It's needed because WallFollower checks dir in order to compute
+    // FIXME: this is kind of a hack. It's needed because DriveStraight checks dir in order to compute
     // FIXME: the correct yaw. it adds dir_to_yaw(getDir()), so we must assume we're close enough
     mouse->internalTurnToFace(dir);
   }
 }
 
 bool TurnInPlace::isFinished() {
-  double currentYaw = mouse->getPose().yaw;
-  dYaw = WallFollower::yawDiff(currentYaw, goalYaw);
+  double currentYaw = mouse->getGlobalPose().yaw;
+  dYaw = KinematicController::yawDiff(currentYaw, goalYaw);
   double vl, vr;
   std::tie(vl, vr) = mouse->getWheelVelocities();
   return isTimedOut() || ((fabs(dYaw) < config.ROT_TOLERANCE) && fabs(vl) < 0.05 && fabs(vr) < 0.05);

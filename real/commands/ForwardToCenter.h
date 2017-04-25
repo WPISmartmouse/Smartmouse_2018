@@ -4,7 +4,7 @@
 #include <common/Mouse.h>
 
 #include "RealMouse.h"
-#include <common/WallFollower.h>
+#include <common/DriveStraight.h>
 
 class ForwardToCenter : public Command {
 public:
@@ -20,11 +20,11 @@ public:
 
 private:
 
-  Pose start;
+  LocalPose start;
   RealMouse *mouse;
 
   RangeData range_data;
-  WallFollower follower;
+  DriveStraight follower;
   const double kDisp = 6;
 };
 

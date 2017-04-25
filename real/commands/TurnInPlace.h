@@ -2,7 +2,7 @@
 #include <common/commanduino/CommanDuino.h>
 #include <common/Direction.h>
 
-#include <common/WallFollower.h>
+#include <common/DriveStraight.h>
 #include <real/RealMouse.h>
 
 class TurnInPlace : public Command {

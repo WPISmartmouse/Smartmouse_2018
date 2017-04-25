@@ -5,7 +5,7 @@
 #include <common/Mouse.h>
 
 #include "SimMouse.h"
-#include <common/WallFollower.h>
+#include <common/DriveStraight.h>
 
 class ForwardToCenter : public Command {
 public:
@@ -21,11 +21,11 @@ public:
 
 private:
 
-  Pose start;
+  GlobalPose start;
   SimMouse *mouse;
 
   RangeData range_data;
-  WallFollower follower;
+  DriveStraight follower;
   const double kDisp = 4;
 };
 

@@ -80,7 +80,7 @@
                     </friction>
                 </surface>
             </collision>
-            <visual name="front_left_analog_visual">
+            <visual name="front_left_visual">
                 <pose>0.045 0.030 0.015 0 0 0</pose>
                 <geometry>
                     <box>
@@ -94,7 +94,7 @@
                     </script>
                 </material>
             </visual>
-            <visual name="front_right_analog_visual">
+            <visual name="front_right_visual">
                 <pose>0.045 -0.030 0.015 0 0 0</pose>
                 <geometry>
                     <box>
@@ -108,7 +108,35 @@
                     </script>
                 </material>
             </visual>
-            <visual name="back_left_analog_visual">
+            <visual name="gerald_left_visual">
+                <pose>0.050 0.018 0.015 0 0 0</pose>
+                <geometry>
+                    <box>
+                        <size>0.004 0.004 0.004</size>
+                    </box>
+                </geometry>
+                <material>
+                    <script>
+                        <name>Gazebo/Blue</name>
+                        <uri>file://media/materials/scripts/gazebo.material</uri>
+                    </script>
+                </material>
+            </visual>
+            <visual name="gerald_right_visual">
+                <pose>0.050 -0.018 0.015 0 0 0</pose>
+                <geometry>
+                    <box>
+                        <size>0.004 0.004 0.004</size>
+                    </box>
+                </geometry>
+                <material>
+                    <script>
+                        <name>Gazebo/Blue</name>
+                        <uri>file://media/materials/scripts/gazebo.material</uri>
+                    </script>
+                </material>
+            </visual>
+            <visual name="back_left_visual">
                 <pose>-0.024 0.030 0.015 0 0 0</pose>
                 <geometry>
                     <box>
@@ -122,7 +150,7 @@
                     </script>
                 </material>
             </visual>
-            <visual name="back_right_analog_visual">
+            <visual name="back_right_visual">
                 <pose>-0.024 -0.030 0.015 0 0 0</pose>
                 <geometry>
                     <box>
@@ -200,6 +228,62 @@
                     </noise>
                 </ray>
                 <plugin name="front_right_analog_ray" filename="libRayPlugin.so"/>
+                <always_on>1</always_on>
+                <update_rate>20</update_rate>
+                <visualize>true</visualize>
+            </sensor>
+            <sensor name="gerald_left" type="ray">
+                <pose>0.050 0.018 0.015 0 0 0</pose>
+                <ray>
+                    <scan>
+                        <horizontal>
+                            <samples>10</samples>
+                            <resolution>0.10</resolution>
+                            <!--centered around 60 deg-->
+                            <min_angle>0.959931</min_angle>
+                            <max_angle>1.13446</max_angle>
+                        </horizontal>
+                    </scan>
+                    <range>
+                        <min>0.01</min>
+                        <max>0.18</max>
+                        <resolution>0.015</resolution>
+                    </range>
+                    <noise>
+                        <type>gaussian</type>
+                        <mean>0.0</mean>
+                        <stddev>0.001</stddev>
+                    </noise>
+                </ray>
+                <plugin name="back_left_analog_ray" filename="libRayPlugin.so"/>
+                <always_on>1</always_on>
+                <update_rate>20</update_rate>
+                <visualize>true</visualize>
+            </sensor>
+            <sensor name="gerald_right" type="ray">
+                <pose>0.050 -0.018 0.015 0 0 0</pose>
+                <ray>
+                    <scan>
+                        <horizontal>
+                            <samples>10</samples>
+                            <resolution>0.10</resolution>
+                            <!--centered around 60 deg-->
+                            <min_angle>-0.959931</min_angle>
+                            <max_angle>-1.13446</max_angle>
+                        </horizontal>
+                    </scan>
+                    <range>
+                        <min>0.01</min>
+                        <max>0.18</max>
+                        <resolution>0.015</resolution>
+                    </range>
+                    <noise>
+                        <type>gaussian</type>
+                        <mean>0.0</mean>
+                        <stddev>0.002</stddev>
+                    </noise>
+                </ray>
+                <plugin name="back_right_analog_ray" filename="libRayPlugin.so"/>
                 <always_on>1</always_on>
                 <update_rate>20</update_rate>
                 <visualize>true</visualize>
@@ -467,7 +551,7 @@
             </physics>
         </joint>
         <joint name="center_joint" type="fixed">
-           <parent>base</parent>
+            <parent>base</parent>
             <child>center</child>
             <pose>0 0 0 0 0 0</pose>
         </joint>

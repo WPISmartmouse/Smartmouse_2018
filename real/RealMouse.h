@@ -48,7 +48,7 @@ public:
 
   virtual SensorReading checkWalls() override;
 
-  virtual Pose getPose() override;
+  virtual GlobalPose getPose() override;
 
   RangeData getRangeData();
 

@@ -1,19 +1,24 @@
 #pragma once
 
-#include <list>
 #include <utility>
 #include <common/util.h>
 #include <common/Pose.h>
 #include <common/RobotConfig.h>
+#include <common/Mouse.h>
 #include "RegulatedMotor.h"
+#include <tuple>
 
 class KinematicController {
 public:
   KinematicController(Mouse *mouse);
 
-  std::pair<double, double> estimate_pose(RangeData range_data, Mouse *mouse);
+  static double yawDiff(double y1, double y2);
 
-  Pose getPose();
+  std::tuple<double, double, bool> estimate_pose(RangeData range_data, Mouse *mouse);
+
+  GlobalPose getGlobalPose();
+
+  LocalPose getLocalPose();
 
   std::pair<double, double> getWheelVelocities();
 
@@ -43,8 +48,14 @@ public:
   unsigned int col;
 
 private:
-  bool initialized = false;
+  bool initialized;
+  bool ignoring_left;
+  bool ignoring_right;
 
-  Pose current_pose_estimate;
+  GlobalPose current_pose_estimate;
   Mouse *mouse;
+  double d_until_left_drop;
+  double d_until_right_drop;
+  static const double DROP_SAFETY;
+  static const double POST_DROP_DIST;
 };

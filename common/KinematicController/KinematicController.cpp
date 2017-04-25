@@ -1,18 +1,48 @@
 #include <algorithm>
 #include <common/Mouse.h>
-#include <common/WallFollower.h>
+#include <common/DriveStraight.h>
 #include <tuple>
 #include "KinematicController.h"
 
-KinematicController::KinematicController(Mouse *mouse) : ignore_sensor_pose_estimate(false),
-                                                         initialized(false), mouse(mouse) {
+const double KinematicController::DROP_SAFETY = 0.8;
+const double KinematicController::POST_DROP_DIST = 0.05;
+
+KinematicController::KinematicController(Mouse *mouse) : ignore_sensor_pose_estimate(false), initialized(false),
+                                                         ignoring_left(false), ignoring_right(false), mouse(mouse),
+                                                         d_until_left_drop(0), d_until_right_drop(0) {
   current_pose_estimate.x = 0;
   current_pose_estimate.y = 0;
   current_pose_estimate.yaw = 0;
 }
 
-Pose KinematicController::getPose() {
+GlobalPose KinematicController::getGlobalPose() {
   return current_pose_estimate;
+}
+
+LocalPose KinematicController::getLocalPose() {
+  LocalPose local_pose_estimate;
+  local_pose_estimate.yaw_from_straight = yawDiff(dir_to_yaw(mouse->getDir()), current_pose_estimate.yaw);
+  switch (mouse->getDir()) {
+    case Direction::N:
+      local_pose_estimate.to_back = (row + 1) * AbstractMaze::UNIT_DIST - current_pose_estimate.y;
+      local_pose_estimate.to_left = current_pose_estimate.x - col * AbstractMaze::UNIT_DIST;
+      break;
+    case Direction::S:
+      local_pose_estimate.to_back = current_pose_estimate.y - row * AbstractMaze::UNIT_DIST;
+      local_pose_estimate.to_left = (col + 1) * AbstractMaze::UNIT_DIST - current_pose_estimate.x;
+      break;
+    case Direction::E:
+      local_pose_estimate.to_left = current_pose_estimate.y - row * AbstractMaze::UNIT_DIST;
+      local_pose_estimate.to_back = current_pose_estimate.x - col * AbstractMaze::UNIT_DIST;
+      break;
+    case Direction::W:
+      local_pose_estimate.to_left = (row + 1) * AbstractMaze::UNIT_DIST - current_pose_estimate.y;
+      local_pose_estimate.to_back = (col + 1) * AbstractMaze::UNIT_DIST - current_pose_estimate.x;
+      break;
+    default:
+      exit(-1);
+  }
+  return local_pose_estimate;
 }
 
 std::pair<double, double> KinematicController::getWheelVelocities() {
@@ -86,25 +116,18 @@ KinematicController::run(double dt_s, double left_angle_rad, double right_angle_
   col_offset_to_edge = fmod(current_pose_estimate.x, AbstractMaze::UNIT_DIST);
 
   // given odometry estimate, improve estimate using sensors, then update odometry estimate to match our best estimate
-  Pose kc_pose = getPose();
-  current_pose_estimate = kc_pose;
   double est_yaw, offset;
-  std::tie(est_yaw, offset) = estimate_pose(range_data, mouse);
+  bool no_walls;
+  std::tie(est_yaw, offset, no_walls) = estimate_pose(range_data, mouse);
 
-//  static int i = 0;
-//  if (i == 10) {
-//    i = 0;
-//    print("%i %i %0.3f, %0.3f, %0.3f %0.3f\r\n", row, col, getPose().x, getPose().y, getPose().yaw, offset);
-//  }
-//  i++;
-
-  if (!ignore_sensor_pose_estimate) {
+  // only override if no on was explicitly set ignore_sensor_pose_estimate to true
+  if (!ignore_sensor_pose_estimate && !no_walls) {
     current_pose_estimate.yaw = est_yaw;
 
     double d_wall_front = 0;
     bool wall_in_front = false;
     if (range_data.front < 0.07) {
-      double yaw_error = WallFollower::yawDiff(current_pose_estimate.yaw, dir_to_yaw(mouse->getDir()));
+      double yaw_error = KinematicController::yawDiff(current_pose_estimate.yaw, dir_to_yaw(mouse->getDir()));
       d_wall_front = cos(yaw_error) * range_data.front + config.FRONT_ANALOG_X;
       wall_in_front = true;
     }
@@ -157,15 +180,16 @@ KinematicController::run(double dt_s, double left_angle_rad, double right_angle_
   return abstract_forces;
 }
 
-std::pair<double, double> KinematicController::estimate_pose(RangeData range_data, Mouse *mouse) {
+std::tuple<double, double, bool> KinematicController::estimate_pose(RangeData range_data, Mouse *mouse) {
   static double last_front_left_analog_dist;
   static double last_front_right_analog_dist;
   static double last_back_left_analog_dist;
   static double last_back_right_analog_dist;
-  std::pair<double, double> newest_estimate;
+  std::tuple<double, double, bool> newest_estimate;
 
-  double *yaw = &newest_estimate.first;
-  double *offset = &newest_estimate.second;
+  double *yaw = &std::get<0>(newest_estimate);
+  double *offset = &std::get<1>(newest_estimate);
+  bool *ignore_walls = &std::get<2>(newest_estimate);
 
   double d1x_l = cos(config.BACK_ANALOG_ANGLE) * range_data.back_left + config.BACK_SIDE_ANALOG_X;
   double d2x_l = cos(config.FRONT_ANALOG_ANGLE) * range_data.front_left + config.FRONT_SIDE_ANALOG_X;
@@ -186,12 +210,22 @@ std::pair<double, double> KinematicController::estimate_pose(RangeData range_dat
   bool sense_right_wall = range_data.front_right < config.SIDE_WALL_THRESHOLD &&
                           range_data.back_right < config.SIDE_WALL_THRESHOLD;
 
+
+  // check for walls that will fall off in the near future (geralds!)
+  if (range_data.gerald_left > config.GERALD_WALL_THRESHOLD) {
+    d_until_left_drop = DROP_SAFETY * tan(config.GERALD_ANGLE) * d_to_wall_left;
+  }
+
+  if (range_data.gerald_right > config.GERALD_WALL_THRESHOLD) {
+    d_until_right_drop = DROP_SAFETY * tan(config.GERALD_ANGLE) * d_to_wall_right;
+  }
+
   // this logic checks for walls that are "falling off" or "falling on"
   // if the change in sensor distance is above some threashold, the wall is arriving or leaving
   // so we don't yet follow the wall
   double d_back_left = fabs(range_data.back_left - last_back_left_analog_dist);
   double d_back_right = fabs(range_data.back_right - last_back_right_analog_dist);
-  if (d_back_left> config.WALL_CHANGED_THRESHOLD) {
+  if (d_back_left > config.WALL_CHANGED_THRESHOLD) {
     sense_left_wall = false;
   }
   if (d_back_right > config.WALL_CHANGED_THRESHOLD) {
@@ -211,12 +245,13 @@ std::pair<double, double> KinematicController::estimate_pose(RangeData range_dat
   if (sense_right_wall && mouse->isWallInDirection(right_of_dir(mouse->getDir()))) { // wall is on right
     *offset = AbstractMaze::UNIT_DIST - d_to_wall_right - AbstractMaze::HALF_WALL_THICKNESS;
     *yaw = dir_to_yaw(mouse->getDir()) + currentYaw_r;
+    *ignore_walls = false;
   } else if (sense_left_wall && mouse->isWallInDirection(left_of_dir(mouse->getDir()))) { // wall is on left
     *offset = d_to_wall_left + AbstractMaze::HALF_WALL_THICKNESS;
     *yaw = dir_to_yaw(mouse->getDir()) + currentYaw_l;
+    *ignore_walls = false;
   } else { // we're too far from any walls, use our pose estimation
-    *offset = WallFollower::dispToLeftEdge(mouse);
-    *yaw = mouse->getPose().yaw;
+    *ignore_walls = true;
   }
 
   last_front_left_analog_dist = range_data.front_left;
@@ -236,4 +271,11 @@ void KinematicController::setSpeedMps(double left_setpoint_mps,
                                       double right_setpoint_mps) {
   left_motor.setSetpointMps(left_setpoint_mps);
   right_motor.setSetpointMps(right_setpoint_mps);
+}
+
+double KinematicController::yawDiff(double y1, double y2) {
+  double diff = y2 - y1;
+  if (diff > M_PI) return diff - M_PI * 2;
+  if (diff < -M_PI) return diff + M_PI * 2;
+  return diff;
 }
