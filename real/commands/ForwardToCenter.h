@@ -25,6 +25,6 @@ private:
 
   RangeData range_data;
   DriveStraight follower;
-  const double kDisp = 6;
+  const double kDisp = 4.0;
 };
 

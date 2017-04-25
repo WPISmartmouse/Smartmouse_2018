@@ -6,9 +6,9 @@
 #include <Arduino.h>
 #endif
 
-const double DriveStraight::kPWall = 0.65; //TODO: Should be 0.8
+const double DriveStraight::kPWall = 0.80; //TODO: Should be 0.8
 const double DriveStraight::kDWall = 50;
-const double DriveStraight::kPYaw = 10.0;
+const double DriveStraight::kPYaw = 7.0;
 
 DriveStraight::DriveStraight() : disp(0.0), goalDisp(AbstractMaze::UNIT_DIST), dispError(goalDisp) {}
 

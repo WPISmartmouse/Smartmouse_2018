@@ -24,7 +24,9 @@ void ForwardToCenter::execute() {
 }
 
 bool ForwardToCenter::isFinished() {
-  return fabs(follower.dispError) <= 0.002 || isTimedOut();
+  double vl, vr;
+  std::tie(vl, vr) = mouse->getWheelVelocities();
+  return fabs(follower.dispError) <= 0.004 || isTimedOut();
 }
 
 void ForwardToCenter::end() {
