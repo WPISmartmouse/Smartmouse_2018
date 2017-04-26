@@ -29,8 +29,6 @@ std::pair<double, double> DriveStraight::compute_wheel_velocities(Mouse *mouse) 
   // To achieve this, we control our yaw as a function of our error in wall distance
   double yawError = KinematicController::yawDiff(goalYaw, current_pose.yaw);
 
-//  print("%f %f %f\r\n", dispError, errorToCenter, yawError);
-
   double l = config.MAX_SPEED;
   double r = config.MAX_SPEED;
   double correction = kPWall * yawError; // in m/s
@@ -94,3 +92,6 @@ double DriveStraight::fwdDispToCenter(Mouse *mouse) {
   return AbstractMaze::HALF_UNIT_DIST - mouse->getLocalPose().to_back;
 }
 
+double DriveStraight::fwdDispToDiag(Mouse *mouse) {
+  return (AbstractMaze::HALF_UNIT_DIST - (config.TRACK_WIDTH/2.0)) - mouse->getLocalPose().to_back;
+}

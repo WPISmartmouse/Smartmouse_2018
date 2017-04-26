@@ -1,13 +1,14 @@
 #pragma once
 
 #include <common/commanduino/CommanDuino.h>
-
-#include "SimMouse.h"
+#include <common/Mouse.h>
+#include <common/Direction.h>
+#include <real/RealMouse.h>
 #include <common/DriveStraight.h>
 
-class ForwardToCenter : public Command {
+class ForwardToDiagonal : public Command {
 public:
-  ForwardToCenter();
+  ForwardToDiagonal();
 
   void initialize();
 
@@ -18,12 +19,10 @@ public:
   void end();
 
 private:
-
   GlobalPose start;
-  SimMouse *mouse;
-
+  RealMouse *mouse;
   RangeData range_data;
   DriveStraight driver;
-  const double kDisp = 4;
+  const double kDisp = 1;
 };
 

@@ -15,13 +15,6 @@ void Forward::initialize() {
 void Forward::execute() {
   range_data = mouse->getRangeData();
 
-  if (range_data.front < 0.08) {
-    digitalWrite(RealMouse::LED_6, 1);
-  }
-  else {
-    digitalWrite(RealMouse::LED_6, 0);
-  }
-
   double l, r;
   std::tie(l, r) = follower.compute_wheel_velocities(this->mouse);
   mouse->setSpeed(l, r);

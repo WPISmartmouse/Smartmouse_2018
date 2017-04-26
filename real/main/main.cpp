@@ -54,14 +54,14 @@ void setup() {
 }
 
 void loop() {
-  if (Serial1.available()) {
-    Serial1.clear();
-    analogWrite(RealMouse::MOTOR_LEFT_A, 0);
-    analogWrite(RealMouse::MOTOR_RIGHT_A, 0);
-    analogWrite(RealMouse::MOTOR_LEFT_B, 0);
-    analogWrite(RealMouse::MOTOR_RIGHT_B, 0);
-    paused = !paused;
-  }
+//  if (Serial1.available()) {
+//    Serial1.clear();
+//    analogWrite(RealMouse::MOTOR_LEFT_A, 0);
+//    analogWrite(RealMouse::MOTOR_RIGHT_A, 0);
+//    analogWrite(RealMouse::MOTOR_LEFT_B, 0);
+//    analogWrite(RealMouse::MOTOR_RIGHT_B, 0);
+//    paused = !paused;
+//  }
 
   if (paused) {
     digitalWrite(RealMouse::SYS_LED, 1);

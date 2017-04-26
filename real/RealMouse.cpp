@@ -104,12 +104,14 @@ void RealMouse::run(double dt_s) {
   range_data.back_right = adcToMeters(analogRead(BACK_RIGHT_ANALOG_PIN));
   range_data.front = adcToMeters(analogRead(FRONT_ANALOG_PIN));
 
+
 //  static int i=0;
-//  if (i > 4) {
+//  if (i > 8) {
 //    i = 0;
 //    print("%f, %f, %f, %f, %f, %f, %f\n", range_data.front_left, range_data.back_left,
 //          range_data.gerald_left, range_data.gerald_right,
 //          range_data.front_right, range_data.back_right, range_data.front);
+//    print("%0.3f %0.3f %0.3f\r\n", range_data.back_right, range_data.front_right, range_data.gerald_right);
 //  }
 //  i++;
 

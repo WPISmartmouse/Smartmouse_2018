@@ -1,14 +1,14 @@
 #pragma once
-#include <ignition/math.hh>
+
 #include <common/commanduino/CommanDuino.h>
 #include <common/Direction.h>
-
 #include <common/DriveStraight.h>
-#include "SimMouse.h"
 
-class TurnInPlace : public Command {
+#include <real/RealMouse.h>
+
+class ArcTurn : public Command {
 public:
-  TurnInPlace(Direction dir);
+  ArcTurn(Direction dir);
 
   void initialize();
 
@@ -21,9 +21,9 @@ public:
 private:
   double goalYaw;
   double dYaw;
-  SimMouse *mouse;
-  Direction dir;
+  RealMouse *mouse;
+  Direction goal_dir, start_dir;
 
-  const double kP = 0.12;
+  static const double kP;
 };
 

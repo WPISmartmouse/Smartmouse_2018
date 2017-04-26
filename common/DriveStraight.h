@@ -16,6 +16,8 @@ public:
 
   static double fwdDispToCenter(Mouse *mouse);
 
+  static double fwdDispToDiag(Mouse *mouse);
+
   static double fwdDisp(Direction dir, GlobalPose current_pose, GlobalPose start_pose);
 
   double sidewaysDispToCenter(Mouse *mouse);

@@ -1,14 +1,14 @@
 #pragma once
-#include <ignition/math.hh>
+
 #include <common/commanduino/CommanDuino.h>
+#include <common/Mouse.h>
 #include <common/Direction.h>
-
+#include <sim/SimMouse.h>
 #include <common/DriveStraight.h>
-#include "SimMouse.h"
 
-class TurnInPlace : public Command {
+class ForwardToDiagonal : public Command {
 public:
-  TurnInPlace(Direction dir);
+  ForwardToDiagonal();
 
   void initialize();
 
@@ -19,11 +19,10 @@ public:
   void end();
 
 private:
-  double goalYaw;
-  double dYaw;
+  GlobalPose start;
   SimMouse *mouse;
-  Direction dir;
-
-  const double kP = 0.12;
+  RangeData range_data;
+  DriveStraight driver;
+  const double kDisp = 1;
 };
 

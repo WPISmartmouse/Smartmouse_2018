@@ -20,13 +20,11 @@ public:
   void end();
 
 private:
-  SimMouse *mouse;
-  Direction start_dir, goal_dir;
-  bool left; //false means right
-  double turn_effort;
+  double goalYaw;
   double dYaw;
-  double goal_x, goal_y;
-  int start_row, start_col;
-  static const double kTurn;
+  SimMouse *mouse;
+  Direction goal_dir, start_dir;
+
+  static const double kP;
 };
 

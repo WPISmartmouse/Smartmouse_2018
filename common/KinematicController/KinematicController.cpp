@@ -77,9 +77,6 @@ KinematicController::run(double dt_s, double left_angle_rad, double right_angle_
                          double ground_truth_right_vel_rps, RangeData range_data) {
   static std::pair<double, double> abstract_forces;
 
-  static int IGN_ = 0;
-  static int T_ = 0;
-
   if (!initialized) {
     initialized = true;
     abstract_forces.first = 0;
@@ -169,11 +166,7 @@ KinematicController::run(double dt_s, double left_angle_rad, double right_angle_
       default:
         break;
     }
-  } else {
-    IGN_++;
-    print("%i / %i\r\n", IGN_, T_);
   }
-  T_++;
 
   // run PID, which will update the velocities of the wheels
   abstract_forces.first = left_motor.runPid(dt_s, left_angle_rad, ground_truth_left_vel_rps);
@@ -260,18 +253,24 @@ std::tuple<double, double, bool> KinematicController::estimate_pose(RangeData ra
     *offset = AbstractMaze::UNIT_DIST - d_to_wall_right - AbstractMaze::HALF_WALL_THICKNESS;
     *yaw = dir_to_yaw(mouse->getDir()) + currentYaw_r;
     *ignore_walls = false;
+#ifdef EMBED
     digitalWrite(31, 1);
     digitalWrite(32, 0);
+#endif
   } else if (sense_left_wall && mouse->isWallInDirection(left_of_dir(mouse->getDir()))) { // wall is on left
     *offset = d_to_wall_left + AbstractMaze::HALF_WALL_THICKNESS;
     *yaw = dir_to_yaw(mouse->getDir()) + currentYaw_l;
     *ignore_walls = false;
+#ifdef EMBED
     digitalWrite(31, 0);
     digitalWrite(32, 1);
+#endif
   } else { // we're too far from any walls, use our pose estimation
     *ignore_walls = true;
+#ifdef EMBED
     digitalWrite(31, 0);
     digitalWrite(32, 0);
+#endif
   }
 
   last_front_left_analog_dist = range_data.front_left;

@@ -1,14 +1,14 @@
-#include <SimMouse.h>
-#include "ForwardToCenter.h"
+#include <tuple>
+#include "ForwardToDiagonal.h"
 
-ForwardToCenter::ForwardToCenter() : Command("FwdToCenter"), mouse(SimMouse::inst()) {}
+ForwardToDiagonal::ForwardToDiagonal() : Command("FwdToDiagonal"), mouse(SimMouse::inst()) {}
 
-void ForwardToCenter::initialize() {
+void ForwardToDiagonal::initialize() {
   start = mouse->getGlobalPose();
-  driver.start(start, DriveStraight::fwdDispToCenter(mouse));
+  driver.start(start, DriveStraight::fwdDispToDiag(mouse));
 }
 
-void ForwardToCenter::execute() {
+void ForwardToDiagonal::execute() {
   double l_adjust, r_adjust;
   std::tie(l_adjust, r_adjust) = driver.compute_wheel_velocities(this->mouse);
   l_adjust = config.MAX_SPEED - l_adjust;
@@ -18,9 +18,9 @@ void ForwardToCenter::execute() {
   mouse->setSpeed(l, r);
 }
 
-bool ForwardToCenter::isFinished() {
+bool ForwardToDiagonal::isFinished() {
   return driver.dispError <= 0;
 }
 
-void ForwardToCenter::end() {
+void ForwardToDiagonal::end() {
 }

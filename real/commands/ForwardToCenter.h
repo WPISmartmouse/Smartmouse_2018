@@ -24,7 +24,7 @@ private:
   RealMouse *mouse;
 
   RangeData range_data;
-  DriveStraight follower;
+  DriveStraight driver;
   const double kDisp = 4.0;
 };
 
