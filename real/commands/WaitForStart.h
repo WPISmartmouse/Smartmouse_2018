@@ -2,16 +2,16 @@
 
 #include <common/commanduino/CommanDuino.h>
 #include "RealMouse.h"
-//#include <list> // THIS MUST GO LAST (idk why...)
 
-class WaitForStart : public Command {
+class WaitForStart : public CommandGroup {
 public:
   WaitForStart();
-  void initialize();
   void execute();
   bool isFinished();
   void end();
 
 private:
+  double speed;
+  static bool calibrated;
   RealMouse *mouse;
 };

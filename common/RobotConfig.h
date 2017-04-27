@@ -23,4 +23,4 @@ typedef struct robot_config_t {
   double MAX_FORCE;
 } RobotConfig;
 
-extern const RobotConfig config;
+extern RobotConfig config;

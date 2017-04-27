@@ -7,6 +7,17 @@
 #include <common/KinematicController/KinematicController.h>
 
 
+class IRConverter {
+public:
+  IRConverter();
+  double adcToMeters(int adc);
+  void calibrate(int avg_adc_value_on_center);
+private:
+  double calibration_offset;
+  std::array<int, 18> ir_lookup;
+
+};
+
 class RealMouse : public Mouse {
 public:
   static constexpr int TICKS_PER_REV = 900;
@@ -70,6 +81,9 @@ public:
   void setup();
 
   KinematicController kinematic_controller;
+  IRConverter ir_converter;
+  double left_angle_rad;
+  double right_angle_rad;
 
 private:
   RealMouse();
@@ -77,10 +91,6 @@ private:
   double tick_to_rad(int ticks);
 
   static RealMouse *instance;
-
-  static double adcToMeters(int adc);
-
-  static const int ir_lookup[18];
 
   Encoder left_encoder, right_encoder;
   RangeData range_data;

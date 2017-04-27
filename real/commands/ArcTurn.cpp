@@ -7,6 +7,7 @@ const double ArcTurn::kP = 0.2;
 ArcTurn::ArcTurn(Direction dir) : Command("RealArcTurn"), mouse(RealMouse::inst()), goal_dir(dir) {}
 
 void ArcTurn::initialize() {
+  digitalWrite(RealMouse::LED_5, 1);
   goalYaw = dir_to_yaw(goal_dir);
   start_dir = mouse->getDir();
   mouse->kinematic_controller.ignore_sensor_pose_estimate = true;
@@ -43,4 +44,5 @@ bool ArcTurn::isFinished() {
 void ArcTurn::end() {
   mouse->kinematic_controller.ignore_sensor_pose_estimate = false;
   mouse->internalTurnToFace(goal_dir);
+  digitalWrite(RealMouse::LED_5, 0);
 }

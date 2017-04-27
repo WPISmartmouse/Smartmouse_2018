@@ -23,6 +23,6 @@ private:
   RealMouse *mouse;
   RangeData range_data;
   DriveStraight driver;
-  const double kDisp = 1;
+  const double kDisp = 3;
 };
 

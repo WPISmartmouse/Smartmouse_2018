@@ -253,24 +253,12 @@ std::tuple<double, double, bool> KinematicController::estimate_pose(RangeData ra
     *offset = AbstractMaze::UNIT_DIST - d_to_wall_right - AbstractMaze::HALF_WALL_THICKNESS;
     *yaw = dir_to_yaw(mouse->getDir()) + currentYaw_r;
     *ignore_walls = false;
-#ifdef EMBED
-    digitalWrite(31, 1);
-    digitalWrite(32, 0);
-#endif
   } else if (sense_left_wall && mouse->isWallInDirection(left_of_dir(mouse->getDir()))) { // wall is on left
     *offset = d_to_wall_left + AbstractMaze::HALF_WALL_THICKNESS;
     *yaw = dir_to_yaw(mouse->getDir()) + currentYaw_l;
     *ignore_walls = false;
-#ifdef EMBED
-    digitalWrite(31, 0);
-    digitalWrite(32, 1);
-#endif
   } else { // we're too far from any walls, use our pose estimation
     *ignore_walls = true;
-#ifdef EMBED
-    digitalWrite(31, 0);
-    digitalWrite(32, 0);
-#endif
   }
 
   last_front_left_analog_dist = range_data.front_left;

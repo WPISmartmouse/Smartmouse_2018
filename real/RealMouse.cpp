@@ -3,7 +3,8 @@
 #include "RealMouse.h"
 
 RealMouse *RealMouse::instance = nullptr;
-const int RealMouse::ir_lookup[18] = {
+
+IRConverter::IRConverter() : ir_lookup{
         755, // .01
         648, // .02
         492, // .03
@@ -22,15 +23,17 @@ const int RealMouse::ir_lookup[18] = {
         75,  // .16
         68,  // .17
         58,  // .18
-};
+} {}
 
-double RealMouse::tick_to_rad(int ticks) {
-  // if in quadrant I or II, it's positive
-  double rad = ticks * RAD_PER_TICK;
-  return rad;
+void IRConverter::calibrate(int avg_adc_value_on_center) {
+  double actual_dist = (0.08 - config.FRONT_SIDE_ANALOG_Y) / sin(config.FRONT_ANALOG_ANGLE);
+  int centered_idx = 4;
+  double expected_distance = (avg_adc_value_on_center - ir_lookup[centered_idx]) * 0.01 /
+                             (ir_lookup[centered_idx] - ir_lookup[centered_idx - 1]) + (centered_idx + 1) * .01;
+  calibration_offset = actual_dist - expected_distance;
 }
 
-double RealMouse::adcToMeters(int adc) {
+double IRConverter::adcToMeters(int adc) {
   if (adc > 751) {
     return 0.01;
   } else if (adc <= 53) {
@@ -39,12 +42,18 @@ double RealMouse::adcToMeters(int adc) {
     for (int i = 1; i < 18; i++) {
       if (adc >= ir_lookup[i]) {
         // linear map between i and i+1, .01 meters spacing
-        double o = (adc - ir_lookup[i]) * 0.01 / (ir_lookup[i] - ir_lookup[i - 1]) + (i + 1) * .01;
+        double o = (adc - ir_lookup[i]) * 0.01 / (ir_lookup[i] - ir_lookup[i - 1]) + (i + 1) * .01 + calibration_offset;
         return o;
       }
     }
     return 0.18;
   }
+}
+
+double RealMouse::tick_to_rad(int ticks) {
+  // if in quadrant I or II, it's positive
+  double rad = ticks * RAD_PER_TICK;
+  return rad;
 }
 
 RealMouse *RealMouse::inst() {
@@ -63,7 +72,7 @@ RangeData RealMouse::getRangeData() {
 SensorReading RealMouse::checkWalls() {
   SensorReading sr(row, col);
 
-  sr.walls[static_cast<int>(dir)] = range_data.front < 0.15;
+  sr.walls[static_cast<int>(dir)] = range_data.front < 0.17;
   sr.walls[static_cast<int>(left_of_dir(dir))] = range_data.front_left < 0.15;
   sr.walls[static_cast<int>(right_of_dir(dir))] = range_data.front_right < 0.15;
   sr.walls[static_cast<int>(opposite_direction(dir))] = false;
@@ -93,16 +102,16 @@ std::pair<double, double> RealMouse::getWheelVelocities() {
 
 void RealMouse::run(double dt_s) {
   double abstract_left_force, abstract_right_force;
-  double left_angle_rad = tick_to_rad(left_encoder.read());
-  double right_angle_rad = tick_to_rad(right_encoder.read());
+  left_angle_rad = tick_to_rad(left_encoder.read());
+  right_angle_rad = tick_to_rad(right_encoder.read());
 
-  range_data.gerald_left = adcToMeters(analogRead(GERALD_LEFT_ANALOG_PIN));
-  range_data.gerald_right = adcToMeters(analogRead(GERALD_RIGHT_ANALOG_PIN));
-  range_data.front_left = adcToMeters(analogRead(FRONT_LEFT_ANALOG_PIN));
-  range_data.back_left = adcToMeters(analogRead(BACK_LEFT_ANALOG_PIN));
-  range_data.front_right = adcToMeters(analogRead(FRONT_RIGHT_ANALOG_PIN));
-  range_data.back_right = adcToMeters(analogRead(BACK_RIGHT_ANALOG_PIN));
-  range_data.front = adcToMeters(analogRead(FRONT_ANALOG_PIN));
+  range_data.gerald_left = ir_converter.adcToMeters(analogRead(GERALD_LEFT_ANALOG_PIN));
+  range_data.gerald_right = ir_converter.adcToMeters(analogRead(GERALD_RIGHT_ANALOG_PIN));
+  range_data.front_left = ir_converter.adcToMeters(analogRead(FRONT_LEFT_ANALOG_PIN));
+  range_data.back_left = ir_converter.adcToMeters(analogRead(BACK_LEFT_ANALOG_PIN));
+  range_data.front_right = ir_converter.adcToMeters(analogRead(FRONT_RIGHT_ANALOG_PIN));
+  range_data.back_right = ir_converter.adcToMeters(analogRead(BACK_RIGHT_ANALOG_PIN));
+  range_data.front = ir_converter.adcToMeters(analogRead(FRONT_ANALOG_PIN));
 
 
 //  static int i=0;
@@ -181,7 +190,7 @@ void RealMouse::setup() {
 
 void RealMouse::resetToStartPose() {
   reset(); // resets row, col, and dir
-  kinematic_controller.reset_x_to(0.06);
+  kinematic_controller.reset_x_to(0.04);
   kinematic_controller.reset_y_to(0.09);
   kinematic_controller.reset_yaw_to(0.0);
 }

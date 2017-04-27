@@ -1,21 +1,41 @@
 #include <common/Mouse.h>
 #include "WaitForStart.h"
-#include "RealMouse.h"
+#include "Calibrate.h"
 
-WaitForStart::WaitForStart() : Command("wait_calibrate"), mouse(RealMouse::inst()) {
-}
+bool WaitForStart::calibrated = false;
 
-void WaitForStart::initialize() {
+WaitForStart::WaitForStart() : CommandGroup("wait_calibrate"), mouse(RealMouse::inst()) {
+  if (!calibrated) {
+    addSequential(new Calibrate());
+    calibrated = true;
+  }
 }
 
 void WaitForStart::execute() {
+  CommandGroup::execute();
+  double percent_speed = fmod(mouse->right_angle_rad, TWO_PI) / TWO_PI;
+  speed =  percent_speed * config.MAX_SPEED;
+  int idx = percent_speed * 100 / 8;
+  for (int i = 0; i < 8; i++) {
+    if (i < idx) {
+      digitalWrite(RealMouse::LED_8 - i, 1);
+    } else {
+      digitalWrite(RealMouse::LED_8 - i, 0);
+    }
+  }
 }
 
 bool WaitForStart::isFinished() {
-  return !digitalRead(RealMouse::BUTTON_PIN);
+  if (CommandGroup::isFinished()) {
+    return !digitalRead(RealMouse::BUTTON_PIN);
+  } else {
+    return false;
+  }
 }
 
 void WaitForStart::end() {
-//  mouse->resetToStartPose();
-  digitalWrite(RealMouse::SYS_LED, 0);
+  config.MAX_SPEED = max(speed, 0.1);
+  for (int i = 0; i < 8; i++) {
+    digitalWrite(RealMouse::LED_8 - i, 0);
+  }
 }
