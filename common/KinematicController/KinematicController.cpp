@@ -11,7 +11,7 @@
 const double KinematicController::DROP_SAFETY = 0.8;
 const double KinematicController::POST_DROP_DIST = 0.05;
 
-KinematicController::KinematicController(Mouse *mouse) : ignore_sensor_pose_estimate(false), initialized(false),
+KinematicController::KinematicController(Mouse *mouse) : ignore_sensor_pose_estimate(false), enabled(true), initialized(false),
                                                          ignoring_left(false), ignoring_right(false), mouse(mouse),
                                                          d_until_left_drop(0), d_until_right_drop(0) {
   current_pose_estimate.x = 0;
@@ -84,102 +84,101 @@ KinematicController::run(double dt_s, double left_angle_rad, double right_angle_
     return abstract_forces;
   }
 
-  // equations based on https://chess.eecs.berkeley.edu/eecs149/documentation/differentialDrive.pdf
-  double vl = Mouse::radToMeters(left_motor.velocity_rps);
-  double vr = Mouse::radToMeters(right_motor.velocity_rps);
+  if (enabled) {
+    // equations based on https://chess.eecs.berkeley.edu/eecs149/documentation/differentialDrive.pdf
+    double vl = Mouse::radToMeters(left_motor.velocity_rps);
+    double vr = Mouse::radToMeters(right_motor.velocity_rps);
 
-  double w = (vr - vl) / config.TRACK_WIDTH;
-  double r = config.TRACK_WIDTH / 2 * (vl + vr) / (vr - vl);
-  double x = current_pose_estimate.x;
-  double y = current_pose_estimate.y;
-  double yaw = current_pose_estimate.yaw;
+    double w = (vr - vl) / config.TRACK_WIDTH;
+    double r = config.TRACK_WIDTH / 2 * (vl + vr) / (vr - vl);
+    double x = current_pose_estimate.x;
+    double y = current_pose_estimate.y;
+    double yaw = current_pose_estimate.yaw;
 
-  if (std::isnan(r)) {
-    // this means we're stopped, so ignore it
-  } else if (std::isinf(r)) {
-    // going perfectly straight is a special condition
-    current_pose_estimate.x += (dt_s * (vl + vr) / 2) * cos(yaw);
-    current_pose_estimate.y += -(dt_s * (vl + vr) / 2) * sin(yaw);
-  } else {
-    current_pose_estimate.x = -cos(w * dt_s) * r * sin(yaw) + sin(w * dt_s) * r * cos(yaw) + x + r * sin(yaw);
-    current_pose_estimate.y = -sin(w * dt_s) * r * sin(yaw) - cos(w * dt_s) * r * cos(yaw) + y + r * cos(yaw);
-    yaw += w * dt_s;
+    if (std::isnan(r)) {
+      // this means we're stopped, so ignore it
+    } else if (std::isinf(r)) {
+      // going perfectly straight is a special condition
+      current_pose_estimate.x += (dt_s * (vl + vr) / 2) * cos(yaw);
+      current_pose_estimate.y += -(dt_s * (vl + vr) / 2) * sin(yaw);
+    } else {
+      current_pose_estimate.x = -cos(w * dt_s) * r * sin(yaw) + sin(w * dt_s) * r * cos(yaw) + x + r * sin(yaw);
+      current_pose_estimate.y = -sin(w * dt_s) * r * sin(yaw) - cos(w * dt_s) * r * cos(yaw) + y + r * cos(yaw);
+      yaw += w * dt_s;
 
-    if (yaw < -M_PI) {
-      yaw += M_PI * 2;
-    } else if (yaw >= M_PI) {
-      yaw -= M_PI * 2;
+      if (yaw < -M_PI) {
+        yaw += M_PI * 2;
+      } else if (yaw >= M_PI) {
+        yaw -= M_PI * 2;
+      }
+
+      current_pose_estimate.yaw = yaw;
     }
 
-    current_pose_estimate.yaw = yaw;
+    row = (unsigned int) (current_pose_estimate.y / AbstractMaze::UNIT_DIST);
+    col = (unsigned int) (current_pose_estimate.x / AbstractMaze::UNIT_DIST);
+    row_offset_to_edge = fmod(current_pose_estimate.y, AbstractMaze::UNIT_DIST);
+    col_offset_to_edge = fmod(current_pose_estimate.x, AbstractMaze::UNIT_DIST);
+
+    // given odometry estimate, improve estimate using sensors, then update odometry estimate to match our best estimate
+    double est_yaw, offset;
+    bool no_walls;
+    std::tie(est_yaw, offset, no_walls) = estimate_pose(range_data, mouse);
+
+    // only override if no on was explicitly set ignore_sensor_pose_estimate to true
+    if (!ignore_sensor_pose_estimate && !no_walls) {
+      current_pose_estimate.yaw = est_yaw;
+
+      double d_wall_front = 0;
+      bool wall_in_front = false;
+      if (range_data.front < 0.08) {
+        double yaw_error = KinematicController::yawDiff(current_pose_estimate.yaw, dir_to_yaw(mouse->getDir()));
+        d_wall_front = cos(yaw_error) * range_data.front + config.FRONT_ANALOG_X;
+        wall_in_front = true;
+      }
+
+      switch (mouse->getDir()) {
+        case Direction::N:
+          current_pose_estimate.x = (col * AbstractMaze::UNIT_DIST) + offset;
+          if (wall_in_front) {
+            current_pose_estimate.y =
+                    (row * AbstractMaze::UNIT_DIST) + d_wall_front + AbstractMaze::HALF_WALL_THICKNESS;
+          }
+          break;
+        case Direction::S:
+          current_pose_estimate.x = (col + 1) * AbstractMaze::UNIT_DIST - offset;
+          if (wall_in_front) {
+            current_pose_estimate.y =
+                    ((row + 1) * AbstractMaze::UNIT_DIST) - d_wall_front - AbstractMaze::HALF_WALL_THICKNESS;
+          }
+          break;
+        case Direction::E:
+          current_pose_estimate.y = (row * AbstractMaze::UNIT_DIST) + offset;
+          if (wall_in_front) {
+            current_pose_estimate.x =
+                    ((col + 1) * AbstractMaze::UNIT_DIST) - d_wall_front - AbstractMaze::HALF_WALL_THICKNESS;
+          }
+          break;
+        case Direction::W:
+          current_pose_estimate.y = (row + 1) * AbstractMaze::UNIT_DIST - offset;
+          if (wall_in_front) {
+            current_pose_estimate.x =
+                    (col * AbstractMaze::UNIT_DIST) + d_wall_front + AbstractMaze::HALF_WALL_THICKNESS;
+          }
+          break;
+        default:
+          break;
+      }
+    }
+
+    // run PID, which will update the velocities of the wheels
+    abstract_forces.first = left_motor.runPid(dt_s, left_angle_rad, ground_truth_left_vel_rps);
+    abstract_forces.second = right_motor.runPid(dt_s, right_angle_rad, ground_truth_right_vel_rps);
   }
-
-  row = (unsigned int) (current_pose_estimate.y / AbstractMaze::UNIT_DIST);
-  col = (unsigned int) (current_pose_estimate.x / AbstractMaze::UNIT_DIST);
-  row_offset_to_edge = fmod(current_pose_estimate.y, AbstractMaze::UNIT_DIST);
-  col_offset_to_edge = fmod(current_pose_estimate.x, AbstractMaze::UNIT_DIST);
-
-  // given odometry estimate, improve estimate using sensors, then update odometry estimate to match our best estimate
-  double est_yaw, offset;
-  bool no_walls;
-  std::tie(est_yaw, offset, no_walls) = estimate_pose(range_data, mouse);
-
-  // only override if no on was explicitly set ignore_sensor_pose_estimate to true
-  if (!ignore_sensor_pose_estimate && !no_walls) {
-    current_pose_estimate.yaw = est_yaw;
-
-    double d_wall_front = 0;
-    bool wall_in_front = false;
-    if (range_data.front < 0.08) {
-      double yaw_error = KinematicController::yawDiff(current_pose_estimate.yaw, dir_to_yaw(mouse->getDir()));
-      d_wall_front = cos(yaw_error) * range_data.front + config.FRONT_ANALOG_X;
-      wall_in_front = true;
-    }
-
-    switch (mouse->getDir()) {
-      case Direction::N:
-        current_pose_estimate.x = (col * AbstractMaze::UNIT_DIST) + offset;
-        if (wall_in_front) {
-          current_pose_estimate.y = (row * AbstractMaze::UNIT_DIST) + d_wall_front + AbstractMaze::HALF_WALL_THICKNESS;
-        }
-        break;
-      case Direction::S:
-        current_pose_estimate.x = (col + 1) * AbstractMaze::UNIT_DIST - offset;
-        if (wall_in_front) {
-          current_pose_estimate.y =
-                  ((row + 1) * AbstractMaze::UNIT_DIST) - d_wall_front - AbstractMaze::HALF_WALL_THICKNESS;
-        }
-        break;
-      case Direction::E:
-        current_pose_estimate.y = (row * AbstractMaze::UNIT_DIST) + offset;
-        if (wall_in_front) {
-          current_pose_estimate.x =
-                  ((col + 1) * AbstractMaze::UNIT_DIST) - d_wall_front - AbstractMaze::HALF_WALL_THICKNESS;
-        }
-        break;
-      case Direction::W:
-        current_pose_estimate.y = (row + 1) * AbstractMaze::UNIT_DIST - offset;
-        if (wall_in_front) {
-          current_pose_estimate.x = (col * AbstractMaze::UNIT_DIST) + d_wall_front + AbstractMaze::HALF_WALL_THICKNESS;
-        }
-        break;
-      default:
-        break;
-    }
+  else {
+    abstract_forces.first = 0;
+    abstract_forces.second = 0;
   }
-
-  // run PID, which will update the velocities of the wheels
-  abstract_forces.first = left_motor.runPid(dt_s, left_angle_rad, ground_truth_left_vel_rps);
-  abstract_forces.second = right_motor.runPid(dt_s, right_angle_rad, ground_truth_right_vel_rps);
-
-//  static int i = 0;
-//  if (i == 15) {
-//  print("%f, %f, %f, %f\r\n", Mouse::radToMeters(left_motor.regulated_setpoint_rps),
-//        Mouse::radToMeters(left_motor.velocity_rps), Mouse::radToMeters(right_motor.regulated_setpoint_rps),
-//        Mouse::radToMeters(right_motor.velocity_rps));
-//    i = 0;
-//  }
-//  i += 1;
 
   return abstract_forces;
 }

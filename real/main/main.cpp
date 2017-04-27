@@ -80,7 +80,7 @@ void loop() {
   }
 
   // minimum period of main loop
-  if (dt_s < 0.020) {
+  if (dt_s < 0.010) {
     return;
   }
 

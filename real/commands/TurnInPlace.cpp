@@ -31,7 +31,6 @@ bool TurnInPlace::isFinished() {
   dYaw = KinematicController::yawDiff(currentYaw, goalYaw);
   double vl, vr;
   std::tie(vl, vr) = mouse->getWheelVelocities();
-  print("%f, %f\r\n", vl, vr);
   return isTimedOut() || (fabs(dYaw) < config.ROT_TOLERANCE);
 }
 

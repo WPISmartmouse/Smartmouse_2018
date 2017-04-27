@@ -12,6 +12,7 @@ typedef struct robot_config_t {
   double GERALD_Y;
   double GERALD_ANGLE;
   double MAX_SPEED;
+  double MAX_HARDWARE_SPEED;
   double MIN_SPEED;
   double FRONT_WALL_THRESHOLD;
   double SIDE_WALL_THRESHOLD;
