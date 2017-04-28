@@ -1,7 +1,7 @@
 
 #include "ArcTurn.h"
 
-ArcTurn::ArcTurn(Direction dir) : Command("SimArcTurn"), mouse(SimMouse::inst()), dir(dir) {}
+ArcTurn::ArcTurn(Direction dir) : Command("RealArcTurn"), mouse(RealMouse::inst()), dir(dir) {}
 
 void ArcTurn::initialize() {
   mouse->kinematic_controller.ignore_sensor_pose_estimate = true;
@@ -89,11 +89,11 @@ void ArcTurn::execute() {
   double ang_error = fabs(mouse->kinematic_controller.yawDiff(curPose.yaw, dir_to_yaw(mouse->getDir())))-dAngle;
   double arc_error = (AbstractMaze::HALF_UNIT_DIST/pose_dist(mouse->getPose(), vtc_x, vtc_y))-1;
 
-  double corr = (ang_error*1.0)+(arc_error*0.5);
-  print("%f\t%f\n\r", dAngle, mouse->kinematic_controller.yawDiff(curPose.yaw, dir_to_yaw(mouse->getDir())));
+  double corr = (ang_error*1.0)+(arc_error*0.25);
+  //print("%f,%f,%f\n\r", dAngle, cur_x, cur_y);//mouse->kinematic_controller.yawDiff(curPose.yaw, dir_to_yaw(mouse->getDir())));
 
-  double fast_speed = FAST_ARC_SPEED*((corr*-5)+1);
-  double slow_speed = SLOW_ARC_SPEED*((corr*5)+1);
+  double fast_speed = FAST_ARC_SPEED*((corr*-3)+1);
+  double slow_speed = SLOW_ARC_SPEED*((corr*3)+1);
 
   if (right_of_dir(mouse->getDir()) == dir ){
     mouse->setSpeed(fast_speed, slow_speed);

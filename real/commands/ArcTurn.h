@@ -3,7 +3,7 @@
 #include <common/Direction.h>
 
 #include <common/WallFollower.h>
-#include <sim/SimMouse.h>
+#include <real/RealMouse.h>
 
 #include <common/RobotConfig.h>
 #include <common/AbstractMaze.h>
@@ -33,7 +33,7 @@ private:
   double end_x;
   double end_y;
 
-  SimMouse* mouse;
+  RealMouse* mouse;
   Direction dir;
   double SLOW_ARC_SPEED = 0.75*(config.MAX_SPEED/(AbstractMaze::HALF_UNIT_DIST+(config.TRACK_WIDTH/2)))*(AbstractMaze::HALF_UNIT_DIST-(config.TRACK_WIDTH/2));
   double FAST_ARC_SPEED = 0.75*config.MAX_SPEED;

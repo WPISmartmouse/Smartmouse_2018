@@ -237,3 +237,10 @@ void KinematicController::setSpeedMps(double left_setpoint_mps,
   left_motor.setSetpointMps(left_setpoint_mps);
   right_motor.setSetpointMps(right_setpoint_mps);
 }
+
+double KinematicController::yawDiff(double y1, double y2) {
+  double diff = y2 - y1;
+  if (diff > M_PI) return diff - M_PI * 2;
+  if (diff < -M_PI) return diff + M_PI * 2;
+  return diff;
+}

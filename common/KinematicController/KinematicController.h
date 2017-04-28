@@ -42,6 +42,8 @@ public:
   unsigned int row;
   unsigned int col;
 
+  double yawDiff(double y1, double y2);
+
 private:
   bool initialized = false;
 

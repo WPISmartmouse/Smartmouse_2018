@@ -1,5 +1,6 @@
 #include <common/commanduino/CommanDuino.h>
 #include <common/commands/SolveCommand.h>
+#include <sim/commands/ArcTurn.h>
 #include <common/Flood.h>
 #include <ignition/transport/Node.hh>
 #include <common/util.h>
@@ -40,6 +41,7 @@ int main(int argc, char *argv[]) {
   mouse->simInit();
 
   Scheduler scheduler(new SolveCommand(new Flood(mouse)));
+  //Scheduler scheduler(new ArcTurn(Direction::S));
 
   bool done = false;
   unsigned long last_t = timer.programTimeMs();
