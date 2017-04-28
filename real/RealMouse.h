@@ -23,11 +23,11 @@ public:
   static constexpr int TICKS_PER_REV = 900;
   static constexpr double RAD_PER_TICK = 2 * M_PI / TICKS_PER_REV;
 
-  static const unsigned int FRONT_RIGHT_ANALOG_PIN = A14;
-  static const unsigned int BACK_RIGHT_ANALOG_PIN = A15;
+  static const unsigned int FRONT_RIGHT_ANALOG_PIN = A18;
+  static const unsigned int BACK_RIGHT_ANALOG_PIN = A14;
   static const unsigned int FRONT_ANALOG_PIN = A16;
   static const unsigned int FRONT_LEFT_ANALOG_PIN = A17;
-  static const unsigned int BACK_LEFT_ANALOG_PIN = A18;
+  static const unsigned int BACK_LEFT_ANALOG_PIN = A15;
   static const unsigned int GERALD_LEFT_ANALOG_PIN = A20;
   static const unsigned int GERALD_RIGHT_ANALOG_PIN = A19;
 

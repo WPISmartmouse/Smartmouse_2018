@@ -72,7 +72,6 @@ RangeData RealMouse::getRangeData() {
 SensorReading RealMouse::checkWalls() {
   SensorReading sr(row, col);
 
-  print("front? %0.3f. %0.3f\r\n", range_data.front, kinematic_controller.getGlobalPose().x);
   sr.walls[static_cast<int>(dir)] = range_data.front < 0.17;
   sr.walls[static_cast<int>(left_of_dir(dir))] = range_data.front_left < 0.15;
   sr.walls[static_cast<int>(right_of_dir(dir))] = range_data.front_right < 0.15;
