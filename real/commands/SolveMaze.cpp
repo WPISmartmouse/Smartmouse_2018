@@ -53,5 +53,6 @@ bool SolveMaze::isFinished() {
 }
 
 void SolveMaze::end() {
+  print("%lu\r\n", getTime());
   solver->teardown();
 }

@@ -81,6 +81,7 @@ public:
   void setup();
 
   KinematicController kinematic_controller;
+  Encoder left_encoder, right_encoder;
   IRConverter ir_converter;
   double left_angle_rad;
   double right_angle_rad;
@@ -92,6 +93,5 @@ private:
 
   static RealMouse *instance;
 
-  Encoder left_encoder, right_encoder;
   RangeData range_data;
 };
