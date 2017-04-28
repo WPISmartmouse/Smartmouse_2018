@@ -13,7 +13,7 @@ SolveCommand::SolveCommand(Solver *solver) : CommandGroup("SolveGroup"), solver(
 
 void SolveCommand::initialize() {
   runs = 0;
-  if (!GlobalProgramSettings.q) {
+  if (!GlobalProgramSettings.quiet) {
     addSequential(new WaitForStart());
   }
   solver->setup();
@@ -33,7 +33,7 @@ bool SolveCommand::isFinished() {
       return true;
     }
 
-    if (!GlobalProgramSettings.q) {
+    if (!GlobalProgramSettings.quiet) {
       addSequential(new Stop(200));
       addSequential(new WaitForStart());
     }

@@ -23,6 +23,7 @@ RobotConfig config = {
         TRACK_WIDTH : 0.0633,
         ANALOG_MAX_DIST : 0.18,
         MAX_FORCE : 0.014,
+        ARC_TURN : false,
 };
 #elif defined(CONSOLE)
 
@@ -49,5 +50,6 @@ RobotConfig config = {
         TRACK_WIDTH : 0.0633,
         ANALOG_MAX_DIST : 0.18,
         MAX_FORCE : 0.016,
+        ARC_TURN : false,
 };
 #endif

@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
   }
   else if (argc == 2) {
     if (strncmp(argv[1], "-q", 2) == 0) {
-      GlobalProgramSettings.q = true;
+      GlobalProgramSettings.quiet = true;
       rand = true;
     }
     else {
@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
   }
   else if (argc == 3) {
     maze_file = std::string(argv[2]);
-    GlobalProgramSettings.q = true;
+    GlobalProgramSettings.quiet = true;
   }
 
   std::fstream fs;

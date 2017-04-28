@@ -41,7 +41,7 @@ void setup() {
   mouse = RealMouse::inst();
   mouse->setup();
 
-  GlobalProgramSettings.q = false;
+  GlobalProgramSettings.quiet = false;
 
 //  scheduler = new Scheduler(new RepeatCommand<Forward>(3));
 //  scheduler = new Scheduler(new Finish(mouse->maze));

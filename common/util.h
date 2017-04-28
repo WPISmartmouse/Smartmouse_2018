@@ -3,7 +3,7 @@
 void print(const char *fmt, ...);
 
 extern struct global_program_settings_t {
-  bool q;
+  bool quiet;
 } GlobalProgramSettings;
 
 template<typename type_name, int size>
