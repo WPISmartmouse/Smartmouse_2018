@@ -29,7 +29,7 @@ void WaitForStart::execute() {
   }
 
   // Set arc turn on or off based on left wheel
-  config.ARC_TURN = fmod(fabs(mouse->left_angle_rad), TWO_PI) > PI;
+  config.ARC_TURN = fmod(fabs(mouse->left_angle_rad), HALF_PI) > M_PI / 4;
   if (config.ARC_TURN) {
     digitalWrite(RealMouse::LED_8, 1);
   } else {
