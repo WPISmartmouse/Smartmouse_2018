@@ -10,32 +10,42 @@
 class ArcTurn : public Command{
 public:
   ArcTurn(Direction dir);
-
   void initialize();
-
   void execute();
-
   bool isFinished();
-
   void end();
+
 private:
-  double dYaw;
-  double dDisp;
-  double goalYaw;
+  RealMouse* mouse;
+  Direction dir;
+
+  GlobalPose curPose;
+  unsigned int curCol;
+  unsigned int curRow;
+  Direction curDir;
+
   GlobalPose startPose;
   unsigned int startCol;
   unsigned int startRow;
 
+  double dYaw;
+  double goalYaw;
+
   double vtc_x;
   double vtc_y;
 
-  double end_x;
-  double end_y;
+  constexpr static double speed_scale = 0.75;
+  double SLOW_ARC_SPEED = speed_scale*
+          (config.MAX_SPEED/(AbstractMaze::HALF_UNIT_DIST+(config.TRACK_WIDTH/2)))*
+          (AbstractMaze::HALF_UNIT_DIST-(config.TRACK_WIDTH/2));
+  double FAST_ARC_SPEED = speed_scale*
+          (config.MAX_SPEED);
 
-  RealMouse* mouse;
-  Direction dir;
-  double SLOW_ARC_SPEED = 0.75*(config.MAX_SPEED/(AbstractMaze::HALF_UNIT_DIST+(config.TRACK_WIDTH/2)))*(AbstractMaze::HALF_UNIT_DIST-(config.TRACK_WIDTH/2));
-  double FAST_ARC_SPEED = 0.75*config.MAX_SPEED;
+  constexpr static double kp_turn = 3.00;
+  constexpr static double ang_weight = 1.00;
+  constexpr static double arc_weight = 1.00;
+
+  // 3.00,1.00,0.75
 
   double pose_dist(GlobalPose pose, double x, double y);
 };
