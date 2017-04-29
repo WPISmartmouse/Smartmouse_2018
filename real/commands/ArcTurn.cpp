@@ -18,12 +18,12 @@ void ArcTurn::initialize() {
   goalYaw = dir_to_yaw(dir);
 
   // determine vtc of arc
-  vtc_x = curCol*AbstractMaze::UNIT_DIST + AbstractMaze::HALF_UNIT_DIST;
-  vtc_y = curRow*AbstractMaze::UNIT_DIST + AbstractMaze::HALF_UNIT_DIST;
+  vtc_x = curCol * AbstractMaze::UNIT_DIST + AbstractMaze::HALF_UNIT_DIST;
+  vtc_y = curRow * AbstractMaze::UNIT_DIST + AbstractMaze::HALF_UNIT_DIST;
   switch (curDir) {
     case Direction::N: {
       vtc_y += AbstractMaze::HALF_UNIT_DIST;
-      if (dir == Direction::E){
+      if (dir == Direction::E) {
         vtc_x += AbstractMaze::HALF_UNIT_DIST;
       } else {
         vtc_x -= AbstractMaze::HALF_UNIT_DIST;
@@ -41,7 +41,7 @@ void ArcTurn::initialize() {
     }
     case Direction::S: {
       vtc_y -= AbstractMaze::HALF_UNIT_DIST;
-      if (dir == Direction::W){
+      if (dir == Direction::W) {
         vtc_x -= AbstractMaze::HALF_UNIT_DIST;
       } else {
         vtc_x += AbstractMaze::HALF_UNIT_DIST;
@@ -50,7 +50,7 @@ void ArcTurn::initialize() {
     }
     case Direction::W: {
       vtc_x += AbstractMaze::HALF_UNIT_DIST;
-      if (dir == Direction::N){
+      if (dir == Direction::N) {
         vtc_y -= AbstractMaze::HALF_UNIT_DIST;
       } else {
         vtc_y += AbstractMaze::HALF_UNIT_DIST;
@@ -68,20 +68,20 @@ void ArcTurn::execute() {
   double cur_y = fabs(curPose.y - vtc_y);
 
   double dAngle;
-  if ((dir == Direction::N)||(dir == Direction::S)) {
-    dAngle = atanf(fabs(cur_x/cur_y));
+  if ((dir == Direction::N) || (dir == Direction::S)) {
+    dAngle = atanf(fabs(cur_x / cur_y));
   } else {
-    dAngle = atanf(fabs(cur_y/cur_x));
+    dAngle = atanf(fabs(cur_y / cur_x));
   }
 
-  double ang_error = fabs(mouse->kinematic_controller.yawDiff(curPose.yaw, dir_to_yaw(curDir)))-dAngle;
-  double arc_error = (AbstractMaze::HALF_UNIT_DIST/pose_dist(curPose, vtc_x, vtc_y))-1;
-  double corr = (ang_error*ang_weight)+(arc_error*arc_weight);
+  double ang_error = fabs(mouse->kinematic_controller.yawDiff(curPose.yaw, dir_to_yaw(curDir))) - dAngle;
+  double arc_error = (AbstractMaze::HALF_UNIT_DIST / pose_dist(curPose, vtc_x, vtc_y)) - 1;
+  double corr = (ang_error * ang_weight) + (arc_error * arc_weight);
 
-  double fast_speed = FAST_ARC_SPEED*((corr*-kp_turn)+1);
-  double slow_speed = SLOW_ARC_SPEED*((corr*kp_turn)+1);
+  double fast_speed = FAST_ARC_SPEED * ((corr * -kp_turn) + 1);
+  double slow_speed = SLOW_ARC_SPEED * ((corr * kp_turn) + 1);
 
-  if (right_of_dir(curDir) == dir ){
+  if (right_of_dir(curDir) == dir) {
     mouse->setSpeed(fast_speed, slow_speed);
   } else {
     mouse->setSpeed(slow_speed, fast_speed);
@@ -95,7 +95,7 @@ bool ArcTurn::isFinished() {
   curDir = mouse->getDir();
 
   dYaw = KinematicController::yawDiff(curPose.yaw, goalYaw);
-  return ((fabs(dYaw) < config.ROT_TOLERANCE) && ((curCol != startCol) || (curRow != startRow)));
+  return (curCol != startCol) || (curRow != startRow);
 }
 
 void ArcTurn::end() {
@@ -104,5 +104,5 @@ void ArcTurn::end() {
 }
 
 double ArcTurn::pose_dist(GlobalPose pose, double x, double y) {
-  return sqrtf(powf(pose.x-x,2) + powf(pose.y-y,2));
+  return sqrtf(powf(pose.x - x, 2) + powf(pose.y - y, 2));
 }
