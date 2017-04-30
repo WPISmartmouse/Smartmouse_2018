@@ -8,6 +8,7 @@ Forward::Forward() : Command("Forward"), mouse(RealMouse::inst()) {}
 
 void Forward::initialize() {
   start = mouse->getGlobalPose();
+  mouse->kinematic_controller.enable_sensor_pose_estimate = true;
   follower.start(start, DriveStraight::dispToNextEdge(mouse));
   digitalWrite(RealMouse::LED_1, 1);
 }
@@ -26,5 +27,6 @@ bool Forward::isFinished() {
 
 void Forward::end() {
   digitalWrite(RealMouse::LED_1, 0);
+  mouse->kinematic_controller.enable_sensor_pose_estimate = false;
 }
 

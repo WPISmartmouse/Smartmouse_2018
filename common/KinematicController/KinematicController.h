@@ -41,7 +41,7 @@ public:
   RegulatedMotor left_motor;
   RegulatedMotor right_motor;
 
-  bool ignore_sensor_pose_estimate;
+  bool enable_sensor_pose_estimate;
   bool enabled;
   double row_offset_to_edge;
   double col_offset_to_edge;

@@ -27,7 +27,7 @@ bool SolveMaze::isFinished() {
 
       addSequential(new Turn(nextDirection));
       addSequential(new Forward());
-      if (!GlobalProgramSettings.q) {
+      if (!GlobalProgramSettings.quiet) {
         addSequential(new WaitForStart());
         solver->mouse->print_maze_mouse();
       }

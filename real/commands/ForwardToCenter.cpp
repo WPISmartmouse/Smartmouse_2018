@@ -7,6 +7,7 @@ ForwardToCenter::ForwardToCenter() : Command("FwdToCenter"), mouse(RealMouse::in
 void ForwardToCenter::initialize() {
   setTimeout(2000);
   start = mouse->getGlobalPose();
+  mouse->kinematic_controller.enable_sensor_pose_estimate = true;
   driver.start(start, DriveStraight::fwdDispToCenter(mouse));
   digitalWrite(RealMouse::LED_3, 1);
 }
@@ -31,4 +32,5 @@ bool ForwardToCenter::isFinished() {
 
 void ForwardToCenter::end() {
   digitalWrite(RealMouse::LED_3, 0);
+  mouse->kinematic_controller.enable_sensor_pose_estimate = false;
 }

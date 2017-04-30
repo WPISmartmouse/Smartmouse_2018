@@ -4,8 +4,6 @@
 ArcTurn::ArcTurn(Direction dir) : Command("RealArcTurn"), mouse(RealMouse::inst()), dir(dir) {}
 
 void ArcTurn::initialize() {
-  mouse->kinematic_controller.ignore_sensor_pose_estimate = true;
-
   curPose = mouse->getGlobalPose();
   curCol = mouse->getCol();
   curRow = mouse->getRow();
@@ -60,7 +58,6 @@ void ArcTurn::initialize() {
     default:
       exit(0);
   }
-  print("START: %i, %i\r\n", curRow, curCol);
 }
 
 void ArcTurn::execute() {
@@ -101,7 +98,6 @@ bool ArcTurn::isFinished() {
 
 void ArcTurn::end() {
   mouse->internalTurnToFace(dir);
-  mouse->kinematic_controller.ignore_sensor_pose_estimate = false;
 }
 
 double ArcTurn::pose_dist(GlobalPose pose, double x, double y) {

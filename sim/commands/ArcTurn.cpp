@@ -4,7 +4,7 @@
 ArcTurn::ArcTurn(Direction dir) : Command("SimArcTurn"), mouse(SimMouse::inst()), dir(dir) {}
 
 void ArcTurn::initialize() {
-  mouse->kinematic_controller.ignore_sensor_pose_estimate = true;
+  mouse->kinematic_controller.enable_sensor_pose_estimate = true;
   setTimeout(2000);
   goalYaw = dir_to_yaw(dir);
   startPose = mouse->getGlobalPose();
@@ -68,7 +68,7 @@ void ArcTurn::initialize() {
 
   //print("%f,%f\n\r", vtc_x, vtc_y);
 
-  mouse->kinematic_controller.ignore_sensor_pose_estimate = true;
+  mouse->kinematic_controller.enable_sensor_pose_estimate = true;
   // when we get close to aligned, there might be a wall we can use to better estimate our angle
 
 }
@@ -101,11 +101,11 @@ void ArcTurn::execute() {
     mouse->setSpeed(slow_speed, fast_speed);
   }
   // this allows us to use that
-  if (fabs(dYaw) < 0.1 && mouse->kinematic_controller.ignore_sensor_pose_estimate) {
+  if (fabs(dYaw) < 0.1 && mouse->kinematic_controller.enable_sensor_pose_estimate) {
     //digitalWrite(RealMouse::LED_2, 1);
     // FIXME: this is kind of a hack. It's needed because WallFollower checks dir in order to compute
     // FIXME: the correct yaw. it adds dir_to_yaw(getDir()), so we must assume we're close enough
-    //mouse->kinematic_controller.ignore_sensor_pose_estimate = false;
+    //mouse->kinematic_controller.enable_sensor_pose_estimate = false;
     //mouse->internalTurnToFace(dir);
   }
 }
@@ -119,7 +119,7 @@ bool ArcTurn::isFinished() {
 void ArcTurn::end() {
   //digitalWrite(RealMouse::LED_3, 1);
   mouse->internalTurnToFace(dir);
-  mouse->kinematic_controller.ignore_sensor_pose_estimate = false;
+  mouse->kinematic_controller.enable_sensor_pose_estimate = false;
 }
 
 double ArcTurn::pose_dist(GlobalPose pose, double x, double y) {

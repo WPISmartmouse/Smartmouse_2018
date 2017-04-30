@@ -8,5 +8,5 @@ bool End::isFinished() {
 }
 
 void End::end() {
-  Serial1.println("DONE.");
+  print("DONE.\r\n");
 }

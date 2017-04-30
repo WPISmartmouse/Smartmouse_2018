@@ -11,7 +11,7 @@
 const double KinematicController::DROP_SAFETY = 0.8;
 const double KinematicController::POST_DROP_DIST = 0.05;
 
-KinematicController::KinematicController(Mouse *mouse) : ignore_sensor_pose_estimate(false), enabled(true), initialized(false),
+KinematicController::KinematicController(Mouse *mouse) : enable_sensor_pose_estimate(false), enabled(true), initialized(false),
                                                          ignoring_left(false), ignoring_right(false), mouse(mouse),
                                                          d_until_left_drop(0), d_until_right_drop(0) {
   current_pose_estimate.x = 0;
@@ -125,8 +125,8 @@ KinematicController::run(double dt_s, double left_angle_rad, double right_angle_
     bool no_walls;
     std::tie(est_yaw, offset, no_walls) = estimate_pose(range_data, mouse);
 
-    // only override if no on was explicitly set ignore_sensor_pose_estimate to true
-    if (!ignore_sensor_pose_estimate && !no_walls) {
+    // only override if no on was explicitly set enable_sensor_pose_estimate to true
+    if (enable_sensor_pose_estimate && !no_walls) {
       current_pose_estimate.yaw = est_yaw;
 
       double d_wall_front = 0;
