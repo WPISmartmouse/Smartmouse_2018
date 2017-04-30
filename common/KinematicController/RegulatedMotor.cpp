@@ -24,6 +24,10 @@ bool RegulatedMotor::isStopped() {
   return stopped;
 }
 
+void RegulatedMotor::reset_enc_rad(double rad) {
+  last_angle_rad = rad;
+}
+
 double RegulatedMotor::runPid(double dt_s, double angle_rad, double ground_truth_velocity_mps) {
   if (!initialized) {
     initialized = true;

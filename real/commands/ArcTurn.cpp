@@ -60,6 +60,7 @@ void ArcTurn::initialize() {
     default:
       exit(0);
   }
+//  print("START: %i, %i\r\n", curRow, curCol);
 }
 
 void ArcTurn::execute() {
@@ -74,7 +75,8 @@ void ArcTurn::execute() {
     dAngle = atanf(fabs(cur_y / cur_x));
   }
 
-  double ang_error = fabs(mouse->kinematic_controller.yawDiff(curPose.yaw, dir_to_yaw(curDir))) - dAngle;
+  double ang_error = KinematicController::yawDiff(dAngle, fabs(KinematicController::yawDiff(curPose.yaw, dir_to_yaw(curDir))));
+//  print("%f %f\r\n", fabs(KinematicController::yawDiff(curPose.yaw, dir_to_yaw(curDir))), dAngle);
   double arc_error = (AbstractMaze::HALF_UNIT_DIST / pose_dist(curPose, vtc_x, vtc_y)) - 1;
   double corr = (ang_error * ang_weight) + (arc_error * arc_weight);
 

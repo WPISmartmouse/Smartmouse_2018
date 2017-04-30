@@ -11,6 +11,7 @@ void Calibrate::initialize() {
 void Calibrate::execute() {}
 
 bool Calibrate::isFinished() {
+  print("DONE CALIBRATION\r\n");
   return true;
 }
 

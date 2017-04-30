@@ -73,8 +73,8 @@ SensorReading RealMouse::checkWalls() {
   SensorReading sr(row, col);
 
   sr.walls[static_cast<int>(dir)] = range_data.front < 0.17;
-  sr.walls[static_cast<int>(left_of_dir(dir))] = range_data.front_left < 0.15;
-  sr.walls[static_cast<int>(right_of_dir(dir))] = range_data.front_right < 0.15;
+  sr.walls[static_cast<int>(left_of_dir(dir))] = range_data.gerald_left < 0.15;
+  sr.walls[static_cast<int>(right_of_dir(dir))] = range_data.gerald_right < 0.15;
   sr.walls[static_cast<int>(opposite_direction(dir))] = false;
 
   return sr;
@@ -190,6 +190,10 @@ void RealMouse::setup() {
 
 void RealMouse::resetToStartPose() {
   reset(); // resets row, col, and dir
+  left_angle_rad = tick_to_rad(left_encoder.read());
+  right_angle_rad = tick_to_rad(right_encoder.read());
+  kinematic_controller.left_motor.reset_enc_rad(left_angle_rad);
+  kinematic_controller.right_motor.reset_enc_rad(right_angle_rad);
   kinematic_controller.reset_x_to(0.08);
   kinematic_controller.reset_y_to(0.09);
   kinematic_controller.reset_yaw_to(0.0);

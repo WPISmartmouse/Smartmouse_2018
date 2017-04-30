@@ -14,6 +14,8 @@ public:
 
   void setSetpointMps(double setpoint_mps);
 
+  void reset_enc_rad(double rad);
+
   static const double kP;
   static const double kI;
   static const double kD;

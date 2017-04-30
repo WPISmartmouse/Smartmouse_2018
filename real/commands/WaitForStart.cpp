@@ -55,5 +55,6 @@ void WaitForStart::end() {
   for (int i = 0; i < 7; i++) {
     digitalWrite(RealMouse::LED_7 - i, 0);
   }
+  mouse->resetToStartPose();
   mouse->kinematic_controller.enabled = true;
 }
