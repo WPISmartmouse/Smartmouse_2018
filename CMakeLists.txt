@@ -37,6 +37,7 @@ if (NOT ${BUILD_SIM})
 
     add_teensy_executable(main real/main/main.cpp ${COM_SRC} ${REAL_SRC} ${REAL_LIBS_SRC})
     set_target_properties(main PROPERTIES COMPILE_FLAGS "-include common/util.h")
+
 else ()
 
     include_directories(${CMAKE_SOURCE_DIR})
@@ -67,6 +68,8 @@ else ()
         target_compile_features(${MAIN} PRIVATE cxx_strong_enums)
         set_target_properties(${MAIN} PROPERTIES COMPILE_FLAGS "-DCONSOLE")
         target_include_directories(${MAIN} PRIVATE console/ console/commands)
+
+        install(TARGETS ${MAIN} DESTINATION bin)
     endforeach ()
 
     ################################
@@ -93,5 +96,7 @@ else ()
         set_target_properties(runConsoleTests PROPERTIES COMPILE_FLAGS "-DCONSOLE -include common/util.h")
 
         add_test(all-tests runConsoleTests)
+
+        install(TARGETS runConsoleTests DESTINATION bin)
     endif ()
 endif ()
