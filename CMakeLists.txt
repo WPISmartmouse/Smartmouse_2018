@@ -39,8 +39,10 @@ if (NOT ${BUILD_SIM})
     set_target_properties(main PROPERTIES COMPILE_FLAGS "-include common/util.h")
 
 else ()
-
+    # Find includes in corresponding build directories
+    set(CMAKE_INCLUDE_CURRENT_DIR ON)
     include_directories(${CMAKE_SOURCE_DIR})
+
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 
     file(GLOB CONSOLE_SRC console/*.cpp console/commands/*.cpp)

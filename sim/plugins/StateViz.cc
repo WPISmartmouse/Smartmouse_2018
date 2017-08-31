@@ -1,7 +1,7 @@
 #include <sstream>
 #include <cmath>
 #include <boost/algorithm/string/replace.hpp>
-#include <sim/SimMouse.h>
+#include <sim/lib/SimMouse.h>
 #include <common/DriveStraight.h>
 #include "StateViz.hh"
 #include "RegenerateWidget.hh"

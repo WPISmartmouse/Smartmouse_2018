@@ -4,7 +4,7 @@
 #include <common/Direction.h>
 
 #include <common/DriveStraight.h>
-#include "SimMouse.h"
+#include <sim/lib/SimMouse.h>
 
 class TurnInPlace : public Command {
 public:

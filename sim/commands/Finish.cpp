@@ -1,4 +1,4 @@
-#include "SimMouse.h"
+#include <sim/lib/SimMouse.h>
 #include "Finish.h"
 
 Finish::Finish(AbstractMaze *maze) : Command("end"), maze(maze) {}

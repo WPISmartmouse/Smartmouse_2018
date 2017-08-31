@@ -2,7 +2,7 @@
 #include <common/commanduino/CommanDuino.h>
 #include <common/Direction.h>
 
-#include <sim/SimMouse.h>
+#include <sim/lib/SimMouse.h>
 
 #include <common/RobotConfig.h>
 #include <common/AbstractMaze.h>

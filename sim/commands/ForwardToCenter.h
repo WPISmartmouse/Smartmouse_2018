@@ -2,7 +2,7 @@
 
 #include <common/commanduino/CommanDuino.h>
 
-#include "SimMouse.h"
+#include <sim/lib/SimMouse.h>
 #include <common/DriveStraight.h>
 
 class ForwardToCenter : public Command {

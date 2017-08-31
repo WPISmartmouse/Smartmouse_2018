@@ -8,8 +8,8 @@
 #include <gazebo/common/Console.hh>
 #include <ignition/transport/Node.hh>
 
-#include "SimTimer.h"
-#include "SimMouse.h"
+#include <sim/lib/SimTimer.h>
+#include <sim/lib/SimMouse.h>
 
 int main(int argc, char **argv) {
 

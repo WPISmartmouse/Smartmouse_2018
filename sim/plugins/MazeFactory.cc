@@ -1,4 +1,4 @@
-#include <sim/SimMouse.h>
+#include <sim/lib/SimMouse.h>
 #include "MazeFactory.hh"
 
 namespace gazebo {

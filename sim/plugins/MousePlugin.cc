@@ -2,7 +2,7 @@
 #include <gazebo/physics/PhysicsTypes.hh>
 #include <gazebo/common/Events.hh>
 #include <gazebo/gazebo_core.hh>
-#include <sim/SimMouse.h>
+#include <sim/lib/SimMouse.h>
 
 #include "MousePlugin.hh"
 

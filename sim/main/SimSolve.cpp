@@ -5,8 +5,8 @@
 #include <ignition/transport/Node.hh>
 #include <common/util.h>
 
-#include "SimMouse.h"
-#include "SimTimer.h"
+#include <sim/lib/SimMouse.h>
+#include <sim/lib/SimTimer.h>
 
 int main(int argc, char *argv[]) {
   // Load gazebo

@@ -1,4 +1,4 @@
-#include <SimMouse.h>
+#include <sim/lib/SimMouse.h>
 #include "ForwardToCenter.h"
 
 ForwardToCenter::ForwardToCenter() : Command("FwdToCenter"), mouse(SimMouse::inst()) {}

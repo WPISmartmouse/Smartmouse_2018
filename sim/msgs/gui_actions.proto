@@ -1,0 +1,10 @@
+syntax = "proto2";
+package smartmousesim.msgs;
+
+/// \brief Message Gui Actions
+
+message GuiActions
+{
+    /// \brief Action for Help > Source Code
+    required bool source_code_action = 1;
+}

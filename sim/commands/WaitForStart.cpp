@@ -1,5 +1,5 @@
 #include <iostream>
-#include <sim/SimMouse.h>
+#include <sim/lib/SimMouse.h>
 #include "WaitForStart.h"
 
 WaitForStart::WaitForStart() : Command("wait") {}

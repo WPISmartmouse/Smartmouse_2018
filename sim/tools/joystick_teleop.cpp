@@ -2,8 +2,8 @@
 #include <ignition/math/Quaternion.hh>
 #include <gazebo/msgs/msgs.hh>
 #include <gazebo/common/Console.hh>
-#include <SimMouse.h>
-#include <SimTimer.h>
+#include <sim/lib/SimMouse.h>
+#include <sim/lib/SimTimer.h>
 #include <joystick/joystick.hh>
 #include <ignition/transport/Node.hh>
 

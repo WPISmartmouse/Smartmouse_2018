@@ -1,6 +1,6 @@
 #pragma once
 #include <common/commanduino/CommanDuino.h>
-#include "SimMouse.h"
+#include <sim/lib/SimMouse.h>
 #include <common/Direction.h>
 
 class Turn : public CommandGroup {

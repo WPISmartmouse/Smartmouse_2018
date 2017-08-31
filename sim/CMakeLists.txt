@@ -103,7 +103,7 @@ add_dependencies(regenerate_widget gazebo_pch)
 ##################################
 # library for simulation sources
 ##################################
-file(GLOB SIM_SRC *.cpp commands/*.cpp)
+file(GLOB SIM_SRC lib/*.cpp commands/*.cpp)
 add_library(sim ${COM_SRC} ${SIM_SRC})
 set_target_properties(sim PROPERTIES COMPILE_FLAGS "-include gazebo_pch.hh -include common/util.h")
 target_include_directories(sim PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${PROTOBUF_INCLUDE_DIRS} commands)
@@ -138,3 +138,8 @@ set_target_properties(joy_teleop PROPERTIES COMPILE_FLAGS "-include gazebo_pch.h
 target_link_libraries(joy_teleop sim ${GAZEBO_LIBRARIES} ncurses)
 target_include_directories(joy_teleop PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${PROTOBUF_INCLUDE_DIRS} commands)
 add_dependencies(joy_teleop gazebo_pch)
+
+#################################
+# add the simulator
+#################################
+add_subdirectory(simulator)

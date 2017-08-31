@@ -3,7 +3,7 @@
 #include <common/commanduino/CommanDuino.h>
 #include <common/Mouse.h>
 #include <common/Direction.h>
-#include <sim/SimMouse.h>
+#include <sim/lib/SimMouse.h>
 #include <common/DriveStraight.h>
 
 class ForwardToDiagonal : public Command {

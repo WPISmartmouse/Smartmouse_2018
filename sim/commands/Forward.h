@@ -6,7 +6,7 @@
 #include <common/Pose.h>
 #include <common/DriveStraight.h>
 
-#include "SimMouse.h"
+#include <sim/lib/SimMouse.h>
 
 class Forward : public Command {
 public:
