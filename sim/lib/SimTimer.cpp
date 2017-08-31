@@ -1,5 +1,3 @@
-#include <gazebo/msgs/msgs.hh>
-
 #include "SimTimer.h"
 
 SimTimer::SimTimer() : ready(false), sim_time_ms(1) {

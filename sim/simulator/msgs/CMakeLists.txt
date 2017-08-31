@@ -1,6 +1,9 @@
+# allow us to import from existing ignition msgs
+set(PROTOBUF_IMPORT_DIRS /home/peter/Projects/ign/ign-msgs)
 PROTOBUF_GENERATE_CPP(PROTO_SRC PROTO_HEADER
         gui_actions.proto
         maze_location.proto
+        robot_command.proto
         state.proto
         )
 
@@ -11,4 +14,4 @@ set(PROTOBUF_LIBRARIES ${PROTOBUF_LIBRARIES} PARENT_SCOPE)
 set(PROTO_SRC ${PROTO_SRC} PARENT_SCOPE)
 set(PROTO_HEADER ${PROTO_HEADER} PARENT_SCOPE)
 
-add_custom_target(protobuf_compilation DEPENDS ${PROTO_SRC})
+add_library(msgs STATIC ${PROTO_SRC} ${PROTO_HEADER})

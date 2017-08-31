@@ -1,4 +1,5 @@
-package gzmaze.msgs;
+syntax = "proto2";
+package smartmouse.msgs;
 
 message MazeLocation {
     required int32 row = 1;

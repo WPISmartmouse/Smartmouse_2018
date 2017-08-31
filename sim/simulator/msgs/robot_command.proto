@@ -1,0 +1,17 @@
+syntax = "proto2";
+package smartmouse.msgs;
+
+message Command
+{
+    optional float abstract_force = 1;
+    optional float kP = 2;
+    optional float kI = 3;
+    optional float kD = 4;
+    optional float target_speed = 5;
+}
+
+message RobotCommand
+{
+    optional Command left = 1;
+    optional Command right = 2;
+}

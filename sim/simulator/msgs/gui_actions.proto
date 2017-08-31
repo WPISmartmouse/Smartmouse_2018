@@ -1,5 +1,5 @@
 syntax = "proto2";
-package smartmousesim.msgs;
+package smartmouse.msgs;
 
 /// \brief Message Gui Actions
 

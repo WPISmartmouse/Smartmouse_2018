@@ -4,11 +4,13 @@
 #include <QtCore/QUrl>
 #include <QtGui/QDesktopServices>
 
+#include <sim/simulator/lib/Server.h>
+#include <sim/simulator/lib/TopicNames.h>
+#include <QtWidgets/QAction>
+#include <QtWidgets/QSpinBox>
+
 #include "main.h"
 #include "ui_mainwindow.h"
-#include "Server.h"
-#include "TopicNames.h"
-#include "Time.h"
 
 void PrintVersionInfo();
 
@@ -22,7 +24,10 @@ MainWindow::MainWindow(QMainWindow *parent) :
   connect(ui->play_button, &QPushButton::clicked, this, &MainWindow::Play);
   connect(ui->pause_button, &QPushButton::clicked, this, &MainWindow::Pause);
   connect(ui->step_once_button, &QPushButton::clicked, this, &MainWindow::Step);
-  connect(ui->step_time_ms_spinner, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, &MainWindow::StepTimeMsChanged);
+  connect(ui->step_time_ms_spinner,
+          static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+          this,
+          &MainWindow::StepTimeMsChanged);
 
   world_control_pub = node.Advertise<ignition::msgs::WorldControl>(TopicNames::kWorldControl);
   physics_pub = node.Advertise<ignition::msgs::Physics>(TopicNames::kPhysics);

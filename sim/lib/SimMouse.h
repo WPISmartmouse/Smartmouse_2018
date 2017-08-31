@@ -2,13 +2,12 @@
 
 #include <mutex>
 #include <condition_variable>
-#include <gazebo/msgs/MessageTypes.hh>
-#include "msgs/msgs.h"
-#include <gazebo/transport/TransportTypes.hh>
 #include <common/Mouse.h>
 #include <common/Pose.h>
 #include <common/KinematicController/KinematicController.h>
 #include <ignition/transport/Node.hh>
+
+#include <sim/simulator/msgs/state.pb.h>
 
 class SimMouse : public Mouse {
 public:
@@ -42,7 +41,7 @@ public:
 
   void publishIndicators();
 
-  void robotStateCallback(ConstRobotStatePtr &msg);
+  void robotStateCallback(const smartmouse::msgs::RobotState &msg);
 
   void run(double dt_s);
 
@@ -50,9 +49,9 @@ public:
 
   void simInit();
 
-  gazebo::transport::PublisherPtr joint_cmd_pub;
-  gazebo::transport::PublisherPtr maze_location_pub;
-  ignition::transport::Node ign_node;
+  ignition::transport::Node::Publisher cmd_pub;
+  ignition::transport::Node::Publisher maze_location_pub;
+  ignition::transport::Node node;
 
   KinematicController kinematic_controller;
 

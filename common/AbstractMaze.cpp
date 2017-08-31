@@ -2,6 +2,7 @@
   @author Peter Mitrano
   */
 #include "AbstractMaze.h"
+
 #include <string.h>
 #include <algorithm>
 

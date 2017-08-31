@@ -1,15 +1,12 @@
 #include <iostream>
 #include <termios.h>
 #include <unistd.h>
-#include <gazebo/msgs/joint_cmd.pb.h>
-#include <gazebo/transport/TransportTypes.hh>
-#include <ignition/math/Quaternion.hh>
-#include <gazebo/msgs/msgs.hh>
-#include <gazebo/common/Console.hh>
 #include <ignition/transport/Node.hh>
 
 #include <sim/lib/SimTimer.h>
 #include <sim/lib/SimMouse.h>
+#include <simulator/msgs/robot_command.pb.h>
+#include <simulator/lib/TopicNames.h>
 
 int main(int argc, char **argv) {
 
@@ -21,31 +18,21 @@ int main(int argc, char **argv) {
   tty.c_lflag &= ~ECHO;
   tcsetattr(STDIN_FILENO, TCSANOW, &tty);
 
-  // Load gazebo
-  printf("Waiting for gazebo...\r\n");
-  bool connected = gazebo::client::setup(argc, argv);
-  if (!connected) {
-    printf("failed to connect to gazebo. Is it running?\n");
-    exit(0);
-  }
   printf("connected to gazebo. Press W,A,S,D,X then enter to send a command.\n");
 
   SimTimer timer;
   Command::setTimerImplementation(&timer);
 
   // Create our node for communication
-  gazebo::transport::NodePtr node(new gazebo::transport::Node());
-  node->Init();
-
-  ignition::transport::Node ign_node;
-  bool success = ign_node.Subscribe("/time_ms", &SimTimer::simTimeCallback, &timer);
+  ignition::transport::Node node;
+  bool success = node.Subscribe("time_ms", &SimTimer::simTimeCallback, &timer);
   if (!success) {
     printf("Failed to subscribe to /time_ms\n");
     return EXIT_FAILURE;
   }
 
-  gazebo::transport::PublisherPtr controlPub;
-  controlPub = node->Advertise<gazebo::msgs::JointCmd>("~/mouse/joint_cmd");
+  ignition::transport::Node::Publisher controlPub;
+  controlPub = node.Advertise<smartmouse::msgs::RobotCommand>(TopicNames::kRobotCommand);
 
   double kP = 0.001;
   double kI = 0.0000;
@@ -101,21 +88,18 @@ int main(int argc, char **argv) {
       double lrps = SimMouse::meterToRad(lspeed);
       double rrps = SimMouse::meterToRad(rspeed);
 
-      gazebo::msgs::JointCmd left;
-      left.set_name("mouse::left_wheel_joint");
-      left.mutable_velocity()->set_target(lrps);
-      left.mutable_velocity()->set_p_gain(kP);
-      left.mutable_velocity()->set_i_gain(kI);
-      left.mutable_velocity()->set_d_gain(kD);
-      controlPub->Publish(left);
+      smartmouse::msgs::RobotCommand cmd;
+      cmd.mutable_left()->set_target_speed(lrps);
+      cmd.mutable_left()->set_kp(kP);
+      cmd.mutable_left()->set_ki(kI);
+      cmd.mutable_left()->set_kd(kD);
 
-      gazebo::msgs::JointCmd right;
-      right.set_name("mouse::right_wheel_joint");
-      right.mutable_velocity()->set_target(rrps);
-      right.mutable_velocity()->set_p_gain(kP);
-      right.mutable_velocity()->set_i_gain(kI);
-      right.mutable_velocity()->set_d_gain(kD);
-      controlPub->Publish(right);
+      cmd.mutable_right()->set_target_speed(rrps);
+      cmd.mutable_right()->set_kp(kP);
+      cmd.mutable_right()->set_ki(kI);
+      cmd.mutable_right()->set_kd(kD);
+
+      controlPub.Publish(cmd);
     }
   }
 

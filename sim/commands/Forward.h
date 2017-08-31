@@ -1,6 +1,5 @@
 #pragma once
 
-#include <ignition/math.hh>
 #include <common/commanduino/CommanDuino.h>
 #include <common/Mouse.h>
 #include <common/Pose.h>

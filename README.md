@@ -18,28 +18,17 @@ https://www.pjrc.com/teensy/td_download.html
     cd .build
     cmake ..
     make
-    
+
 ### Uploading to the robot
 
 After connecting the usb cable, `cd .build` and run the following:
 
-    teensy_loader_cli --mcu=MK66FX1M0 -w -s -v bin/main.elf.hex 
+    teensy_loader_cli --mcu=MK66FX1M0 -w -s -v bin/main.elf.hex
 
 Obviously this requires teensy_loader_cli
 
 
 ## The simulator
-
-### Installing (On ubuntu 16.04+)
-
-go to [http://gazebosim.org/tutorials?tut=install_ubuntu&cat=install](http://gazebosim.org/tutorials?tut=install_ubuntu&cat=install) and follow the installation tutorials. You will need to install both gazebo8 and libgazebo8-dev
-
-    sudo apt-get install gazebo8 libgazebo8-dev cmake protobuf-compiler libncurses5-dev
-
-Test by running `gazebo --verbose`, it should open gazebo and print out version information.
-
-Clone this repo, which contains the gazebo models and plugins.
-
 
 #### Building Simulation
 
@@ -50,14 +39,4 @@ Clone this repo, which contains the gazebo models and plugins.
 
 #### Running Simulation
 
-Assuming you've installed gazebo correctly and built with simuation, cd to the root of the project `Smartmouse_2017`.
-
-    source sim/setup.sh
-    gazebo --verbose sim/gzmaze.world
-
-
-If you see errors, fix them before moving on. Then in another terminal...
-
-    ./.sim_build/sim/SimSolve
-
-Press enter. Watch the mouse go!
+TODO

@@ -1,6 +1,6 @@
+#include <sim/simulator/msgs/robot_command.pb.h>
+#include <sim/simulator/msgs/maze_location.pb.h>
 #include "SimMouse.h"
-#include <gazebo/msgs/msgs.hh>
-#include <common/Mouse.h>
 
 SimMouse *SimMouse::instance = nullptr;
 const std::string SimMouse::grey_color = "Gazebo/Grey";
@@ -85,30 +85,30 @@ bool SimMouse::isStopped() {
 void SimMouse::publishIndicators() {
   for (unsigned int i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
     for (unsigned int j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
-      ign_node.Request("/marker", *indicators[i][j]);
+      node.Request("/marker", *indicators[i][j]);
     }
   }
 }
 
-void SimMouse::robotStateCallback(ConstRobotStatePtr &msg) {
+void SimMouse::robotStateCallback(const smartmouse::msgs::RobotState &msg) {
   std::unique_lock<std::mutex> lk(dataMutex);
-  true_pose.x = msg->true_x_meters();
-  true_pose.y = msg->true_y_meters();
-  true_pose.yaw = msg->true_yaw_rad();
+  true_pose.x = msg.true_x_meters();
+  true_pose.y = msg.true_y_meters();
+  true_pose.yaw = msg.true_yaw_rad();
 
-  this->left_wheel_velocity_mps = msg->left_wheel_velocity_mps();
-  this->right_wheel_velocity_mps = msg->right_wheel_velocity_mps();
+  this->left_wheel_velocity_mps = msg.left_wheel_velocity_mps();
+  this->right_wheel_velocity_mps = msg.right_wheel_velocity_mps();
 
-  this->left_wheel_angle_rad = msg->left_wheel_angle_radians();
-  this->right_wheel_angle_rad = msg->right_wheel_angle_radians();
+  this->left_wheel_angle_rad = msg.left_wheel_angle_radians();
+  this->right_wheel_angle_rad = msg.right_wheel_angle_radians();
 
-  this->range_data.front_left = msg->front_left();
-  this->range_data.front_right = msg->front_right();
-  this->range_data.gerald_left = msg->gerald_left();
-  this->range_data.gerald_right = msg->gerald_right();
-  this->range_data.back_left = msg->back_left();
-  this->range_data.back_right = msg->back_right();
-  this->range_data.front = msg->front();
+  this->range_data.front_left = msg.front_left();
+  this->range_data.front_right = msg.front_right();
+  this->range_data.gerald_left = msg.gerald_left();
+  this->range_data.gerald_right = msg.gerald_right();
+  this->range_data.back_left = msg.back_left();
+  this->range_data.back_right = msg.back_right();
+  this->range_data.front = msg.front();
 
   dataCond.notify_all();
 }
@@ -131,7 +131,7 @@ void SimMouse::run(double dt_s) {
   col = kinematic_controller.col;
 
   // publish status information
-  gzmaze::msgs::MazeLocation maze_loc_msg;
+  smartmouse::msgs::MazeLocation maze_loc_msg;
   maze_loc_msg.set_row(row);
   maze_loc_msg.set_col(col);
   maze_loc_msg.set_row_offset(kinematic_controller.row_offset_to_edge);
@@ -152,19 +152,12 @@ void SimMouse::run(double dt_s) {
     std::cerr << "Missing fields: [" << maze_loc_msg.InitializationErrorString() << "]" << std::endl;
   }
 
-  maze_location_pub->Publish(maze_loc_msg);
+  maze_location_pub.Publish(maze_loc_msg);
 
-  double left_force_newtons = abstractForceToNewtons(abstract_left_force);
-  gazebo::msgs::JointCmd left;
-  left.set_name("mouse::left_wheel_joint");
-  left.set_force(left_force_newtons);
-  joint_cmd_pub->Publish(left);
-
-  double right_force_newtons = abstractForceToNewtons(abstract_right_force);
-  gazebo::msgs::JointCmd right;
-  right.set_name("mouse::right_wheel_joint");
-  right.set_force(right_force_newtons);
-  joint_cmd_pub->Publish(right);
+  smartmouse::msgs::RobotCommand cmd;
+  cmd.mutable_left()->set_abstract_force(abstract_left_force);
+  cmd.mutable_right()->set_abstract_force(abstract_right_force);
+  cmd_pub.Publish(cmd);
 
   update_markers();
 }
@@ -206,7 +199,7 @@ void SimMouse::update_markers() {
     double y = -getGlobalPose().y;
     double yaw = getGlobalPose().yaw;
     Set(estimated_pose_marker.mutable_pose(), ignition::math::Pose3d(x, y, 0.02, 0, 0, yaw));
-    ign_node.Request("/marker", estimated_pose_marker);
+    node.Request("/marker", estimated_pose_marker);
   }
 
   {
@@ -225,7 +218,7 @@ void SimMouse::update_markers() {
     estimated_center->set_y(-getGlobalPose().y);
     estimated_center->set_z(.02);
     error_marker.mutable_material()->mutable_script()->set_name("Gazebo/Black");
-    ign_node.Request("/marker", error_marker);
+    node.Request("/marker", error_marker);
   }
 }
 
