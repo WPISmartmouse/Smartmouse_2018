@@ -12,14 +12,14 @@ namespace Ui {
 class MainWindow : public QMainWindow {
 Q_OBJECT
 
-public:
+ public:
   MainWindow(QMainWindow *parent = 0);
+
+  void OnExit();
 
   virtual ~MainWindow();
 
 private slots:
-
-  void OnExit();
 
   void Play();
 

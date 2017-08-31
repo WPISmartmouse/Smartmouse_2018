@@ -118,6 +118,10 @@ int main(int argc, char *argv[]) {
 
   int ret_code = app.exec();
 
+  ignition::msgs::WorldControl quit_msg;
+  quit_msg.set_quit(true);
+  window.OnExit();
+
   server.join();
 
   return ret_code;
