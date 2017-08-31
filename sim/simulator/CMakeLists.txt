@@ -10,9 +10,10 @@ set_source_files_properties(${PROTO_SRC} ${PROTO_HEADER}
         PROPERTIES GENERATED TRUE)
 
 add_library(common lib/Time.cpp)
-add_dependencies(common msgs)
+target_link_libraries(common msgs)
 
 add_library(server lib/Server.cpp)
+target_link_libraries(server msgs)
 
 add_executable(SmartmouseSim main.cpp)
 

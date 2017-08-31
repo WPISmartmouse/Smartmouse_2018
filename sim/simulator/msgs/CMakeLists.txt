@@ -1,11 +1,7 @@
 # allow us to import from existing ignition msgs
-set(PROTOBUF_IMPORT_DIRS /home/peter/Projects/ign/ign-msgs)
-PROTOBUF_GENERATE_CPP(PROTO_SRC PROTO_HEADER
-        gui_actions.proto
-        maze_location.proto
-        robot_command.proto
-        state.proto
-        )
+set(PROTOBUF_IMPORT_DIRS ${IGNITION-MSGS_DIR})
+file(GLOB PROTOS *.proto)
+PROTOBUF_GENERATE_CPP(PROTO_SRC PROTO_HEADER ${PROTOS})
 
 # Variables needed to propagate through modules
 # If more than one layer of cmake use CACHE INTERNAL ...

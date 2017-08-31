@@ -3,6 +3,8 @@ find_package(Qt5Test REQUIRED)
 find_package(Protobuf REQUIRED)
 find_package(ignition-transport3 QUIET REQUIRED)
 
+set(IGNITION-MSGS_DIR /home/peter/Projects/ign/ign-msgs)
+
 add_definitions(${QT_DEFINITIONS})
 include_directories(${PROTOBUF_INCLUDE_DIRS} ${Qt5Test_INCLUDE_DIRS} ${IGNITION-TRANSPORT_INCLUDE_DIRS})
 link_directories(${IGNITION-TRANSPORT_LIBRARY_DIRS})

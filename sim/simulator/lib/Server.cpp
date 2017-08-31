@@ -76,11 +76,11 @@ void Server::OnWorldControl(const ignition::msgs::WorldControl &msg) {
   // End critical section
 }
 
-void Server::OnPhysics(const ignition::msgs::Physics &msg) {
+void Server::OnPhysics(const smartmouse::msgs::PhysicsConfig &msg) {
   // Enter critical section
   {
     std::lock_guard<std::mutex> guard(physics_mutex_);
-    ns_per_iteration_ = msg.step_time_ms() * 1000000;
+    ns_per_iteration_ = msg.ns_per_step() * 1000000u;
   }
   // End critical section
 }
