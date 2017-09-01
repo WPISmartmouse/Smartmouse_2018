@@ -1,8 +1,8 @@
 #pragma once
+
 #include <time.h>
 
 #include <ignition/transport.hh>
-#include <QWidget>
 #include <QtWidgets/QMainWindow>
 
 #include <sim/simulator/lib/widgets/StateWidget.h>
@@ -16,15 +16,15 @@ namespace Ui {
 class MainWindow;
 }
 
-class MainWindow : public QMainWindow {
+class Client : public QMainWindow {
  Q_OBJECT
 
  public:
-  MainWindow(QMainWindow *parent = 0);
+  Client(QMainWindow *parent = 0);
 
   void OnExit();
 
-  virtual ~MainWindow();
+  virtual ~Client();
 
  private slots:
 

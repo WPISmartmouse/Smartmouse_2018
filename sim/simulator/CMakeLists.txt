@@ -13,12 +13,15 @@ add_library(common lib/Time.cpp)
 target_link_libraries(common msgs)
 
 add_library(server lib/Server.cpp)
-target_link_libraries(server msgs)
+target_link_libraries(server msgs common ${IGNITION-TRANSPORT_LIBRARIES})
+
+add_library(client lib/Client.cpp)
+target_link_libraries(client msgs Qt5::Widgets common server ${IGNITION-TRANSPORT_LIBRARIES})
 
 file(GLOB WIDGET_SRCS lib/widgets/*.cpp)
 
 add_executable(SmartmouseSim main.cpp ${WIDGET_SRCS})
 
-target_link_libraries(SmartmouseSim Qt5::Widgets ${IGNITION-TRANSPORT_LIBRARIES} msgs server common)
+target_link_libraries(SmartmouseSim server client)
 
 install(TARGETS SmartmouseSim DESTINATION bin)
