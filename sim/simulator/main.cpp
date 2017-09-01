@@ -20,10 +20,15 @@ int main(int argc, char *argv[]) {
       break;
 
     switch (c) {
-      case 'v':PrintVersionInfo();
+      case 'v': {
+        PrintVersionInfo();
         return EXIT_SUCCESS;
-      case '?':break;
-      default:abort();
+      }
+      case '?': { break; }
+      default: {
+        std::cout << "Invalid Arugments" << std::endl;
+        return EXIT_FAILURE;
+      }
     }
   }
 
@@ -35,7 +40,7 @@ int main(int argc, char *argv[]) {
 
   Client window;
 
-  window.setWindowTitle("SmartMouse Simulator");
+  window.setWindowTitle("Smartmouse Simulator");
   window.showMaximized();
 
   int ret_code = app.exec();

@@ -45,11 +45,11 @@ Client::Client(QMainWindow *parent) :
   // publish the initial configuration
   smartmouse::msgs::PhysicsConfig initial_physics_config;
   initial_physics_config.set_ns_of_sim_per_step(1000000u); // 1ms
-  initial_physics_config.set_real_time_factor(0.5);
+  initial_physics_config.set_real_time_factor(10);
   physics_pub_.Publish(initial_physics_config);
 
   smartmouse::msgs::ServerControl initial_server_control;
-  initial_server_control.set_pause(true);
+  initial_server_control.set_pause(false);
   server_control_pub_.Publish(initial_server_control);
 }
 

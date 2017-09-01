@@ -27,7 +27,7 @@ class Server {
   Time sim_time_;
   unsigned long steps_ = 0UL;
   std::mutex physics_mutex_;
-  bool pause_ = false;
+  bool pause_ = true;
   bool quit_ = false;
   unsigned int ns_of_sim_per_step_ = 1000000u;
   unsigned long pause_at_steps_ = 0ul;
