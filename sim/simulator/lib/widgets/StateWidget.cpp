@@ -2,35 +2,29 @@
 #include <cmath>
 #include <boost/algorithm/string/replace.hpp>
 #include <sim/lib/SimMouse.h>
-#include <common/DriveStraight.h>
-#include "StateViz.hh"
-#include "RegenerateWidget.hh"
-#include <common/KinematicController/KinematicController.h>
+#include "StateWidget.h"
+#include <QtWidgets/QHBoxLayout>
+#include <msgs/robot_command.pb.h>
+#include <lib/TopicNames.h>
+#include <QtWidgets/QPushButton>
+#include <common/math/math.h>
 
-using namespace gazebo;
+StateWidget::StateWidget() : QWidget() {
+  this->node.Subscribe(TopicNames::kRobotState, &StateWidget::StateCallback, this);
+  this->node.Subscribe(TopicNames::kMazeLocation, &StateWidget::MazeLocationCallback, this);
+  this->node.Subscribe("~/mouse/base/front_left/scan", &StateWidget::FrontLeftAnalogCallback, this);
+  this->node.Subscribe("~/mouse/base/front_right/scan", &StateWidget::FrontRightAnalogCallback, this);
+  this->node.Subscribe("~/mouse/base/back_left/scan", &StateWidget::BackLeftAnalogCallback, this);
+  this->node.Subscribe("~/mouse/base/back_right/scan", &StateWidget::BackRightAnalogCallback, this);
+  this->node.Subscribe("~/mouse/base/front/scan", &StateWidget::FrontAnalogCallback, this);
+  this->node.Subscribe(TopicNames::kWorldStatistics, &StateWidget::OnStats, this);
 
-// Register this plugin with the simulator
-GZ_REGISTER_GUI_PLUGIN(StateViz)
-
-StateViz::StateViz() : GUIPlugin() {
-
-  this->node = transport::NodePtr(new transport::Node());
-  this->node->Init();
-  this->state_sub = this->node->Subscribe("~/mouse/state", &StateViz::StateCallback, this);
-  this->maze_loc_sub = this->node->Subscribe("~/maze_location", &StateViz::MazeLocationCallback, this);
-  this->front_left_analog_sub = this->node->Subscribe("~/mouse/base/front_left/scan", &StateViz::FrontLeftAnalogCallback, this);
-  this->front_right_analog_sub = this->node->Subscribe("~/mouse/base/front_right/scan", &StateViz::FrontRightAnalogCallback, this);
-  this->back_left_analog_sub = this->node->Subscribe("~/mouse/base/back_left/scan", &StateViz::BackLeftAnalogCallback, this);
-  this->back_right_analog_sub = this->node->Subscribe("~/mouse/base/back_right/scan", &StateViz::BackRightAnalogCallback, this);
-  this->front_analog_sub = this->node->Subscribe("~/mouse/base/front/scan", &StateViz::FrontAnalogCallback, this);
-  this->statsSub = this->node->Subscribe("~/world_stats", &StateViz::OnStats, this);
-
-  this->reset_trace_pub = this->ign_node.Advertise<ignition::msgs::Empty>("/delete_plot");
+  this->reset_trace_pub = this->node.Advertise<ignition::msgs::Empty>("/delete_plot");
   if (!reset_trace_pub) {
-    gzerr << "Failed to advertise to [" << this->topic << "]" << std::endl;
+    std::cerr << "Failed to advertise to [" << this->topic << "]" << std::endl;
   }
 
-  this->stop_pub = this->node->Advertise<gazebo::msgs::JointCmd>("~/mouse/joint_cmd");
+  this->stop_pub = this->node.Advertise<smartmouse::msgs::RobotCommand>(TopicNames::kRobotCommand);
 
   QHBoxLayout *main_layout = new QHBoxLayout();
 
@@ -186,36 +180,30 @@ StateViz::StateViz() : GUIPlugin() {
   main_layout->setContentsMargins(2, 2, 2, 2);
   this->setLayout(main_layout);
 
-  this->move(RegenerateWidget::WIDTH, 0);
-  this->setFixedSize(StateViz::WIDTH, StateViz::HEIGHT);
+  this->move(100, 0);
+  this->setFixedSize(StateWidget::WIDTH, StateWidget::HEIGHT);
 
 }
 
-StateViz::~StateViz() {
-}
-
-void StateViz::StateCallback(ConstRobotStatePtr &msg) {
+void StateWidget::StateCallback(const smartmouse::msgs::RobotState &msg) {
   char left_wheel_velocity_str[14];
-  snprintf(left_wheel_velocity_str, 14, "%0.2f cm/s", (100 * msg->left_wheel_velocity_mps()));
+  snprintf(left_wheel_velocity_str, 14, "%0.2f cm/s", (100 * msg.left_wheel_velocity_mps()));
 
   char right_wheel_velocity_str[14];
-  snprintf(right_wheel_velocity_str, 14, "%0.2f cm/s", (100 * msg->right_wheel_velocity_mps()));
-
-  gazebo::msgs::Pose pose = msg->true_pose();
-
+  snprintf(right_wheel_velocity_str, 14, "%0.2f cm/s", (100 * msg.right_wheel_velocity_mps()));
 
   char x_str[14];
-  snprintf(x_str, 14, "%0.1f cm", msg->true_x_meters() * 100);
+  snprintf(x_str, 14, "%0.1f cm", msg.true_x_meters() * 100);
 
   char y_str[14];
-  snprintf(y_str, 14, "%0.1f cm", msg->true_y_meters() * 100);
+  snprintf(y_str, 14, "%0.1f cm", msg.true_y_meters() * 100);
 
   char yaw_str[15];
-  snprintf(yaw_str, 15, "%0.1f deg", (msg->true_yaw_rad() * 180 / M_PI));
+  snprintf(yaw_str, 15, "%0.1f deg", (msg.true_yaw_rad() * 180 / M_PI));
 
-  this->true_x = msg->true_x_meters();
-  this->true_y = msg->true_y_meters();
-  this->true_yaw = msg->true_yaw_rad();
+  this->true_x = msg.true_x_meters();
+  this->true_y = msg.true_y_meters();
+  this->true_yaw = msg.true_yaw_rad();
 
   this->SetLeftVelocity(left_wheel_velocity_str);
   this->SetRightVelocity(right_wheel_velocity_str);
@@ -225,38 +213,38 @@ void StateViz::StateCallback(ConstRobotStatePtr &msg) {
 }
 
 
-void StateViz::MazeLocationCallback(ConstMazeLocationPtr &msg) {
+void StateWidget::MazeLocationCallback(const smartmouse::msgs::MazeLocation &msg) {
   // compute x and y with respect to the top left square
   char row_str[14];
-  snprintf(row_str, 14, "%i (%0.1f cm)", msg->row(), msg->row_offset() * 100);
+  snprintf(row_str, 14, "%i (%0.1f cm)", msg.row(), msg.row_offset() * 100);
   char col_str[14];
-  snprintf(col_str, 14, "%i (%0.1f cm)", msg->col(), msg->col_offset() * 100);
+  snprintf(col_str, 14, "%i (%0.1f cm)", msg.col(), msg.col_offset() * 100);
   this->SetRow(row_str);
   this->SetCol(col_str);
-  this->SetDir(QString::fromStdString(msg->dir()));
+  this->SetDir(QString::fromStdString(msg.dir()));
 
   char x_str[14];
-  snprintf(x_str, 14, "%0.1f cm", msg->estimated_x_meters() * 100);
+  snprintf(x_str, 14, "%0.1f cm", msg.estimated_x_meters() * 100);
 
   char y_str[14];
-  snprintf(y_str, 14, "%0.1f cm", msg->estimated_y_meters() * 100);
+  snprintf(y_str, 14, "%0.1f cm", msg.estimated_y_meters() * 100);
 
   char yaw_str[14];
-  snprintf(yaw_str, 14, "%0.1f deg", (msg->estimated_yaw_rad() * 180 / M_PI));
+  snprintf(yaw_str, 14, "%0.1f deg", (msg.estimated_yaw_rad() * 180 / M_PI));
 
-  if (fabs(msg->estimated_x_meters() - true_x) > 0.01) {
+  if (fabs(msg.estimated_x_meters() - true_x) > 0.01) {
     this->HighlightX("QLineEdit {color:red;}");
   }
   else {
     this->HighlightX("QLineEdit {color:black;}");
   }
-  if (fabs(msg->estimated_y_meters() - true_y) > 0.01) {
+  if (fabs(msg.estimated_y_meters() - true_y) > 0.01) {
     this->HighlightY("QLineEdit {color:red;}");
   }
   else {
     this->HighlightY("QLineEdit {color:black;}");
   }
-  if (KinematicController::yawDiff(msg->estimated_yaw_rad(), true_yaw) > 0.02) {
+  if (smartmouse::math::yawDiff(msg.estimated_yaw_rad(), true_yaw) > 0.02) {
     this->HighlightYaw("QLineEdit {color:red;}");
   }
   else {
@@ -266,72 +254,67 @@ void StateViz::MazeLocationCallback(ConstMazeLocationPtr &msg) {
   this->SetEstimatedX(x_str);
   this->SetEstimatedY(y_str);
   this->SetEstimatedYaw(yaw_str);
-  this->SetMazeEdit(msg->mouse_maze_string().c_str());
+  this->SetMazeEdit(msg.mouse_maze_string().c_str());
 }
 
-void StateViz::StopRobot() {
-  gazebo::msgs::JointCmd left;
-  left.set_name("mouse::left_wheel_joint");
-  left.set_force(0);
-  stop_pub->Publish(left);
+void StateWidget::StopRobot() {
+  smartmouse::msgs::RobotCommand cmd;
+  cmd.mutable_left()->set_abstract_force(0);
+  cmd.mutable_right()->set_abstract_force(0);
 
-  gazebo::msgs::JointCmd right;
-  right.set_name("mouse::right_wheel_joint");
-  right.set_force(0);
-  stop_pub->Publish(right);
-
+  stop_pub.Publish(cmd);
 }
 
-void StateViz::ClearRobotTrace() {
+void StateWidget::ClearRobotTrace() {
   ignition::msgs::Empty msg;
   this->reset_trace_pub.Publish(msg);
 }
 
-void StateViz::FrontLeftAnalogCallback(ConstLaserScanStampedPtr &msg) {
-  msgs::LaserScan scan = msg->scan();
+void StateWidget::FrontLeftAnalogCallback(const ignition::msgs::LaserScanStamped &msg) {
+  ignition::msgs::LaserScan scan = msg.scan();
   assert(scan.ranges_size() == 1);
   double raw_range = scan.ranges(0);
   sensor_state->frontLeftWall = raw_range;
 }
 
-void StateViz::FrontRightAnalogCallback(ConstLaserScanStampedPtr &msg) {
-  msgs::LaserScan scan = msg->scan();
+void StateWidget::FrontRightAnalogCallback(const ignition::msgs::LaserScanStamped &msg) {
+  ignition::msgs::LaserScan scan = msg.scan();
   assert(scan.ranges_size() == 1);
   double raw_range = scan.ranges(0);
   sensor_state->frontRightWall = raw_range;
 }
 
-void StateViz::BackLeftAnalogCallback(ConstLaserScanStampedPtr &msg) {
-  msgs::LaserScan scan = msg->scan();
+void StateWidget::BackLeftAnalogCallback(const ignition::msgs::LaserScanStamped &msg) {
+  ignition::msgs::LaserScan scan = msg.scan();
   assert(scan.ranges_size() == 1);
   double raw_range = scan.ranges(0);
   sensor_state->backLeftWall = raw_range;
 }
 
-void StateViz::BackRightAnalogCallback(ConstLaserScanStampedPtr &msg) {
-  msgs::LaserScan scan = msg->scan();
+void StateWidget::BackRightAnalogCallback(const ignition::msgs::LaserScanStamped &msg) {
+  ignition::msgs::LaserScan scan = msg.scan();
   assert(scan.ranges_size() == 1);
   double raw_range = scan.ranges(0);
   sensor_state->backRightWall = raw_range;
 }
 
-void StateViz::FrontAnalogCallback(ConstLaserScanStampedPtr &msg) {
-  msgs::LaserScan scan = msg->scan();
+void StateWidget::FrontAnalogCallback(const ignition::msgs::LaserScanStamped &msg) {
+  ignition::msgs::LaserScan scan = msg.scan();
   assert(scan.ranges_size() == 1);
   double raw_range = scan.ranges(0);
   sensor_state->frontWall = raw_range;
 }
 
 SensorState::SensorState() {
-  resize(30, StateViz::HEIGHT);
+  resize(30, StateWidget::HEIGHT);
 }
 
 QSize SensorState::minimumSizeHint() const {
-  return QSize(100, StateViz::HEIGHT);
+  return QSize(100, StateWidget::HEIGHT);
 }
 
 QSize SensorState::sizeHint() const {
-  return QSize(100, StateViz::HEIGHT);
+  return QSize(100, StateWidget::HEIGHT);
 }
 
 void SensorState::paintEvent(QPaintEvent * event) {
@@ -399,6 +382,6 @@ void SensorState::paintEvent(QPaintEvent * event) {
   painter.drawText(55, 140, br_str);
 }
 
-void StateViz::OnStats(ConstWorldStatisticsPtr &msg) {
+void StateWidget::OnStats(const ignition::msgs::WorldStatistics &msg) {
   sensor_state->update();
 }

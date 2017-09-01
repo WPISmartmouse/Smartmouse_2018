@@ -24,13 +24,11 @@ class SensorState : public QWidget {
 
 };
 
-class StateViz : public QWidget {
+class StateWidget : public QWidget {
  Q_OBJECT
 
  public:
-  StateViz();
-
-  virtual ~StateViz();
+  StateWidget();
 
   static constexpr int HEIGHT = 170;
   static constexpr int MAZE_S = HEIGHT - 2;

@@ -2,29 +2,35 @@
 #include <cmath>
 #include <boost/algorithm/string/replace.hpp>
 #include <sim/lib/SimMouse.h>
-#include "StateViz.h"
-#include <QtWidgets/QHBoxLayout>
-#include <msgs/robot_command.pb.h>
-#include <lib/TopicNames.h>
-#include <QtWidgets/QPushButton>
-#include <common/math/math.h>
+#include <common/DriveStraight.h>
+#include "StateWidget.hh"
+#include "RegenerateWidget.hh"
+#include <common/KinematicController/KinematicController.h>
 
-StateViz::StateViz() : QWidget() {
-  this->node.Subscribe(TopicNames::kRobotState, &StateViz::StateCallback, this);
-  this->node.Subscribe(TopicNames::kMazeLocation, &StateViz::MazeLocationCallback, this);
-  this->node.Subscribe("~/mouse/base/front_left/scan", &StateViz::FrontLeftAnalogCallback, this);
-  this->node.Subscribe("~/mouse/base/front_right/scan", &StateViz::FrontRightAnalogCallback, this);
-  this->node.Subscribe("~/mouse/base/back_left/scan", &StateViz::BackLeftAnalogCallback, this);
-  this->node.Subscribe("~/mouse/base/back_right/scan", &StateViz::BackRightAnalogCallback, this);
-  this->node.Subscribe("~/mouse/base/front/scan", &StateViz::FrontAnalogCallback, this);
-  this->node.Subscribe(TopicNames::kWorldStatistics, &StateViz::OnStats, this);
+using namespace gazebo;
 
-  this->reset_trace_pub = this->node.Advertise<ignition::msgs::Empty>("/delete_plot");
+// Register this plugin with the simulator
+GZ_REGISTER_GUI_PLUGIN(StateViz)
+
+StateViz::StateViz() : GUIPlugin() {
+
+  this->node = transport::NodePtr(new transport::Node());
+  this->node->Init();
+  this->state_sub = this->node->Subscribe("~/mouse/state", &StateViz::StateCallback, this);
+  this->maze_loc_sub = this->node->Subscribe("~/maze_location", &StateViz::MazeLocationCallback, this);
+  this->front_left_analog_sub = this->node->Subscribe("~/mouse/base/front_left/scan", &StateViz::FrontLeftAnalogCallback, this);
+  this->front_right_analog_sub = this->node->Subscribe("~/mouse/base/front_right/scan", &StateViz::FrontRightAnalogCallback, this);
+  this->back_left_analog_sub = this->node->Subscribe("~/mouse/base/back_left/scan", &StateViz::BackLeftAnalogCallback, this);
+  this->back_right_analog_sub = this->node->Subscribe("~/mouse/base/back_right/scan", &StateViz::BackRightAnalogCallback, this);
+  this->front_analog_sub = this->node->Subscribe("~/mouse/base/front/scan", &StateViz::FrontAnalogCallback, this);
+  this->statsSub = this->node->Subscribe("~/world_stats", &StateViz::OnStats, this);
+
+  this->reset_trace_pub = this->ign_node.Advertise<ignition::msgs::Empty>("/delete_plot");
   if (!reset_trace_pub) {
-    std::cerr << "Failed to advertise to [" << this->topic << "]" << std::endl;
+    gzerr << "Failed to advertise to [" << this->topic << "]" << std::endl;
   }
 
-  this->stop_pub = this->node.Advertise<smartmouse::msgs::RobotCommand>(TopicNames::kRobotCommand);
+  this->stop_pub = this->node->Advertise<gazebo::msgs::JointCmd>("~/mouse/joint_cmd");
 
   QHBoxLayout *main_layout = new QHBoxLayout();
 
@@ -180,7 +186,7 @@ StateViz::StateViz() : QWidget() {
   main_layout->setContentsMargins(2, 2, 2, 2);
   this->setLayout(main_layout);
 
-  this->move(100, 0);
+  this->move(RegenerateWidget::WIDTH, 0);
   this->setFixedSize(StateViz::WIDTH, StateViz::HEIGHT);
 
 }
@@ -188,25 +194,28 @@ StateViz::StateViz() : QWidget() {
 StateViz::~StateViz() {
 }
 
-void StateViz::StateCallback(const smartmouse::msgs::RobotState &msg) {
+void StateViz::StateCallback(ConstRobotStatePtr &msg) {
   char left_wheel_velocity_str[14];
-  snprintf(left_wheel_velocity_str, 14, "%0.2f cm/s", (100 * msg.left_wheel_velocity_mps()));
+  snprintf(left_wheel_velocity_str, 14, "%0.2f cm/s", (100 * msg->left_wheel_velocity_mps()));
 
   char right_wheel_velocity_str[14];
-  snprintf(right_wheel_velocity_str, 14, "%0.2f cm/s", (100 * msg.right_wheel_velocity_mps()));
+  snprintf(right_wheel_velocity_str, 14, "%0.2f cm/s", (100 * msg->right_wheel_velocity_mps()));
+
+  gazebo::msgs::Pose pose = msg->true_pose();
+
 
   char x_str[14];
-  snprintf(x_str, 14, "%0.1f cm", msg.true_x_meters() * 100);
+  snprintf(x_str, 14, "%0.1f cm", msg->true_x_meters() * 100);
 
   char y_str[14];
-  snprintf(y_str, 14, "%0.1f cm", msg.true_y_meters() * 100);
+  snprintf(y_str, 14, "%0.1f cm", msg->true_y_meters() * 100);
 
   char yaw_str[15];
-  snprintf(yaw_str, 15, "%0.1f deg", (msg.true_yaw_rad() * 180 / M_PI));
+  snprintf(yaw_str, 15, "%0.1f deg", (msg->true_yaw_rad() * 180 / M_PI));
 
-  this->true_x = msg.true_x_meters();
-  this->true_y = msg.true_y_meters();
-  this->true_yaw = msg.true_yaw_rad();
+  this->true_x = msg->true_x_meters();
+  this->true_y = msg->true_y_meters();
+  this->true_yaw = msg->true_yaw_rad();
 
   this->SetLeftVelocity(left_wheel_velocity_str);
   this->SetRightVelocity(right_wheel_velocity_str);
@@ -216,38 +225,38 @@ void StateViz::StateCallback(const smartmouse::msgs::RobotState &msg) {
 }
 
 
-void StateViz::MazeLocationCallback(const smartmouse::msgs::MazeLocation &msg) {
+void StateViz::MazeLocationCallback(ConstMazeLocationPtr &msg) {
   // compute x and y with respect to the top left square
   char row_str[14];
-  snprintf(row_str, 14, "%i (%0.1f cm)", msg.row(), msg.row_offset() * 100);
+  snprintf(row_str, 14, "%i (%0.1f cm)", msg->row(), msg->row_offset() * 100);
   char col_str[14];
-  snprintf(col_str, 14, "%i (%0.1f cm)", msg.col(), msg.col_offset() * 100);
+  snprintf(col_str, 14, "%i (%0.1f cm)", msg->col(), msg->col_offset() * 100);
   this->SetRow(row_str);
   this->SetCol(col_str);
-  this->SetDir(QString::fromStdString(msg.dir()));
+  this->SetDir(QString::fromStdString(msg->dir()));
 
   char x_str[14];
-  snprintf(x_str, 14, "%0.1f cm", msg.estimated_x_meters() * 100);
+  snprintf(x_str, 14, "%0.1f cm", msg->estimated_x_meters() * 100);
 
   char y_str[14];
-  snprintf(y_str, 14, "%0.1f cm", msg.estimated_y_meters() * 100);
+  snprintf(y_str, 14, "%0.1f cm", msg->estimated_y_meters() * 100);
 
   char yaw_str[14];
-  snprintf(yaw_str, 14, "%0.1f deg", (msg.estimated_yaw_rad() * 180 / M_PI));
+  snprintf(yaw_str, 14, "%0.1f deg", (msg->estimated_yaw_rad() * 180 / M_PI));
 
-  if (fabs(msg.estimated_x_meters() - true_x) > 0.01) {
+  if (fabs(msg->estimated_x_meters() - true_x) > 0.01) {
     this->HighlightX("QLineEdit {color:red;}");
   }
   else {
     this->HighlightX("QLineEdit {color:black;}");
   }
-  if (fabs(msg.estimated_y_meters() - true_y) > 0.01) {
+  if (fabs(msg->estimated_y_meters() - true_y) > 0.01) {
     this->HighlightY("QLineEdit {color:red;}");
   }
   else {
     this->HighlightY("QLineEdit {color:black;}");
   }
-  if (smartmouse::math::yawDiff(msg.estimated_yaw_rad(), true_yaw) > 0.02) {
+  if (KinematicController::yawDiff(msg->estimated_yaw_rad(), true_yaw) > 0.02) {
     this->HighlightYaw("QLineEdit {color:red;}");
   }
   else {
@@ -257,15 +266,20 @@ void StateViz::MazeLocationCallback(const smartmouse::msgs::MazeLocation &msg) {
   this->SetEstimatedX(x_str);
   this->SetEstimatedY(y_str);
   this->SetEstimatedYaw(yaw_str);
-  this->SetMazeEdit(msg.mouse_maze_string().c_str());
+  this->SetMazeEdit(msg->mouse_maze_string().c_str());
 }
 
 void StateViz::StopRobot() {
-  smartmouse::msgs::RobotCommand cmd;
-  cmd.mutable_left()->set_abstract_force(0);
-  cmd.mutable_right()->set_abstract_force(0);
+  gazebo::msgs::JointCmd left;
+  left.set_name("mouse::left_wheel_joint");
+  left.set_force(0);
+  stop_pub->Publish(left);
 
-  stop_pub.Publish(cmd);
+  gazebo::msgs::JointCmd right;
+  right.set_name("mouse::right_wheel_joint");
+  right.set_force(0);
+  stop_pub->Publish(right);
+
 }
 
 void StateViz::ClearRobotTrace() {
@@ -273,36 +287,36 @@ void StateViz::ClearRobotTrace() {
   this->reset_trace_pub.Publish(msg);
 }
 
-void StateViz::FrontLeftAnalogCallback(const ignition::msgs::LaserScanStamped &msg) {
-  ignition::msgs::LaserScan scan = msg.scan();
+void StateViz::FrontLeftAnalogCallback(ConstLaserScanStampedPtr &msg) {
+  msgs::LaserScan scan = msg->scan();
   assert(scan.ranges_size() == 1);
   double raw_range = scan.ranges(0);
   sensor_state->frontLeftWall = raw_range;
 }
 
-void StateViz::FrontRightAnalogCallback(const ignition::msgs::LaserScanStamped &msg) {
-  ignition::msgs::LaserScan scan = msg.scan();
+void StateViz::FrontRightAnalogCallback(ConstLaserScanStampedPtr &msg) {
+  msgs::LaserScan scan = msg->scan();
   assert(scan.ranges_size() == 1);
   double raw_range = scan.ranges(0);
   sensor_state->frontRightWall = raw_range;
 }
 
-void StateViz::BackLeftAnalogCallback(const ignition::msgs::LaserScanStamped &msg) {
-  ignition::msgs::LaserScan scan = msg.scan();
+void StateViz::BackLeftAnalogCallback(ConstLaserScanStampedPtr &msg) {
+  msgs::LaserScan scan = msg->scan();
   assert(scan.ranges_size() == 1);
   double raw_range = scan.ranges(0);
   sensor_state->backLeftWall = raw_range;
 }
 
-void StateViz::BackRightAnalogCallback(const ignition::msgs::LaserScanStamped &msg) {
-  ignition::msgs::LaserScan scan = msg.scan();
+void StateViz::BackRightAnalogCallback(ConstLaserScanStampedPtr &msg) {
+  msgs::LaserScan scan = msg->scan();
   assert(scan.ranges_size() == 1);
   double raw_range = scan.ranges(0);
   sensor_state->backRightWall = raw_range;
 }
 
-void StateViz::FrontAnalogCallback(const ignition::msgs::LaserScanStamped &msg) {
-  ignition::msgs::LaserScan scan = msg.scan();
+void StateViz::FrontAnalogCallback(ConstLaserScanStampedPtr &msg) {
+  msgs::LaserScan scan = msg->scan();
   assert(scan.ranges_size() == 1);
   double raw_range = scan.ranges(0);
   sensor_state->frontWall = raw_range;
@@ -385,6 +399,6 @@ void SensorState::paintEvent(QPaintEvent * event) {
   painter.drawText(55, 140, br_str);
 }
 
-void StateViz::OnStats(const ignition::msgs::WorldStatistics &msg) {
+void StateViz::OnStats(ConstWorldStatisticsPtr &msg) {
   sensor_state->update();
 }

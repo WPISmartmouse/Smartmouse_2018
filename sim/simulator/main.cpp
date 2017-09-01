@@ -18,8 +18,8 @@ MainWindow::MainWindow(QMainWindow *parent) :
     QMainWindow(parent), ui(new Ui::MainWindow) {
   ui->setupUi(this);
 
-  this->state_viz_widget = new StateViz();
-  ui->right_side_layout->insertWidget(0, this->state_viz_widget);
+  this->state_widget = new StateWidget();
+  ui->right_side_layout->insertWidget(0, this->state_widget);
 
   connect(ui->actionExit, &QAction::triggered, this, &MainWindow::OnExit);
   connect(ui->actionSourceCode, &QAction::triggered, this, &MainWindow::ShowSourceCode);
