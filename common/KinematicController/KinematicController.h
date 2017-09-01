@@ -12,8 +12,6 @@ class KinematicController {
 public:
   KinematicController(Mouse *mouse);
 
-  static double yawDiff(double y1, double y2);
-
   std::tuple<double, double, bool> estimate_pose(RangeData range_data, Mouse *mouse);
 
   GlobalPose getGlobalPose();

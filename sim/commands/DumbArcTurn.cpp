@@ -1,3 +1,4 @@
+#include <common/math/math.h>
 #include "DumbArcTurn.h"
 
 const double DumbArcTurn::kP = 0.12;
@@ -22,7 +23,7 @@ void DumbArcTurn::execute() {
 
 bool DumbArcTurn::isFinished() {
   double currentYaw = mouse->getGlobalPose().yaw;
-  dYaw = KinematicController::yawDiff(currentYaw, goalYaw);
+  dYaw = smartmouse::math::yawDiff(currentYaw, goalYaw);
   double vl, vr;
   std::tie(vl, vr) = mouse->getWheelVelocities();
   return fabs(dYaw) < config.ROT_TOLERANCE;

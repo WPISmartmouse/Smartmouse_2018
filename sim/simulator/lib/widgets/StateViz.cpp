@@ -7,6 +7,7 @@
 #include <msgs/robot_command.pb.h>
 #include <lib/TopicNames.h>
 #include <QtWidgets/QPushButton>
+#include <common/math/math.h>
 
 StateViz::StateViz() : QWidget() {
   this->node.Subscribe(TopicNames::kRobotState, &StateViz::StateCallback, this);
@@ -246,12 +247,12 @@ void StateViz::MazeLocationCallback(const smartmouse::msgs::MazeLocation &msg) {
   else {
     this->HighlightY("QLineEdit {color:black;}");
   }
-//  if (KinematicController::yawDiff(msg.estimated_yaw_rad(), true_yaw) > 0.02) {
-//    this->HighlightYaw("QLineEdit {color:red;}");
-//  }
-//  else {
-//    this->HighlightYaw("QLineEdit {color:black;}");
-//  }
+  if (smartmouse::math::yawDiff(msg.estimated_yaw_rad(), true_yaw) > 0.02) {
+    this->HighlightYaw("QLineEdit {color:red;}");
+  }
+  else {
+    this->HighlightYaw("QLineEdit {color:black;}");
+  }
 
   this->SetEstimatedX(x_str);
   this->SetEstimatedY(y_str);

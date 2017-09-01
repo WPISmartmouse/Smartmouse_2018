@@ -1,5 +1,6 @@
 #include <common/KinematicController/KinematicController.h>
 #include <limits>
+#include <common/math/math.h>
 #include "DriveStraight.h"
 
 #ifdef ARDUINO
@@ -27,7 +28,7 @@ std::pair<double, double> DriveStraight::compute_wheel_velocities(Mouse *mouse) 
 
   // The goal is to be facing straight when you wall distance is correct.
   // To achieve this, we control our yaw as a function of our error in wall distance
-  double yawError = KinematicController::yawDiff(goalYaw, current_pose.yaw);
+  double yawError = smartmouse::math::yawDiff(goalYaw, current_pose.yaw);
 
   double l = config.MAX_SPEED;
   double r = config.MAX_SPEED;

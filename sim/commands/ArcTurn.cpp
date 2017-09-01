@@ -1,4 +1,5 @@
 
+#include <common/math/math.h>
 #include "ArcTurn.h"
 
 ArcTurn::ArcTurn(Direction dir) : Command("SimArcTurn"), mouse(SimMouse::inst()), dir(dir) {}
@@ -86,11 +87,11 @@ void ArcTurn::execute() {
     dAngle = atanf(fabs(cur_y/cur_x));
   }
 
-  double ang_error = fabs(mouse->kinematic_controller.yawDiff(curPose.yaw, dir_to_yaw(mouse->getDir())))-dAngle;
+  double ang_error = fabs(smartmouse::math::yawDiff(curPose.yaw, dir_to_yaw(mouse->getDir())))-dAngle;
   double arc_error = (AbstractMaze::HALF_UNIT_DIST/pose_dist(mouse->getGlobalPose(), vtc_x, vtc_y))-1;
 
   double corr = (ang_error*1.0)+(arc_error*0.5);
-  print("%f\t%f\n\r", dAngle, mouse->kinematic_controller.yawDiff(curPose.yaw, dir_to_yaw(mouse->getDir())));
+  print("%f\t%f\n\r", dAngle, smartmouse::math::yawDiff(curPose.yaw, dir_to_yaw(mouse->getDir())));
 
   double fast_speed = FAST_ARC_SPEED*((corr*-5)+1);
   double slow_speed = SLOW_ARC_SPEED*((corr*5)+1);
@@ -112,7 +113,7 @@ void ArcTurn::execute() {
 
 bool ArcTurn::isFinished() {
   double currentYaw = mouse->getGlobalPose().yaw;
-  dYaw = KinematicController::yawDiff(currentYaw, goalYaw);
+  dYaw = smartmouse::math::yawDiff(currentYaw, goalYaw);
   return ((fabs(dYaw) < config.ROT_TOLERANCE) && ((mouse->getCol() != startCol) || (mouse->getRow() != startRow)));
 }
 
