@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>681</width>
+    <width>827</width>
     <height>600</height>
    </rect>
   </property>
@@ -14,6 +14,12 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="main_widget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
      <widget class="QTabWidget" name="tabs">
@@ -32,9 +38,9 @@
        </attribute>
        <layout class="QFormLayout" name="formLayout_2">
         <item row="0" column="0">
-         <widget class="QLabel" name="label">
+         <widget class="QLabel" name="ms_per_step_label">
           <property name="text">
-           <string>Step Time (ms)</string>
+           <string>Time Per Step (ms)</string>
           </property>
          </widget>
         </item>
@@ -42,6 +48,23 @@
          <widget class="QSpinBox" name="ms_per_step_spinner">
           <property name="maximum">
            <number>10000</number>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="real_time_factor_label">
+          <property name="text">
+           <string>RealTime Factor</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QDoubleSpinBox" name="real_time_factor_spinner">
+          <property name="decimals">
+           <number>3</number>
+          </property>
+          <property name="maximum">
+           <double>10.000000000000000</double>
           </property>
          </widget>
         </item>
@@ -103,6 +126,20 @@
          </widget>
         </item>
         <item>
+         <widget class="QLabel" name="real_time_label">
+          <property name="text">
+           <string>RTF:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="real_time_value_label">
+          <property name="text">
+           <string>1.0</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QLabel" name="time_label">
           <property name="text">
            <string>Time:</string>
@@ -110,7 +147,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="time">
+         <widget class="QLabel" name="time_value_label">
           <property name="text">
            <string>00:00:00.0000</string>
           </property>
@@ -127,7 +164,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>681</width>
+     <width>827</width>
      <height>19</height>
     </rect>
    </property>

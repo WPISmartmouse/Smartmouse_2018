@@ -29,6 +29,7 @@ class Server {
   std::mutex physics_mutex_;
   bool pause_ = false;
   bool quit_ = false;
-  unsigned int ns_per_step_ = 0u;
+  unsigned int ns_of_sim_per_step_ = 1000000u;
   unsigned long pause_at_steps_ = 0ul;
+  double real_time_factor_ = 1.0;
 };

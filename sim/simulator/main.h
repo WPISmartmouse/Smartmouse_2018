@@ -38,6 +38,8 @@ class MainWindow : public QMainWindow {
 
   void ShowWiki();
 
+  void RealTimeFactorChanged(double real_time_factor);
+
   void StepCountChanged(int step_time_ms);
 
   void StepTimeMsChanged(int step_time_ms);

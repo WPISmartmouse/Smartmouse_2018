@@ -28,6 +28,10 @@ MainWindow::MainWindow(QMainWindow *parent) :
   connect(ui_->play_button, &QPushButton::clicked, this, &MainWindow::Play);
   connect(ui_->pause_button, &QPushButton::clicked, this, &MainWindow::Pause);
   connect(ui_->step_button, &QPushButton::clicked, this, &MainWindow::Step);
+  connect(ui_->real_time_factor_spinner,
+          static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
+          this,
+          &MainWindow::RealTimeFactorChanged);
   connect(ui_->step_spinner,
           static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
           this,
@@ -46,7 +50,8 @@ MainWindow::MainWindow(QMainWindow *parent) :
 
   // publish the initial configuration
   smartmouse::msgs::PhysicsConfig initial_physics_config;
-  initial_physics_config.set_ns_per_step(1000000u); // 1ms
+  initial_physics_config.set_ns_of_sim_per_step(1000000u); // 1ms
+  initial_physics_config.set_real_time_factor(0.5);
   physics_pub_.Publish(initial_physics_config);
 
   smartmouse::msgs::ServerControl initial_server_control;
@@ -83,6 +88,12 @@ void MainWindow::Step() {
   server_control_pub_.Publish(step_msg);
 }
 
+void MainWindow::RealTimeFactorChanged(double real_time_factor) {
+  smartmouse::msgs::PhysicsConfig rtf_msg;
+  rtf_msg.set_real_time_factor(real_time_factor);
+  physics_pub_.Publish(rtf_msg);
+}
+
 void MainWindow::StepCountChanged(int step_time_ms) {
   if (step_time_ms > 0) {
     step_count_ = (unsigned int) step_time_ms;
@@ -91,7 +102,7 @@ void MainWindow::StepCountChanged(int step_time_ms) {
 
 void MainWindow::StepTimeMsChanged(int step_time_ms) {
   smartmouse::msgs::PhysicsConfig physics_msg;
-  physics_msg.set_ns_per_step(step_time_ms * 1000000u);
+  physics_msg.set_ns_of_sim_per_step(step_time_ms * 1000000u);
   physics_pub_.Publish(physics_msg);
 }
 
@@ -101,11 +112,17 @@ void MainWindow::OnWorldControl(const smartmouse::msgs::ServerControl &msg) {
 
 void MainWindow::OnWorldStats(const smartmouse::msgs::WorldStatistics &msg) {
   Time time(msg.sim_time());
-  ui_->time->setText(QString::fromStdString(time.FormattedString()));
+  ui_->time_value_label->setText(QString::fromStdString(time.FormattedString()));
+  ui_->real_time_value_label->setText(QString::number(msg.real_time_factor()));
 }
 
 void MainWindow::OnPhysics(const smartmouse::msgs::PhysicsConfig &msg) {
-  ui_->ms_per_step_spinner->setValue(msg.ns_per_step() / 1000000);
+  if (msg.has_ns_of_sim_per_step()) {
+    ui_->ms_per_step_spinner->setValue(msg.ns_of_sim_per_step() / 1000000);
+  }
+  if (msg.has_real_time_factor()) {
+    ui_->real_time_factor_spinner->setValue(msg.real_time_factor());
+  }
 }
 
 void MainWindow::OnGuiActions(const smartmouse::msgs::GuiActions &msg) {
