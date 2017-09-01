@@ -4,7 +4,6 @@
 
 WorldWidget::WorldWidget() {
   setFixedSize(400, 400);
-  std::cout << "hello" << std::endl;
 }
 
 void WorldWidget::paintEvent(QPaintEvent *event) {

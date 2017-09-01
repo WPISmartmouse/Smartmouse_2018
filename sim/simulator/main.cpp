@@ -1,86 +1,111 @@
+#include <getopt.h>
+
 #include <QApplication>
 #include <QWidget>
-#include <getopt.h>
 #include <QtCore/QUrl>
 #include <QtGui/QDesktopServices>
-
-#include <sim/simulator/lib/Server.h>
-#include <sim/simulator/lib/TopicNames.h>
 #include <QtWidgets/QAction>
 #include <QtWidgets/QSpinBox>
 
-#include "main.h"
+#include <sim/simulator/lib/Server.h>
+#include <sim/simulator/lib/TopicNames.h>
+#include <sim/simulator/main.h>
+
 #include "ui_mainwindow.h"
 
 void PrintVersionInfo();
 
 MainWindow::MainWindow(QMainWindow *parent) :
-    QMainWindow(parent), ui(new Ui::MainWindow) {
-  ui->setupUi(this);
+    QMainWindow(parent), ui_(new Ui::MainWindow) {
+  ui_->setupUi(this);
 
-  this->world_widget = new WorldWidget();
-  ui->right_side_layout->insertWidget(0, this->world_widget);
+  this->world_widget_ = new WorldWidget();
+  ui_->right_side_layout->insertWidget(0, this->world_widget_);
 
-  connect(ui->actionExit, &QAction::triggered, this, &MainWindow::OnExit);
-  connect(ui->actionSourceCode, &QAction::triggered, this, &MainWindow::ShowSourceCode);
-  connect(ui->actionWiki, &QAction::triggered, this, &MainWindow::ShowWiki);
-  connect(ui->play_button, &QPushButton::clicked, this, &MainWindow::Play);
-  connect(ui->pause_button, &QPushButton::clicked, this, &MainWindow::Pause);
-  connect(ui->step_once_button, &QPushButton::clicked, this, &MainWindow::Step);
-  connect(ui->step_time_ms_spinner,
+  connect(ui_->actionExit, &QAction::triggered, this, &MainWindow::OnExit);
+  connect(ui_->actionSourceCode, &QAction::triggered, this, &MainWindow::ShowSourceCode);
+  connect(ui_->actionWiki, &QAction::triggered, this, &MainWindow::ShowWiki);
+  connect(ui_->play_button, &QPushButton::clicked, this, &MainWindow::Play);
+  connect(ui_->pause_button, &QPushButton::clicked, this, &MainWindow::Pause);
+  connect(ui_->step_button, &QPushButton::clicked, this, &MainWindow::Step);
+  connect(ui_->step_spinner,
+          static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+          this,
+          &MainWindow::StepCountChanged);
+  connect(ui_->ms_per_step_spinner,
           static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
           this,
           &MainWindow::StepTimeMsChanged);
 
-  world_control_pub = node.Advertise<ignition::msgs::WorldControl>(TopicNames::kWorldControl);
-  physics_pub = node.Advertise<ignition::msgs::Physics>(TopicNames::kPhysics);
-  node.Subscribe(TopicNames::kWorldControl, &MainWindow::OnWorldControl, this);
-  node.Subscribe(TopicNames::kWorldStatistics, &MainWindow::OnWorldStats, this);
-  node.Subscribe(TopicNames::kGuiActions, &MainWindow::OnGuiActions, this);
+  server_control_pub_ = node_.Advertise<smartmouse::msgs::ServerControl>(TopicNames::kWorldControl);
+  physics_pub_ = node_.Advertise<smartmouse::msgs::PhysicsConfig>(TopicNames::kPhysics);
+  node_.Subscribe(TopicNames::kWorldControl, &MainWindow::OnWorldControl, this);
+  node_.Subscribe(TopicNames::kWorldStatistics, &MainWindow::OnWorldStats, this);
+  node_.Subscribe(TopicNames::kGuiActions, &MainWindow::OnGuiActions, this);
+  node_.Subscribe(TopicNames::kPhysics, &MainWindow::OnPhysics, this);
+
+  // publish the initial configuration
+  smartmouse::msgs::PhysicsConfig initial_physics_config;
+  initial_physics_config.set_ns_per_step(1000000u); // 1ms
+  physics_pub_.Publish(initial_physics_config);
+
+  smartmouse::msgs::ServerControl initial_server_control;
+  initial_server_control.set_pause(true);
+  server_control_pub_.Publish(initial_server_control);
 }
 
 MainWindow::~MainWindow() {
-  delete ui;
+  delete ui_;
 }
 
 void MainWindow::OnExit() {
-  ignition::msgs::WorldControl quit_msg;
+  smartmouse::msgs::ServerControl quit_msg;
   quit_msg.set_quit(true);
-  world_control_pub.Publish(quit_msg);
+  server_control_pub_.Publish(quit_msg);
   QApplication::quit();
 }
 
 void MainWindow::Play() {
-  ignition::msgs::WorldControl play_msg;
+  smartmouse::msgs::ServerControl play_msg;
   play_msg.set_pause(false);
-  world_control_pub.Publish(play_msg);
+  server_control_pub_.Publish(play_msg);
 }
 
 void MainWindow::Pause() {
-  ignition::msgs::WorldControl pause_msg;
+  smartmouse::msgs::ServerControl pause_msg;
   pause_msg.set_pause(true);
-  world_control_pub.Publish(pause_msg);
+  server_control_pub_.Publish(pause_msg);
 }
 
-void MainWindow::Step(unsigned int steps) {
-  ignition::msgs::WorldControl step_msg;
-  step_msg.set_multi_step(steps);
-  world_control_pub.Publish(step_msg);
+void MainWindow::Step() {
+  smartmouse::msgs::ServerControl step_msg;
+  step_msg.set_step(this->step_count);
+  server_control_pub_.Publish(step_msg);
+}
+
+void MainWindow::StepCountChanged(int step_time_ms) {
+  if (step_time_ms > 0) {
+    this->step_count = (unsigned int) step_time_ms;
+  }
 }
 
 void MainWindow::StepTimeMsChanged(int step_time_ms) {
-  ignition::msgs::Physics physics_msg;
-  physics_msg.set_step_time_ms(step_time_ms);
-  physics_pub.Publish(physics_msg);
+  smartmouse::msgs::PhysicsConfig physics_msg;
+  physics_msg.set_ns_per_step(step_time_ms * 1000000u);
+  physics_pub_.Publish(physics_msg);
 }
 
-void MainWindow::OnWorldControl(const ignition::msgs::WorldControl &msg) {
+void MainWindow::OnWorldControl(const smartmouse::msgs::ServerControl &msg) {
   std::cout << msg.DebugString() << std::endl;
 }
 
-void MainWindow::OnWorldStats(const ignition::msgs::WorldStatistics &msg) {
+void MainWindow::OnWorldStats(const smartmouse::msgs::WorldStatistics &msg) {
   Time time(msg.sim_time());
-  ui->time->setText(QString::fromStdString(time.FormattedString()));
+  ui_->time->setText(QString::fromStdString(time.FormattedString()));
+}
+
+void MainWindow::OnPhysics(const smartmouse::msgs::PhysicsConfig &msg) {
+  ui_->ms_per_step_spinner->setValue(msg.ns_per_step() / 1000000);
 }
 
 void MainWindow::OnGuiActions(const smartmouse::msgs::GuiActions &msg) {
@@ -124,11 +149,11 @@ int main(int argc, char *argv[]) {
   MainWindow window;
 
   window.setWindowTitle("SmartMouse Simulator");
-  window.show();
+  window.showMaximized();
 
   int ret_code = app.exec();
 
-  ignition::msgs::WorldControl quit_msg;
+  smartmouse::msgs::ServerControl quit_msg;
   quit_msg.set_quit(true);
   window.OnExit();
 

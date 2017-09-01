@@ -39,7 +39,7 @@
          </widget>
         </item>
         <item row="0" column="1">
-         <widget class="QSpinBox" name="step_time_ms_spinner">
+         <widget class="QSpinBox" name="ms_per_step_spinner">
           <property name="maximum">
            <number>10000</number>
           </property>
@@ -72,6 +72,23 @@
       <item>
        <layout class="QHBoxLayout" name="time_status_layout">
         <item>
+         <widget class="QPushButton" name="step_button">
+          <property name="text">
+           <string>Step</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="step_spinner">
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>1000</number>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QPushButton" name="play_button">
           <property name="text">
            <string>Play</string>
@@ -82,13 +99,6 @@
          <widget class="QPushButton" name="pause_button">
           <property name="text">
            <string>Pause</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="step_once_button">
-          <property name="text">
-           <string>Step Once</string>
           </property>
          </widget>
         </item>
