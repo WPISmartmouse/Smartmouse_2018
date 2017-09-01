@@ -15,7 +15,9 @@ target_link_libraries(common msgs)
 add_library(server lib/Server.cpp)
 target_link_libraries(server msgs)
 
-add_executable(SmartmouseSim main.cpp)
+file(GLOB WIDGET_SRCS lib/widgets/*.cpp)
+
+add_executable(SmartmouseSim main.cpp ${WIDGET_SRCS})
 
 target_link_libraries(SmartmouseSim Qt5::Widgets ${IGNITION-TRANSPORT_LIBRARIES} msgs server common)
 

@@ -8,7 +8,7 @@
 #include <lib/TopicNames.h>
 #include <QtWidgets/QPushButton>
 
-StateViz::StateViz() : {
+StateViz::StateViz() : QWidget() {
   this->node.Subscribe(TopicNames::kRobotState, &StateViz::StateCallback, this);
   this->node.Subscribe(TopicNames::kMazeLocation, &StateViz::MazeLocationCallback, this);
   this->node.Subscribe("~/mouse/base/front_left/scan", &StateViz::FrontLeftAnalogCallback, this);
@@ -246,12 +246,12 @@ void StateViz::MazeLocationCallback(const smartmouse::msgs::MazeLocation &msg) {
   else {
     this->HighlightY("QLineEdit {color:black;}");
   }
-  if (KinematicController::yawDiff(msg.estimated_yaw_rad(), true_yaw) > 0.02) {
-    this->HighlightYaw("QLineEdit {color:red;}");
-  }
-  else {
-    this->HighlightYaw("QLineEdit {color:black;}");
-  }
+//  if (KinematicController::yawDiff(msg.estimated_yaw_rad(), true_yaw) > 0.02) {
+//    this->HighlightYaw("QLineEdit {color:red;}");
+//  }
+//  else {
+//    this->HighlightYaw("QLineEdit {color:black;}");
+//  }
 
   this->SetEstimatedX(x_str);
   this->SetEstimatedY(y_str);

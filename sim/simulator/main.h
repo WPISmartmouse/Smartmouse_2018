@@ -5,6 +5,7 @@
 #include <QWidget>
 #include <QtWidgets/QMainWindow>
 #include <msgs/gui_actions.pb.h>
+#include <lib/widgets/StateViz.h>
 
 namespace Ui {
   class MainWindow;
@@ -43,4 +44,6 @@ private:
   Ui::MainWindow *ui;
   ignition::transport::Node::Publisher world_control_pub;
   ignition::transport::Node::Publisher physics_pub;
+
+  StateViz *state_viz_widget;
 };
