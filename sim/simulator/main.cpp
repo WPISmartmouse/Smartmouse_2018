@@ -33,6 +33,7 @@ MainWindow::MainWindow(QMainWindow *parent) :
   physics_pub = node.Advertise<ignition::msgs::Physics>(TopicNames::kPhysics);
   node.Subscribe(TopicNames::kWorldControl, &MainWindow::OnWorldControl, this);
   node.Subscribe(TopicNames::kWorldStatistics, &MainWindow::OnWorldStats, this);
+  node.Subscribe(TopicNames::kGuiActions, &MainWindow::OnGuiActions, this);
 }
 
 MainWindow::~MainWindow() {
@@ -77,6 +78,12 @@ void MainWindow::OnWorldControl(const ignition::msgs::WorldControl &msg) {
 void MainWindow::OnWorldStats(const ignition::msgs::WorldStatistics &msg) {
   Time time(msg.sim_time());
   ui->time->setText(QString::fromStdString(time.FormattedString()));
+}
+
+void MainWindow::OnGuiActions(const smartmouse::msgs::GuiActions &msg) {
+  if (msg.source_code_action()) {
+    ShowSourceCode();
+  }
 }
 
 void MainWindow::ShowWiki() {

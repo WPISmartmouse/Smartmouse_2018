@@ -4,6 +4,7 @@
 #include <ignition/transport.hh>
 #include <QWidget>
 #include <QtWidgets/QMainWindow>
+#include <msgs/gui_actions.pb.h>
 
 namespace Ui {
   class MainWindow;
@@ -36,6 +37,7 @@ private slots:
 private:
   void OnWorldControl(const ignition::msgs::WorldControl &msg);
   void OnWorldStats(const ignition::msgs::WorldStatistics &msg);
+  void OnGuiActions(const smartmouse::msgs::GuiActions &msg);
 
   ignition::transport::Node node;
   Ui::MainWindow *ui;
