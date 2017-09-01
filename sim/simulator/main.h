@@ -54,5 +54,5 @@ class MainWindow : public QMainWindow {
   ignition::transport::Node::Publisher physics_pub_;
 
   WorldWidget *world_widget_;
-  unsigned int step_count = 1u;
+  unsigned int step_count_ = 1u;
 };

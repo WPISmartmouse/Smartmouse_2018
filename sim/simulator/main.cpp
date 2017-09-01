@@ -19,8 +19,8 @@ MainWindow::MainWindow(QMainWindow *parent) :
     QMainWindow(parent), ui_(new Ui::MainWindow) {
   ui_->setupUi(this);
 
-  this->world_widget_ = new WorldWidget();
-  ui_->right_side_layout->insertWidget(0, this->world_widget_);
+  world_widget_ = new WorldWidget();
+  ui_->right_side_layout->insertWidget(0, world_widget_);
 
   connect(ui_->actionExit, &QAction::triggered, this, &MainWindow::OnExit);
   connect(ui_->actionSourceCode, &QAction::triggered, this, &MainWindow::ShowSourceCode);
@@ -79,13 +79,13 @@ void MainWindow::Pause() {
 
 void MainWindow::Step() {
   smartmouse::msgs::ServerControl step_msg;
-  step_msg.set_step(this->step_count);
+  step_msg.set_step(step_count_);
   server_control_pub_.Publish(step_msg);
 }
 
 void MainWindow::StepCountChanged(int step_time_ms) {
   if (step_time_ms > 0) {
-    this->step_count = (unsigned int) step_time_ms;
+    step_count_ = (unsigned int) step_time_ms;
   }
 }
 

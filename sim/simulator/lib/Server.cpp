@@ -3,8 +3,7 @@
 #include <msgs/world_statistics.pb.h>
 
 void Server::start() {
-  this->thread = new std::thread(std::bind(&Server::RunLoop, this));
-
+  thread_ = new std::thread(std::bind(&Server::RunLoop, this));
   sim_time_ = Time::Zero;
 }
 
@@ -88,5 +87,5 @@ void Server::OnPhysics(const smartmouse::msgs::PhysicsConfig &msg) {
 }
 
 void Server::join() {
-  thread->join();
+  thread_->join();
 }

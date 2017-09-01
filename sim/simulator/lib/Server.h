@@ -12,7 +12,7 @@ class Server {
  public:
   void start();
 
-  std::thread *thread;
+  std::thread *thread_;
   void RunLoop();
 
   void Step();
