@@ -18,8 +18,8 @@ MainWindow::MainWindow(QMainWindow *parent) :
     QMainWindow(parent), ui(new Ui::MainWindow) {
   ui->setupUi(this);
 
-  this->state_widget = new StateWidget();
-  ui->right_side_layout->insertWidget(0, this->state_widget);
+  this->world_widget = new WorldWidget();
+  ui->right_side_layout->insertWidget(0, this->world_widget);
 
   connect(ui->actionExit, &QAction::triggered, this, &MainWindow::OnExit);
   connect(ui->actionSourceCode, &QAction::triggered, this, &MainWindow::ShowSourceCode);

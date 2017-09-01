@@ -6,13 +6,14 @@
 #include <QtWidgets/QMainWindow>
 #include <msgs/gui_actions.pb.h>
 #include <lib/widgets/StateWidget.h>
+#include <lib/widgets/WorldWidget.h>
 
 namespace Ui {
-  class MainWindow;
+class MainWindow;
 }
 
 class MainWindow : public QMainWindow {
-Q_OBJECT
+ Q_OBJECT
 
  public:
   MainWindow(QMainWindow *parent = 0);
@@ -21,7 +22,7 @@ Q_OBJECT
 
   virtual ~MainWindow();
 
-private slots:
+ private slots:
 
   void Play();
 
@@ -35,7 +36,7 @@ private slots:
 
   void StepTimeMsChanged(int step_time_ms);
 
-private:
+ private:
   void OnWorldControl(const ignition::msgs::WorldControl &msg);
   void OnWorldStats(const ignition::msgs::WorldStatistics &msg);
   void OnGuiActions(const smartmouse::msgs::GuiActions &msg);
@@ -45,5 +46,5 @@ private:
   ignition::transport::Node::Publisher world_control_pub;
   ignition::transport::Node::Publisher physics_pub;
 
-  StateWidget *state_widget;
+  WorldWidget *world_widget;
 };
