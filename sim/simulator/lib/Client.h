@@ -44,6 +44,13 @@ class Client : public QMainWindow {
 
   void StepTimeMsChanged(int step_time_ms);
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "NotImplementedFunctions"
+ signals:
+  void SetRealTime(QString str);
+  void SetTime(QString str);
+#pragma clang diagnostic pop
+
  private:
   void OnWorldControl(const smartmouse::msgs::ServerControl &msg);
   void OnWorldStats(const smartmouse::msgs::WorldStatistics &msg);

@@ -22,6 +22,7 @@ Client::Client(QMainWindow *parent) :
   connect(ui_->play_button, &QPushButton::clicked, this, &Client::Play);
   connect(ui_->pause_button, &QPushButton::clicked, this, &Client::Pause);
   connect(ui_->step_button, &QPushButton::clicked, this, &Client::Step);
+  // Casting is to handle overloaded slot valueChanged. Don't overload slots!
   connect(ui_->real_time_factor_spinner,
           static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
           this,
@@ -34,6 +35,8 @@ Client::Client(QMainWindow *parent) :
           static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
           this,
           &Client::StepTimeMsChanged);
+  QObject::connect(this, &Client::SetRealTime, ui_->real_time_value_label, &QLabel::setText);
+  QObject::connect(this, &Client::SetTime, ui_->time_value_label, &QLabel::setText);
 
   server_control_pub_ = node_.Advertise<smartmouse::msgs::ServerControl>(TopicNames::kWorldControl);
   physics_pub_ = node_.Advertise<smartmouse::msgs::PhysicsConfig>(TopicNames::kPhysics);
@@ -45,7 +48,7 @@ Client::Client(QMainWindow *parent) :
   // publish the initial configuration
   smartmouse::msgs::PhysicsConfig initial_physics_config;
   initial_physics_config.set_ns_of_sim_per_step(1000000u); // 1ms
-  initial_physics_config.set_real_time_factor(10);
+  initial_physics_config.set_real_time_factor(1);
   physics_pub_.Publish(initial_physics_config);
 
   smartmouse::msgs::ServerControl initial_server_control;
@@ -106,8 +109,8 @@ void Client::OnWorldControl(const smartmouse::msgs::ServerControl &msg) {
 
 void Client::OnWorldStats(const smartmouse::msgs::WorldStatistics &msg) {
   Time time(msg.sim_time());
-  ui_->time_value_label->setText(QString::fromStdString(time.FormattedString()));
-  ui_->real_time_value_label->setText(QString::number(msg.real_time_factor()));
+  emit SetRealTime(QString::number(msg.real_time_factor()));
+  emit SetTime(QString::fromStdString(time.FormattedString()));
 }
 
 void Client::OnPhysics(const smartmouse::msgs::PhysicsConfig &msg) {

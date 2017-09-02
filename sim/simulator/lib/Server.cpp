@@ -69,7 +69,7 @@ void Server::RunLoop() {
     ignition::msgs::Time *sim_time_msg = world_stats_msg.mutable_sim_time();
     *sim_time_msg = sim_time_.toIgnMsg();
     world_stats_msg.set_real_time_factor(rtf.Double());
-//    world_stats_pub_.Publish(world_stats_msg);
+    world_stats_pub_.Publish(world_stats_msg);
   }
 }
 
