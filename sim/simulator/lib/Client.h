@@ -52,6 +52,8 @@ class Client : public QMainWindow {
 #pragma clang diagnostic pop
 
  private:
+  void ConfigureGui();
+
   void OnWorldControl(const smartmouse::msgs::ServerControl &msg);
   void OnWorldStats(const smartmouse::msgs::WorldStatistics &msg);
   void OnGuiActions(const smartmouse::msgs::GuiActions &msg);

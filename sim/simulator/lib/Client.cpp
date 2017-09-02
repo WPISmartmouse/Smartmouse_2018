@@ -13,30 +13,7 @@ Client::Client(QMainWindow *parent) :
     QMainWindow(parent), ui_(new Ui::MainWindow) {
   ui_->setupUi(this);
 
-  world_widget_ = new WorldWidget();
-  ui_->right_side_layout->insertWidget(0, world_widget_);
-
-  connect(ui_->actionExit, &QAction::triggered, this, &Client::OnExit);
-  connect(ui_->actionSourceCode, &QAction::triggered, this, &Client::ShowSourceCode);
-  connect(ui_->actionWiki, &QAction::triggered, this, &Client::ShowWiki);
-  connect(ui_->play_button, &QPushButton::clicked, this, &Client::Play);
-  connect(ui_->pause_button, &QPushButton::clicked, this, &Client::Pause);
-  connect(ui_->step_button, &QPushButton::clicked, this, &Client::Step);
-  // Casting is to handle overloaded slot valueChanged. Don't overload slots!
-  connect(ui_->real_time_factor_spinner,
-          static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
-          this,
-          &Client::RealTimeFactorChanged);
-  connect(ui_->step_spinner,
-          static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
-          this,
-          &Client::StepCountChanged);
-  connect(ui_->ms_per_step_spinner,
-          static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
-          this,
-          &Client::StepTimeMsChanged);
-  QObject::connect(this, &Client::SetRealTime, ui_->real_time_value_label, &QLabel::setText);
-  QObject::connect(this, &Client::SetTime, ui_->time_value_label, &QLabel::setText);
+  ConfigureGui();
 
   server_control_pub_ = node_.Advertise<smartmouse::msgs::ServerControl>(TopicNames::kWorldControl);
   physics_pub_ = node_.Advertise<smartmouse::msgs::PhysicsConfig>(TopicNames::kPhysics);
@@ -134,4 +111,33 @@ void Client::ShowWiki() {
 
 void Client::ShowSourceCode() {
   QDesktopServices::openUrl(QUrl("https://github.com/WPISmartMouse/SmartmouseSim", QUrl::TolerantMode));
+}
+
+void Client::ConfigureGui() {
+  world_widget_ = new WorldWidget();
+  ui_->right_side_layout->insertWidget(0, world_widget_);
+
+  connect(ui_->actionExit, &QAction::triggered, this, &Client::OnExit);
+  connect(ui_->actionSourceCode, &QAction::triggered, this, &Client::ShowSourceCode);
+  connect(ui_->actionWiki, &QAction::triggered, this, &Client::ShowWiki);
+  connect(ui_->play_button, &QPushButton::clicked, this, &Client::Play);
+  connect(ui_->pause_button, &QPushButton::clicked, this, &Client::Pause);
+  connect(ui_->step_button, &QPushButton::clicked, this, &Client::Step);
+  // Casting is to handle overloaded slot valueChanged. Don't overload slots!
+  connect(ui_->real_time_factor_spinner,
+          static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
+          this,
+          &Client::RealTimeFactorChanged);
+  connect(ui_->step_spinner,
+          static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+          this,
+          &Client::StepCountChanged);
+  connect(ui_->ms_per_step_spinner,
+          static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+          this,
+          &Client::StepTimeMsChanged);
+  QObject::connect(this, &Client::SetRealTime, ui_->real_time_value_label, &QLabel::setText);
+  QObject::connect(this, &Client::SetTime, ui_->time_value_label, &QLabel::setText);
+
+  ui_->tab_splitter->setHandleWidth(10);
 }
