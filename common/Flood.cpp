@@ -46,7 +46,11 @@ Direction Flood::planNextStep() {
                                            AbstractMaze::CENTER);
       break;
     case Solver::Goal::START:
-      solvable = no_wall_maze.flood_fill_from_point(no_wall_path, mouse->getRow(), mouse->getCol(), 0, 0);
+      solvable = no_wall_maze.flood_fill_from_point(no_wall_path,
+                                                    mouse->getRow(),
+                                                    mouse->getCol(),
+                                                    0,
+                                                    0);
       //this way commands can see this used to visualize in gazebo
       mouse->maze->path_to_next_goal = no_wall_path;
       all_wall_maze->flood_fill_from_point(all_wall_path, mouse->getRow(), mouse->getCol(), 0, 0);
@@ -79,11 +83,12 @@ bool Flood::isFinished() {
   unsigned int r = mouse->getRow();
   unsigned int c = mouse->getCol();
   const unsigned int C = AbstractMaze::MAZE_SIZE / 2;
-  switch (goal) {
-    case Solver::Goal::CENTER:
-      return !solvable || ((r >= C - 1 && r <= C) && (c >= C - 1 && c <= C));
-    case Solver::Goal::START:
-      return !solvable || (r == 0 && c == 0);
+  if (goal == Solver::Goal::CENTER) {
+    return !solvable || ((r >= C - 1 && r <= C) && (c >= C - 1 && c <= C));
+  } else if (goal == Solver::Goal::START) {
+    return !solvable || (r == 0 && c == 0);
+  } else {
+    return false;
   }
 }
 

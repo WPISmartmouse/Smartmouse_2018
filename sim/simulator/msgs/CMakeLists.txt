@@ -1,5 +1,4 @@
 # allow us to import from existing ignition msgs
-set(PROTOBUF_IMPORT_DIRS ${IGNITION-MSGS_DIR})
 file(GLOB PROTOS *.proto)
 PROTOBUF_GENERATE_CPP(PROTO_SRC PROTO_HEADER ${PROTOS})
 

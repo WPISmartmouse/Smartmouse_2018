@@ -52,7 +52,8 @@ void Server::RunLoop() {
     Time used_step_time = end_step_time - start_step_time;
 
     if (used_step_time < desired_step_time) {
-      Time sleep_time = desired_step_time - used_step_time;
+      // there is a fudge factor here to account for the time to publish world stats
+      Time sleep_time = desired_step_time - used_step_time - 5e-5;
       Time::Sleep(sleep_time);
     }
     else {
