@@ -52,7 +52,7 @@ Client::Client(QMainWindow *parent) :
   physics_pub_.Publish(initial_physics_config);
 
   smartmouse::msgs::ServerControl initial_server_control;
-  initial_server_control.set_pause(false);
+  initial_server_control.set_pause(true);
   server_control_pub_.Publish(initial_server_control);
 }
 
