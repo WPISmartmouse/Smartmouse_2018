@@ -27,6 +27,7 @@ public:
   constexpr static double HALF_WALL_THICKNESS = WALL_THICKNESS/2.0;
   constexpr static double INNER_UNIT_DIST = UNIT_DIST - WALL_THICKNESS;
   constexpr static double HALF_UNIT_DIST = UNIT_DIST / 2.0;
+  constexpr static double MAZE_SIZE_M = MAZE_SIZE * UNIT_DIST;
   constexpr static double HALF_INNER_UNIT_DIST = INNER_UNIT_DIST / 2.0;
   bool solved; //boolean for if we know the fastest route
   char *fastest_route; //a char array like NSEWNENNSNE, which means North, South, East...
