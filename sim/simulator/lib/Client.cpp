@@ -111,6 +111,8 @@ void Client::ShowSourceCode() {
 void Client::ConfigureGui() {
   world_widget_ = new WorldWidget();
   ui_->right_side_layout->insertWidget(0, world_widget_);
+  ui_->tabs->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Expanding);
+  ui_->tabs->setMaximumWidth(300);
 
   connect(ui_->actionExit, &QAction::triggered, this, &Client::OnExit);
   connect(ui_->actionSourceCode, &QAction::triggered, this, &Client::ShowSourceCode);

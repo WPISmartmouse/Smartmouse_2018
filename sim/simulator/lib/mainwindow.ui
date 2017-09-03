@@ -86,19 +86,6 @@
       <widget class="QWidget" name="layoutWidget">
        <layout class="QVBoxLayout" name="right_side_layout">
         <item>
-         <spacer name="verticalSpacer">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
          <layout class="QHBoxLayout" name="time_status_layout">
           <item>
            <widget class="QPushButton" name="step_button">
