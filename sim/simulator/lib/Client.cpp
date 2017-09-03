@@ -17,7 +17,6 @@ Client::Client(QMainWindow *parent) :
 
   server_control_pub_ = node_.Advertise<smartmouse::msgs::ServerControl>(TopicNames::kWorldControl);
   physics_pub_ = node_.Advertise<smartmouse::msgs::PhysicsConfig>(TopicNames::kPhysics);
-  node_.Subscribe(TopicNames::kWorldControl, &Client::OnWorldControl, this);
   node_.Subscribe(TopicNames::kWorldStatistics, &Client::OnWorldStats, this);
   node_.Subscribe(TopicNames::kGuiActions, &Client::OnGuiActions, this);
   node_.Subscribe(TopicNames::kPhysics, &Client::OnPhysics, this);
@@ -74,14 +73,10 @@ void Client::StepCountChanged(int step_time_ms) {
   }
 }
 
-void Client::StepTimeMsChanged(int step_time_ms) {
+void Client::TimePerStepMsChanged(int step_time_ms) {
   smartmouse::msgs::PhysicsConfig physics_msg;
   physics_msg.set_ns_of_sim_per_step(step_time_ms * 1000000u);
   physics_pub_.Publish(physics_msg);
-}
-
-void Client::OnWorldControl(const smartmouse::msgs::ServerControl &msg) {
-  std::cout << msg.DebugString() << std::endl;
 }
 
 void Client::OnWorldStats(const smartmouse::msgs::WorldStatistics &msg) {
@@ -135,7 +130,7 @@ void Client::ConfigureGui() {
   connect(ui_->ms_per_step_spinner,
           static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
           this,
-          &Client::StepTimeMsChanged);
+          &Client::TimePerStepMsChanged);
   QObject::connect(this, &Client::SetRealTime, ui_->real_time_value_label, &QLabel::setText);
   QObject::connect(this, &Client::SetTime, ui_->time_value_label, &QLabel::setText);
 

@@ -42,7 +42,7 @@ class Client : public QMainWindow {
 
   void StepCountChanged(int step_time_ms);
 
-  void StepTimeMsChanged(int step_time_ms);
+  void TimePerStepMsChanged(int step_time_ms);
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "NotImplementedFunctions"
@@ -54,7 +54,6 @@ class Client : public QMainWindow {
  private:
   void ConfigureGui();
 
-  void OnWorldControl(const smartmouse::msgs::ServerControl &msg);
   void OnWorldStats(const smartmouse::msgs::WorldStatistics &msg);
   void OnGuiActions(const smartmouse::msgs::GuiActions &msg);
   void OnPhysics(const smartmouse::msgs::PhysicsConfig &msg);

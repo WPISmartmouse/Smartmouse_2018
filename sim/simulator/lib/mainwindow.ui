@@ -50,6 +50,9 @@
          </item>
          <item row="0" column="1">
           <widget class="QSpinBox" name="ms_per_step_spinner">
+           <property name="minimum">
+            <number>1</number>
+           </property>
            <property name="maximum">
             <number>10000</number>
            </property>
@@ -80,7 +83,7 @@
         </attribute>
        </widget>
       </widget>
-      <widget class="QWidget" name="">
+      <widget class="QWidget" name="layoutWidget">
        <layout class="QVBoxLayout" name="right_side_layout">
         <item>
          <spacer name="verticalSpacer">

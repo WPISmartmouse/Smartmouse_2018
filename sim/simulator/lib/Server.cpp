@@ -21,7 +21,7 @@ void Server::RunLoop() {
 
     // special case when update_rate is zero, like on startup.
     if (desired_step_time == 0) {
-      Time::MSleep(100);
+      Time::MSleep(1);
       continue;
     }
 
@@ -40,7 +40,7 @@ void Server::RunLoop() {
       }
 
       if (pause_) {
-        Time::MSleep(10);
+        Time::MSleep(1);
         continue;
       }
 

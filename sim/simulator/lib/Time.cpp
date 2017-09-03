@@ -411,7 +411,7 @@ Time Time::Sleep(const Time &_time) {
     }
 #endif
   } else {
-    std::cout << "Sleep time is larger than clock resolution, skipping sleep\n";
+    std::cout << "Sleep time is smaller than clock resolution, skipping sleep\n";
   }
 
   return result;
