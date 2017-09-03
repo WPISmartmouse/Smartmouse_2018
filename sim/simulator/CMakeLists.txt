@@ -1,6 +1,7 @@
 # Instruct CMake to run moc automatically when needed.
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTORCC ON)
 
 # Find the QtWidgets library
 find_package(Qt5Widgets)
@@ -20,7 +21,7 @@ target_link_libraries(client msgs Qt5::Widgets common server ${IGNITION-TRANSPOR
 
 file(GLOB WIDGET_SRCS lib/widgets/*.cpp)
 
-add_executable(SmartmouseSim main.cpp ${WIDGET_SRCS})
+add_executable(SmartmouseSim main.cpp ${WIDGET_SRCS} simulator.qrc)
 
 target_link_libraries(SmartmouseSim server client)
 

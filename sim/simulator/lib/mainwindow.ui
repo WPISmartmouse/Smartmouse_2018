@@ -245,6 +245,8 @@
    </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="../simulator.qrc"/>
+ </resources>
  <connections/>
 </ui>

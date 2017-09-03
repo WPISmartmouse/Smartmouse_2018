@@ -134,5 +134,8 @@ void Client::ConfigureGui() {
   QObject::connect(this, &Client::SetRealTime, ui_->real_time_value_label, &QLabel::setText);
   QObject::connect(this, &Client::SetTime, ui_->time_value_label, &QLabel::setText);
 
-  ui_->tab_splitter->setHandleWidth(10);
+  QFile styleFile(":/style.qss");
+  styleFile.open(QFile::ReadOnly);
+  QString style(styleFile.readAll());
+  this->setStyleSheet(style);
 }

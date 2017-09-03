@@ -1,0 +1,7 @@
+QSplitter::handle:horizontal {
+    width: 16px;
+}
+
+QSplitter::handle:vertical {
+    height: 16px;
+}
