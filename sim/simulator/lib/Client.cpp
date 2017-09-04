@@ -111,7 +111,13 @@ void Client::ShowSourceCode() {
 }
 
 void Client::LoadMaze() {
-  QString fileName = QFileDialog::getOpenFileName(this, tr("Open Maze"), maze_file_dir_, tr("Maze Files (*.mz)"));
+  QString file_name = QFileDialog::getOpenFileName(this, tr("Open Maze"), maze_files_dir_, tr("Maze Files (*.mz)"));
+
+  if (file_name != nullptr) {
+    QFileInfo file_info(file_name);
+    maze_files_dir_ = file_info.dir().absolutePath();
+    settings_->setValue("gui/maze_files_directory", maze_files_dir_);
+  }
 }
 
 void Client::ConfigureGui() {
@@ -156,6 +162,7 @@ void Client::closeEvent(QCloseEvent *event) {
 
 void Client::writeSettings() {
   settings_->setValue("gui/tab_splitter", ui_->tab_splitter->saveState());
+  settings_->setValue("gui/info_tabs", ui_->info_tabs->currentIndex());
 }
 
 void Client::RestoreSettings() {
@@ -168,4 +175,9 @@ void Client::RestoreSettings() {
   if (!splitter_state.isEmpty()) {
     ui_->tab_splitter->restoreState(splitter_state);
   }
+
+  const int info_tab_index = settings_->value("gui/info_tabs").toInt();
+  ui_->info_tabs->setCurrentIndex(info_tab_index);
+
+  maze_files_dir_ = settings_->value("gui/maze_files_directory").toString();
 }

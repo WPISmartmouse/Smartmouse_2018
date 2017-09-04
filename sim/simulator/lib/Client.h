@@ -69,7 +69,7 @@ class Client : public QMainWindow {
 
   unsigned int step_count_ = 1u;
   MazeWidget *maze_widget_;
-  const QString maze_file_dir_;
+  QString maze_files_dir_;
   QSettings *settings_;
   void writeSettings();
   void RestoreSettings();
