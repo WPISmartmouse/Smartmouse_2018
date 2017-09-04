@@ -5,7 +5,7 @@
 #include <common/AbstractMaze.h>
 #include <sim/simulator/lib/widgets/MazeWidget.h>
 
-const int MazeWidget::PADDING = 4;
+const int MazeWidget::PADDING_PX = 24;
 
 MazeWidget::MazeWidget() : QWidget() {
   setSizePolicy(QSizePolicy::Policy::MinimumExpanding, QSizePolicy::Policy::MinimumExpanding);
@@ -18,13 +18,14 @@ void MazeWidget::paintEvent(QPaintEvent *event) {
 
     QRect r = this->geometry();
 
-    int w = std::min(r.width(), r.height()) - PADDING;
+    int w = std::min(r.width(), r.height()) - PADDING_PX;
     double m2p = w / AbstractMaze::MAZE_SIZE_M;
 
     int cx = (r.width() - w) / 2;
     int cy = (r.height() - w) / 2;
+
     tf.translate(cx, cy);
-    tf = QTransform::fromScale(m2p, m2p);
+    tf = tf.scale(m2p, m2p);
   }
 
   QRectF base = QRectF(0, 0, AbstractMaze::MAZE_SIZE_M, AbstractMaze::MAZE_SIZE_M);

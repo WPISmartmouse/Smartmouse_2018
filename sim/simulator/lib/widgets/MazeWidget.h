@@ -11,6 +11,6 @@ class MazeWidget : public QWidget {
 
   void paintEvent(QPaintEvent *event);
   const QString getTabName();
-  static const int PADDING;
+  static const int PADDING_PX;
 };
 
