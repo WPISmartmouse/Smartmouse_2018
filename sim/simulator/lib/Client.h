@@ -22,6 +22,8 @@ class Client : public QMainWindow {
  public:
   Client(QMainWindow *parent = 0);
 
+  void closeEvent(QCloseEvent *event) override;
+
   void OnExit();
 
   virtual ~Client();
@@ -33,6 +35,8 @@ class Client : public QMainWindow {
   void Pause();
 
   void Step();
+
+  void LoadMaze();
 
   void ShowSourceCode();
 
@@ -65,4 +69,8 @@ class Client : public QMainWindow {
 
   unsigned int step_count_ = 1u;
   MazeWidget *maze_widget_;
+  const QString maze_file_dir_;
+  QSettings *settings_;
+  void writeSettings();
+  void RestoreSettings();
 };

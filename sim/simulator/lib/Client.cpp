@@ -15,6 +15,8 @@ Client::Client(QMainWindow *parent) :
 
   ConfigureGui();
 
+  RestoreSettings();
+
   server_control_pub_ = node_.Advertise<smartmouse::msgs::ServerControl>(TopicNames::kWorldControl);
   physics_pub_ = node_.Advertise<smartmouse::msgs::PhysicsConfig>(TopicNames::kPhysics);
   node_.Subscribe(TopicNames::kWorldStatistics, &Client::OnWorldStats, this);
@@ -108,12 +110,17 @@ void Client::ShowSourceCode() {
   QDesktopServices::openUrl(QUrl("https://github.com/WPISmartMouse/SmartmouseSim", QUrl::TolerantMode));
 }
 
+void Client::LoadMaze() {
+  QString fileName = QFileDialog::getOpenFileName(this, tr("Open Maze"), maze_file_dir_, tr("Maze Files (*.mz)"));
+}
+
 void Client::ConfigureGui() {
   maze_widget_ = new MazeWidget();
   ui_->gui_tabs->addTab(maze_widget_, maze_widget_->getTabName());
   ui_->main_tab->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Expanding);
   ui_->main_tab->setMaximumWidth(300);
 
+  connect(ui_->load_maze_button, &QPushButton::clicked, this, &Client::LoadMaze);
   connect(ui_->actionExit, &QAction::triggered, this, &Client::OnExit);
   connect(ui_->actionSourceCode, &QAction::triggered, this, &Client::ShowSourceCode);
   connect(ui_->actionWiki, &QAction::triggered, this, &Client::ShowWiki);
@@ -140,4 +147,25 @@ void Client::ConfigureGui() {
   styleFile.open(QFile::ReadOnly);
   QString style(styleFile.readAll());
   this->setStyleSheet(style);
+}
+
+void Client::closeEvent(QCloseEvent *event) {
+  writeSettings();
+  event->accept();
+}
+
+void Client::writeSettings() {
+  settings_->setValue("gui/tab_splitter", ui_->tab_splitter->saveState());
+}
+
+void Client::RestoreSettings() {
+  QCoreApplication::setOrganizationName("WPISmartmouse");
+  QCoreApplication::setOrganizationDomain("smartmouse.com");
+  QCoreApplication::setApplicationName("Smartmouse Sim");
+  settings_ = new QSettings();
+
+  const QByteArray splitter_state = settings_->value("gui/tab_splitter").toByteArray();
+  if (!splitter_state.isEmpty()) {
+    ui_->tab_splitter->restoreState(splitter_state);
+  }
 }
