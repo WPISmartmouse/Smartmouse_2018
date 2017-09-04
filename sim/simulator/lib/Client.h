@@ -6,11 +6,11 @@
 #include <QtWidgets/QMainWindow>
 
 #include <sim/simulator/lib/widgets/StateWidget.h>
-#include <sim/simulator/lib/widgets/WorldWidget.h>
 #include <sim/simulator/msgs/gui_actions.pb.h>
 #include <sim/simulator/msgs/physics_config.pb.h>
 #include <sim/simulator/msgs/server_control.pb.h>
 #include <sim/simulator/msgs/world_statistics.pb.h>
+#include <lib/widgets/MazeWidget.h>
 
 namespace Ui {
 class MainWindow;
@@ -63,6 +63,6 @@ class Client : public QMainWindow {
   ignition::transport::Node::Publisher server_control_pub_;
   ignition::transport::Node::Publisher physics_pub_;
 
-  WorldWidget *world_widget_;
   unsigned int step_count_ = 1u;
+  MazeWidget *maze_widget_;
 };

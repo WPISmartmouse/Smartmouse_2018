@@ -1,20 +1,24 @@
-#include <QtGui/QPainter>
-#include <common/AbstractMaze.h>
-#include "WorldWidget.h"
 #include <iostream>
 
-WorldWidget::WorldWidget() {
+#include <QtGui/QPainter>
+
+#include <common/AbstractMaze.h>
+#include <sim/simulator/lib/widgets/MazeWidget.h>
+
+const int MazeWidget::PADDING = 4;
+
+MazeWidget::MazeWidget() : QWidget() {
   setSizePolicy(QSizePolicy::Policy::MinimumExpanding, QSizePolicy::Policy::MinimumExpanding);
 }
 
-void WorldWidget::paintEvent(QPaintEvent *event) {
+void MazeWidget::paintEvent(QPaintEvent *event) {
   QPainter painter(this);
   QTransform tf;
   {
 
     QRect r = this->geometry();
 
-    int w = std::min(r.width(), r.height()) - 1;
+    int w = std::min(r.width(), r.height()) - PADDING;
     double m2p = w / AbstractMaze::MAZE_SIZE_M;
 
     int cx = (r.width() - w) / 2;
@@ -33,4 +37,7 @@ void WorldWidget::paintEvent(QPaintEvent *event) {
     QLineF v_line((i * AbstractMaze::UNIT_DIST), 0, (i * AbstractMaze::UNIT_DIST), AbstractMaze::MAZE_SIZE_M);
     painter.drawLine(tf.map(v_line));
   }
+}
+const QString MazeWidget::getTabName() {
+  return QString("Maze View");
 }

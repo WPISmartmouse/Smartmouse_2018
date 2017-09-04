@@ -81,7 +81,7 @@ void Client::TimePerStepMsChanged(int step_time_ms) {
 
 void Client::OnWorldStats(const smartmouse::msgs::WorldStatistics &msg) {
   Time time(msg.sim_time());
-  emit SetRealTime(QString::number(msg.real_time_factor()));
+  emit SetRealTime(QString::number(msg.real_time_factor(), 'f', 4));
   emit SetTime(QString::fromStdString(time.FormattedString()));
 }
 
@@ -109,10 +109,10 @@ void Client::ShowSourceCode() {
 }
 
 void Client::ConfigureGui() {
-  world_widget_ = new WorldWidget();
-  ui_->right_side_layout->insertWidget(0, world_widget_);
-  ui_->tabs->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Expanding);
-  ui_->tabs->setMaximumWidth(300);
+  maze_widget_ = new MazeWidget();
+  ui_->gui_tabs->addTab(maze_widget_, maze_widget_->getTabName());
+  ui_->main_tab->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Expanding);
+  ui_->main_tab->setMaximumWidth(300);
 
   connect(ui_->actionExit, &QAction::triggered, this, &Client::OnExit);
   connect(ui_->actionSourceCode, &QAction::triggered, this, &Client::ShowSourceCode);
