@@ -4,6 +4,7 @@
 #include <tuple>
 #include <common/math/math.h>
 #include "KinematicController.h"
+#include <cmath>
 
 #ifdef EMBED
 #include <Arduino.h>
