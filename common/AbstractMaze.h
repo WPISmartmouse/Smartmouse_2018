@@ -16,7 +16,7 @@
 class AbstractMaze {
   friend class Mouse;
 
-public:
+ public:
 
   constexpr static unsigned int MAZE_SIZE = 16;
   constexpr static unsigned int PATH_SIZE = 256;
@@ -24,7 +24,7 @@ public:
   constexpr static unsigned int CENTER = MAZE_SIZE / 2;
   constexpr static double UNIT_DIST = 0.18;
   constexpr static double WALL_THICKNESS = 0.012;
-  constexpr static double HALF_WALL_THICKNESS = WALL_THICKNESS/2.0;
+  constexpr static double HALF_WALL_THICKNESS = WALL_THICKNESS / 2.0;
   constexpr static double INNER_UNIT_DIST = UNIT_DIST - WALL_THICKNESS;
   constexpr static double HALF_UNIT_DIST = UNIT_DIST / 2.0;
   constexpr static double MAZE_SIZE_M = MAZE_SIZE * UNIT_DIST;
@@ -38,8 +38,6 @@ public:
    * allocates a maze of the given size and sets all links in graph to be null. Naturally, it's column major.
    */
   AbstractMaze();
-
-  Node *center_node();
 
   void mark_origin_known();
 
@@ -66,8 +64,6 @@ public:
   //the fill starts from r0, c0 and ends at r1, c1
   bool flood_fill_from_point(char *path, unsigned int r0, unsigned int c0, unsigned int r1, unsigned int c1);
 
-  bool flood_fill_from_origin(char *path, unsigned int r1, unsigned int c1);
-
   bool flood_fill_from_origin_to_center(char *path);
 
   /** \brief connect all neighbors in the whole maze
@@ -75,11 +71,6 @@ public:
    * \param j col
    */
   void connect_all_neighbors_in_maze();
-
-  /** \brief output a maze that has the fewest walls
-   * actually I have no idea how this works
-   */
-  Node *maze_diff(AbstractMaze *maze2);
 
   /** \brief get node by its position
    * \return 0 on success, OUT_OF_BOUNDS, or -1 on NULL
@@ -110,6 +101,8 @@ public:
   void print_maze();
   void print_maze_str(char *buff);
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
   /** duh*/
   void print_pointer_maze();
 
@@ -125,6 +118,7 @@ public:
 
   /** duh*/
   void print_dist_maze();
+#pragma clang diagnostic pop
 
   static AbstractMaze gen_random_legal_maze();
   static void _make_connections(AbstractMaze *maze, Node *node);

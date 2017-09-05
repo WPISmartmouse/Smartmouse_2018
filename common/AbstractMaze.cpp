@@ -80,53 +80,8 @@ void AbstractMaze::update(SensorReading sr) {
   }
 }
 
-Node *AbstractMaze::maze_diff(AbstractMaze *maze2) {
-  Node *new_goal = nullptr;
-
-  unsigned int i, j;
-  int max = -1;
-  for (i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
-    for (j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
-
-      Node *n1 = nullptr;
-      this->get_node(&n1, i, j);
-      Node *n2 = nullptr;
-      maze2->get_node(&n2, i, j);
-
-      //don't look at nodes you've already actually visited
-      if (!n1->visited && !n2->visited) {
-        int count1 = 0, count2 = 0;
-
-        Direction d;
-        for (d = Direction::First; d < Direction::Last; d++) {
-          if (n1->neighbor(d) == nullptr) count1++;
-          if (n2->neighbor(d) == nullptr) count2++;
-        }
-
-        int diff = abs(count2 - count1);
-
-        if (diff > max) {
-          max = diff;
-          //doesn't matter n1 or n2, all we're using are the row/col
-          new_goal = n1;
-        }
-      }
-    }
-  }
-
-  return new_goal;
-}
-
-Node *AbstractMaze::center_node() {
-  return nodes[AbstractMaze::CENTER][AbstractMaze::CENTER];
-}
-
 bool AbstractMaze::flood_fill_from_point(char *path, unsigned int r0, unsigned int c0, unsigned int r1, unsigned int c1) {
   return flood_fill(path, r0, c0, r1, c1);
-}
-
-bool AbstractMaze::flood_fill_from_origin(char *path, unsigned int r1, unsigned int c1) {
-  return flood_fill(path, 0, 0, r1, c1);
 }
 
 bool AbstractMaze::flood_fill_from_origin_to_center(char *path) {

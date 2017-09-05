@@ -1,17 +1,16 @@
+#include <cmath>
 #include <algorithm>
 #include <common/Mouse.h>
 #include <common/DriveStraight.h>
 #include <tuple>
 #include <common/math/math.h>
 #include "KinematicController.h"
-#include <cmath>
 
 #ifdef EMBED
 #include <Arduino.h>
 #endif
 
 const double KinematicController::DROP_SAFETY = 0.8;
-const double KinematicController::POST_DROP_DIST = 0.05;
 
 KinematicController::KinematicController(Mouse *mouse) : enable_sensor_pose_estimate(false), enabled(true), initialized(false),
                                                          ignoring_left(false), ignoring_right(false), mouse(mouse),
