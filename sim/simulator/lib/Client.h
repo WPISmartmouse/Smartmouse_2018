@@ -36,7 +36,7 @@ class Client : public QMainWindow {
 
   void Step();
 
-  void LoadMaze();
+  void LoadNewMaze();
 
   void ShowSourceCode();
 
@@ -73,4 +73,6 @@ class Client : public QMainWindow {
   QSettings *settings_;
   void writeSettings();
   void RestoreSettings();
+  void LoadDefaultMaze();
+  QString default_maze_file_name_;
 };

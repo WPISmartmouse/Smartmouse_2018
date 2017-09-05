@@ -110,13 +110,23 @@ void Client::ShowSourceCode() {
   QDesktopServices::openUrl(QUrl("https://github.com/WPISmartMouse/SmartmouseSim", QUrl::TolerantMode));
 }
 
-void Client::LoadMaze() {
+void Client::LoadNewMaze() {
   QString file_name = QFileDialog::getOpenFileName(this, tr("Open Maze"), maze_files_dir_, tr("Maze Files (*.mz)"));
 
   if (file_name != nullptr) {
     QFileInfo file_info(file_name);
     maze_files_dir_ = file_info.dir().absolutePath();
+    default_maze_file_name_ = file_name;
+    settings_->setValue("gui/default_maze_file_name", default_maze_file_name_);
     settings_->setValue("gui/maze_files_directory", maze_files_dir_);
+    ui_->maze_file_name_label->setText(file_info.fileName());
+  }
+}
+
+void Client::LoadDefaultMaze() {
+  if (default_maze_file_name_ != nullptr) {
+    QFileInfo file_info(default_maze_file_name_);
+    ui_->maze_file_name_label->setText(file_info.fileName());
   }
 }
 
@@ -126,7 +136,7 @@ void Client::ConfigureGui() {
   ui_->main_tab->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Expanding);
   ui_->main_tab->setMaximumWidth(300);
 
-  connect(ui_->load_maze_button, &QPushButton::clicked, this, &Client::LoadMaze);
+  connect(ui_->load_maze_button, &QPushButton::clicked, this, &Client::LoadNewMaze);
   connect(ui_->actionExit, &QAction::triggered, this, &Client::OnExit);
   connect(ui_->actionSourceCode, &QAction::triggered, this, &Client::ShowSourceCode);
   connect(ui_->actionWiki, &QAction::triggered, this, &Client::ShowWiki);
@@ -180,4 +190,6 @@ void Client::RestoreSettings() {
   ui_->info_tabs->setCurrentIndex(info_tab_index);
 
   maze_files_dir_ = settings_->value("gui/maze_files_directory").toString();
+  default_maze_file_name_ = settings_->value("gui/default_maze_file_name").toString();
+  LoadDefaultMaze();
 }
