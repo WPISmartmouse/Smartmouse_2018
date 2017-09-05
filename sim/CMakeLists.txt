@@ -21,10 +21,8 @@ add_subdirectory(simulator)
 ##################################
 file(GLOB SIM_SRC lib/*.cpp commands/*.cpp)
 add_library(sim ${COM_SRC} ${SIM_SRC})
-target_include_directories(sim PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${PROTOBUF_INCLUDE_DIRS} commands)
 set_target_properties(sim PROPERTIES COMPILE_FLAGS "-include common/util.h")
 target_link_libraries(sim ${IGNITION-TRANSPORT_LIBRARIES} msgs)
-add_dependencies(sim msgs)
 
 #################################
 # actual sim mouse programs
@@ -34,7 +32,6 @@ set(SIMS SimSolve SimNavTest)
 foreach (MAIN ${SIMS})
     add_executable(${MAIN} "main/${MAIN}.cpp")
     target_link_libraries(${MAIN} sim ${IGNITION-TRANSPORT_LIBRARIES})
-    target_include_directories(${MAIN} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} commands)
 endforeach ()
 
 #################################
@@ -42,8 +39,18 @@ endforeach ()
 #################################
 add_executable(keyboard_teleop ./tools/keyboard_teleop.cpp)
 target_link_libraries(keyboard_teleop sim ncurses msgs)
-target_include_directories(keyboard_teleop PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${PROTOBUF_INCLUDE_DIRS} commands)
 
 add_executable(joy_teleop ./tools/joystick_teleop.cpp joystick/joystick.cc)
 target_link_libraries(joy_teleop sim ncurses msgs)
-target_include_directories(joy_teleop PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${PROTOBUF_INCLUDE_DIRS} commands)
+
+################################
+# testing
+################################
+add_executable(sim_tests simulator/test/Test.cpp ${COM_SRC})
+target_compile_features(sim_tests PRIVATE cxx_strong_enums)
+target_link_libraries(sim_tests gtest gtest_main sim server)
+set_target_properties(sim_tests PROPERTIES COMPILE_FLAGS "-DSIM -include common/util.h")
+
+add_test(all-tests sim_tests)
+
+install(TARGETS sim_tests DESTINATION bin)

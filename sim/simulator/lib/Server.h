@@ -3,8 +3,8 @@
 #include <thread>
 #include <ignition/transport/Node.hh>
 
-#include <msgs/server_control.pb.h>
 #include <sim/simulator/lib/Time.h>
+#include <sim/simulator/msgs/server_control.pb.h>
 #include <sim/simulator/msgs/physics_config.pb.h>
 
 class Server {

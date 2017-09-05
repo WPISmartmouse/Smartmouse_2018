@@ -1,5 +1,5 @@
-#include "Forward.h"
-#include "ConsoleMouse.h"
+#include <commands/Forward.h>
+#include <console/ConsoleMouse.h>
 
 Forward::Forward() : mouse(ConsoleMouse::inst()) {}
 

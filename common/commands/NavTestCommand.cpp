@@ -1,8 +1,8 @@
-#include "NavTestCommand.h"
-#include "WaitForStart.h"
-#include "Forward.h"
-#include "Stop.h"
-#include "Turn.h"
+#include <common/commands/NavTestCommand.h>
+#include <commands/WaitForStart.h>
+#include <commands/Forward.h>
+#include <commands/Stop.h>
+#include <commands/Turn.h>
 
 NavTestCommand::NavTestCommand(Solver *solver) : CommandGroup("NavTestGroup"), solver(solver) {
   commands.push_back(new Forward());

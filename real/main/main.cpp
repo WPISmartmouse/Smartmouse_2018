@@ -5,9 +5,9 @@
 #include <common/commands/SolveCommand.h>
 #include <common/util.h>
 #include <common/Flood.h>
-#include "Finish.h"
-#include "Forward.h"
-#include "Turn.h"
+#include <commands/Finish.h>
+#include <commands/Forward.h>
+#include <commands/Turn.h>
 
 ArduinoTimer timer;
 AbstractMaze maze;

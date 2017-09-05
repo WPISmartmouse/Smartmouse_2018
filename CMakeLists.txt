@@ -13,6 +13,9 @@ endif ()
 
 project(smartmouse)
 
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+include_directories(${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR})
+
 file(GLOB_RECURSE COM_SRC
         common/*.cpp)
 
@@ -28,7 +31,7 @@ if (NOT ${BUILD_SIM})
 
     file(GLOB REAL_LIB_DIRS real/lib/*)
 
-    include_directories(${CMAKE_SOURCE_DIR} ${REAL_LIB_DIRS} real real/commands)
+    include_directories(${REAL_LIB_DIRS} real)
     add_definitions(-DEMBED)
 
     import_arduino_library(Bounce2)
@@ -39,11 +42,6 @@ if (NOT ${BUILD_SIM})
     set_target_properties(main PROPERTIES COMPILE_FLAGS "-include common/util.h")
 
 else ()
-    # Find includes in corresponding build directories
-    set(CMAKE_INCLUDE_CURRENT_DIR ON)
-    include_directories(${CMAKE_SOURCE_DIR})
-    include_directories(${CMAKE_BINARY_DIR})
-
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-unknown-pragmas")
 
     file(GLOB CONSOLE_SRC console/*.cpp console/commands/*.cpp)
@@ -53,8 +51,8 @@ else ()
     ################################
     add_library(console ${COM_SRC} ${CONSOLE_SRC})
     target_compile_features(console PRIVATE cxx_strong_enums)
+    target_include_directories(console PRIVATE console)
     set_target_properties(console PROPERTIES COMPILE_FLAGS "-DCONSOLE -include common/util.h")
-    target_include_directories(console PRIVATE console/ console/commands)
 
     ################################
     # text-only console programs
@@ -70,36 +68,21 @@ else ()
         target_link_libraries(${MAIN} console)
         target_compile_features(${MAIN} PRIVATE cxx_strong_enums)
         set_target_properties(${MAIN} PROPERTIES COMPILE_FLAGS "-DCONSOLE")
-        target_include_directories(${MAIN} PRIVATE console/ console/commands)
 
         install(TARGETS ${MAIN} DESTINATION bin)
     endforeach ()
+
+    ################################
+    # testing
+    ################################
+    enable_testing()
+    add_subdirectory(gtest)
+    include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
     ################################
     # all simulation stuff
     ################################
     if (BUILD_SIM)
         add_subdirectory(sim)
-    endif ()
-
-    ################################
-    # testing
-    ################################
-    if (TESTS)
-        add_subdirectory(gtest)
-
-        enable_testing()
-
-        include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
-
-        add_executable(runConsoleTests test/Test.cpp ${COM_SRC} ${CONSOLE_SRC})
-        target_compile_features(runConsoleTests PRIVATE cxx_strong_enums)
-        target_include_directories(runConsoleTests PRIVATE console/ console/commands)
-        target_link_libraries(runConsoleTests sim gtest gtest_main)
-        set_target_properties(runConsoleTests PROPERTIES COMPILE_FLAGS "-DCONSOLE -include common/util.h")
-
-        add_test(all-tests runConsoleTests)
-
-        install(TARGETS runConsoleTests DESTINATION bin)
     endif ()
 endif ()

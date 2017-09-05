@@ -1,7 +1,7 @@
-#include "WaitForStart.h"
-#include "ReturnToStart.h"
-#include "Forward.h"
-#include "Turn.h"
+#include <commands/WaitForStart.h>
+#include <common/commands/ReturnToStart.h>
+#include <commands/Forward.h>
+#include <commands/Turn.h>
 
 ReturnToStart::ReturnToStart(Mouse *mouse) : CommandGroup("return"), mouse(mouse) {
   pathToStart = (char *) malloc(sizeof(char) * AbstractMaze::PATH_SIZE);

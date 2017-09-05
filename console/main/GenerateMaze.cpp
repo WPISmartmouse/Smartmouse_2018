@@ -1,5 +1,5 @@
-#include "ConsoleMouse.h"
-#include "ConsoleMaze.h"
+#include <console/ConsoleMaze.h>
+#include <console/ConsoleMouse.h>
 #include <iostream>
 
 int main(int argc, char *argv[]) {

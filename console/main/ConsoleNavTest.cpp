@@ -4,9 +4,9 @@
 
 #include <common/commanduino/CommanDuino.h>
 #include <common/commands/SolveCommand.h>
-#include "ConsoleMaze.h"
-#include "ConsoleMouse.h"
-#include "ConsoleTimer.h"
+#include <console/ConsoleMaze.h>
+#include <console/ConsoleMouse.h>
+#include <console/ConsoleTimer.h>
 #include <common/Flood.h>
 #include <common/WallFollow.h>
 #include <common/commands/NavTestCommand.h>

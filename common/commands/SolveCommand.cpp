@@ -1,12 +1,13 @@
-#include "Turn.h"
+#include <commands/Turn.h>
 #ifndef CONSOLE
-#include "ForwardToCenter.h"
-#include "TurnInPlace.h"
+#include <commands/ForwardToCenter.h>
+#include <commands/TurnInPlace.h>
 #endif
-#include "SolveCommand.h"
-#include "WaitForStart.h"
-#include "Stop.h"
-#include "Finish.h"
+#include <common/commands/SolveCommand.h>
+#include <commands/WaitForStart.h>
+#include <commands/Stop.h>
+#include <commands/Finish.h>
+#include <commands/SolveMaze.h>
 
 SolveCommand::SolveCommand(Solver *solver) : CommandGroup("SolveGroup"), solver(solver) {}
 
