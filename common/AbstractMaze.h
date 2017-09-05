@@ -47,7 +47,6 @@ class AbstractMaze {
    * \param dir direction connect in
    */
   void connect_neighbor(unsigned int row, unsigned int col, const Direction dir);
-  void disconnect_neighbor(unsigned int row, unsigned int col, const Direction dir);
 
   void reset();
 
@@ -90,10 +89,10 @@ class AbstractMaze {
    */
   void connect_all_neighbors(unsigned int row, unsigned int col);
 
-  /** \brief remove any neighbor in the given direction
+  /** \brief disconnect any neighbor in the given direction
    * \param dir direction connect in
    */
-  void remove_neighbor(unsigned int row, unsigned int col, const Direction dir);
+  void disconnect_neighbor(unsigned int row, unsigned int col, const Direction dir);
 
   /** prints a maze
   * @param maze the maze

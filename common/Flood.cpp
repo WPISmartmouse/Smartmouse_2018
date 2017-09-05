@@ -14,6 +14,10 @@ void Flood::setup() {
   mouse->reset();
   mouse->maze->reset();
   all_wall_maze = mouse->maze;
+  all_wall_maze->connect_neighbor(AbstractMaze::CENTER, AbstractMaze::CENTER, Direction::W);
+  all_wall_maze->connect_neighbor(AbstractMaze::CENTER, AbstractMaze::CENTER, Direction::N);
+  all_wall_maze->connect_neighbor(AbstractMaze::CENTER - 1, AbstractMaze::CENTER - 1, Direction::E);
+  all_wall_maze->connect_neighbor(AbstractMaze::CENTER - 1, AbstractMaze::CENTER - 1, Direction::S);
   no_wall_maze.connect_all_neighbors_in_maze();
   goal = Solver::Goal::CENTER;
 }

@@ -69,7 +69,7 @@ void AbstractMaze::update(SensorReading sr) {
   for (Direction d = Direction::First; d < Direction::Last; d++) {
     //if a wall exists in that direction, add a wall
     if (sr.isWall(d)) {
-      remove_neighbor(sr.row, sr.col, d);
+      disconnect_neighbor(sr.row, sr.col, d);
     }
       //if no wall exists in that direction remove it
     else {
@@ -157,7 +157,7 @@ bool AbstractMaze::flood_fill(char *path, unsigned int r0, unsigned int c0, unsi
   return solvable;
 }
 
-void AbstractMaze::remove_neighbor(unsigned int row, unsigned int col, const Direction dir) {
+void AbstractMaze::disconnect_neighbor(unsigned int row, unsigned int col, const Direction dir) {
   Node *n1 = nullptr;
   int n1_status = get_node(&n1, row, col);
   Node *n2 = nullptr;
@@ -172,19 +172,6 @@ void AbstractMaze::remove_neighbor(unsigned int row, unsigned int col, const Dir
   }
 }
 
-void AbstractMaze::disconnect_neighbor(unsigned int row, unsigned int col, const Direction dir) {
-  Node *n1 = nullptr;
-  int n1_status = get_node(&n1, row, col);
-  Node *n2 = nullptr;
-  int n2_status = get_node_in_direction(&n2, row, col, dir);
-
-  Direction opposite = opposite_direction(dir);
-
-  if ((n1_status != Node::OUT_OF_BOUNDS) && (n2_status != Node::OUT_OF_BOUNDS)) {
-    n1->neighbors[static_cast<int>(dir)] = nullptr;
-    n2->neighbors[static_cast<int>(opposite)] = nullptr;
-  }
-}
 void AbstractMaze::connect_neighbor(unsigned int row, unsigned int col, const Direction dir) {
   Node *n1 = nullptr;
   int n1_status = get_node(&n1, row, col);
@@ -405,10 +392,6 @@ AbstractMaze AbstractMaze::gen_random_legal_maze() {
   maze.connect_neighbor(MAZE_SIZE / 2, MAZE_SIZE / 2, Direction::W);
   maze.connect_neighbor(MAZE_SIZE / 2 - 1, MAZE_SIZE / 2 - 1, Direction::S);
   maze.connect_neighbor(MAZE_SIZE / 2 - 1, MAZE_SIZE / 2 - 1, Direction::E);
-
-  // TODO: make a legal start. This right now might make the maze unsolvable...
-//  maze.connect_neighbor(0, 0, Direction::E);
-//  maze.disconnect_neighbor(0, 0, Direction::S);
 
   return maze;
 }
