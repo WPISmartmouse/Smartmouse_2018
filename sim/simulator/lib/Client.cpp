@@ -119,6 +119,9 @@ void Client::LoadNewMaze() {
     default_maze_file_name_ = file_name;
     settings_->setValue("gui/default_maze_file_name", default_maze_file_name_);
     settings_->setValue("gui/maze_files_directory", maze_files_dir_);
+
+    // TODO: Actually load the maze here
+
     ui_->maze_file_name_label->setText(file_info.fileName());
   }
 }
@@ -126,6 +129,9 @@ void Client::LoadNewMaze() {
 void Client::LoadDefaultMaze() {
   if (default_maze_file_name_ != nullptr) {
     QFileInfo file_info(default_maze_file_name_);
+
+    // TODO: Actually load the maze here
+
     ui_->maze_file_name_label->setText(file_info.fileName());
   }
 }

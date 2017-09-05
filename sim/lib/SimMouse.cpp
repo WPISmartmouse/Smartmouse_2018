@@ -163,25 +163,25 @@ void SimMouse::run(double dt_s) {
 }
 
 void SimMouse::update_markers() {
-//  static unsigned int last_row = 0, last_col = 0;
-//
-//  if (last_col != col || last_row != row) {
-//    for (unsigned int i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
-//      for (unsigned int j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
-//        indicators[i][j]->mutable_material()->mutable_script()->set_name(grey_color);
-//      }
-//    }
-//    indicatePath(row, col, maze->path_to_next_goal, red_color);
-//    indicatePath(0, 0, maze->fastest_theoretical_route, green_color);
-//    if (maze->solved) {
-//      indicatePath(0, 0, maze->fastest_route, blue_color);
-//    }
-//
-//    publishIndicators();
-//
-//    last_row = row;
-//    last_col = col;
-//  }
+  static unsigned int last_row = 0, last_col = 0;
+
+  if (last_col != col || last_row != row) {
+    for (unsigned int i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
+      for (unsigned int j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
+        indicators[i][j]->mutable_material()->mutable_script()->set_name(grey_color);
+      }
+    }
+    indicatePath(row, col, maze->path_to_next_goal, red_color);
+    indicatePath(0, 0, maze->fastest_theoretical_route, green_color);
+    if (maze->solved) {
+      indicatePath(0, 0, maze->fastest_route, blue_color);
+    }
+
+    publishIndicators();
+
+    last_row = row;
+    last_col = col;
+  }
 
   {
     ignition::msgs::Marker estimated_pose_marker;
