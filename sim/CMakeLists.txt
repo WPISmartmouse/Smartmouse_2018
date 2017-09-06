@@ -42,15 +42,3 @@ target_link_libraries(keyboard_teleop sim ncurses msgs)
 
 add_executable(joy_teleop ./tools/joystick_teleop.cpp joystick/joystick.cc)
 target_link_libraries(joy_teleop sim ncurses msgs)
-
-################################
-# testing
-################################
-add_executable(sim_tests simulator/test/Test.cpp ${COM_SRC})
-target_compile_features(sim_tests PRIVATE cxx_strong_enums)
-target_link_libraries(sim_tests gtest gtest_main sim server)
-set_target_properties(sim_tests PROPERTIES COMPILE_FLAGS "-DSIM -include common/util.h")
-
-add_test(all-tests sim_tests)
-
-install(TARGETS sim_tests DESTINATION bin)

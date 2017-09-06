@@ -44,40 +44,15 @@ if (NOT ${BUILD_SIM})
 else ()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-unknown-pragmas")
 
-    file(GLOB CONSOLE_SRC console/*.cpp console/commands/*.cpp)
-
     ################################
-    # library for console programs
+    # gtest
     ################################
-    add_library(console ${COM_SRC} ${CONSOLE_SRC})
-    target_compile_features(console PRIVATE cxx_strong_enums)
-    target_include_directories(console PRIVATE console)
-    set_target_properties(console PROPERTIES COMPILE_FLAGS "-DCONSOLE -include common/util.h")
-
-    ################################
-    # text-only console programs
-    ################################
-    set(CONSOLES Solve
-            Animate
-            ConsoleNavTest
-            GenerateMaze
-            ReadAndPrint)
-
-    foreach (MAIN ${CONSOLES})
-        add_executable(${MAIN} "console/main/${MAIN}.cpp")
-        target_link_libraries(${MAIN} console)
-        target_compile_features(${MAIN} PRIVATE cxx_strong_enums)
-        set_target_properties(${MAIN} PROPERTIES COMPILE_FLAGS "-DCONSOLE")
-
-        install(TARGETS ${MAIN} DESTINATION bin)
-    endforeach ()
-
-    ################################
-    # testing
-    ################################
-    enable_testing()
     add_subdirectory(gtest)
-    include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+
+    ################################
+    # console
+    ################################
+    add_subdirectory(console)
 
     ################################
     # all simulation stuff

@@ -1,4 +1,4 @@
-#include "RobotConfig.h"
+#include <common/RobotConfig.h>
 
 #if defined(SIM)
 RobotConfig config = {
@@ -25,8 +25,6 @@ RobotConfig config = {
         MAX_FORCE : 0.014,
         ARC_TURN : false,
 };
-#elif defined(CONSOLE)
-
 #else // REAL
 RobotConfig config = {
         FRONT_ANALOG_ANGLE : 1.35255,
