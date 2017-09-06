@@ -19,7 +19,10 @@ class MazeWidget : public QWidget {
   const QString getTabName();
 
  private:
+  QRectF PaintWall(smartmouse::msgs::Wall wall);
+
   static const int PADDING_PX;
+  static QBrush wallBrush;
 
   ignition::transport::Node node_;
   smartmouse::msgs::Maze maze_;

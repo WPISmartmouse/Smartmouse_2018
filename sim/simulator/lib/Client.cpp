@@ -15,16 +15,15 @@ Client::Client(QMainWindow *parent) :
     QMainWindow(parent), ui_(new Ui::MainWindow) {
   ui_->setupUi(this);
 
-  ConfigureGui();
-
-  RestoreSettings();
-
   server_control_pub_ = node_.Advertise<smartmouse::msgs::ServerControl>(TopicNames::kWorldControl);
   physics_pub_ = node_.Advertise<smartmouse::msgs::PhysicsConfig>(TopicNames::kPhysics);
   maze_pub_ = node_.Advertise<smartmouse::msgs::Maze>(TopicNames::kMaze);
   node_.Subscribe(TopicNames::kWorldStatistics, &Client::OnWorldStats, this);
   node_.Subscribe(TopicNames::kGuiActions, &Client::OnGuiActions, this);
   node_.Subscribe(TopicNames::kPhysics, &Client::OnPhysics, this);
+
+  ConfigureGui();
+  RestoreSettings();
 
   // publish the initial configuration
   smartmouse::msgs::PhysicsConfig initial_physics_config;
