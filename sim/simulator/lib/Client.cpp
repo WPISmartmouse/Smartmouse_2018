@@ -65,6 +65,18 @@ void Client::Step() {
   server_control_pub_.Publish(step_msg);
 }
 
+void Client::ResetMouse() {
+  smartmouse::msgs::ServerControl reset_msg;
+  reset_msg.set_reset_robot(true);
+  server_control_pub_.Publish(reset_msg);
+}
+
+void Client::ResetTime() {
+  smartmouse::msgs::ServerControl reset_msg;
+  reset_msg.set_reset_time(true);
+  server_control_pub_.Publish(reset_msg);
+}
+
 void Client::RealTimeFactorChanged(double real_time_factor) {
   smartmouse::msgs::PhysicsConfig rtf_msg;
   rtf_msg.set_real_time_factor(real_time_factor);
@@ -153,6 +165,8 @@ void Client::ConfigureGui() {
   connect(ui_->load_maze_button, &QPushButton::clicked, this, &Client::LoadNewMaze);
   connect(ui_->actionExit, &QAction::triggered, this, &Client::Exit);
   connect(ui_->actionRestart, &QAction::triggered, this, &Client::Restart);
+  connect(ui_->actionReset_Mouse, &QAction::triggered, this, &Client::ResetMouse);
+  connect(ui_->actionReset_Time, &QAction::triggered, this, &Client::ResetTime);
   connect(ui_->actionSourceCode, &QAction::triggered, this, &Client::ShowSourceCode);
   connect(ui_->actionWiki, &QAction::triggered, this, &Client::ShowWiki);
   connect(ui_->play_button, &QPushButton::clicked, this, &Client::Play);

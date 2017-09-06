@@ -34,6 +34,8 @@ class Client : public QMainWindow {
   void Restart();
   void Play();
   void Pause();
+  void ResetMouse();
+  void ResetTime();
   void Step();
   void LoadNewMaze();
   void ShowSourceCode();

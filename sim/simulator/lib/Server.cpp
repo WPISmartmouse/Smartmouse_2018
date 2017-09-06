@@ -11,7 +11,7 @@ void Server::RunLoop() {
   node_ptr_ = new ignition::transport::Node();
 
   world_stats_pub_ = node_ptr_->Advertise<smartmouse::msgs::WorldStatistics>(TopicNames::kWorldStatistics);
-  node_ptr_->Subscribe(TopicNames::kWorldControl, &Server::OnWorldControl, this);
+  node_ptr_->Subscribe(TopicNames::kWorldControl, &Server::OnServerControl, this);
   node_ptr_->Subscribe(TopicNames::kPhysics, &Server::OnPhysics, this);
   node_ptr_->Subscribe(TopicNames::kMaze, &Server::OnMaze, this);
 
@@ -56,8 +56,7 @@ void Server::RunLoop() {
       // there is a fudge factor here to account for the time to publish world stats
       Time sleep_time = desired_step_time - used_step_time - 50e-6;
       Time::Sleep(sleep_time);
-    }
-    else {
+    } else {
       std::cout << "Update took " << used_step_time.Float() << ". Skipping sleep." << std::endl;
     }
 
@@ -83,14 +82,28 @@ void Server::Step() {
   ++steps_;
 }
 
-void Server::OnWorldControl(const smartmouse::msgs::ServerControl &msg) {
+void Server::ResetTime() {
+  sim_time_ = Time::Zero;
+  steps_ = 0UL;
+  pause_at_steps_ = 0ul;
+}
+
+void Server::OnServerControl(const smartmouse::msgs::ServerControl &msg) {
   // Enter critical section
   {
     std::lock_guard<std::mutex> guard(physics_mutex_);
-    pause_ = msg.pause();
-    quit_ = msg.quit();
+    if (msg.has_pause()) {
+      pause_ = msg.pause();
+    }
+    if (msg.has_quit()) {
+      quit_ = msg.quit();
+    }
     if (msg.has_step()) {
+      pause_ = false;
       pause_at_steps_ = steps_ + msg.step();
+    }
+    if (msg.has_reset_time()) {
+      ResetTime();
     }
   }
   // End critical section

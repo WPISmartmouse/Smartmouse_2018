@@ -195,7 +195,7 @@
           <item>
            <widget class="QLabel" name="time_value_label">
             <property name="text">
-             <string>00:00:00.0000</string>
+             <string>00 00:00:00.000</string>
             </property>
            </widget>
           </item>
@@ -238,10 +238,10 @@
    </widget>
    <widget class="QMenu" name="menuWorld">
     <property name="title">
-     <string>World</string>
+     <string>Server</string>
     </property>
     <addaction name="actionReset_Mouse"/>
-    <addaction name="actionReset_Time_Mouse"/>
+    <addaction name="actionReset_Time"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -274,9 +274,9 @@
     <string>Reset Mouse</string>
    </property>
   </action>
-  <action name="actionReset_Time_Mouse">
+  <action name="actionReset_Time">
    <property name="text">
-    <string>Reset Time + Mouse</string>
+    <string>Reset Time</string>
    </property>
   </action>
   <action name="actionWiki">

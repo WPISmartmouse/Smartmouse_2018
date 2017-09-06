@@ -21,7 +21,7 @@ class Server {
 
   void join();
  private:
-  void OnWorldControl(const smartmouse::msgs::ServerControl &msg);
+  void OnServerControl(const smartmouse::msgs::ServerControl &msg);
   void OnPhysics(const smartmouse::msgs::PhysicsConfig &msg);
   void OnMaze(const smartmouse::msgs::Maze &msg);
 
@@ -36,4 +36,5 @@ class Server {
   unsigned long pause_at_steps_ = 0ul;
   double real_time_factor_ = 1.0;
   smartmouse::msgs::Maze maze_;
+  void ResetTime();
 };

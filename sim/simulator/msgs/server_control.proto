@@ -7,5 +7,7 @@ message ServerControl {
     optional bool pause = 2;
     optional uint32 step = 4;
     optional bool quit = 7;
+    optional bool reset_time = 8;
+    optional bool reset_robot = 9;
 }
 
