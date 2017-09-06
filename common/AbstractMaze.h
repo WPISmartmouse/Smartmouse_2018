@@ -4,6 +4,7 @@
 #pragma once
 
 #include <stdio.h>
+#include <fstream>
 
 #include "SensorReading.h"
 #include "Node.h"
@@ -38,6 +39,10 @@ class AbstractMaze {
    * allocates a maze of the given size and sets all links in graph to be null. Naturally, it's column major.
    */
   AbstractMaze();
+
+#ifndef ARDUINO // this can't exist on arduino
+  AbstractMaze(std::ifstream &fs);
+#endif
 
   void mark_origin_known();
 

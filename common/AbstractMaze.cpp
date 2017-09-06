@@ -4,6 +4,7 @@
 #include "AbstractMaze.h"
 
 #include <string.h>
+#include <string>
 #include <algorithm>
 #include <random>
 
@@ -23,6 +24,35 @@ AbstractMaze::AbstractMaze() : solved(false) {
     }
   }
 }
+
+#ifndef ARDUINO
+AbstractMaze::AbstractMaze(std::ifstream &fs) : AbstractMaze() {
+  std::string line;
+
+  //look West and North to connect any nodes
+  for (unsigned int i = 0; i < MAZE_SIZE; i++) { //read in each line
+    std::getline(fs, line);
+
+    if (!fs) {
+      printf("getline failed\n.");
+      return;
+    }
+
+    int charPos = 0;
+    for (unsigned int j = 0; j < MAZE_SIZE; j++) {
+      if (line.at(charPos) != '|') {
+        connect_neighbor(i, j, Direction::W);
+      }
+      charPos++;
+      if (line.at(charPos) != '_') {
+        connect_neighbor(i, j, Direction::S);
+      }
+      charPos++;
+    }
+  }
+  printf("\n");
+}
+#endif
 
 int AbstractMaze::get_node(Node **out, unsigned int row, unsigned int col) {
   if (col < 0 || col >= MAZE_SIZE || row < 0 || row >= MAZE_SIZE) {

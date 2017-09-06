@@ -1,4 +1,3 @@
-#include <console/ConsoleMaze.h>
 #include <console/ConsoleMouse.h>
 #include <iostream>
 
@@ -49,15 +48,15 @@ int main(int argc, char *argv[]) {
   maze_file = std::string(argv[optind++]);
   path = std::string(argv[optind]);
 
-  std::fstream fs;
-  fs.open(maze_file, std::fstream::in);
+  std::ifstream fs;
+  fs.open(maze_file, std::ifstream::in);
 
   if (fs.good()) {
     std::cout << "maze file: " << maze_file << std::endl;
     std::cout << "path: " << path << std::endl;
     std::cout << "start pos: (" << row << "," << col << ")" << std::endl;
 
-    ConsoleMaze maze(fs);
+    AbstractMaze maze(fs);
     ConsoleMouse::inst()->seedMaze(&maze);
 
     unsigned int i = 0;

@@ -8,7 +8,6 @@
 #include <common/WallFollow.h>
 #include <common/Flood.h>
 #include <common/Node.h>
-#include <console/ConsoleMaze.h>
 #include <console/ConsoleMouse.h>
 
 const char *FLOOD_SLN = "ESSSEESSWSSSEENNENESSEES";
@@ -136,12 +135,12 @@ TEST(ConnectMazeTest, RemoveNeighbors) {
 
 TEST(FloodFillTest, EmptyMaze){
   std::string maze_file = "../../mazes/empty.mz";
-  std::fstream fs;
-  fs.open(maze_file, std::fstream::in);
+  std::ifstream fs;
+  fs.open(maze_file, std::ifstream::in);
 
   ASSERT_TRUE(fs.good());
 
-  ConsoleMaze maze(fs);
+  AbstractMaze maze(fs);
   Node *origin;
   Node *center;
 
@@ -172,12 +171,12 @@ TEST(FloodFillTest, EmptyMaze){
 
 TEST(FloodFillTest, StripedMaze){
   std::string maze_file = "../../mazes/stripes.mz";
-  std::fstream fs;
-  fs.open(maze_file, std::fstream::in);
+  std::ifstream fs;
+  fs.open(maze_file, std::ifstream::in);
 
   ASSERT_TRUE(fs.good());
 
-  ConsoleMaze maze(fs);
+  AbstractMaze maze(fs);
   Node *origin;
   Node *center;
 
@@ -208,12 +207,12 @@ TEST(FloodFillTest, StripedMaze){
 
 TEST(SolveMazeTest, WallFollowSolve) {
   std::string maze_file = "../../mazes/16x16.mz";
-  std::fstream fs;
-  fs.open(maze_file, std::fstream::in);
+  std::ifstream fs;
+  fs.open(maze_file, std::ifstream::in);
 
   ASSERT_TRUE(fs.good());
 
-  ConsoleMaze maze(fs);
+  AbstractMaze maze(fs);
   ConsoleMouse::inst()->seedMaze(&maze);
   WallFollow solver(ConsoleMouse::inst());
   solver.setup();
@@ -228,12 +227,12 @@ TEST(SolveMazeTest, WallFollowSolve) {
 
 TEST(SolveMazeTest, FloodSolve) {
   std::string maze_file = "../../mazes/16x16.mz";
-  std::fstream fs;
-  fs.open(maze_file, std::fstream::in);
+  std::ifstream fs;
+  fs.open(maze_file, std::ifstream::in);
 
   ASSERT_TRUE(fs.good());
 
-  ConsoleMaze maze(fs);
+  AbstractMaze maze(fs);
   ConsoleMouse::inst()->seedMaze(&maze);
   Flood solver(ConsoleMouse::inst());
   solver.setup();

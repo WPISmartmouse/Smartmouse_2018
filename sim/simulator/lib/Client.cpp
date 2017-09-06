@@ -1,3 +1,4 @@
+#include <fstream>
 #include <QtCore/QUrl>
 #include <QtGui/QDesktopServices>
 #include <QtWidgets/QAction>
@@ -6,6 +7,8 @@
 #include <sim/simulator/lib/Server.h>
 #include <sim/simulator/lib/Client.h>
 #include <sim/simulator/lib/TopicNames.h>
+#include <common/AbstractMaze.h>
+#include <msgs/msgs.h>
 
 #include "ui_mainwindow.h"
 
@@ -121,6 +124,10 @@ void Client::LoadNewMaze() {
     settings_->setValue("gui/maze_files_directory", maze_files_dir_);
 
     // TODO: Actually load the maze here
+    std::ifstream fs;
+    fs.open(file_info.absolutePath().toStdString(), std::fstream::in);
+    AbstractMaze maze(fs);
+    smartmouse::msgs::Maze maze_msg = smartmouse::msgs::fromAbstractMaze(&maze);
 
     ui_->maze_file_name_label->setText(file_info.fileName());
   }
