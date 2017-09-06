@@ -13,6 +13,7 @@ void Server::RunLoop() {
   world_stats_pub_ = node_ptr_->Advertise<smartmouse::msgs::WorldStatistics>(TopicNames::kWorldStatistics);
   node_ptr_->Subscribe(TopicNames::kWorldControl, &Server::OnWorldControl, this);
   node_ptr_->Subscribe(TopicNames::kPhysics, &Server::OnPhysics, this);
+  node_ptr_->Subscribe(TopicNames::kMaze, &Server::OnMaze, this);
 
   while (true) {
     Time update_rate = Time(0, ns_of_sim_per_step_);
@@ -107,6 +108,15 @@ void Server::OnPhysics(const smartmouse::msgs::PhysicsConfig &msg) {
         real_time_factor_ = msg.real_time_factor();
       }
     }
+  }
+  // End critical section
+}
+
+void Server::OnMaze(const smartmouse::msgs::Maze &msg) {
+  // Enter critical section
+  {
+    std::lock_guard<std::mutex> guard(physics_mutex_);
+    maze_ = msg;
   }
   // End critical section
 }

@@ -26,8 +26,6 @@ class Client : public QMainWindow {
 
   void OnExit();
 
-  virtual ~Client();
-
  private slots:
 
   void Play();
@@ -57,22 +55,22 @@ class Client : public QMainWindow {
 
  private:
   void ConfigureGui();
+  void LoadDefaultMaze();
+  void RestoreSettings();
+  void SaveSettings();
 
   void OnWorldStats(const smartmouse::msgs::WorldStatistics &msg);
   void OnGuiActions(const smartmouse::msgs::GuiActions &msg);
   void OnPhysics(const smartmouse::msgs::PhysicsConfig &msg);
 
-  ignition::transport::Node node_;
-  Ui::MainWindow *ui_;
-  ignition::transport::Node::Publisher server_control_pub_;
-  ignition::transport::Node::Publisher physics_pub_;
-
   unsigned int step_count_ = 1u;
+  ignition::transport::Node node_;
+  ignition::transport::Node::Publisher maze_pub_;
+  ignition::transport::Node::Publisher physics_pub_;
+  ignition::transport::Node::Publisher server_control_pub_;
   MazeWidget *maze_widget_;
-  QString maze_files_dir_;
   QSettings *settings_;
-  void writeSettings();
-  void RestoreSettings();
-  void LoadDefaultMaze();
+  QString maze_files_dir_;
   QString default_maze_file_name_;
+  Ui::MainWindow *ui_;
 };

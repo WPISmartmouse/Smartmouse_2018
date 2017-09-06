@@ -7,6 +7,7 @@
 #include <string>
 #include <algorithm>
 #include <random>
+#include <iostream>
 
 #ifdef EMBED
 #include <Arduino.h>
@@ -33,12 +34,12 @@ AbstractMaze::AbstractMaze(std::ifstream &fs) : AbstractMaze() {
   for (unsigned int i = 0; i < MAZE_SIZE; i++) { //read in each line
     std::getline(fs, line);
 
-    if (!fs) {
-      printf("getline failed\n.");
+    if (!fs.good()) {
+      print("getline failed");
       return;
     }
 
-    int charPos = 0;
+    unsigned int charPos = 0;
     for (unsigned int j = 0; j < MAZE_SIZE; j++) {
       if (line.at(charPos) != '|') {
         connect_neighbor(i, j, Direction::W);

@@ -7,7 +7,6 @@
 #include <sim/simulator/lib/Server.h>
 #include <sim/simulator/lib/Client.h>
 #include <sim/simulator/lib/TopicNames.h>
-#include <common/AbstractMaze.h>
 #include <msgs/msgs.h>
 
 #include "ui_mainwindow.h"
@@ -22,6 +21,7 @@ Client::Client(QMainWindow *parent) :
 
   server_control_pub_ = node_.Advertise<smartmouse::msgs::ServerControl>(TopicNames::kWorldControl);
   physics_pub_ = node_.Advertise<smartmouse::msgs::PhysicsConfig>(TopicNames::kPhysics);
+  maze_pub_ = node_.Advertise<smartmouse::msgs::Maze>(TopicNames::kMaze);
   node_.Subscribe(TopicNames::kWorldStatistics, &Client::OnWorldStats, this);
   node_.Subscribe(TopicNames::kGuiActions, &Client::OnGuiActions, this);
   node_.Subscribe(TopicNames::kPhysics, &Client::OnPhysics, this);
@@ -35,10 +35,6 @@ Client::Client(QMainWindow *parent) :
   smartmouse::msgs::ServerControl initial_server_control;
   initial_server_control.set_pause(true);
   server_control_pub_.Publish(initial_server_control);
-}
-
-Client::~Client() {
-  delete ui_;
 }
 
 void Client::OnExit() {
@@ -124,11 +120,10 @@ void Client::LoadNewMaze() {
     settings_->setValue("gui/maze_files_directory", maze_files_dir_);
 
     std::ifstream fs;
-    fs.open(file_info.absolutePath().toStdString(), std::fstream::in);
+    fs.open(file_info.absoluteFilePath().toStdString(), std::fstream::in);
     AbstractMaze maze(fs);
     smartmouse::msgs::Maze maze_msg = smartmouse::msgs::fromAbstractMaze(&maze);
-    // TODO: Actually publish the maze here
-
+    maze_pub_.Publish(maze_msg);
     ui_->maze_file_name_label->setText(file_info.fileName());
   }
 }
@@ -138,11 +133,10 @@ void Client::LoadDefaultMaze() {
     QFileInfo file_info(default_maze_file_name_);
 
     std::ifstream fs;
-    fs.open(file_info.absolutePath().toStdString(), std::fstream::in);
+    fs.open(file_info.absoluteFilePath().toStdString(), std::fstream::in);
     AbstractMaze maze(fs);
     smartmouse::msgs::Maze maze_msg = smartmouse::msgs::fromAbstractMaze(&maze);
-    // TODO: Actually publish the maze here
-
+    maze_pub_.Publish(maze_msg);
     ui_->maze_file_name_label->setText(file_info.fileName());
   }
 }
@@ -183,11 +177,11 @@ void Client::ConfigureGui() {
 }
 
 void Client::closeEvent(QCloseEvent *event) {
-  writeSettings();
+  SaveSettings();
   event->accept();
 }
 
-void Client::writeSettings() {
+void Client::SaveSettings() {
   settings_->setValue("gui/tab_splitter", ui_->tab_splitter->saveState());
   settings_->setValue("gui/info_tabs", ui_->info_tabs->currentIndex());
 }

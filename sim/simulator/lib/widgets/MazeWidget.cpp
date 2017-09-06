@@ -4,11 +4,13 @@
 
 #include <common/AbstractMaze.h>
 #include <sim/simulator/lib/widgets/MazeWidget.h>
+#include <lib/TopicNames.h>
 
 const int MazeWidget::PADDING_PX = 24;
 
 MazeWidget::MazeWidget() : QWidget() {
   setSizePolicy(QSizePolicy::Policy::MinimumExpanding, QSizePolicy::Policy::MinimumExpanding);
+//  node_.Subscribe(TopicNames::kMaze, &MazeWidget::OnMaze, this);
 }
 
 void MazeWidget::paintEvent(QPaintEvent *event) {
@@ -41,4 +43,8 @@ void MazeWidget::paintEvent(QPaintEvent *event) {
 }
 const QString MazeWidget::getTabName() {
   return QString("Maze View");
+}
+
+void MazeWidget::OnMaze(const smartmouse::msgs::Maze &msg) {
+  maze_ = msg;
 }
