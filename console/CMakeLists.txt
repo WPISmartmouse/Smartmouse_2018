@@ -29,7 +29,6 @@ endforeach ()
 ################################
 # testing
 ################################
-include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 add_executable(console_tests test/Test.cpp ${COM_SRC})
 target_compile_features(console_tests PRIVATE cxx_strong_enums)
 target_link_libraries(console_tests gtest gtest_main console)

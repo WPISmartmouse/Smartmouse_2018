@@ -26,3 +26,13 @@ add_executable(SmartmouseSim main.cpp ${WIDGET_SRCS} simulator.qrc)
 target_link_libraries(SmartmouseSim server client)
 
 install(TARGETS SmartmouseSim DESTINATION bin)
+
+################################
+# testing
+################################
+add_executable(sim_tests test/SimTest.cpp)
+target_compile_features(sim_tests PRIVATE cxx_strong_enums)
+target_link_libraries(sim_tests gtest gtest_main sim msgs)
+set_target_properties(sim_tests PROPERTIES COMPILE_FLAGS "-DCONSOLE -include common/util.h")
+
+install(TARGETS sim_tests DESTINATION bin)
