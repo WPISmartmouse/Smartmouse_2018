@@ -129,5 +129,7 @@ class AbstractMaze {
 
   bool flood_fill(char *path, unsigned int r0, unsigned int c0, unsigned int r1, unsigned int c1);
 
+  bool operator==(const AbstractMaze &other) const;
+
   Node *nodes[AbstractMaze::MAZE_SIZE][AbstractMaze::MAZE_SIZE]; // array of node pointers
 };

@@ -449,3 +449,21 @@ void AbstractMaze::_make_connections(AbstractMaze *maze, Node *node) {
     }
   }
 }
+
+bool AbstractMaze::operator==(const AbstractMaze &other) const {
+  unsigned int r, c;
+  for (r = 0; r < AbstractMaze::MAZE_SIZE; r++) {
+    for (c = 0; c < AbstractMaze::MAZE_SIZE; c++) {
+      Node *n = nodes[r][c];
+      Node *n2 = other.nodes[r][c];
+      for (Direction d = Direction::First; d < Direction::Last; d++) {
+        bool wall = (n->neighbor(d) == nullptr);
+        bool wall2 = (n2->neighbor(d) == nullptr);
+        if (wall ^ wall2) {
+          return false;
+        }
+      }
+    }
+  }
+  return true;
+}

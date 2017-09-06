@@ -123,11 +123,11 @@ void Client::LoadNewMaze() {
     settings_->setValue("gui/default_maze_file_name", default_maze_file_name_);
     settings_->setValue("gui/maze_files_directory", maze_files_dir_);
 
-    // TODO: Actually load the maze here
     std::ifstream fs;
     fs.open(file_info.absolutePath().toStdString(), std::fstream::in);
     AbstractMaze maze(fs);
     smartmouse::msgs::Maze maze_msg = smartmouse::msgs::fromAbstractMaze(&maze);
+    // TODO: Actually publish the maze here
 
     ui_->maze_file_name_label->setText(file_info.fileName());
   }
@@ -137,7 +137,11 @@ void Client::LoadDefaultMaze() {
   if (default_maze_file_name_ != nullptr) {
     QFileInfo file_info(default_maze_file_name_);
 
-    // TODO: Actually load the maze here
+    std::ifstream fs;
+    fs.open(file_info.absolutePath().toStdString(), std::fstream::in);
+    AbstractMaze maze(fs);
+    smartmouse::msgs::Maze maze_msg = smartmouse::msgs::fromAbstractMaze(&maze);
+    // TODO: Actually publish the maze here
 
     ui_->maze_file_name_label->setText(file_info.fileName());
   }

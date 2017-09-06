@@ -29,17 +29,32 @@ smartmouse::msgs::Maze fromAbstractMaze(AbstractMaze *maze, std::string name, in
     }
   }
 
+  unsigned int i;
+  for (i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
+    Wall *left_col_wall = maze_msg.add_walls();
+    smartmouse::msgs::RowCol *left_col_node = left_col_wall->mutable_node();
+    left_col_node->set_row(i);
+    left_col_node->set_col(0);
+    left_col_wall->set_direction(Direction_Dir_W);
+
+    Wall *top_row_wall = maze_msg.add_walls();
+    smartmouse::msgs::RowCol *top_row_node = top_row_wall->mutable_node();
+    top_row_node->set_row(0);
+    top_row_node->set_col(i);
+    top_row_wall->set_direction(Direction_Dir_N);
+  }
+
   return maze_msg;
 }
 
 AbstractMaze toAbstractMaze(smartmouse::msgs::Maze maze_msg) {
   AbstractMaze maze;
 
+  maze.connect_all_neighbors_in_maze();
   for (Wall wall : maze_msg.walls()) {
     smartmouse::msgs::RowCol node = wall.node();
     smartmouse::msgs::Direction::Dir dir_msg = wall.direction();
     ::Direction dir = dirMsgEnumToDir(dir_msg);
-    maze.connect_all_neighbors_in_maze();
     maze.disconnect_neighbor(node.row(), node.col(), dir);
   }
 

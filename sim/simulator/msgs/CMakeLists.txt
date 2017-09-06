@@ -10,3 +10,4 @@ set(PROTO_SRC ${PROTO_SRC} PARENT_SCOPE)
 set(PROTO_HEADER ${PROTO_HEADER} PARENT_SCOPE)
 
 add_library(msgs STATIC msgs.cpp ${PROTO_SRC} ${PROTO_HEADER})
+target_link_libraries(msgs sim)
