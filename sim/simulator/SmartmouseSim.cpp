@@ -36,20 +36,21 @@ int main(int argc, char *argv[]) {
   Server server;
   server.start();
 
-  QApplication app(argc, argv);
-
-  Client window;
-
-  window.setWindowTitle("Smartmouse Simulator");
-  window.showMaximized();
-
-  int ret_code = app.exec();
+  int return_code = 0;
+  Client *window;
+  do {
+    QApplication app(argc, argv);
+    window = new Client();
+    window->setWindowTitle("Smartmouse Simulator");
+    window->showMaximized();
+    return_code = app.exec();
+  } while (return_code == Client::kRestartCode);
 
   smartmouse::msgs::ServerControl quit_msg;
   quit_msg.set_quit(true);
-  window.OnExit();
+  window->Exit();
 
   server.join();
 
-  return ret_code;
+  return return_code;
 }

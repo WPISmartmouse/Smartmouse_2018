@@ -20,30 +20,26 @@ class Client : public QMainWindow {
  Q_OBJECT
 
  public:
+  static const int kRestartCode = 1337;
+
   Client(QMainWindow *parent = 0);
 
   void closeEvent(QCloseEvent *event) override;
 
-  void OnExit();
+ public slots:
+  void Exit();
 
  private slots:
 
+  void Restart();
   void Play();
-
   void Pause();
-
   void Step();
-
   void LoadNewMaze();
-
   void ShowSourceCode();
-
   void ShowWiki();
-
   void RealTimeFactorChanged(double real_time_factor);
-
   void StepCountChanged(int step_time_ms);
-
   void TimePerStepMsChanged(int step_time_ms);
 
 #pragma clang diagnostic push

@@ -36,11 +36,15 @@ Client::Client(QMainWindow *parent) :
   server_control_pub_.Publish(initial_server_control);
 }
 
-void Client::OnExit() {
+void Client::Exit() {
   smartmouse::msgs::ServerControl quit_msg;
   quit_msg.set_quit(true);
   server_control_pub_.Publish(quit_msg);
   QApplication::quit();
+}
+
+void Client::Restart() {
+  qApp->exit(kRestartCode);
 }
 
 void Client::Play() {
@@ -147,7 +151,8 @@ void Client::ConfigureGui() {
   ui_->main_tab->setMaximumWidth(300);
 
   connect(ui_->load_maze_button, &QPushButton::clicked, this, &Client::LoadNewMaze);
-  connect(ui_->actionExit, &QAction::triggered, this, &Client::OnExit);
+  connect(ui_->actionExit, &QAction::triggered, this, &Client::Exit);
+  connect(ui_->actionRestart, &QAction::triggered, this, &Client::Restart);
   connect(ui_->actionSourceCode, &QAction::triggered, this, &Client::ShowSourceCode);
   connect(ui_->actionWiki, &QAction::triggered, this, &Client::ShowWiki);
   connect(ui_->play_button, &QPushButton::clicked, this, &Client::Play);

@@ -21,7 +21,7 @@ target_link_libraries(client msgs Qt5::Widgets simulator_lib sim server ${IGNITI
 
 file(GLOB WIDGET_SRCS lib/widgets/*.cpp)
 
-add_executable(SmartmouseSim main.cpp ${WIDGET_SRCS} simulator.qrc)
+add_executable(SmartmouseSim SmartmouseSim.cpp ${WIDGET_SRCS} simulator.qrc)
 
 target_link_libraries(SmartmouseSim server client)
 
