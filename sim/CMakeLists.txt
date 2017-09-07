@@ -4,7 +4,7 @@ find_package(Protobuf REQUIRED)
 find_package(ignition-msgs0 QUIET REQUIRED)
 find_package(ignition-transport3 QUIET REQUIRED)
 
-set(PROTOBUF_IMPORT_DIRS ${IGNITION-MSGS_INCLUDE_DIRS})
+set(PROTOBUF_IMPORT_DIRS ${IGNITION-MSGS_PROTO_PATH})
 
 add_definitions(${QT_DEFINITIONS})
 include_directories(${PROTOBUF_INCLUDE_DIRS} ${Qt5Test_INCLUDE_DIRS} ${IGNITION-TRANSPORT_INCLUDE_DIRS})
@@ -17,8 +17,11 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${IGNITION-TRANSPORT_CXX_FLAGS} -fPIC -D
 add_subdirectory(simulator)
 
 ##################################
-# library for simulation sources
+# libraries for common & simulation sources
 ##################################
+add_library(sim_common ${COM_SRC})
+set_target_properties(sim_common PROPERTIES COMPILE_FLAGS "-include common/util.h")
+
 file(GLOB SIM_SRC lib/*.cpp commands/*.cpp)
 add_library(sim ${COM_SRC} ${SIM_SRC})
 set_target_properties(sim PROPERTIES COMPILE_FLAGS "-include common/util.h")
