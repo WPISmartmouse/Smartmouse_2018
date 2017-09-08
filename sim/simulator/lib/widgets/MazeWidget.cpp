@@ -13,6 +13,7 @@ QBrush MazeWidget::kWallBrush = QBrush(Qt::red);
 MazeWidget::MazeWidget() : QWidget() {
   setSizePolicy(QSizePolicy::Policy::MinimumExpanding, QSizePolicy::Policy::MinimumExpanding);
   node_.Subscribe(TopicNames::kMaze, &MazeWidget::OnMaze, this);
+  node_.Subscribe(TopicNames::kRobotDescription, &MazeWidget::OnRobotDescription, this);
 }
 
 /**
@@ -58,6 +59,12 @@ void MazeWidget::paintEvent(QPaintEvent *event) {
   }
 
   // Draw the mouse
+  QPainterPath footprint_;
+  footprint_.moveTo(mouse_.footprint(0).x(), mouse_.footprint(0).y());
+  for (auto pt : mouse_.footprint()) {
+    footprint_.lineTo(pt.x(), pt.y());
+  }
+
   QTransform mouse_tf;
   mouse_tf.translate(robot_state_.xytheta().x(), robot_state_.xytheta().y());
   mouse_tf.rotateRadians(robot_state_.xytheta().theta(), Qt::ZAxis);
@@ -113,5 +120,10 @@ const QString MazeWidget::getTabName() {
 
 void MazeWidget::OnMaze(const smartmouse::msgs::Maze &msg) {
   maze_ = msg;
+  update();
+}
+
+void MazeWidget::OnRobotDescription(const smartmouse::msgs::RobotDescription &msg) {
+  mouse_ = msg;
   update();
 }

@@ -129,7 +129,7 @@ void Client::ShowSourceCode() {
 void Client::LoadNewMouse() {
     QString file_name = QFileDialog::getOpenFileName(this, tr("Open Mouse"), mouse_files_dir_, tr("Mouse Files (*.ms)"));
 
-    if (file_name != nullptr) {
+    if (!file_name.isEmpty()) {
       QFileInfo file_info(file_name);
       mouse_files_dir_ = file_info.dir().absolutePath();
       default_mouse_file_name_ = file_name;
@@ -138,6 +138,7 @@ void Client::LoadNewMouse() {
 
       std::ifstream fs;
       fs.open(file_info.absoluteFilePath().toStdString(), std::fstream::in);
+
       smartmouse::msgs::RobotDescription robot_description_msg = smartmouse::msgs::Convert(fs);
       robot_description_pub_.Publish(robot_description_msg);
       ui_->mouse_file_name_label->setText(file_info.fileName());
@@ -147,7 +148,7 @@ void Client::LoadNewMouse() {
 void Client::LoadNewMaze() {
   QString file_name = QFileDialog::getOpenFileName(this, tr("Open Maze"), maze_files_dir_, tr("Maze Files (*.mz)"));
 
-  if (file_name != nullptr) {
+  if (!file_name.isEmpty()) {
     QFileInfo file_info(file_name);
     maze_files_dir_ = file_info.dir().absolutePath();
     default_maze_file_name_ = file_name;
@@ -164,7 +165,7 @@ void Client::LoadNewMaze() {
 }
 
 void Client::LoadDefaultMouse() {
-  if (default_mouse_file_name_ != nullptr) {
+  if (!default_mouse_file_name_.isEmpty()) {
     QFileInfo file_info(default_mouse_file_name_);
 
     std::ifstream fs;
@@ -173,10 +174,14 @@ void Client::LoadDefaultMouse() {
     robot_description_pub_.Publish(mouse_msg);
     ui_->mouse_file_name_label->setText(file_info.fileName());
   }
+  else {
+    std::cout << "no default mouse" << std::endl;
+    // TODO: handle this case
+  }
 }
 
 void Client::LoadDefaultMaze() {
-  if (default_maze_file_name_ != nullptr) {
+  if (!default_maze_file_name_.isEmpty()) {
     QFileInfo file_info(default_maze_file_name_);
 
     std::ifstream fs;
@@ -185,6 +190,10 @@ void Client::LoadDefaultMaze() {
     smartmouse::msgs::Maze maze_msg = smartmouse::msgs::Convert(&maze);
     maze_pub_.Publish(maze_msg);
     ui_->maze_file_name_label->setText(file_info.fileName());
+  }
+  else {
+    std::cout << "no default maze" << std::endl;
+    // TODO: handle this case
   }
 }
 

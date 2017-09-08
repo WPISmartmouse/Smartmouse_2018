@@ -5,6 +5,7 @@
 #include <sim/simulator/msgs/robot_ui_state.pb.h>
 #include <sim/simulator/msgs/maze.pb.h>
 #include <ignition/transport/Node.hh>
+#include <msgs/robot_description.pb.h>
 
 class MazeWidget : public QWidget {
  Q_OBJECT
@@ -13,6 +14,7 @@ class MazeWidget : public QWidget {
   MazeWidget();
 
   void OnMaze(const smartmouse::msgs::Maze &msg);
+  void OnRobotDescription(const smartmouse::msgs::RobotDescription &msg);
 
   void paintEvent(QPaintEvent *event);
 
@@ -27,7 +29,7 @@ class MazeWidget : public QWidget {
 
   ignition::transport::Node node_;
   smartmouse::msgs::Maze maze_;
-  QPainterPath footprint_;
   smartmouse::msgs::RobotUiState robot_state_;
+  smartmouse::msgs::RobotDescription mouse_;
 };
 

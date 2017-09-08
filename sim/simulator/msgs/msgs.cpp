@@ -1,3 +1,4 @@
+#include <sim/simulator/lib/json.hpp>
 #include "msgs.h"
 
 namespace smartmouse {
@@ -76,9 +77,16 @@ AbstractMaze Convert(smartmouse::msgs::Maze maze_msg) {
 }
 
 RobotDescription Convert(std::ifstream &fs) {
-  // TODO: implement me
+  nlohmann::json json;
+  json << fs;
+
   RobotDescription robot_description;
-  robot_description.ParseFromIstream(&fs);
+  auto footprint = robot_description.mutable_footprint();
+  for (auto json_pt : json["footprint"]) {
+    auto pt = footprint->Add();
+    pt->set_x(json_pt["x"]);
+    pt->set_y(json_pt["y"]);
+  }
 
   return robot_description;
 }

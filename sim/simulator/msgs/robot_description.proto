@@ -2,16 +2,14 @@ syntax = "proto2";
 
 import "ignition/msgs/vector2d.proto";
 import "ignition/msgs/vector3d.proto";
+import "xytheta.proto";
 
 package smartmouse.msgs;
 
 message RobotDescription {
-    optional Polygon2D footprint = 1;
+    repeated ignition.msgs.Vector2d footprint = 1;
     optional ignition.msgs.Vector2d left_wheel = 2;
     optional ignition.msgs.Vector2d right_wheel = 3;
     optional ignition.msgs.Vector3d cog = 4;
-}
-
-message Polygon2D {
-    repeated ignition.msgs.Vector2d pts = 1;
+    repeated XYTheta range_sensors = 5;
 }
