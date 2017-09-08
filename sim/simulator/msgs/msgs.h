@@ -12,7 +12,7 @@ AbstractMaze ToAbstractMaze(smartmouse::msgs::Maze maze_msg);
 
 ::Direction DirMsgToDir(smartmouse::msgs::Direction dir_msg);
 
-::Direction DirMsgEnumToDir(smartmouse::msgs::Direction::Dir dir_enum);
+::Direction Convert(smartmouse::msgs::Direction::Dir dir_enum);
 
 RobotDescription Convert(std::ifstream &fs);
 }

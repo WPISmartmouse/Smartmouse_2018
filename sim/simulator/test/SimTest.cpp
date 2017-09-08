@@ -23,17 +23,17 @@ TEST(DirectionTest, DirectionMsgConversion) {
 }
 
 TEST(DirectionTest, DirectionEnumConversion) {
-  EXPECT_EQ(smartmouse::msgs::DirMsgEnumToDir(smartmouse::msgs::Direction_Dir_N), ::Direction::N);
-  EXPECT_EQ(smartmouse::msgs::DirMsgEnumToDir(smartmouse::msgs::Direction_Dir_E), ::Direction::E);
-  EXPECT_EQ(smartmouse::msgs::DirMsgEnumToDir(smartmouse::msgs::Direction_Dir_S), ::Direction::S);
-  EXPECT_EQ(smartmouse::msgs::DirMsgEnumToDir(smartmouse::msgs::Direction_Dir_W), ::Direction::W);
+  EXPECT_EQ(smartmouse::msgs::Convert(smartmouse::msgs::Direction_Dir_N), ::Direction::N);
+  EXPECT_EQ(smartmouse::msgs::Convert(smartmouse::msgs::Direction_Dir_E), ::Direction::E);
+  EXPECT_EQ(smartmouse::msgs::Convert(smartmouse::msgs::Direction_Dir_S), ::Direction::S);
+  EXPECT_EQ(smartmouse::msgs::Convert(smartmouse::msgs::Direction_Dir_W), ::Direction::W);
 }
 
 TEST(MazeTest, MazeConversion) {
   AbstractMaze maze;
   smartmouse::msgs::Maze maze_msg = smartmouse::msgs::FromAbstractMaze(&maze);
 
-  EXPECT_EQ(maze_msg.walls_size(), 2 * (AbstractMaze::MAZE_SIZE * AbstractMaze::MAZE_SIZE + AbstractMaze::MAZE_SIZE));
+  EXPECT_EQ(maze_msg.walls_size(), (int)(2 * (AbstractMaze::MAZE_SIZE * AbstractMaze::MAZE_SIZE + AbstractMaze::MAZE_SIZE)));
 
   AbstractMaze maze2 = smartmouse::msgs::ToAbstractMaze(maze_msg);
 

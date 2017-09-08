@@ -54,7 +54,7 @@ AbstractMaze ToAbstractMaze(smartmouse::msgs::Maze maze_msg) {
   for (Wall wall : maze_msg.walls()) {
     smartmouse::msgs::RowCol node = wall.node();
     smartmouse::msgs::Direction::Dir dir_msg = wall.direction();
-    ::Direction dir = DirMsgEnumToDir(dir_msg);
+    ::Direction dir = Convert(dir_msg);
     maze.disconnect_neighbor(node.row(), node.col(), dir);
   }
 
@@ -62,10 +62,10 @@ AbstractMaze ToAbstractMaze(smartmouse::msgs::Maze maze_msg) {
 }
 
 ::Direction DirMsgToDir(smartmouse::msgs::Direction dir_msg) {
-  return DirMsgEnumToDir(dir_msg.direction());
+  return Convert(dir_msg.direction());
 }
 
-::Direction DirMsgEnumToDir(smartmouse::msgs::Direction::Dir dir_enum) {
+::Direction Convert(smartmouse::msgs::Direction::Dir dir_enum) {
   switch (dir_enum) {
     case Direction_Dir_N: return ::Direction::N;
     case Direction_Dir_S: return ::Direction::S;
