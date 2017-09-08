@@ -8,7 +8,6 @@
 #include <sim/simulator/lib/Client.h>
 #include <sim/simulator/lib/TopicNames.h>
 #include <sim/simulator/msgs/msgs.h>
-#include <sim/simulator/msgs/robot_description.pb.h>
 
 #include "ui_mainwindow.h"
 
@@ -42,10 +41,12 @@ void Client::Exit() {
   smartmouse::msgs::ServerControl quit_msg;
   quit_msg.set_quit(true);
   server_control_pub_.Publish(quit_msg);
+  SaveSettings();
   QApplication::quit();
 }
 
 void Client::Restart() {
+  SaveSettings();
   qApp->exit(kRestartCode);
 }
 
@@ -126,6 +127,24 @@ void Client::ShowSourceCode() {
   QDesktopServices::openUrl(QUrl("https://github.com/WPISmartMouse/SmartmouseSim", QUrl::TolerantMode));
 }
 
+void Client::LoadNewMouse() {
+    QString file_name = QFileDialog::getOpenFileName(this, tr("Open Mouse"), mouse_files_dir_, tr("Mouse Files (*.ms)"));
+
+    if (file_name != nullptr) {
+      QFileInfo file_info(file_name);
+      mouse_files_dir_ = file_info.dir().absolutePath();
+      default_mouse_file_name_ = file_name;
+      settings_->setValue("gui/default_mouse_file_name", default_mouse_file_name_);
+      settings_->setValue("gui/mouse_files_directory", mouse_files_dir_);
+
+      std::ifstream fs;
+      fs.open(file_info.absoluteFilePath().toStdString(), std::fstream::in);
+      smartmouse::msgs::RobotDescription robot_description_msg = smartmouse::msgs::Convert(fs);
+      robot_description_pub_.Publish(robot_description_msg);
+      ui_->mouse_file_name_label->setText(file_info.fileName());
+    }
+}
+
 void Client::LoadNewMaze() {
   QString file_name = QFileDialog::getOpenFileName(this, tr("Open Maze"), maze_files_dir_, tr("Maze Files (*.mz)"));
 
@@ -142,6 +161,18 @@ void Client::LoadNewMaze() {
     smartmouse::msgs::Maze maze_msg = smartmouse::msgs::Convert(&maze);
     maze_pub_.Publish(maze_msg);
     ui_->maze_file_name_label->setText(file_info.fileName());
+  }
+}
+
+void Client::LoadDefaultMouse() {
+  if (default_mouse_file_name_ != nullptr) {
+    QFileInfo file_info(default_mouse_file_name_);
+
+    std::ifstream fs;
+    fs.open(file_info.absoluteFilePath().toStdString(), std::fstream::in);
+    smartmouse::msgs::RobotDescription mouse_msg = smartmouse::msgs::Convert(fs);
+    robot_description_pub_.Publish(mouse_msg);
+    ui_->mouse_file_name_label->setText(file_info.fileName());
   }
 }
 
@@ -165,6 +196,7 @@ void Client::ConfigureGui() {
   ui_->main_tab->setMaximumWidth(300);
 
   connect(ui_->load_maze_button, &QPushButton::clicked, this, &Client::LoadNewMaze);
+  connect(ui_->load_mouse_button, &QPushButton::clicked, this, &Client::LoadNewMouse);
   connect(ui_->actionExit, &QAction::triggered, this, &Client::Exit);
   connect(ui_->actionRestart, &QAction::triggered, this, &Client::Restart);
   connect(ui_->actionReset_Mouse, &QAction::triggered, this, &Client::ResetMouse);
@@ -209,7 +241,7 @@ void Client::SaveSettings() {
 void Client::RestoreSettings() {
   QCoreApplication::setOrganizationName("WPISmartmouse");
   QCoreApplication::setOrganizationDomain("smartmouse.com");
-  QCoreApplication::setApplicationName("Smartmouse Sim");
+  QCoreApplication::setApplicationName("SmartmouseSim");
   settings_ = new QSettings();
 
   const QByteArray splitter_state = settings_->value("gui/tab_splitter").toByteArray();
@@ -224,14 +256,7 @@ void Client::RestoreSettings() {
   default_maze_file_name_ = settings_->value("gui/default_maze_file_name").toString();
   LoadDefaultMaze();
 
-  QString robot_description_file_name_ = settings_->value("robot_description_file_name").toString();
-  QFileInfo robot_description_file_info (robot_description_file_name_);
-  std::ifstream robot_description_fs;
-  robot_description_fs.open(robot_description_file_info.absoluteFilePath().toStdString(), std::fstream::in);
-
-  if (robot_description_fs.good()) {
-    // read the file and publish info
-    smartmouse::msgs::RobotDescription robot_description = smartmouse::msgs::Convert(robot_description_fs);
-    robot_description_pub_.Publish(robot_description);
-  }
+  mouse_files_dir_ = settings_->value("gui/mouse_files_directory").toString();
+  default_mouse_file_name_ = settings_->value("gui/default_mouse_file_name").toString();
+  LoadDefaultMouse();
 }

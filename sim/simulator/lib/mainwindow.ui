@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>758</width>
+    <width>769</width>
     <height>600</height>
    </rect>
   </property>
@@ -34,7 +34,7 @@
         </sizepolicy>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>2</number>
        </property>
        <widget class="QWidget" name="main_tab">
         <attribute name="title">
@@ -114,6 +114,27 @@
           <widget class="QLabel" name="editing_label">
            <property name="text">
             <string>Not Editing</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="mouse_tab">
+        <attribute name="title">
+         <string>Mouse</string>
+        </attribute>
+        <layout class="QFormLayout" name="formLayout_3">
+         <item row="0" column="0">
+          <widget class="QPushButton" name="load_mouse_button">
+           <property name="text">
+            <string>Load Mouse</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="mouse_file_name_label">
+           <property name="text">
+            <string>No Mouse</string>
            </property>
           </widget>
          </item>
@@ -212,7 +233,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>758</width>
+     <width>769</width>
      <height>19</height>
     </rect>
    </property>

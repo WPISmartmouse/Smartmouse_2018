@@ -38,6 +38,7 @@ class Client : public QMainWindow {
   void ResetTime();
   void Step();
   void LoadNewMaze();
+  void LoadNewMouse();
   void ShowSourceCode();
   void ShowWiki();
   void RealTimeFactorChanged(double real_time_factor);
@@ -54,6 +55,7 @@ class Client : public QMainWindow {
  private:
   void ConfigureGui();
   void LoadDefaultMaze();
+  void LoadDefaultMouse();
   void RestoreSettings();
   void SaveSettings();
 
@@ -70,7 +72,8 @@ class Client : public QMainWindow {
   MazeWidget *maze_widget_;
   QSettings *settings_;
   QString maze_files_dir_;
+  QString mouse_files_dir_;
   QString default_maze_file_name_;
-  QString robot_description_file_name_;
+  QString default_mouse_file_name_;
   Ui::MainWindow *ui_;
 };

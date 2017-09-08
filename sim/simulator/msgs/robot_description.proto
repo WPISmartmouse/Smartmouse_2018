@@ -6,9 +6,9 @@ import "ignition/msgs/vector3d.proto";
 package smartmouse.msgs;
 
 message RobotDescription {
-    required Polygon2D footprint = 1;
-    required ignition.msgs.Vector2d left_wheel = 2;
-    required ignition.msgs.Vector2d right_wheel = 3;
+    optional Polygon2D footprint = 1;
+    optional ignition.msgs.Vector2d left_wheel = 2;
+    optional ignition.msgs.Vector2d right_wheel = 3;
     optional ignition.msgs.Vector3d cog = 4;
 }
 
