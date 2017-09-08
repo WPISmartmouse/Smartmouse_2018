@@ -41,7 +41,6 @@ void Client::Exit() {
   smartmouse::msgs::ServerControl quit_msg;
   quit_msg.set_quit(true);
   server_control_pub_.Publish(quit_msg);
-  SaveSettings();
   QApplication::quit();
 }
 
