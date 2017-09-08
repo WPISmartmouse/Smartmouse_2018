@@ -10,6 +10,8 @@ void PrintVersionInfo() {
 }
 
 int main(int argc, char *argv[]) {
+
+  // TODO: add proper argument parsing, and a way to pass them to the Client
   int c;
 
   while (1) {

@@ -76,6 +76,7 @@ AbstractMaze Convert(smartmouse::msgs::Maze maze_msg) {
 }
 
 RobotDescription Convert(std::ifstream &fs) {
+  // TODO: implement me
   return RobotDescription();
 }
 
