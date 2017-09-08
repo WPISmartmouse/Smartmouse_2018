@@ -31,11 +31,11 @@ TEST(DirectionTest, DirectionEnumConversion) {
 
 TEST(MazeTest, MazeConversion) {
   AbstractMaze maze;
-  smartmouse::msgs::Maze maze_msg = smartmouse::msgs::FromAbstractMaze(&maze);
+  smartmouse::msgs::Maze maze_msg = smartmouse::msgs::Convert(&maze);
 
   EXPECT_EQ(maze_msg.walls_size(), (int)(2 * (AbstractMaze::MAZE_SIZE * AbstractMaze::MAZE_SIZE + AbstractMaze::MAZE_SIZE)));
 
-  AbstractMaze maze2 = smartmouse::msgs::ToAbstractMaze(maze_msg);
+  AbstractMaze maze2 = smartmouse::msgs::Convert(maze_msg);
 
   EXPECT_EQ(maze, maze2);
 }

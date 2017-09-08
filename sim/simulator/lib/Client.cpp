@@ -139,7 +139,7 @@ void Client::LoadNewMaze() {
     std::ifstream fs;
     fs.open(file_info.absoluteFilePath().toStdString(), std::fstream::in);
     AbstractMaze maze(fs);
-    smartmouse::msgs::Maze maze_msg = smartmouse::msgs::FromAbstractMaze(&maze);
+    smartmouse::msgs::Maze maze_msg = smartmouse::msgs::Convert(&maze);
     maze_pub_.Publish(maze_msg);
     ui_->maze_file_name_label->setText(file_info.fileName());
   }
@@ -152,7 +152,7 @@ void Client::LoadDefaultMaze() {
     std::ifstream fs;
     fs.open(file_info.absoluteFilePath().toStdString(), std::fstream::in);
     AbstractMaze maze(fs);
-    smartmouse::msgs::Maze maze_msg = smartmouse::msgs::FromAbstractMaze(&maze);
+    smartmouse::msgs::Maze maze_msg = smartmouse::msgs::Convert(&maze);
     maze_pub_.Publish(maze_msg);
     ui_->maze_file_name_label->setText(file_info.fileName());
   }

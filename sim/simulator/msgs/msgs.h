@@ -6,11 +6,11 @@
 
 namespace smartmouse {
 namespace msgs {
-smartmouse::msgs::Maze FromAbstractMaze(AbstractMaze *maze, std::string name = "", int size = AbstractMaze::MAZE_SIZE);
+smartmouse::msgs::Maze Convert(AbstractMaze *maze, std::string name = "", int size = AbstractMaze::MAZE_SIZE);
 
-AbstractMaze ToAbstractMaze(smartmouse::msgs::Maze maze_msg);
+AbstractMaze Convert(smartmouse::msgs::Maze maze_msg);
 
-::Direction DirMsgToDir(smartmouse::msgs::Direction dir_msg);
+::Direction Convert(smartmouse::msgs::Direction dir_msg);
 
 ::Direction Convert(smartmouse::msgs::Direction::Dir dir_enum);
 

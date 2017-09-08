@@ -3,7 +3,7 @@
 namespace smartmouse {
 namespace msgs {
 
-smartmouse::msgs::Maze FromAbstractMaze(AbstractMaze *maze, std::string name, int size) {
+smartmouse::msgs::Maze Convert(AbstractMaze *maze, std::string name, int size) {
   Maze maze_msg;
   maze_msg.set_name(name);
   maze_msg.set_size(size);
@@ -47,7 +47,7 @@ smartmouse::msgs::Maze FromAbstractMaze(AbstractMaze *maze, std::string name, in
   return maze_msg;
 }
 
-AbstractMaze ToAbstractMaze(smartmouse::msgs::Maze maze_msg) {
+AbstractMaze Convert(smartmouse::msgs::Maze maze_msg) {
   AbstractMaze maze;
 
   maze.connect_all_neighbors_in_maze();
@@ -61,7 +61,7 @@ AbstractMaze ToAbstractMaze(smartmouse::msgs::Maze maze_msg) {
   return maze;
 }
 
-::Direction DirMsgToDir(smartmouse::msgs::Direction dir_msg) {
+::Direction Convert(smartmouse::msgs::Direction dir_msg) {
   return Convert(dir_msg.direction());
 }
 
