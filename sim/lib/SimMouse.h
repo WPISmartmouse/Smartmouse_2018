@@ -7,7 +7,7 @@
 #include <common/KinematicController/KinematicController.h>
 #include <ignition/transport/Node.hh>
 
-#include <sim/simulator/msgs/state.pb.h>
+#include <sim/simulator/msgs/robot_sim_state.pb.h>
 
 class SimMouse : public Mouse {
 public:
@@ -41,7 +41,7 @@ public:
 
   void publishIndicators();
 
-  void robotStateCallback(const smartmouse::msgs::RobotState &msg);
+  void robotStateCallback(const smartmouse::msgs::RobotSimState &msg);
 
   void run(double dt_s);
 

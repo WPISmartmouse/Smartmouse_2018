@@ -1,0 +1,10 @@
+syntax = "proto2";
+
+import "xytheta.proto";
+
+package smartmouse.msgs;
+
+message RobotUiState {
+    required smartmouse.msgs.XYTheta xytheta = 1;
+    repeated bool LEDs = 2;
+}

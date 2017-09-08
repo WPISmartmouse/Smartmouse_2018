@@ -58,20 +58,15 @@ std::pair<double, double> SimMouse::getWheelVelocities() {
 void SimMouse::indicatePath(unsigned int row, unsigned int col, std::string path, std::string color) {
   for (char &c : path) {
     switch (c) {
-      case 'N':
-        row--;
+      case 'N':row--;
         break;
-      case 'E':
-        col++;
+      case 'E':col++;
         break;
-      case 'S':
-        row++;
+      case 'S':row++;
         break;
-      case 'W':
-        col--;
+      case 'W':col--;
         break;
-      default:
-        break;
+      default:break;
     }
     indicators[row][col]->mutable_material()->mutable_script()->set_name(color);
   }
@@ -79,7 +74,7 @@ void SimMouse::indicatePath(unsigned int row, unsigned int col, std::string path
 
 bool SimMouse::isStopped() {
   return kinematic_controller.isStopped() && fabs(abstract_left_force) <= 5 &&
-         fabs(abstract_right_force) <= RegulatedMotor::MIN_ABSTRACT_FORCE;
+      fabs(abstract_right_force) <= RegulatedMotor::MIN_ABSTRACT_FORCE;
 }
 
 void SimMouse::publishIndicators() {
@@ -90,7 +85,7 @@ void SimMouse::publishIndicators() {
   }
 }
 
-void SimMouse::robotStateCallback(const smartmouse::msgs::RobotState &msg) {
+void SimMouse::robotStateCallback(const smartmouse::msgs::RobotSimState &msg) {
   std::unique_lock<std::mutex> lk(dataMutex);
   true_pose.x = msg.true_x_meters();
   true_pose.y = msg.true_y_meters();

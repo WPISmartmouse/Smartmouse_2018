@@ -10,4 +10,5 @@ constexpr char kGuiActions[] = "gui";
 constexpr char kRobotState[] = "robot_state";
 constexpr char kMazeLocation[] = "maze_location";
 constexpr char kMaze[] = "maze";
+constexpr char kRobotDescription[] = "robot_description";
 }

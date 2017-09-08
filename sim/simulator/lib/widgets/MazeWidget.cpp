@@ -6,8 +6,9 @@
 #include <sim/simulator/lib/widgets/MazeWidget.h>
 #include <lib/TopicNames.h>
 
-const int MazeWidget::PADDING_PX = 24;
-QBrush MazeWidget::wallBrush = QBrush(Qt::red);
+const int MazeWidget::kPaddingPx = 24;
+const QBrush MazeWidget::kRobotBrush = QBrush(QColor("#fe5"));
+QBrush MazeWidget::kWallBrush = QBrush(Qt::red);
 
 MazeWidget::MazeWidget() : QWidget() {
   setSizePolicy(QSizePolicy::Policy::MinimumExpanding, QSizePolicy::Policy::MinimumExpanding);
@@ -26,7 +27,7 @@ void MazeWidget::paintEvent(QPaintEvent *event) {
 
     QRect r = this->geometry();
 
-    int w = std::min(r.width(), r.height()) - PADDING_PX;
+    int w = std::min(r.width(), r.height()) - kPaddingPx;
     double m2p = w / AbstractMaze::MAZE_SIZE_M;
 
     int cx = (r.width() - w) / 2;
@@ -53,8 +54,14 @@ void MazeWidget::paintEvent(QPaintEvent *event) {
   // Draw all the walls
   for (smartmouse::msgs::Wall wall : maze_.walls()) {
     QRectF wall_rect = PaintWall(wall);
-    painter.fillRect(tf.mapRect(wall_rect), wallBrush);
+    painter.fillRect(tf.mapRect(wall_rect), kWallBrush);
   }
+
+  // Draw the mouse
+  QTransform mouse_tf;
+  mouse_tf.translate(robot_state_.xytheta().x(), robot_state_.xytheta().y());
+  mouse_tf.rotateRadians(robot_state_.xytheta().theta(), Qt::ZAxis);
+  painter.fillPath(tf.map(footprint_), kRobotBrush);
 }
 
 QRectF MazeWidget::PaintWall(smartmouse::msgs::Wall wall) {

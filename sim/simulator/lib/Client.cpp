@@ -7,7 +7,8 @@
 #include <sim/simulator/lib/Server.h>
 #include <sim/simulator/lib/Client.h>
 #include <sim/simulator/lib/TopicNames.h>
-#include <msgs/msgs.h>
+#include <sim/simulator/msgs/msgs.h>
+#include <sim/simulator/msgs/robot_description.pb.h>
 
 #include "ui_mainwindow.h"
 
@@ -18,6 +19,7 @@ Client::Client(QMainWindow *parent) :
   server_control_pub_ = node_.Advertise<smartmouse::msgs::ServerControl>(TopicNames::kWorldControl);
   physics_pub_ = node_.Advertise<smartmouse::msgs::PhysicsConfig>(TopicNames::kPhysics);
   maze_pub_ = node_.Advertise<smartmouse::msgs::Maze>(TopicNames::kMaze);
+  robot_description_pub_ = node_.Advertise<smartmouse::msgs::RobotDescription>(TopicNames::kRobotDescription);
   node_.Subscribe(TopicNames::kWorldStatistics, &Client::OnWorldStats, this);
   node_.Subscribe(TopicNames::kGuiActions, &Client::OnGuiActions, this);
   node_.Subscribe(TopicNames::kPhysics, &Client::OnPhysics, this);
@@ -137,7 +139,7 @@ void Client::LoadNewMaze() {
     std::ifstream fs;
     fs.open(file_info.absoluteFilePath().toStdString(), std::fstream::in);
     AbstractMaze maze(fs);
-    smartmouse::msgs::Maze maze_msg = smartmouse::msgs::fromAbstractMaze(&maze);
+    smartmouse::msgs::Maze maze_msg = smartmouse::msgs::FromAbstractMaze(&maze);
     maze_pub_.Publish(maze_msg);
     ui_->maze_file_name_label->setText(file_info.fileName());
   }
@@ -150,7 +152,7 @@ void Client::LoadDefaultMaze() {
     std::ifstream fs;
     fs.open(file_info.absoluteFilePath().toStdString(), std::fstream::in);
     AbstractMaze maze(fs);
-    smartmouse::msgs::Maze maze_msg = smartmouse::msgs::fromAbstractMaze(&maze);
+    smartmouse::msgs::Maze maze_msg = smartmouse::msgs::FromAbstractMaze(&maze);
     maze_pub_.Publish(maze_msg);
     ui_->maze_file_name_label->setText(file_info.fileName());
   }
@@ -221,4 +223,15 @@ void Client::RestoreSettings() {
   maze_files_dir_ = settings_->value("gui/maze_files_directory").toString();
   default_maze_file_name_ = settings_->value("gui/default_maze_file_name").toString();
   LoadDefaultMaze();
+
+  QString robot_description_file_name_ = settings_->value("robot_description_file_name").toString();
+  QFileInfo robot_description_file_info (robot_description_file_name_);
+  std::ifstream robot_description_fs;
+  robot_description_fs.open(robot_description_file_info.absoluteFilePath().toStdString(), std::fstream::in);
+
+  if (robot_description_fs.good()) {
+    // read the file and publish info
+    smartmouse::msgs::RobotDescription robot_description = smartmouse::msgs::Convert(robot_description_fs);
+    robot_description_pub_.Publish(robot_description);
+  }
 }

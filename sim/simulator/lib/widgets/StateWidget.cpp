@@ -185,7 +185,7 @@ StateWidget::StateWidget() : QWidget() {
 
 }
 
-void StateWidget::StateCallback(const smartmouse::msgs::RobotState &msg) {
+void StateWidget::StateCallback(const smartmouse::msgs::RobotSimState &msg) {
   char left_wheel_velocity_str[14];
   snprintf(left_wheel_velocity_str, 14, "%0.2f cm/s", (100 * msg.left_wheel_velocity_mps()));
 

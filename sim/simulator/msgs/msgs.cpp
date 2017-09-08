@@ -3,7 +3,7 @@
 namespace smartmouse {
 namespace msgs {
 
-smartmouse::msgs::Maze fromAbstractMaze(AbstractMaze *maze, std::string name, int size) {
+smartmouse::msgs::Maze FromAbstractMaze(AbstractMaze *maze, std::string name, int size) {
   Maze maze_msg;
   maze_msg.set_name(name);
   maze_msg.set_size(size);
@@ -47,25 +47,25 @@ smartmouse::msgs::Maze fromAbstractMaze(AbstractMaze *maze, std::string name, in
   return maze_msg;
 }
 
-AbstractMaze toAbstractMaze(smartmouse::msgs::Maze maze_msg) {
+AbstractMaze ToAbstractMaze(smartmouse::msgs::Maze maze_msg) {
   AbstractMaze maze;
 
   maze.connect_all_neighbors_in_maze();
   for (Wall wall : maze_msg.walls()) {
     smartmouse::msgs::RowCol node = wall.node();
     smartmouse::msgs::Direction::Dir dir_msg = wall.direction();
-    ::Direction dir = dirMsgEnumToDir(dir_msg);
+    ::Direction dir = DirMsgEnumToDir(dir_msg);
     maze.disconnect_neighbor(node.row(), node.col(), dir);
   }
 
   return maze;
 }
 
-::Direction dirMsgToDir(smartmouse::msgs::Direction dir_msg) {
-  return dirMsgEnumToDir(dir_msg.direction());
+::Direction DirMsgToDir(smartmouse::msgs::Direction dir_msg) {
+  return DirMsgEnumToDir(dir_msg.direction());
 }
 
-::Direction dirMsgEnumToDir(smartmouse::msgs::Direction::Dir dir_enum) {
+::Direction DirMsgEnumToDir(smartmouse::msgs::Direction::Dir dir_enum) {
   switch (dir_enum) {
     case Direction_Dir_N: return ::Direction::N;
     case Direction_Dir_S: return ::Direction::S;
@@ -73,6 +73,10 @@ AbstractMaze toAbstractMaze(smartmouse::msgs::Maze maze_msg) {
     case Direction_Dir_W: return ::Direction::W;
   }
   return ::Direction::INVALID;
+}
+
+RobotDescription Convert(std::ifstream &fs) {
+  return RobotDescription();
 }
 
 }

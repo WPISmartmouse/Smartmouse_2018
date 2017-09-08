@@ -7,7 +7,7 @@
 #include <ignition/transport/Node.hh>
 #include <QtWidgets/QLabel>
 #include <msgs/maze_location.pb.h>
-#include <msgs/state.pb.h>
+#include <msgs/robot_sim_state.pb.h>
 
 class SensorState : public QWidget {
  Q_OBJECT
@@ -87,7 +87,7 @@ class StateWidget : public QWidget {
 
   void FrontAnalogCallback(const ignition::msgs::LaserScanStamped &msg);
 
-  void StateCallback(const smartmouse::msgs::RobotState &msg);
+  void StateCallback(const smartmouse::msgs::RobotSimState &msg);
 
   void MazeLocationCallback(const smartmouse::msgs::MazeLocation &msg);
 

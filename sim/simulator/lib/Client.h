@@ -66,9 +66,11 @@ class Client : public QMainWindow {
   ignition::transport::Node::Publisher maze_pub_;
   ignition::transport::Node::Publisher physics_pub_;
   ignition::transport::Node::Publisher server_control_pub_;
+  ignition::transport::Node::Publisher robot_description_pub_;
   MazeWidget *maze_widget_;
   QSettings *settings_;
   QString maze_files_dir_;
   QString default_maze_file_name_;
+  QString robot_description_file_name_;
   Ui::MainWindow *ui_;
 };
