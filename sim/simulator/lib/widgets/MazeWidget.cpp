@@ -7,7 +7,7 @@
 #include <lib/TopicNames.h>
 
 const int MazeWidget::kPaddingPx = 24;
-const QBrush MazeWidget::kRobotBrush = QBrush(QColor("#fe5"));
+const QBrush MazeWidget::kRobotBrush = QBrush(QColor("#F57C00"));
 QBrush MazeWidget::kWallBrush = QBrush(Qt::red);
 
 MazeWidget::MazeWidget() : QWidget() {
@@ -65,10 +65,20 @@ void MazeWidget::paintEvent(QPaintEvent *event) {
     footprint_.lineTo(pt.x(), pt.y());
   }
 
+  double lwx = mouse_.left_wheel().x();
+  double lwy = mouse_.left_wheel().y();
+  double rwx = mouse_.right_wheel().x();
+  double rwy = mouse_.right_wheel().y();
+  QRectF left_wheel(lwx - 0.01, lwy - 0.01, 0.02, 0.02);
+  QRectF right_wheel(rwx - 0.01, rwy - 0.01, 0.02, 0.02);
+
   QTransform mouse_tf;
   mouse_tf.translate(robot_state_.xytheta().x(), robot_state_.xytheta().y());
   mouse_tf.rotateRadians(robot_state_.xytheta().theta(), Qt::ZAxis);
   painter.fillPath(tf.map(footprint_), kRobotBrush);
+
+  painter.fillRect(tf.mapRect(left_wheel), QBrush(Qt::black));
+  painter.fillRect(tf.mapRect(right_wheel), QBrush(Qt::black));
 }
 
 QRectF MazeWidget::PaintWall(smartmouse::msgs::Wall wall) {

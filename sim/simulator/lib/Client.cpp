@@ -205,6 +205,7 @@ void Client::ConfigureGui() {
 
   connect(ui_->load_maze_button, &QPushButton::clicked, this, &Client::LoadNewMaze);
   connect(ui_->load_mouse_button, &QPushButton::clicked, this, &Client::LoadNewMouse);
+  connect(ui_->refresh_mouse_button, &QPushButton::clicked, this, &Client::LoadDefaultMouse);
   connect(ui_->actionExit, &QAction::triggered, this, &Client::Exit);
   connect(ui_->actionRestart, &QAction::triggered, this, &Client::Restart);
   connect(ui_->actionReset_Mouse, &QAction::triggered, this, &Client::ResetMouse);
