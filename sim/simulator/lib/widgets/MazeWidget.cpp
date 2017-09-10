@@ -1,6 +1,8 @@
 #include <iostream>
 
+#include <QGraphicsItem>
 #include <QtGui/QPainter>
+#include <QtWidgets/QApplication>
 
 #include <common/AbstractMaze.h>
 #include <sim/simulator/lib/widgets/MazeWidget.h>
@@ -10,54 +12,20 @@ const int MazeWidget::kPaddingPx = 24;
 const QBrush MazeWidget::kRobotBrush = QBrush(QColor("#F57C00"));
 QBrush MazeWidget::kWallBrush = QBrush(Qt::red);
 
-MazeWidget::MazeWidget() : QWidget() {
-  setSizePolicy(QSizePolicy::Policy::MinimumExpanding, QSizePolicy::Policy::MinimumExpanding);
-  node_.Subscribe(TopicNames::kMaze, &MazeWidget::OnMaze, this);
-  node_.Subscribe(TopicNames::kRobotDescription, &MazeWidget::OnRobotDescription, this);
-  node_.Subscribe(TopicNames::kRobotSimState, &MazeWidget::OnRobotSimState, this);
-}
-
 /**
  * All drawing should be done in meters, with the origin as the center of the top-left corner.
  * The coordinate system is X increasing across columns, Y increasing across rows, and Z down into the maze.
  * Yes, Z is down so it's a right handed coordinate system. Get over it.
  */
-void MazeWidget::paintEvent(QPaintEvent *event) {
-  QPainter painter(this);
-  QTransform tf;
-  {
+MazeWidget::MazeWidget() : QGraphicsView(), graphics_scene_(new QGraphicsScene) {
+  setSizePolicy(QSizePolicy::Policy::MinimumExpanding, QSizePolicy::Policy::MinimumExpanding);
+  node_.Subscribe(TopicNames::kMaze, &MazeWidget::OnMaze, this);
+  node_.Subscribe(TopicNames::kRobotDescription, &MazeWidget::OnRobotDescription, this);
+  node_.Subscribe(TopicNames::kRobotSimState, &MazeWidget::OnRobotSimState, this);
 
-    QRect r = this->geometry();
-
-    int w = std::min(r.width(), r.height()) - kPaddingPx;
-    double m2p = w / AbstractMaze::MAZE_SIZE_M;
-
-    int cx = (r.width() - w) / 2;
-    int cy = (r.height() - w) / 2;
-
-    tf.translate(cx, cy);
-    tf = tf.scale(m2p, m2p);
-  }
-
-  // draw the background
-  QRectF base = QRectF(0, 0, AbstractMaze::MAZE_SIZE_M, AbstractMaze::MAZE_SIZE_M);
-  painter.fillRect(tf.mapRect(base), QApplication::palette().background());
-
-  // Draw the thin-line grid over the whole maze
-  for (unsigned int i = 0; i <= AbstractMaze::MAZE_SIZE; i++) {
-    QLineF h_line(0, i * AbstractMaze::UNIT_DIST, AbstractMaze::MAZE_SIZE_M, i * AbstractMaze::UNIT_DIST);
-    painter.setPen(QApplication::palette().light().color());
-    painter.drawLine(tf.map(h_line));
-
-    QLineF v_line((i * AbstractMaze::UNIT_DIST), 0, (i * AbstractMaze::UNIT_DIST), AbstractMaze::MAZE_SIZE_M);
-    painter.drawLine(tf.map(v_line));
-  }
-
-  // Draw all the walls
-  PaintWalls(painter, tf);
-
-  // Draw the mouse
-  PaintMouse(painter, tf);
+  setScene(graphics_scene_);
+  // This seems to be the only way to create/add the rectangle
+  background_rect_ = graphics_scene_->addRect(0, 0, 1, 1);
 }
 
 void MazeWidget::PaintMouse(QPainter &painter, QTransform tf) {
@@ -133,11 +101,28 @@ const QString MazeWidget::getTabName() {
 
 void MazeWidget::OnMaze(const smartmouse::msgs::Maze &msg) {
   maze_ = msg;
-  update();
+
+//  // draw the background
+//  QRectF base = QRectF(0, 0, AbstractMaze::MAZE_SIZE_M, AbstractMaze::MAZE_SIZE_M);
+//  painter.fillRect(tf.mapRect(base), QApplication::palette().background());
+//
+//  // Draw the thin-line grid over the whole maze
+//  for (unsigned int i = 0; i <= AbstractMaze::MAZE_SIZE; i++) {
+//    QLineF h_line(0, i * AbstractMaze::UNIT_DIST, AbstractMaze::MAZE_SIZE_M, i * AbstractMaze::UNIT_DIST);
+//    painter.setPen(QApplication::palette().light().color());
+//    painter.drawLine(tf.map(h_line));
+//
+//    QLineF v_line((i * AbstractMaze::UNIT_DIST), 0, (i * AbstractMaze::UNIT_DIST), AbstractMaze::MAZE_SIZE_M);
+//    painter.drawLine(tf.map(v_line));
+//  }
+//
+//  // Draw all the walls
+//  PaintWalls(painter, tf);
 }
 
 void MazeWidget::OnRobotDescription(const smartmouse::msgs::RobotDescription &msg) {
   mouse_ = msg;
+
   update();
 }
 
@@ -148,4 +133,25 @@ void MazeWidget::OnRobotSimState(const smartmouse::msgs::RobotSimState &msg) {
   xytheta->set_theta(msg.true_yaw_rad());
 
   update();
+}
+
+void MazeWidget::resizeEvent(QResizeEvent *event) {
+  QRect r = this->geometry();
+
+  int w = std::min(r.width(), r.height()) - kPaddingPx;
+  double m2p = w / AbstractMaze::MAZE_SIZE_M;
+
+  int cx = (r.width() - w) / 2;
+  int cy = (r.height() - w) / 2;
+
+  // scale to meters and set the origin to be top left
+  QTransform tf;
+  tf.translate(cx, cy);
+  tf.scale(m2p, m2p);
+
+  background_rect_->setRect(tf.mapRect(QRectF(0, 0, AbstractMaze::MAZE_SIZE_M, AbstractMaze::MAZE_SIZE_M)));
+
+  update();
+
+  QGraphicsView::resizeEvent(event);
 }

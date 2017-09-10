@@ -11,6 +11,7 @@
 #include <sim/simulator/msgs/server_control.pb.h>
 #include <sim/simulator/msgs/world_statistics.pb.h>
 #include <lib/widgets/MazeWidget.h>
+#include <QtCore/QSettings>
 
 namespace Ui {
 class MainWindow;
