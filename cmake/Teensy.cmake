@@ -21,7 +21,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(TY_EXECUTABLE "/usr/bin/tyc" CACHE FILEPATH "Path to the 'ty' executable that can upload programs to the Teensy")
+find_program(TY_EXECUTABLE NAMES "teensy_loader_cli" DOC "Path to the executable that can upload programs to the Teensy")
 
 file(GLOB_RECURSE TEENSY_C_CORE_FILES
     ${TEENSY_ROOT}/*.c
@@ -112,12 +112,14 @@ macro(add_teensy_executable TARGET_NAME)
                       DEPENDS ${TARGET_ELF}.eep ${TARGET_ELF}.hex)
     add_dependencies(${TARGET_NAME}_Firmware ${TARGET_NAME})
 
-    if(EXISTS "${TY_EXECUTABLE}")
+    if(NOT TY_EXECUTABLE)
+        message("teensy_cli does not exist! Will not generate ${TARGET_NAME}_Upload target")
+    else()
         add_custom_target(${TARGET_NAME}_Upload
                           DEPENDS ${TY_EXECUTABLE} ${TARGET_ELF}.hex
-                          COMMAND "${TY_EXECUTABLE}" upload ${TARGET_ELF}.hex)
+                          COMMAND "${TY_EXECUTABLE}" --mcu=TEENSY35 -w -s ${TARGET_ELF}.hex)
         add_dependencies(${TARGET_NAME}_Upload ${TARGET_NAME}_Firmware)
-    endif(EXISTS "${TY_EXECUTABLE}")
+    endif()
 endmacro(add_teensy_executable)
 
 macro(import_arduino_library LIB_NAME)
