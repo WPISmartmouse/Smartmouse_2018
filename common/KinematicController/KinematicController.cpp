@@ -3,6 +3,7 @@
 #include <common/DriveStraight.h>
 #include <tuple>
 #include "KinematicController.h"
+#include <cmath>
 
 #ifdef EMBED
 #include <Arduino.h>

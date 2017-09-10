@@ -4,6 +4,7 @@
 #include "AbstractMaze.h"
 #include <string.h>
 #include <algorithm>
+#include <random>
 
 #ifdef EMBED
 #include <Arduino.h>
