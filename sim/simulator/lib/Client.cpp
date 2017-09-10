@@ -15,7 +15,7 @@ Client::Client(QMainWindow *parent) :
     QMainWindow(parent), ui_(new Ui::MainWindow) {
   ui_->setupUi(this);
 
-  server_control_pub_ = node_.Advertise<smartmouse::msgs::ServerControl>(TopicNames::kWorldControl);
+  server_control_pub_ = node_.Advertise<smartmouse::msgs::ServerControl>(TopicNames::kServerControl);
   physics_pub_ = node_.Advertise<smartmouse::msgs::PhysicsConfig>(TopicNames::kPhysics);
   maze_pub_ = node_.Advertise<smartmouse::msgs::Maze>(TopicNames::kMaze);
   robot_description_pub_ = node_.Advertise<smartmouse::msgs::RobotDescription>(TopicNames::kRobotDescription);
@@ -33,7 +33,7 @@ Client::Client(QMainWindow *parent) :
   physics_pub_.Publish(initial_physics_config);
 
   smartmouse::msgs::ServerControl initial_server_control;
-  initial_server_control.set_pause(true);
+  initial_server_control.set_pause(false);
   server_control_pub_.Publish(initial_server_control);
 }
 

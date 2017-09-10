@@ -18,19 +18,13 @@ int main(int argc, char **argv) {
   tty.c_lflag &= ~ECHO;
   tcsetattr(STDIN_FILENO, TCSANOW, &tty);
 
-  printf("connected to gazebo. Press W,A,S,D,X then enter to send a command.\n");
+  printf("Press W,A,S,D,X then enter to send a command.\n");
 
   SimTimer timer;
   Command::setTimerImplementation(&timer);
 
   // Create our node for communication
   ignition::transport::Node node;
-  bool success = node.Subscribe("time_ms", &SimTimer::simTimeCallback, &timer);
-  if (!success) {
-    printf("Failed to subscribe to /time_ms\n");
-    return EXIT_FAILURE;
-  }
-
   ignition::transport::Node::Publisher controlPub;
   controlPub = node.Advertise<smartmouse::msgs::RobotCommand>(TopicNames::kRobotCommand);
 
@@ -40,7 +34,7 @@ int main(int argc, char **argv) {
   double acc = 0.0005; // m/iteration^2
 
   bool keepGoing = true;
-  char key;
+  int key;
 
   double lspeed_setpoint = 0; // m/sec^2
   double rspeed_setpoint = 0; // m/sec^2
@@ -89,7 +83,7 @@ int main(int argc, char **argv) {
       double rrps = SimMouse::meterToRad(rspeed);
 
       smartmouse::msgs::RobotCommand cmd;
-      cmd.mutable_left()->set_target_speed(lrps);
+      cmd.mutable_left()->set_target_speed(1);
       cmd.mutable_left()->set_kp(kP);
       cmd.mutable_left()->set_ki(kI);
       cmd.mutable_left()->set_kd(kD);

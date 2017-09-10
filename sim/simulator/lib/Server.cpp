@@ -1,8 +1,6 @@
 #include <sim/simulator/lib/Server.h>
 #include <sim/simulator/lib/TopicNames.h>
 #include <msgs/world_statistics.pb.h>
-#include <msgs/robot_sim_state.pb.h>
-#include <common/RobotConfig.h>
 
 void Server::start() {
   thread_ = new std::thread(std::bind(&Server::RunLoop, this));
@@ -14,9 +12,10 @@ void Server::RunLoop() {
 
   world_stats_pub_ = node_ptr_->Advertise<smartmouse::msgs::WorldStatistics>(TopicNames::kWorldStatistics);
   sim_state_pub_ = node_ptr_->Advertise<smartmouse::msgs::RobotSimState>(TopicNames::kRobotSimState);
-  node_ptr_->Subscribe(TopicNames::kWorldControl, &Server::OnServerControl, this);
+  node_ptr_->Subscribe(TopicNames::kServerControl, &Server::OnServerControl, this);
   node_ptr_->Subscribe(TopicNames::kPhysics, &Server::OnPhysics, this);
   node_ptr_->Subscribe(TopicNames::kMaze, &Server::OnMaze, this);
+  node_ptr_->Subscribe(TopicNames::kRobotCommand, &Server::OnRobotCommand, this);
 
   while (true) {
     Time update_rate = Time(0, ns_of_sim_per_step_);
@@ -28,6 +27,8 @@ void Server::RunLoop() {
       Time::MSleep(1);
       continue;
     }
+
+    smartmouse::msgs::RobotSimState sim_state_msg;
 
     // Begin Critical Section
     {
@@ -48,7 +49,7 @@ void Server::RunLoop() {
         continue;
       }
 
-      Step();
+      sim_state_msg = Step();
     }
     // End Critical Section
 
@@ -75,20 +76,29 @@ void Server::RunLoop() {
     world_stats_msg.set_real_time_factor(rtf.Double());
     world_stats_pub_.Publish(world_stats_msg);
 
-    smartmouse::msgs::RobotSimState sim_state_msg;
-    sim_state_msg.set_true_x_meters(0.08);
-    sim_state_msg.set_true_y_meters(0.08);
-    sim_state_msg.set_true_yaw_rad(0);
     sim_state_pub_.Publish(sim_state_msg);
   }
 }
 
-void Server::Step() {
+smartmouse::msgs::RobotSimState Server::Step() {
   // update sim time
-  sim_time_ += Time(0, ns_of_sim_per_step_);
+  auto dt = Time(0, ns_of_sim_per_step_);
+  sim_time_ += dt;
+
+//  double f = (cmd_.left().abstract_force() + cmd_.right().abstract_force())/2.0;
+  double f = 0.1;
+  double x_m = internal_state_.p().x();
+  internal_state_.mutable_p()->set_x(x_m + f * dt.Double());
+
+  smartmouse::msgs::RobotSimState sim_state_msg;
+  sim_state_msg.set_true_x_meters(internal_state_.p().x());
+  sim_state_msg.set_true_y_meters(internal_state_.p().y());
+  sim_state_msg.set_true_yaw_rad(internal_state_.p().theta());
 
   // increment step counter
   ++steps_;
+
+  return sim_state_msg;
 }
 
 void Server::ResetTime() {
@@ -139,6 +149,15 @@ void Server::OnMaze(const smartmouse::msgs::Maze &msg) {
   {
     std::lock_guard<std::mutex> guard(physics_mutex_);
     maze_ = msg;
+  }
+  // End critical section
+}
+
+void Server::OnRobotCommand(const smartmouse::msgs::RobotCommand &msg) {
+  // Enter critical section
+  {
+    std::lock_guard<std::mutex> guard(physics_mutex_);
+    cmd_ = msg;
   }
   // End critical section
 }

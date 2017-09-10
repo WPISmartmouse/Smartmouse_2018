@@ -139,12 +139,12 @@ const QString MazeWidget::getTabName() {
 
 void MazeWidget::OnMaze(const smartmouse::msgs::Maze &msg) {
   maze_ = msg;
-  update();
+  emit update();
 }
 
 void MazeWidget::OnRobotDescription(const smartmouse::msgs::RobotDescription &msg) {
   mouse_ = msg;
-  update();
+  emit update();
 }
 
 void MazeWidget::OnRobotSimState(const smartmouse::msgs::RobotSimState &msg) {
@@ -153,5 +153,7 @@ void MazeWidget::OnRobotSimState(const smartmouse::msgs::RobotSimState &msg) {
   xytheta->set_y(msg.true_y_meters());
   xytheta->set_theta(msg.true_yaw_rad());
 
-  update();
+  std::cout << msg.true_x_meters() << std::endl;
+
+  emit update();
 }

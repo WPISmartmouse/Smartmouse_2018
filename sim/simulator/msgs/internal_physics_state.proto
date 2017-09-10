@@ -1,0 +1,23 @@
+syntax = "proto2";
+
+package smartmouse.msgs;
+
+import "xytheta.proto";
+import "ignition/msgs/inertial.proto";
+
+message InternalPhysicsState
+{
+    required WheelPhysicsState left_wheel = 1;
+    required WheelPhysicsState right_wheel = 2;
+    required ignition.msgs.Inertial intertial = 3;
+    required XYTheta p = 4;
+    required XYTheta v = 5;
+    required XYTheta a = 6;
+}
+
+message WheelPhysicsState {
+    required double theta = 1;
+    required double omega = 2;
+    required double alpha = 3;
+}
+

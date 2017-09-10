@@ -4,6 +4,7 @@
 #include <lib/Server.h>
 #include <QtWidgets/QApplication>
 #include <lib/Client.h>
+#include <lib/TopicNames.h>
 
 void PrintVersionInfo() {
   printf("SmartmouseSim v 0.0.0\n");
@@ -34,25 +35,28 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  // Start physics thread
-  Server server;
-  server.start();
+  ignition::transport::Node node;
+  auto server_pub = node.Advertise<smartmouse::msgs::ServerControl>(TopicNames::kServerControl);
 
   int return_code = 0;
   Client *window;
   do {
+    // Start physics thread
+    Server server;
+    server.start();
+
     QApplication app(argc, argv);
     window = new Client();
     window->setWindowTitle("Smartmouse Simulator");
     window->showMaximized();
     return_code = app.exec();
+
+    smartmouse::msgs::ServerControl quit_msg;
+    quit_msg.set_quit(true);
+    server_pub.Publish(quit_msg);
+    server.join();
   } while (return_code == Client::kRestartCode);
-
-  smartmouse::msgs::ServerControl quit_msg;
-  quit_msg.set_quit(true);
   window->Exit();
-
-  server.join();
 
   return return_code;
 }
