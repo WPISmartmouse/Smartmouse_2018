@@ -89,12 +89,18 @@ RobotDescription Convert(std::ifstream &fs) {
   }
 
   auto left_wheel = robot_description.mutable_left_wheel();
-  left_wheel->set_x(json["left_wheel"]["x"]);
-  left_wheel->set_y(json["left_wheel"]["y"]);
+  auto left_wheel_pose = left_wheel->mutable_pose();
+  left_wheel_pose->set_x(json["left_wheel"]["pose"]["x"]);
+  left_wheel_pose->set_y(json["left_wheel"]["pose"]["y"]);
+  left_wheel->set_radius(json["left_wheel"]["radius"]);
+  left_wheel->set_thickness(json["left_wheel"]["thickness"]);
 
   auto right_wheel = robot_description.mutable_right_wheel();
-  right_wheel->set_x(json["right_wheel"]["x"]);
-  right_wheel->set_y(json["right_wheel"]["y"]);
+  auto right_wheel_pose = right_wheel->mutable_pose();
+  right_wheel_pose->set_x(json["right_wheel"]["pose"]["x"]);
+  right_wheel_pose->set_y(json["right_wheel"]["pose"]["y"]);
+  right_wheel->set_radius(json["right_wheel"]["radius"]);
+  right_wheel->set_thickness(json["right_wheel"]["thickness"]);
 
   return robot_description;
 }

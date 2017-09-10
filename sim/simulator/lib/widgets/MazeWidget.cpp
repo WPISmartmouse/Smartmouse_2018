@@ -67,19 +67,25 @@ void MazeWidget::PaintMouse(QPainter &painter, QTransform tf) {
     footprint_.lineTo(pt.x(), pt.y());
   }
 
-  double lwx = mouse_.left_wheel().x();
-  double lwy = mouse_.left_wheel().y();
-  double rwx = mouse_.right_wheel().x();
-  double rwy = mouse_.right_wheel().y();
-  QRectF left_wheel(lwx - 0.01, lwy - 0.01, 0.02, 0.02);
-  QRectF right_wheel(rwx - 0.01, rwy - 0.01, 0.02, 0.02);
+  auto left_wheel = mouse_.left_wheel();
+  auto right_wheel = mouse_.right_wheel();
+  double lwx = left_wheel.pose().x();
+  double lwy = left_wheel.pose().y();
+  double rwx = right_wheel.pose().x();
+  double rwy = right_wheel.pose().y();
+  double lr = left_wheel.radius();
+  double lt = left_wheel.thickness();
+  double rr = right_wheel.radius();
+  double rt = right_wheel.thickness();
+  QRectF left_wheel_rect(lwx - lr, lwy - lt/2, lr * 2, lt);
+  QRectF right_wheel_rect(rwx - rr, rwy - rt/2, rr * 2, rt);
 
   tf.translate(robot_state_.xytheta().x(), robot_state_.xytheta().y());
   tf.rotateRadians(robot_state_.xytheta().theta(), Qt::ZAxis);
 
   painter.fillPath(tf.map(footprint_), kRobotBrush);
-  painter.fillRect(tf.mapRect(left_wheel), QBrush(Qt::black));
-  painter.fillRect(tf.mapRect(right_wheel), QBrush(Qt::black));
+  painter.fillRect(tf.mapRect(left_wheel_rect), QBrush(Qt::black));
+  painter.fillRect(tf.mapRect(right_wheel_rect), QBrush(Qt::black));
 }
 
 void MazeWidget::PaintWalls(QPainter &painter, QTransform tf) {

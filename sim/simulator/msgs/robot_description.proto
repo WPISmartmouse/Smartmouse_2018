@@ -8,8 +8,15 @@ package smartmouse.msgs;
 
 message RobotDescription {
     repeated ignition.msgs.Vector2d footprint = 1;
-    optional ignition.msgs.Vector2d left_wheel = 2;
-    optional ignition.msgs.Vector2d right_wheel = 3;
+    optional WheelDescription left_wheel = 2;
+    optional WheelDescription right_wheel = 3;
     optional ignition.msgs.Vector3d cog = 4;
     repeated XYTheta range_sensors = 5;
+}
+
+message WheelDescription {
+   required ignition.msgs.Vector2d pose = 1;
+   required double radius = 2;
+   required double thickness = 3;
+   required double u_static = 4;
 }
