@@ -22,7 +22,7 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 set(TRIPLE "arm-none-eabi")
-set(ARDUINO_ROOT "/opt/arduino-1.8.4/arduino-1.8.4" CACHE PATH "Path to the Arduino directory")
+set(ARDUINO_ROOT "/opt/arduino-1.8.4" CACHE PATH "Path to the Arduino directory")
 set(TEENSY_CORES_ROOT "${ARDUINO_ROOT}/hardware/teensy/avr/cores" CACHE PATH "Teensy cores")
 set(ARDUINO_LIB_ROOT "${ARDUINO_ROOT}/hardware/teensy/avr/libraries" CACHE PATH "arduino libraries directory")
 set(TEENSY_ROOT "${TEENSY_CORES_ROOT}/teensy3")
