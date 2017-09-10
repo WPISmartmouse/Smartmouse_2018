@@ -10,7 +10,7 @@
 #include <common/math/math.h>
 
 StateWidget::StateWidget() : QWidget() {
-  this->node.Subscribe(TopicNames::kRobotState, &StateWidget::StateCallback, this);
+  this->node.Subscribe(TopicNames::kRobotSimState, &StateWidget::StateCallback, this);
   this->node.Subscribe(TopicNames::kMazeLocation, &StateWidget::MazeLocationCallback, this);
   this->node.Subscribe("~/mouse/base/front_left/scan", &StateWidget::FrontLeftAnalogCallback, this);
   this->node.Subscribe("~/mouse/base/front_right/scan", &StateWidget::FrontRightAnalogCallback, this);

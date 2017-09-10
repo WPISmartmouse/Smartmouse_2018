@@ -14,6 +14,7 @@ MazeWidget::MazeWidget() : QWidget() {
   setSizePolicy(QSizePolicy::Policy::MinimumExpanding, QSizePolicy::Policy::MinimumExpanding);
   node_.Subscribe(TopicNames::kMaze, &MazeWidget::OnMaze, this);
   node_.Subscribe(TopicNames::kRobotDescription, &MazeWidget::OnRobotDescription, this);
+  node_.Subscribe(TopicNames::kRobotSimState, &MazeWidget::OnRobotSimState, this);
 }
 
 /**
@@ -53,12 +54,13 @@ void MazeWidget::paintEvent(QPaintEvent *event) {
   }
 
   // Draw all the walls
-  for (smartmouse::msgs::Wall wall : maze_.walls()) {
-    QRectF wall_rect = PaintWall(wall);
-    painter.fillRect(tf.mapRect(wall_rect), kWallBrush);
-  }
+  PaintWalls(painter, tf);
 
   // Draw the mouse
+  PaintMouse(painter, tf);
+}
+
+void MazeWidget::PaintMouse(QPainter &painter, QTransform tf) {
   QPainterPath footprint_;
   footprint_.moveTo(mouse_.footprint(0).x(), mouse_.footprint(0).y());
   for (auto pt : mouse_.footprint()) {
@@ -72,56 +74,57 @@ void MazeWidget::paintEvent(QPaintEvent *event) {
   QRectF left_wheel(lwx - 0.01, lwy - 0.01, 0.02, 0.02);
   QRectF right_wheel(rwx - 0.01, rwy - 0.01, 0.02, 0.02);
 
-  QTransform mouse_tf;
-  mouse_tf.translate(robot_state_.xytheta().x(), robot_state_.xytheta().y());
-  mouse_tf.rotateRadians(robot_state_.xytheta().theta(), Qt::ZAxis);
-  painter.fillPath(tf.map(footprint_), kRobotBrush);
+  tf.translate(robot_state_.xytheta().x(), robot_state_.xytheta().y());
+  tf.rotateRadians(robot_state_.xytheta().theta(), Qt::ZAxis);
 
+  painter.fillPath(tf.map(footprint_), kRobotBrush);
   painter.fillRect(tf.mapRect(left_wheel), QBrush(Qt::black));
   painter.fillRect(tf.mapRect(right_wheel), QBrush(Qt::black));
 }
 
-QRectF MazeWidget::PaintWall(smartmouse::msgs::Wall wall) {
-  smartmouse::msgs::RowCol row_col = wall.node();
-  smartmouse::msgs::Direction::Dir dir = wall.direction();
-  double center_row;
-  double center_col;
-  std::tie(center_row, center_col) = AbstractMaze::rowColToXYCenter(row_col.row(), row_col.col());
+void MazeWidget::PaintWalls(QPainter &painter, QTransform tf) {
+  for (smartmouse::msgs::Wall wall : maze_.walls()) {
+    smartmouse::msgs::RowCol row_col = wall.node();
+    smartmouse::msgs::Direction::Dir dir = wall.direction();
+    double center_row;
+    double center_col;
+    std::tie(center_row, center_col) = AbstractMaze::rowColToXYCenter(row_col.row(), row_col.col());
 
 
-  double x1 = center_col, y1 = center_row, w = AbstractMaze::UNIT_DIST, h = AbstractMaze::WALL_THICKNESS;
-  switch (dir) {
-    case smartmouse::msgs::Direction_Dir_N: {
-      x1 = center_col - AbstractMaze::HALF_UNIT_DIST;
-      y1 = center_row - AbstractMaze::HALF_UNIT_DIST - AbstractMaze::HALF_WALL_THICKNESS;
-      w = AbstractMaze::UNIT_DIST;
-      h = AbstractMaze::WALL_THICKNESS;
-      break;
+    double x1 = center_col, y1 = center_row, w = AbstractMaze::UNIT_DIST, h = AbstractMaze::WALL_THICKNESS;
+    switch (dir) {
+      case smartmouse::msgs::Direction_Dir_N: {
+        x1 = center_col - AbstractMaze::HALF_UNIT_DIST;
+        y1 = center_row - AbstractMaze::HALF_UNIT_DIST - AbstractMaze::HALF_WALL_THICKNESS;
+        w = AbstractMaze::UNIT_DIST;
+        h = AbstractMaze::WALL_THICKNESS;
+        break;
+      }
+      case smartmouse::msgs::Direction_Dir_S: {
+        x1 = center_col - AbstractMaze::HALF_UNIT_DIST;
+        y1 = center_row + AbstractMaze::HALF_UNIT_DIST - AbstractMaze::HALF_WALL_THICKNESS;
+        w = AbstractMaze::UNIT_DIST;
+        h = AbstractMaze::WALL_THICKNESS;
+        break;
+      }
+      case smartmouse::msgs::Direction_Dir_E: {
+        x1 = center_col + AbstractMaze::HALF_UNIT_DIST - AbstractMaze::HALF_WALL_THICKNESS;
+        y1 = center_row - AbstractMaze::HALF_UNIT_DIST;
+        w = AbstractMaze::WALL_THICKNESS;
+        h = AbstractMaze::UNIT_DIST;
+        break;
+      }
+      case smartmouse::msgs::Direction_Dir_W: {
+        x1 = center_col - AbstractMaze::HALF_UNIT_DIST - AbstractMaze::HALF_WALL_THICKNESS;
+        y1 = center_row - AbstractMaze::HALF_UNIT_DIST;
+        w = AbstractMaze::WALL_THICKNESS;
+        h = AbstractMaze::UNIT_DIST;
+        break;
+      }
     }
-    case smartmouse::msgs::Direction_Dir_S: {
-      x1 = center_col - AbstractMaze::HALF_UNIT_DIST;
-      y1 = center_row + AbstractMaze::HALF_UNIT_DIST - AbstractMaze::HALF_WALL_THICKNESS;
-      w = AbstractMaze::UNIT_DIST;
-      h = AbstractMaze::WALL_THICKNESS;
-      break;
-    }
-    case smartmouse::msgs::Direction_Dir_E: {
-      x1 = center_col + AbstractMaze::HALF_UNIT_DIST - AbstractMaze::HALF_WALL_THICKNESS;
-      y1 = center_row - AbstractMaze::HALF_UNIT_DIST;
-      w = AbstractMaze::WALL_THICKNESS;
-      h = AbstractMaze::UNIT_DIST;
-      break;
-    }
-    case smartmouse::msgs::Direction_Dir_W: {
-      x1 = center_col - AbstractMaze::HALF_UNIT_DIST - AbstractMaze::HALF_WALL_THICKNESS;
-      y1 = center_row - AbstractMaze::HALF_UNIT_DIST;
-      w = AbstractMaze::WALL_THICKNESS;
-      h = AbstractMaze::UNIT_DIST;
-      break;
-    }
+
+    painter.fillRect(tf.mapRect(QRectF(x1, y1, w, h)), kWallBrush);
   }
-
-  return QRectF(x1, y1, w, h);
 }
 
 const QString MazeWidget::getTabName() {
@@ -135,5 +138,14 @@ void MazeWidget::OnMaze(const smartmouse::msgs::Maze &msg) {
 
 void MazeWidget::OnRobotDescription(const smartmouse::msgs::RobotDescription &msg) {
   mouse_ = msg;
+  update();
+}
+
+void MazeWidget::OnRobotSimState(const smartmouse::msgs::RobotSimState &msg) {
+  auto xytheta = robot_state_.mutable_xytheta();
+  xytheta->set_x(msg.true_x_meters());
+  xytheta->set_y(msg.true_y_meters());
+  xytheta->set_theta(msg.true_yaw_rad());
+
   update();
 }

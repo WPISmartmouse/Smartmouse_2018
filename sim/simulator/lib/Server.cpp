@@ -1,6 +1,8 @@
 #include <sim/simulator/lib/Server.h>
 #include <sim/simulator/lib/TopicNames.h>
 #include <msgs/world_statistics.pb.h>
+#include <msgs/robot_sim_state.pb.h>
+#include <common/RobotConfig.h>
 
 void Server::start() {
   thread_ = new std::thread(std::bind(&Server::RunLoop, this));
@@ -11,6 +13,7 @@ void Server::RunLoop() {
   node_ptr_ = new ignition::transport::Node();
 
   world_stats_pub_ = node_ptr_->Advertise<smartmouse::msgs::WorldStatistics>(TopicNames::kWorldStatistics);
+  sim_state_pub_ = node_ptr_->Advertise<smartmouse::msgs::RobotSimState>(TopicNames::kRobotSimState);
   node_ptr_->Subscribe(TopicNames::kWorldControl, &Server::OnServerControl, this);
   node_ptr_->Subscribe(TopicNames::kPhysics, &Server::OnPhysics, this);
   node_ptr_->Subscribe(TopicNames::kMaze, &Server::OnMaze, this);
@@ -71,6 +74,12 @@ void Server::RunLoop() {
     *sim_time_msg = sim_time_.toIgnMsg();
     world_stats_msg.set_real_time_factor(rtf.Double());
     world_stats_pub_.Publish(world_stats_msg);
+
+    smartmouse::msgs::RobotSimState sim_state_msg;
+    sim_state_msg.set_true_x_meters(0.08);
+    sim_state_msg.set_true_y_meters(0.08);
+    sim_state_msg.set_true_yaw_rad(0);
+    sim_state_pub_.Publish(sim_state_msg);
   }
 }
 
