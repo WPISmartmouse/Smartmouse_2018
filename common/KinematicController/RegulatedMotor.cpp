@@ -36,7 +36,7 @@ double RegulatedMotor::runPid(double dt_s, double angle_rad, double ground_truth
   }
 
   estimated_velocity_rps = (angle_rad - last_angle_rad) / dt_s;
-#ifdef EMBED
+#ifdef EMBED //TODO: remove this crutch
   velocity_rps = estimated_velocity_rps;
 #else
   velocity_rps = Mouse::meterToRad(ground_truth_velocity_mps);
