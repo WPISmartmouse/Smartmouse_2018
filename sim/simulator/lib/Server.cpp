@@ -85,8 +85,7 @@ smartmouse::msgs::RobotSimState Server::Step() {
   auto dt = Time(0, ns_of_sim_per_step_);
   sim_time_ += dt;
 
-//  double f = (cmd_.left().abstract_force() + cmd_.right().abstract_force())/2.0;
-  double f = 0.1;
+  double f = cmd_.left().target_speed() * 0.01;
   double x_m = internal_state_.p().x();
   internal_state_.mutable_p()->set_x(x_m + f * dt.Double());
 

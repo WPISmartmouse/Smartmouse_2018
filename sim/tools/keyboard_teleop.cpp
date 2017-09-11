@@ -83,7 +83,7 @@ int main(int argc, char **argv) {
       double rrps = SimMouse::meterToRad(rspeed);
 
       smartmouse::msgs::RobotCommand cmd;
-      cmd.mutable_left()->set_target_speed(1);
+      cmd.mutable_left()->set_target_speed(lrps);
       cmd.mutable_left()->set_kp(kP);
       cmd.mutable_left()->set_ki(kI);
       cmd.mutable_left()->set_kd(kD);
