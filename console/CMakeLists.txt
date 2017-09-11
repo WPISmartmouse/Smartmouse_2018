@@ -3,7 +3,7 @@ file(GLOB CONSOLE_SRC *.cpp commands/*.cpp)
 ################################
 # library for console programs
 ################################
-add_library(console ${COM_SRC} ${CONSOLE_SRC})
+add_library(console ${COM_SRC} ${COM_COMMAND_SRC} ${CONSOLE_SRC})
 target_compile_features(console PRIVATE cxx_strong_enums)
 target_include_directories(console PRIVATE console)
 set_target_properties(console PROPERTIES COMPILE_FLAGS "-DCONSOLE -include common/util.h")

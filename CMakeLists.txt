@@ -16,8 +16,9 @@ project(smartmouse)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 include_directories(${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR})
 
-file(GLOB_RECURSE COM_SRC
-        common/*.cpp)
+
+file(GLOB COM_SRC common/*.cpp common/math/*.cpp common/commanduino/*.cpp common/KinematicController/*.cpp)
+file(GLOB COM_COMMAND_SRC common/commands/*.cpp)
 
 if (NOT ${BUILD_SIM})
     include(Teensy)
@@ -38,7 +39,7 @@ if (NOT ${BUILD_SIM})
     import_arduino_library(i2c_t3)
     import_arduino_library(SPI)
 
-    add_teensy_executable(main real/main/main.cpp ${COM_SRC} ${REAL_SRC} ${REAL_LIBS_SRC})
+    add_teensy_executable(main real/main/main.cpp ${COM_SRC} ${COM_COMMAND_SRC} ${REAL_SRC} ${REAL_LIBS_SRC})
     set_target_properties(main PROPERTIES COMPILE_FLAGS "-include common/util.h")
 
 else ()

@@ -22,10 +22,13 @@ add_subdirectory(simulator)
 add_library(sim_common ${COM_SRC})
 set_target_properties(sim_common PROPERTIES COMPILE_FLAGS "-include common/util.h")
 
+add_library(sim_common_commands ${COM_COMMAND_SRC})
+set_target_properties(sim_common_commands PROPERTIES COMPILE_FLAGS "-include common/util.h")
+
 file(GLOB SIM_SRC lib/*.cpp commands/*.cpp)
-add_library(sim ${COM_SRC} ${SIM_SRC})
+add_library(sim ${SIM_SRC})
 set_target_properties(sim PROPERTIES COMPILE_FLAGS "-include common/util.h")
-target_link_libraries(sim ${IGNITION-TRANSPORT_LIBRARIES} msgs)
+target_link_libraries(sim sim_common sim_common_commands ${IGNITION-TRANSPORT_LIBRARIES} msgs)
 
 #################################
 # actual sim mouse programs
@@ -34,14 +37,14 @@ set(SIMS SimSolve SimNavTest)
 
 foreach (MAIN ${SIMS})
     add_executable(${MAIN} "main/${MAIN}.cpp")
-    target_link_libraries(${MAIN} sim ${IGNITION-TRANSPORT_LIBRARIES})
+    target_link_libraries(${MAIN} sim_common sim_common_commands sim ${IGNITION-TRANSPORT_LIBRARIES})
 endforeach ()
 
 #################################
 # command line tools for simulation
 #################################
 add_executable(keyboard_teleop ./tools/keyboard_teleop.cpp)
-target_link_libraries(keyboard_teleop sim ncurses msgs)
+target_link_libraries(keyboard_teleop sim_common sim ncurses msgs)
 
 add_executable(joy_teleop ./tools/joystick_teleop.cpp joystick/joystick.cc)
-target_link_libraries(joy_teleop sim ncurses msgs)
+target_link_libraries(joy_teleop sim_common sim ncurses msgs)
