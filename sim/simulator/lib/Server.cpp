@@ -1,6 +1,7 @@
 #include <sim/simulator/lib/Server.h>
 #include <sim/simulator/lib/TopicNames.h>
 #include <msgs/world_statistics.pb.h>
+#include <common/Mouse.h>
 
 void Server::start() {
   thread_ = new std::thread(std::bind(&Server::RunLoop, this));
@@ -85,27 +86,7 @@ smartmouse::msgs::RobotSimState Server::Step() {
   auto dt = Time(0, ns_of_sim_per_step_);
   sim_time_ += dt;
 
-  // use the cmd abstract forces, apply our dynamics model, update internal state
-
-//  double f = cmd_.left().target_speed() * 0.01;
-//  double x_m = internal_state_.p().x();
-//  internal_state_.mutable_p()->set_x();
-//  internal_state_.mutable_p()->set_y();
-//  internal_state_.mutable_p()->set_theta();
-//  internal_state_.mutable_v()->set_x();
-//  internal_state_.mutable_v()->set_y();
-//  internal_state_.mutable_v()->set_theta();
-//  internal_state_.mutable_a()->set_x();
-//  internal_state_.mutable_a()->set_y();
-//  internal_state_.mutable_a()->set_theta();
-
-  smartmouse::msgs::RobotSimState sim_state_msg;
-  auto stamp = sim_state_msg.mutable_stamp();
-  stamp->set_sec(sim_time_.sec);
-  stamp->set_nsec(sim_time_.nsec);
-  sim_state_msg.set_true_x_meters(internal_state_.p().x());
-  sim_state_msg.set_true_y_meters(internal_state_.p().y());
-  sim_state_msg.set_true_yaw_rad(internal_state_.p().theta());
+  auto sim_state_msg = UpdateInternalState(dt.Double());
 
   // increment step counter
   ++steps_;
@@ -176,4 +157,54 @@ void Server::OnRobotCommand(const smartmouse::msgs::RobotCommand &msg) {
 
 void Server::join() {
   thread_->join();
+}
+
+smartmouse::msgs::RobotSimState Server::UpdateInternalState(double dt) {
+  // use the cmd abstract forces, apply our dynamics model, update internal state
+  double x = internal_state_.p().x();
+  double y = internal_state_.p().y();
+  double theta = internal_state_.p().theta();
+  double vx = internal_state_.v().x();
+  double vy = internal_state_.v().y();
+  double w = internal_state_.v().theta();
+  double ax = internal_state_.a().x();
+  double ay = internal_state_.a().y();
+  double a = internal_state_.a().theta();
+  double lt = internal_state_.left_wheel().theta();
+  double lw = internal_state_.left_wheel().omega();
+  double la = internal_state_.left_wheel().alpha();
+  double rt = internal_state_.right_wheel().theta();
+  double rw = internal_state_.right_wheel().omega();
+  double ra = internal_state_.right_wheel().alpha();
+
+  double lv = lw * dt / (M_2_PI * Mouse::WHEEL_RAD);
+  double rv = rw * dt / (M_2_PI * Mouse::WHEEL_RAD);
+  lt = lt + lw * dt + 1/2 * la * dt * dt;
+  rt = rt + rw * dt + 1/2 * ra * dt * dt;
+
+  internal_state_.mutable_p()->set_x(x);
+  internal_state_.mutable_p()->set_y(y);
+  internal_state_.mutable_p()->set_theta(theta);
+  internal_state_.mutable_v()->set_x(vx);
+  internal_state_.mutable_v()->set_y(vy);
+  internal_state_.mutable_v()->set_theta(w);
+  internal_state_.mutable_a()->set_x(ax);
+  internal_state_.mutable_a()->set_y(ay);
+  internal_state_.mutable_a()->set_theta(a);
+  internal_state_.mutable_left_wheel()->set_theta(lt);
+  internal_state_.mutable_left_wheel()->set_omega(lw);
+  internal_state_.mutable_left_wheel()->set_alpha(la);
+  internal_state_.mutable_right_wheel()->set_theta(rt);
+  internal_state_.mutable_right_wheel()->set_omega(rw);
+  internal_state_.mutable_right_wheel()->set_alpha(ra);
+
+  smartmouse::msgs::RobotSimState sim_state_msg;
+  auto stamp = sim_state_msg.mutable_stamp();
+  stamp->set_sec(sim_time_.sec);
+  stamp->set_nsec(sim_time_.nsec);
+  sim_state_msg.set_true_x_meters(internal_state_.p().x());
+  sim_state_msg.set_true_y_meters(internal_state_.p().y());
+  sim_state_msg.set_true_yaw_rad(internal_state_.p().theta());
+
+  return sim_state_msg;
 }

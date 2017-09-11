@@ -46,4 +46,5 @@ class Server {
   void ResetTime();
 
   smartmouse::msgs::InternalPhysicsState internal_state_;
+  smartmouse::msgs::RobotSimState UpdateInternalState(double dt);
 };
