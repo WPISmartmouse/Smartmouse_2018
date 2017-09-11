@@ -4,7 +4,7 @@
 
 bool WaitForStart::calibrated = false;
 
-WaitForStart::WaitForStart() : CommandGroup("wait_calibrate"), mouse(RealMouse::inst()) {
+WaitForStart::WaitForStart() : CommandGroup("wait_calibrate"), mouse(RealMouse::inst()), speed(0) {
   mouse->kinematic_controller.enabled = false;
   if (!calibrated) {
     addSequential(new Calibrate());
@@ -51,7 +51,7 @@ bool WaitForStart::isFinished() {
 }
 
 void WaitForStart::end() {
-  config.MAX_SPEED = max(speed, 0.1);
+  config.MAX_SPEED = max(speed, 0.6);
   for (int i = 0; i < 7; i++) {
     digitalWrite(RealMouse::LED_7 - i, 0);
   }

@@ -39,7 +39,7 @@ RobotConfig config = {
         GERALD_X : 0.054,
         GERALD_Y : 0.018,
         GERALD_ANGLE : 0.6544985,
-        MAX_SPEED : 0.30,
+        MAX_SPEED : 0.60,
         MAX_HARDWARE_SPEED : 0.60,
         MIN_SPEED : 0.013,
         FRONT_WALL_THRESHOLD : 0.15,

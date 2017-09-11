@@ -167,7 +167,7 @@ void RealMouse::setup() {
   left_encoder.init(ENCODER_LEFT_A, ENCODER_LEFT_B);
   right_encoder.init(ENCODER_RIGHT_A, ENCODER_RIGHT_B);
 
-  kinematic_controller.setAcceleration(5.5, 8.0);
+  kinematic_controller.setAcceleration(6, 6);
 
   resetToStartPose();
 
@@ -183,7 +183,7 @@ void RealMouse::resetToStartPose() {
   right_angle_rad = tick_to_rad(right_encoder.read());
   kinematic_controller.left_motor.reset_enc_rad(left_angle_rad);
   kinematic_controller.right_motor.reset_enc_rad(right_angle_rad);
-  kinematic_controller.reset_x_to(0.08);
+  kinematic_controller.reset_x_to(0.00);
   kinematic_controller.reset_y_to(0.09);
   kinematic_controller.reset_yaw_to(0.0);
 }

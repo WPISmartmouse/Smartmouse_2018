@@ -29,9 +29,17 @@ std::pair<double, double> DriveStraight::compute_wheel_velocities(Mouse *mouse) 
   // To achieve this, we control our yaw as a function of our error in wall distance
   double yawError = KinematicController::yawDiff(goalYaw, current_pose.yaw);
 
-  double l = config.MAX_SPEED;
-  double r = config.MAX_SPEED;
-  double correction = kPWall * yawError; // in m/s
+  // given starting velocity, fixed acceleration, and final velocity
+  // generate the velocity profile for achieving this as fast as possible
+  if (current_speed < config.MAX_SPEED) {
+    l = current_speed + acceleration;
+  }
+  else if (dispError < dispToSlowDown) {
+    l = current_speed - acceleration;
+  }
+  double l = ; // config.MAX_SPEED;
+  double r = velocity_profile(); // config.MAX_SPEED;
+  double correction = kPWall * yawError;
 
   if (yawError < 0) { // need to turn left
     l += correction; // correction will be negative here
@@ -44,16 +52,11 @@ std::pair<double, double> DriveStraight::compute_wheel_velocities(Mouse *mouse) 
 
 double DriveStraight::fwdDisp(Direction dir, GlobalPose current_pose, GlobalPose start_pose) {
   switch (dir) {
-    case Direction::N:
-      return start_pose.y - current_pose.y;
-    case Direction::E:
-      return current_pose.x - start_pose.x;
-    case Direction::S:
-      return current_pose.y - start_pose.y;
-    case Direction::W:
-      return start_pose.x - current_pose.x;
-    default:
-      return std::numeric_limits<double>::quiet_NaN();
+    case Direction::N:return start_pose.y - current_pose.y;
+    case Direction::E:return current_pose.x - start_pose.x;
+    case Direction::S:return current_pose.y - start_pose.y;
+    case Direction::W:return start_pose.x - current_pose.x;
+    default:return std::numeric_limits<double>::quiet_NaN();
   }
 }
 
@@ -78,9 +81,13 @@ double DriveStraight::dispToNextEdge(Mouse *mouse) {
       double next_col_x = mouse->getCol() * AbstractMaze::UNIT_DIST;
       return current_pose.x - next_col_x;
     }
-    default:
-      return std::numeric_limits<double>::quiet_NaN();
+    default:return std::numeric_limits<double>::quiet_NaN();
   }
+}
+
+double DriveStraight::dispToNthEdge(Mouse *mouse, unsigned int n) {
+  // give the displacement to the nth edge like above...
+  return 0;
 }
 
 double DriveStraight::sidewaysDispToCenter(Mouse *mouse) {
@@ -93,5 +100,5 @@ double DriveStraight::fwdDispToCenter(Mouse *mouse) {
 }
 
 double DriveStraight::fwdDispToDiag(Mouse *mouse) {
-  return (AbstractMaze::HALF_UNIT_DIST - (config.TRACK_WIDTH/2.0)) - mouse->getLocalPose().to_back;
+  return (AbstractMaze::HALF_UNIT_DIST - (config.TRACK_WIDTH / 2.0)) - mouse->getLocalPose().to_back;
 }

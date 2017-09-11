@@ -2,12 +2,9 @@
 #include <common/commanduino/CommanDuino.h>
 #include <real/ArduinoTimer.h>
 #include <common/AbstractMaze.h>
-#include <common/commands/SolveCommand.h>
 #include <common/util.h>
-#include <common/Flood.h>
+#include <common/commands/NavTestCommand.h>
 #include "Finish.h"
-#include "Forward.h"
-#include "Turn.h"
 
 ArduinoTimer timer;
 AbstractMaze maze;
@@ -18,24 +15,6 @@ bool done = false;
 bool on = true;
 bool paused = false;
 
-
-class Hack : public CommandGroup {
-public:
-  Hack() {
-    addSequential(new Forward());
-    addSequential(new Forward());
-    addSequential(new Forward());
-    addSequential(new Forward());
-    addSequential(new Forward());
-    addSequential(new Turn(Direction::W));
-    addSequential(new Turn(Direction::S));
-    addSequential(new Turn(Direction::E));
-    addSequential(new Turn(Direction::W));
-    addSequential(new Forward());
-    addSequential(new Turn(Direction::S));
-  }
-};
-
 void setup() {
   Command::setTimerImplementation(&timer);
   mouse = RealMouse::inst();
@@ -43,10 +22,8 @@ void setup() {
 
   GlobalProgramSettings.quiet = false;
 
-//  scheduler = new Scheduler(new RepeatCommand<Forward>(3));
-//  scheduler = new Scheduler(new Finish(mouse->maze));
-//  scheduler = new Scheduler(new Turn(Direction::N));
-  scheduler = new Scheduler(new SolveCommand(new Flood(mouse)));
+  scheduler = new Scheduler(new NavTestCommand());
+//  scheduler = new Scheduler(new SolveCommand(new Flood(mouse)));
 
   last_t = timer.programTimeMs();
   last_blink = timer.programTimeMs();
@@ -55,7 +32,7 @@ void setup() {
 void loop() {
   if (Serial1.available()) {
     int c = Serial1.read();
-    if (c == (int)'p') {
+    if (c == (int) 'p') {
       Serial1.clear();
       analogWrite(RealMouse::MOTOR_LEFT_A, 0);
       analogWrite(RealMouse::MOTOR_RIGHT_A, 0);
@@ -88,8 +65,7 @@ void loop() {
 
   if (!done) {
     done = scheduler->run();
-  }
-  else {
+  } else {
     mouse->setSpeed(0, 0);
     digitalWrite(RealMouse::SYS_LED, 1);
   }

@@ -4,6 +4,7 @@
 #include <common/Mouse.h>
 #include <common/Direction.h>
 #include <common/RobotConfig.h>
+#include <real/RealMouse.h>
 
 class DriveStraight {
 public:
@@ -13,6 +14,8 @@ public:
   void start(GlobalPose start_pose, double goalDisp);
 
   static double dispToNextEdge(Mouse *mouse);
+
+  static double dispToNthEdge(Mouse *mouse, unsigned int n);
 
   static double fwdDispToCenter(Mouse *mouse);
 
