@@ -15,5 +15,7 @@ AbstractMaze Convert(smartmouse::msgs::Maze maze_msg);
 ::Direction Convert(smartmouse::msgs::Direction::Dir dir_enum);
 
 RobotDescription Convert(std::ifstream &fs);
+
+double Convert(ignition::msgs::Time time);
 }
 }

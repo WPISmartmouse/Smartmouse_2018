@@ -22,6 +22,12 @@ class MazeWidget : public QWidget {
 
   const QString getTabName();
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "NotImplementedFunctions"
+ signals:
+  void MyUpdate();
+#pragma clang diagnostic pop
+
  private:
   void PaintWalls(QPainter &painter, QTransform tf);
   void PaintMouse(QPainter &painter, QTransform tf);

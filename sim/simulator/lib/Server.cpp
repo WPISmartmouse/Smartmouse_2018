@@ -91,6 +91,9 @@ smartmouse::msgs::RobotSimState Server::Step() {
   internal_state_.mutable_p()->set_x(x_m + f * dt.Double());
 
   smartmouse::msgs::RobotSimState sim_state_msg;
+  auto stamp = sim_state_msg.mutable_stamp();
+  stamp->set_sec(sim_time_.sec);
+  stamp->set_nsec(sim_time_.nsec);
   sim_state_msg.set_true_x_meters(internal_state_.p().x());
   sim_state_msg.set_true_y_meters(internal_state_.p().y());
   sim_state_msg.set_true_yaw_rad(internal_state_.p().theta());

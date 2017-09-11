@@ -4,7 +4,8 @@
 
 #include <common/AbstractMaze.h>
 #include <sim/simulator/lib/widgets/MazeWidget.h>
-#include <lib/TopicNames.h>
+#include <sim/simulator/lib/TopicNames.h>
+#include <sim/simulator/msgs/msgs.h>
 
 const int MazeWidget::kPaddingPx = 24;
 const QBrush MazeWidget::kRobotBrush = QBrush(QColor("#F57C00"));
@@ -15,6 +16,11 @@ MazeWidget::MazeWidget() : QWidget() {
   node_.Subscribe(TopicNames::kMaze, &MazeWidget::OnMaze, this);
   node_.Subscribe(TopicNames::kRobotDescription, &MazeWidget::OnRobotDescription, this);
   node_.Subscribe(TopicNames::kRobotSimState, &MazeWidget::OnRobotSimState, this);
+
+  QObject::connect(this,
+                   &MazeWidget::MyUpdate,
+                   this,
+                   static_cast<void (QWidget::*)()>(&QWidget::update), Qt::QueuedConnection);
 }
 
 /**
@@ -77,8 +83,8 @@ void MazeWidget::PaintMouse(QPainter &painter, QTransform tf) {
   double lt = left_wheel.thickness();
   double rr = right_wheel.radius();
   double rt = right_wheel.thickness();
-  QRectF left_wheel_rect(lwx - lr, lwy - lt/2, lr * 2, lt);
-  QRectF right_wheel_rect(rwx - rr, rwy - rt/2, rr * 2, rt);
+  QRectF left_wheel_rect(lwx - lr, lwy - lt / 2, lr * 2, lt);
+  QRectF right_wheel_rect(rwx - rr, rwy - rt / 2, rr * 2, rt);
 
   tf.translate(robot_state_.xytheta().x(), robot_state_.xytheta().y());
   tf.rotateRadians(robot_state_.xytheta().theta(), Qt::ZAxis);
@@ -95,7 +101,6 @@ void MazeWidget::PaintWalls(QPainter &painter, QTransform tf) {
     double center_row;
     double center_col;
     std::tie(center_row, center_col) = AbstractMaze::rowColToXYCenter(row_col.row(), row_col.col());
-
 
     double x1 = center_col, y1 = center_row, w = AbstractMaze::UNIT_DIST, h = AbstractMaze::WALL_THICKNESS;
     switch (dir) {
@@ -139,12 +144,12 @@ const QString MazeWidget::getTabName() {
 
 void MazeWidget::OnMaze(const smartmouse::msgs::Maze &msg) {
   maze_ = msg;
-  emit update();
+  emit MyUpdate();
 }
 
 void MazeWidget::OnRobotDescription(const smartmouse::msgs::RobotDescription &msg) {
   mouse_ = msg;
-  emit update();
+  emit MyUpdate();
 }
 
 void MazeWidget::OnRobotSimState(const smartmouse::msgs::RobotSimState &msg) {
@@ -153,7 +158,5 @@ void MazeWidget::OnRobotSimState(const smartmouse::msgs::RobotSimState &msg) {
   xytheta->set_y(msg.true_y_meters());
   xytheta->set_theta(msg.true_yaw_rad());
 
-  std::cout << msg.true_x_meters() << std::endl;
-
-  emit update();
+  emit MyUpdate();
 }
