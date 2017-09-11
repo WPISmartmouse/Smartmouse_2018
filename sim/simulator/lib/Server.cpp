@@ -85,9 +85,19 @@ smartmouse::msgs::RobotSimState Server::Step() {
   auto dt = Time(0, ns_of_sim_per_step_);
   sim_time_ += dt;
 
-  double f = cmd_.left().target_speed() * 0.01;
-  double x_m = internal_state_.p().x();
-  internal_state_.mutable_p()->set_x(x_m + f * dt.Double());
+  // use the cmd abstract forces, apply our dynamics model, update internal state
+
+//  double f = cmd_.left().target_speed() * 0.01;
+//  double x_m = internal_state_.p().x();
+//  internal_state_.mutable_p()->set_x();
+//  internal_state_.mutable_p()->set_y();
+//  internal_state_.mutable_p()->set_theta();
+//  internal_state_.mutable_v()->set_x();
+//  internal_state_.mutable_v()->set_y();
+//  internal_state_.mutable_v()->set_theta();
+//  internal_state_.mutable_a()->set_x();
+//  internal_state_.mutable_a()->set_y();
+//  internal_state_.mutable_a()->set_theta();
 
   smartmouse::msgs::RobotSimState sim_state_msg;
   auto stamp = sim_state_msg.mutable_stamp();

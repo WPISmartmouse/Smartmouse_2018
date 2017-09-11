@@ -28,70 +28,44 @@ int main(int argc, char **argv) {
   ignition::transport::Node::Publisher controlPub;
   controlPub = node.Advertise<smartmouse::msgs::RobotCommand>(TopicNames::kRobotCommand);
 
-  double kP = 0.001;
-  double kI = 0.0000;
-  double kD = 0.0000;
-  double acc = 0.0005; // m/iteration^2
-
   bool keepGoing = true;
   int key;
 
-  double lspeed_setpoint = 0; // m/sec^2
-  double rspeed_setpoint = 0; // m/sec^2
-  double lspeed = 0; // m/s
-  double rspeed = 0; // m/s
-  const double u = .09; // m/s
+  double lforce_setpoint = 0;
+  double rforce_setpoint = 0;
+  double lforce = 0;
+  double rforce = 0;
+  const double u = .09;
   while (keepGoing) {
     key = std::cin.get();
 
     if (key == 'w') {
-      lspeed_setpoint += u;
-      rspeed_setpoint += u;
+      lforce_setpoint += u;
+      rforce_setpoint += u;
     } else if (key == 'a') {
-      lspeed_setpoint += u;
-      rspeed_setpoint -= u;
+      lforce_setpoint += u;
+      rforce_setpoint -= u;
     } else if (key == 's') {
-      lspeed_setpoint = 0;
-      rspeed_setpoint = 0;
+      lforce_setpoint = 0;
+      rforce_setpoint = 0;
     } else if (key == 'd') {
-      lspeed_setpoint -= u;
-      rspeed_setpoint += u;
+      lforce_setpoint -= u;
+      rforce_setpoint += u;
     } else if (key == 'x') {
-      lspeed_setpoint -= u;
-      rspeed_setpoint -= u;
+      lforce_setpoint -= u;
+      rforce_setpoint -= u;
     } else if (key == 'q') {
       keepGoing = false;
     } else {
     }
 
-    // Handle acceleration
-    while (rspeed != rspeed_setpoint or lspeed != lspeed_setpoint) {
-
-      if (rspeed < rspeed_setpoint) {
-        rspeed = std::min(rspeed + acc, rspeed_setpoint);
-      } else if (rspeed > rspeed_setpoint) {
-        rspeed = std::max(rspeed - acc, rspeed_setpoint);
-      }
-
-      if (lspeed < lspeed_setpoint) {
-        lspeed = std::min(lspeed + acc, lspeed_setpoint);
-      } else if (lspeed > lspeed_setpoint) {
-        lspeed = std::max(lspeed - acc, lspeed_setpoint);
-      }
-
-      double lrps = SimMouse::meterToRad(lspeed);
-      double rrps = SimMouse::meterToRad(rspeed);
+    if (rforce != rforce_setpoint or lforce != lforce_setpoint) {
+      rforce = rforce_setpoint;
+      lforce = lforce_setpoint;
 
       smartmouse::msgs::RobotCommand cmd;
-      cmd.mutable_left()->set_target_speed(lrps);
-      cmd.mutable_left()->set_kp(kP);
-      cmd.mutable_left()->set_ki(kI);
-      cmd.mutable_left()->set_kd(kD);
-
-      cmd.mutable_right()->set_target_speed(rrps);
-      cmd.mutable_right()->set_kp(kP);
-      cmd.mutable_right()->set_ki(kI);
-      cmd.mutable_right()->set_kd(kD);
+      cmd.mutable_left()->set_abstract_force(lforce);
+      cmd.mutable_right()->set_abstract_force(rforce);
 
       controlPub.Publish(cmd);
     }

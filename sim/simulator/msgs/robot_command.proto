@@ -4,10 +4,6 @@ package smartmouse.msgs;
 message Command
 {
     optional double abstract_force = 1;
-    optional double kP = 2;
-    optional double kI = 3;
-    optional double kD = 4;
-    optional double target_speed = 5;
 }
 
 message RobotCommand

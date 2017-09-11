@@ -20,17 +20,12 @@ int main(int argc, char **argv) {
   ignition::transport::Node::Publisher controlPub;
   controlPub = node.Advertise<smartmouse::msgs::RobotCommand>(TopicNames::kRobotCommand);
 
-  double kP = 0.001;
-  double kI = 0.0000;
-  double kD = 0.0000;
-  double acc = 0.0005; // m/iteration^2
-
   bool keepGoing = true;
 
-  double lspeed_setpoint = 0; // m/sec^2
-  double rspeed_setpoint = 0; // m/sec^2
-  double lspeed = 0; // m/s
-  double rspeed = 0; // m/s
+  double lforce_setpoint = 0; // m/sec^2
+  double rforce_setpoint = 0; // m/sec^2
+  double lforce = 0; // m/s
+  double rforce = 0; // m/s
   const double u = .09; // m/s
 
   Joystick joystick("/dev/input/js0");
@@ -55,40 +50,19 @@ int main(int argc, char **argv) {
     if (event.type == JS_EVENT_BUTTON && event.number == 1) {
     } else if (event.type == JS_EVENT_AXIS) {
       if (event.number == 1) {
-        lspeed_setpoint = -u * event.value / 30000.0;
+        lforce_setpoint = -u * event.value / 30000.0;
       } else if (event.number == 4) {
-        rspeed_setpoint = -u * event.value / 30000.0;
+        rforce_setpoint = -u * event.value / 30000.0;
       }
     }
 
-    // Handle acceleration
-    while (rspeed != rspeed_setpoint or lspeed != lspeed_setpoint) {
-
-      if (rspeed < rspeed_setpoint) {
-        rspeed = std::min(rspeed + acc, rspeed_setpoint);
-      } else if (rspeed > rspeed_setpoint) {
-        rspeed = std::max(rspeed - acc, rspeed_setpoint);
-      }
-
-      if (lspeed < lspeed_setpoint) {
-        lspeed = std::min(lspeed + acc, lspeed_setpoint);
-      } else if (lspeed > lspeed_setpoint) {
-        lspeed = std::max(lspeed - acc, lspeed_setpoint);
-      }
-
-      double lrps = SimMouse::meterToRad(lspeed);
-      double rrps = SimMouse::meterToRad(rspeed);
+    if (rforce != rforce_setpoint or lforce != lforce_setpoint) {
+      rforce = rforce_setpoint;
+      lforce = lforce_setpoint;
 
       smartmouse::msgs::RobotCommand cmd;
-      cmd.mutable_left()->set_target_speed(lrps);
-      cmd.mutable_left()->set_kp(kP);
-      cmd.mutable_left()->set_ki(kI);
-      cmd.mutable_left()->set_kd(kD);
-
-      cmd.mutable_right()->set_target_speed(rrps);
-      cmd.mutable_right()->set_kp(kP);
-      cmd.mutable_right()->set_ki(kI);
-      cmd.mutable_right()->set_kd(kD);
+      cmd.mutable_left()->set_abstract_force(lforce);
+      cmd.mutable_right()->set_abstract_force(rforce);
 
       controlPub.Publish(cmd);
     }
