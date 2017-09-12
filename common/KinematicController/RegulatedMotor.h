@@ -10,7 +10,7 @@ public:
 
   double runPid(double dt_s, double angle_rad, double ground_truth_velocity_mps);
 
-  void setAcceleration(double acceleration, double brake_acceleration);
+  void setAccelerationMpss(double acceleration_mpss);
 
   void setSetpointMps(double setpoint_mps);
 
@@ -26,8 +26,7 @@ public:
 
   bool initialized = false;
   double abstract_force;
-  double acceleration;
-  double brake_acceleration;
+  double acceleration_mpss;
   double derivative;
   double error;
   double estimated_velocity_rps;

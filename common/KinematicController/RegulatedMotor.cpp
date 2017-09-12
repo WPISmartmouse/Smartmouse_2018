@@ -11,16 +11,22 @@ const double RegulatedMotor::INTEGRAL_CAP = 0.0;
 const double RegulatedMotor::DERIV_CAP = 0.0;
 const double RegulatedMotor::MIN_ABSTRACT_FORCE = 3.5;
 
-RegulatedMotor::RegulatedMotor() : initialized(false), abstract_force(0),
-                                                     acceleration(0), brake_acceleration(0),
-                                                     integral(0), last_angle_rad(0), last_error(0),
-                                                     last_velocity_rps(0),
-                                                     regulated_setpoint_rps(0), setpoint_rps(0),
-                                                     smooth_derivative(0), velocity_rps(0) {}
-
+RegulatedMotor::RegulatedMotor()
+    : initialized(false),
+      abstract_force(0),
+      acceleration_mpss(0),
+      integral(0),
+      last_angle_rad(0),
+      last_error(0),
+      last_velocity_rps(0),
+      regulated_setpoint_rps(0),
+      setpoint_rps(0),
+      smooth_derivative(0),
+      velocity_rps(0) {
+}
 bool RegulatedMotor::isStopped() {
   bool stopped =
-          fabs(Mouse::radToMeters(velocity_rps)) <= 0.001 && fabs(abstract_force) <= RegulatedMotor::MIN_ABSTRACT_FORCE;
+      fabs(Mouse::radToMeters(velocity_rps)) <= 0.001 && fabs(abstract_force) <= RegulatedMotor::MIN_ABSTRACT_FORCE;
   return stopped;
 }
 
@@ -61,11 +67,7 @@ double RegulatedMotor::runPid(double dt_s, double angle_rad, double ground_truth
   abstract_force = std::max(std::min(255.0, abstract_force), -255.0);
 
   // limit the change in setpoint
-  double acc = acceleration * dt_s;
-  if (setpoint_rps == 0) {
-    acc = brake_acceleration * dt_s;
-  }
-
+  double acc = acceleration_mpss * dt_s;
   if (regulated_setpoint_rps < setpoint_rps) {
     regulated_setpoint_rps = std::min(regulated_setpoint_rps + acc, setpoint_rps);
   } else if (regulated_setpoint_rps > setpoint_rps) {
@@ -79,17 +81,15 @@ double RegulatedMotor::runPid(double dt_s, double angle_rad, double ground_truth
   return abstract_force;
 }
 
-void RegulatedMotor::setAcceleration(double acceleration, double brake_acceleration) {
-  this->acceleration = Mouse::meterToRad(acceleration);
-  this->brake_acceleration = Mouse::meterToRad(brake_acceleration);
+void RegulatedMotor::setAccelerationMpss(double acceleration_mpss) {
+  this->acceleration_mpss = Mouse::meterToRad(acceleration_mpss);
 }
 
 void RegulatedMotor::setSetpointMps(double setpoint_mps) {
   double s = 0;
   if (setpoint_mps > 0) {
     s = fmax(fmin(setpoint_mps, config.MAX_SPEED), config.MIN_SPEED);
-  }
-  else if (setpoint_mps < 0) {
+  } else if (setpoint_mps < 0) {
     s = fmin(fmax(setpoint_mps, -config.MAX_SPEED), -config.MIN_SPEED);
   }
   this->setpoint_rps = Mouse::meterToRad(s);

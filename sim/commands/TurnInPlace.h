@@ -3,7 +3,7 @@
 #include <common/commanduino/CommanDuino.h>
 #include <common/Direction.h>
 
-#include <common/DriveStraight.h>
+#include <common/DriveStraight.h.not>
 #include "SimMouse.h"
 
 class TurnInPlace : public Command {

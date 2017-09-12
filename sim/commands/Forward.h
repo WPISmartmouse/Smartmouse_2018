@@ -4,7 +4,7 @@
 #include <common/commanduino/CommanDuino.h>
 #include <common/Mouse.h>
 #include <common/Pose.h>
-#include <common/DriveStraight.h>
+#include <common/DriveStraight.h.not>
 
 #include "SimMouse.h"
 

@@ -4,7 +4,7 @@
 #include <common/Mouse.h>
 #include <common/Direction.h>
 #include <sim/SimMouse.h>
-#include <common/DriveStraight.h>
+#include <common/DriveStraight.h.not>
 
 class ForwardToDiagonal : public Command {
 public:

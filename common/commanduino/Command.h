@@ -12,6 +12,7 @@ class Command {
 public:
 
   static void setTimerImplementation(TimerInterface *timer);
+  static TimerInterface *getTimerImplementation();
 
   Command();
 

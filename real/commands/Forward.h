@@ -3,7 +3,6 @@
 #include <common/commanduino/CommanDuino.h>
 #include <common/Mouse.h>
 #include <common/Pose.h>
-#include <common/DriveStraight.h>
 
 #include "RealMouse.h"
 
@@ -20,11 +19,9 @@ public:
   void end();
 
 private:
-
   GlobalPose start;
   RealMouse *mouse;
 
   RangeData range_data;
-  DriveStraight follower;
 };
 

@@ -4,7 +4,6 @@
 #include <common/Mouse.h>
 #include <common/Direction.h>
 #include <real/RealMouse.h>
-#include <common/DriveStraight.h>
 
 class ForwardToDiagonal : public Command {
 public:
@@ -22,7 +21,6 @@ private:
   GlobalPose start;
   RealMouse *mouse;
   RangeData range_data;
-  DriveStraight driver;
   const double kDisp = 3;
 };
 

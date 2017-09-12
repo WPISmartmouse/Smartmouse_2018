@@ -2,7 +2,7 @@
 #include <cmath>
 #include <boost/algorithm/string/replace.hpp>
 #include <sim/SimMouse.h>
-#include <common/DriveStraight.h>
+#include <common/DriveStraight.h.not>
 #include "StateViz.hh"
 #include "RegenerateWidget.hh"
 #include <common/KinematicController/KinematicController.h>

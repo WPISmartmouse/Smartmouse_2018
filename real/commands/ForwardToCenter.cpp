@@ -8,7 +8,7 @@ void ForwardToCenter::initialize() {
   setTimeout(2000);
   start = mouse->getGlobalPose();
   mouse->kinematic_controller.enable_sensor_pose_estimate = true;
-  driver.start(start, DriveStraight::fwdDispToCenter(mouse));
+  mouse->kinematic_controller.start(start, KinematicController::fwdDispToCenter(mouse));
   digitalWrite(RealMouse::LED_3, 1);
 }
 
@@ -16,18 +16,18 @@ void ForwardToCenter::execute() {
   range_data = mouse->getRangeData();
 
   double l_adjust, r_adjust;
-  std::tie(l_adjust, r_adjust) = driver.compute_wheel_velocities(this->mouse);
+  std::tie(l_adjust, r_adjust) = mouse->kinematic_controller.compute_wheel_velocities(this->mouse);
   l_adjust = config.MAX_SPEED - l_adjust;
   r_adjust = config.MAX_SPEED - r_adjust;
-  double l = driver.dispError * kDisp - l_adjust;
-  double r = driver.dispError * kDisp - r_adjust;
+  double l = mouse->kinematic_controller.drive_straight_state.dispError * kDisp - l_adjust;
+  double r = mouse->kinematic_controller.drive_straight_state.dispError * kDisp - r_adjust;
   mouse->setSpeed(l, r);
 }
 
 bool ForwardToCenter::isFinished() {
   double vl, vr;
   std::tie(vl, vr) = mouse->getWheelVelocities();
-  return fabs(driver.dispError) <= 0.004 || isTimedOut();
+  return fabs(mouse->kinematic_controller.drive_straight_state.dispError) <= 0.004 || isTimedOut();
 }
 
 void ForwardToCenter::end() {

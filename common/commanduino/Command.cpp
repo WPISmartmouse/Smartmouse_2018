@@ -69,3 +69,7 @@ void Command::_end() {
 bool Command::operator!=(const Command &other) {
   return this->name != other.name;
 }
+
+TimerInterface *Command::getTimerImplementation() {
+  return timer;
+}
