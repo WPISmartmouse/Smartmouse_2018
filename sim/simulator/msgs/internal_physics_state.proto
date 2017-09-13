@@ -5,6 +5,7 @@ package smartmouse.msgs;
 import "xytheta.proto";
 import "ignition/msgs/inertial.proto";
 
+// x y and theta are in the global frame!
 message InternalPhysicsState
 {
     required WheelPhysicsState left_wheel = 1;

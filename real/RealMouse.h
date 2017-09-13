@@ -55,8 +55,6 @@ public:
 
   static RealMouse *inst();
 
-  static const RobotConfig config;
-
   virtual SensorReading checkWalls() override;
 
   virtual GlobalPose getGlobalPose() override;

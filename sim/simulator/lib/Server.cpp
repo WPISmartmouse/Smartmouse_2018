@@ -2,6 +2,7 @@
 #include <sim/simulator/lib/TopicNames.h>
 #include <msgs/world_statistics.pb.h>
 #include <common/Mouse.h>
+#include <common/RobotConfig.h>
 
 void Server::start() {
   thread_ = new std::thread(std::bind(&Server::RunLoop, this));
@@ -170,33 +171,68 @@ smartmouse::msgs::RobotSimState Server::UpdateInternalState(double dt) {
   double ax = internal_state_.a().x();
   double ay = internal_state_.a().y();
   double a = internal_state_.a().theta();
-  double lt = internal_state_.left_wheel().theta();
-  double lw = internal_state_.left_wheel().omega();
-  double la = internal_state_.left_wheel().alpha();
-  double rt = internal_state_.right_wheel().theta();
-  double rw = internal_state_.right_wheel().omega();
-  double ra = internal_state_.right_wheel().alpha();
+  double tl = internal_state_.left_wheel().theta();
+  double wl = internal_state_.left_wheel().omega();
+  double al = internal_state_.left_wheel().alpha();
+  double tr = internal_state_.right_wheel().theta();
+  double wr = internal_state_.right_wheel().omega();
+  double ar = internal_state_.right_wheel().alpha();
 
-  double lv = lw * dt / (M_2_PI * Mouse::WHEEL_RAD);
-  double rv = rw * dt / (M_2_PI * Mouse::WHEEL_RAD);
-  lt = lt + lw * dt + 1/2 * la * dt * dt;
-  rt = rt + rw * dt + 1/2 * ra * dt * dt;
+  double vl = wl * (M_2_PI * Mouse::WHEEL_RAD);
+  double vr = wr * (M_2_PI * Mouse::WHEEL_RAD);
 
-  internal_state_.mutable_p()->set_x(x);
-  internal_state_.mutable_p()->set_y(y);
-  internal_state_.mutable_p()->set_theta(theta);
-  internal_state_.mutable_v()->set_x(vx);
-  internal_state_.mutable_v()->set_y(vy);
-  internal_state_.mutable_v()->set_theta(w);
-  internal_state_.mutable_a()->set_x(ax);
-  internal_state_.mutable_a()->set_y(ay);
-  internal_state_.mutable_a()->set_theta(a);
-  internal_state_.mutable_left_wheel()->set_theta(lt);
-  internal_state_.mutable_left_wheel()->set_omega(lw);
-  internal_state_.mutable_left_wheel()->set_alpha(la);
-  internal_state_.mutable_right_wheel()->set_theta(rt);
-  internal_state_.mutable_right_wheel()->set_omega(rw);
-  internal_state_.mutable_right_wheel()->set_alpha(ra);
+  // newtons equations of rotational motion to update wheel states
+  double new_tl = tl + wl * dt + 1/2 * al * dt * dt;
+  double new_tr = tr + wr * dt + 1/2 * ar * dt * dt;
+  double new_wl = wl + al;
+  double new_wr = wr + ar;
+  double new_al = al + cmd_.left().abstract_force();
+  double new_ar = ar + cmd_.right().abstract_force();
+
+  // forward kinematics for differential drive robot
+  double w_about_icc = 0.5 * wl + 0.5 * wl;
+  double dtheta_about_icc = w_about_icc * dt;
+  double R = 0;
+  double new_x, new_y;
+  // if we're going perfectly straight R is infinity, so check first.
+  // update the x & y coordinates
+  if (std::abs(vl-vr) < 1e-5) {
+    R = config.TRACK_WIDTH * (vr + vl) / (2 *(vr - vl));
+    // TODO: update x & y
+    new_x = x + 0;
+    new_y = y + 0;
+  }
+  else {
+    double v = (vl + vr) / 2;
+    new_x = x + cos(theta) * dt * v;
+    new_y = y + sin(theta) * dt * v;
+  }
+
+  double new_vx = (new_x - x) / dt;
+  double new_vy = (new_y - y) / dt;
+  double new_ax = (new_vx - vx) / dt;
+  double new_ay = (new_vy - vy) / dt;
+
+  // update theta, omega, and alpha
+  double new_theta = theta + dtheta_about_icc;
+  double new_w = (new_theta - theta) / dt;
+  double new_a = (new_w - w) / dt;
+
+  internal_state_.mutable_p()->set_x(new_x);
+  internal_state_.mutable_p()->set_y(new_y);
+  internal_state_.mutable_p()->set_theta(new_theta);
+  internal_state_.mutable_v()->set_x(new_vx);
+  internal_state_.mutable_v()->set_y(new_vy);
+  internal_state_.mutable_v()->set_theta(new_w);
+  internal_state_.mutable_a()->set_x(new_ax);
+  internal_state_.mutable_a()->set_y(new_ay);
+  internal_state_.mutable_a()->set_theta(new_a);
+  internal_state_.mutable_left_wheel()->set_theta(new_tl);
+  internal_state_.mutable_left_wheel()->set_omega(new_wl);
+  internal_state_.mutable_left_wheel()->set_alpha(new_al);
+  internal_state_.mutable_right_wheel()->set_theta(new_tr);
+  internal_state_.mutable_right_wheel()->set_omega(new_wr);
+  internal_state_.mutable_right_wheel()->set_alpha(new_ar);
 
   smartmouse::msgs::RobotSimState sim_state_msg;
   auto stamp = sim_state_msg.mutable_stamp();
