@@ -3,6 +3,7 @@
 #include <tuple>
 #include "KinematicController.h"
 #include <cmath>
+#include <common/commanduino/Command.h>
 
 #ifdef EMBED
 #include <Arduino.h>
@@ -307,15 +308,36 @@ std::pair<double, double> KinematicController::compute_wheel_velocities(Mouse *m
   // given starting velocity, fixed acceleration, and final velocity
   // generate the velocity profile for achieving this as fast as possible
   double t = ((double)Command::getTimerImplementation()->programTimeMs()) / 1000;
-  double dt = t - drive_straight_state.start_time_s;
+  double dt_s = t - drive_straight_state.start_time_s;
+  const double vf_mps = 0.20; // TODO: make this a function of what motion primitive comes next
   double t_max = 0; // FIXME
-  if (dt < t_max) {
-    drive_straight_state.left_speed_mps = drive_straight_state.left_speed_mps + acceleration_mpss;
-    drive_straight_state.right_speed_mps = drive_straight_state.right_speed_mps + acceleration_mpss;
+  if (dt_s < t_max) {
+    if (drive_straight_state.left_speed_mps < config.MAX_SPEED) {
+      drive_straight_state.left_speed_mps += acceleration_mpss;
+    }
+    else {
+      drive_straight_state.left_speed_mps = config.MAX_SPEED;
+    }
+    if (drive_straight_state.right_speed_mps < config.MAX_SPEED) {
+      drive_straight_state.right_speed_mps += acceleration_mpss;
+    }
+    else {
+      drive_straight_state.left_speed_mps = config.MAX_SPEED;
+    }
   }
   else {
-    drive_straight_state.left_speed_mps = drive_straight_state.left_speed_mps - acceleration_mpss;
-    drive_straight_state.right_speed_mps = drive_straight_state.right_speed_mps - acceleration_mpss;
+    if (drive_straight_state.left_speed_mps > vf) {
+      drive_straight_state.left_speed_mps -= acceleration_mpss;
+    }
+    else {
+      drive_straight_state.left_speed_mps = vf;
+    }
+    if (drive_straight_state.right_speed_mps > vf) {
+      drive_straight_state.right_speed_mps -= acceleration_mpss;
+    }
+    else {
+      drive_straight_state.left_speed_mps = vf;
+    }
   }
 
   double correction = kPWall * yawError;
