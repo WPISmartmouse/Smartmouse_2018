@@ -53,9 +53,9 @@ Deriving the kinematic equations of a differential drive robot.
   \centering
 \end{figure}
 
-At an instant in time we say that the robot is turning around some point $ICC$, the instanteous center. The radius $R$ about that point is what we want to solve for. We start with the knowedge that since the robot doesn't tear itself apart while driving, the rate $w$ at which both wheels (and the robot) move around $ICC$ is the same.
+At an instant in time we say that the robot is turning around some point $ICC$, the instanteous center. The radius $R$ about that point is what we want to solve for. We start with the knowedge that since the robot doesn't tear itself apart while driving, the rate $\omega$ at which both wheels (and the robot) move around $ICC$ is the same.
 \begin{equation} \label{eq:1}
-  \omega_l = \omega_r = w
+  \omega_l = \omega_r = \omega
 \end{equation}
 Let $R_l$ and $R_l$ be the radius to the right and left wheels.
 \begin{equation} \label{eq:2}
@@ -65,20 +65,20 @@ We can then combine \ref{eq:1} and \ref{eq:2}
 \begin{equation}
   \frac{v_l}{R_l} = \frac{v_r}{R_r}
 \end{equation}
-We can then substitute $R_l = R - \frac{w}{2}$ and $R_r = R + \frac{w}{2}$
+We can then substitute $R_l = R - \frac{W}{2}$ and $R_r = R + \frac{W}{2}$
 \begin{equation}
-  \frac{v_l}{R-\frac{w}{2}} = \frac{v_r}{R + \frac{w}{2}}
+  \frac{v_l}{R-\frac{W}{2}} = \frac{v_r}{R + \frac{W}{2}}
 \end{equation}
 
-No do some algebra...
+Now do some algebra...
 \begin{align*}
-  \frac{v_l}{R-\frac{w}{2}} &= \frac{v_r}{R + \frac{w}{2}} \\[1em]
-  \frac{R-\frac{w}{2}}{v_l} &= \frac{R + \frac{w}{2}}{v_r} \\[1em]
-  \frac{R}{v_l}-\frac{w}{2v_l} &= \frac{R}{v_r} + \frac{w}{2v_r} \\[1em]
-  \frac{R}{v_l}-\frac{R}{v_r} &= \frac{w}{2v_r}+\frac{w}{2v_l} \\[1em]
-  \frac{R(v_r-v_l)}{v_rv_l} &= \frac{w(v_l+v_r)}{2v_rv_l} \\[1em]
+  \frac{v_l}{R-\frac{W}{2}} &= \frac{v_r}{R + \frac{W}{2}} \\[1em]
+  \frac{R-\frac{W}{2}}{v_l} &= \frac{R + \frac{W}{2}}{v_r} \\[1em]
+  \frac{R}{v_l}-\frac{W}{2v_l} &= \frac{R}{v_r} + \frac{W}{2v_r} \\[1em]
+  \frac{R}{v_l}-\frac{R}{v_r} &= \frac{W}{2v_r}+\frac{W}{2v_l} \\[1em]
+  \frac{R(v_r-v_l)}{v_rv_l} &= \frac{W(v_l+v_r)}{2v_rv_l} \\[1em]
   R(v_r-v_l) &= w(v_l+v_r) \\[1em]
-  R &= \frac{w(v_l+v_r)}{2(v_r-v_l)} \\[1em]
+  R &= \frac{W(v_l+v_r)}{2(v_r-v_l)} \\[1em]
 \end{align*}
 
 \textbf{Next we need to figure out how to update our $x_r$, $y_r$, and $\theta_r$ given $R$.} \\
@@ -113,16 +113,43 @@ We then just add back the coordinates of $ICC$. Great! Now we know how to update
 \shortintertext{where}
   ICC_x &= x_r-R\sin{\theta_r} \\
   ICC_y &= y_r+R\cos{\theta_r} \\
-  \Delta\theta &= \dfrac{v_l}{R-\frac{W}{2}}\Delta t
+  \Delta\theta &= \dfrac{v_l}{R-\frac{W}{2}}\Delta t \\
+  R &= \frac{W(v_l+v_r)}{2(v_r-v_l)}
 \end{align}
 
-In full expanded form, with some algebraic simplifications:
+We can expand and simplify the udpate equations for $x_r$.
 
 \begin{align}
- \theta_r &\leftarrow \theta_r + \dfrac{v_l}{R-\frac{W}{2}}\Delta t \\
+  x_r &\leftarrow \cos{(\dfrac{v_l}{R-\frac{W}{2}}\Delta t)}(x_r-x_r+R\sin{\theta_r})+\sin{(\dfrac{v_l}{R-\frac{W}{2}}\Delta t)}(y_r-y_r-R\cos{\theta_r}) + x_r-R\sin{\theta_r} \\
   x_r &\leftarrow \cos{(\dfrac{v_l}{R-\frac{W}{2}}\Delta t)}(R\sin{\theta_r})+\sin{(\dfrac{v_l}{R-\frac{W}{2}}\Delta t)}(-R\cos{\theta_r}) + x_r-R\sin{\theta_r} \\
-  y_r &\leftarrow -\sin{(\dfrac{v_l}{R-\frac{W}{2}}\Delta t)}(R\sin{\theta_r})+\cos{(\dfrac{v_l}{R-\frac{W}{2}}\Delta t)}(-R\cos{\theta_r}) + y_r+R\cos{\theta_r}
+  x_r &\leftarrow R\cos{(\dfrac{v_l}{R-\frac{W}{2}}\Delta t)}\sin{\theta_r}-R\sin{(\dfrac{v_l}{R-\frac{W}{2}}\Delta t)}\cos{\theta_r} + x_r-R\sin{\theta_r} \\
+  x_r &\leftarrow x_r+R\cos{(\dfrac{v_l}{R-\frac{W}{2}}\Delta t)}\sin{\theta_r}-R\sin{(\dfrac{v_l}{R-\frac{W}{2}}\Delta t)}\cos{\theta_r}-R\sin{\theta_r} \\
+  x_r &\leftarrow x_r+R\Big(\cos{(\dfrac{v_l}{R-\frac{W}{2}}\Delta t)}\sin{\theta_r}-\sin{(\dfrac{v_l}{R-\frac{W}{2}}\Delta t)}\cos{\theta_r}\Big)-R\sin{\theta_r} \\
+  \shortintertext{let $\dfrac{v_l}{R-\frac{W}{2}}=a$, and $\theta_r=b$, we can use $\cos{a}\sin{b}-\sin{a}\cos{b}=-\sin{(a-b)}$}
+  x_r &\leftarrow x_r+R\Bigg(-\sin{\Big(\dfrac{v_l}{R-\frac{W}{2}}\Delta t-\theta_r}\Big)\Bigg)-R\sin{\theta_r} \\
+  x_r &\leftarrow x_r+R\Bigg(-\sin{\Big(\dfrac{v_l}{R-\frac{W}{2}}\Delta t-\theta_r}\Big)-\sin{\theta_r}\Bigg) \\
+  x_r &\leftarrow x_r-R\Bigg(\sin{\Big(\dfrac{v_l}{R-\frac{W}{2}}\Delta t-\theta_r}\Big)+\sin{\theta_r}\Bigg) \\
+  \shortintertext{sub in for $R$ in the denominator}
+  x_r &\leftarrow x_r-R\Bigg(\sin{\Big(\dfrac{v_l}{\frac{W(v_l+v_r)}{2(v_r-v_l)}-\frac{W}{2}}\Delta t-\theta_r}\Big)+\sin{\theta_r}\Bigg) \\
+  x_r &\leftarrow x_r-R\Bigg(\sin{\Big(\dfrac{v_l}{\frac{W(v_l+v_r)}{2(v_r-v_l)}-\frac{W(v_r-v_l)}{2(v_r-v_l)}}\Delta t-\theta_r\Big)}+\sin{\theta_r}\Bigg) \\
+  x_r &\leftarrow x_r-R\Bigg(\sin{\Big(\dfrac{v_l}{\frac{Wv_l+Wv_r-Wv_r+Wv_l)}{2(v_r-v_l)}}\Delta t-\theta_r\Big)}+\sin{\theta_r}\Bigg) \\
+  x_r &\leftarrow x_r-R\Bigg(\sin{\Big(\dfrac{v_l}{\frac{Wv_l}{(v_r-v_l)}}\Delta t-\theta_r\Big)}+\sin{\theta_r}\Bigg) \\
+  x_r &\leftarrow x_r-R\Bigg(\sin{\Big(\frac{v_r-v_l}{W}\Delta t-\theta_r\Big)}+\sin{\theta_r}\Bigg)
 \end{align}
+
+We can apply the same process for $y_r$.
+
+\begin{align}
+  x_l &\leftarrow x_l-R\Bigg(\cos{\Big(\frac{v_r-v_l}{W}\Delta t-\theta_r\Big)}-\cos{\theta_r}\Bigg)
+\end{align}
+
+\textbf{Final Solution to the forward Kinematics:}
+\begin{align}
+ \theta_r &\leftarrow \theta_r + \dfrac{v_l}{R-\frac{W}{2}}\Delta t \\
+  x_r &\leftarrow x_r-R\Bigg(\sin{\Big(\frac{v_r-v_l}{W}\Delta t-\theta_r\Big)}+\sin{\theta_r}\Bigg) \\
+  x_l &\leftarrow x_l-R\Bigg(\cos{\Big(\frac{v_r-v_l}{W}\Delta t-\theta_r\Big)}-\cos{\theta_r}\Bigg)
+\end{align}
+
 
 \end{document}
 
