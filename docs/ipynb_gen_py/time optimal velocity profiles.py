@@ -30,7 +30,7 @@ get_ipython().run_cell_magic('tikz', '-s 400,400', '\\draw[->] (0,0) -- (10,0);\
 
 # ## Code that proves it
 
-# In[87]:
+# In[1]:
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -48,7 +48,7 @@ def profile(Vf, Vmax, d, A, buffer=3e-3):
     while x < d:
         x = x + v*dt + a*dt*dt/2.0
         v = v + a*dt
-        ramp_d = (v*v - Vf*Vf) / (2*A)
+        ramp_d = (v*v+ - Vf*Vf) / (2.0*A)
         if (d-x) < ramp_d + buffer:
             a = -A
         elif v < Vmax:
@@ -87,4 +87,9 @@ graph("position", 0)
 graph("velocity", 1)
 graph("acceleration", 2)
 plt.show()
+
+
+# In[ ]:
+
+
 
