@@ -109,11 +109,19 @@ We then just add back the coordinates of $ICC$. Great! Now we know how to update
 \begin{align}
  \theta_r &\leftarrow \theta_r + \Delta\theta \\
   x_r &\leftarrow \cos{(\Delta\theta)}(x_r-ICC_x)+\sin{(\Delta\theta)}(y_r-ICC_y) + ICC_x \\
-  y_r &\leftarrow -\sin{(\Delta\theta)}(x_r-ICC_x)+\cos{(\Delta\theta)})y_r-ICC_y) + ICC_y \\
+  y_r &\leftarrow -\sin{(\Delta\theta)}(x_r-ICC_x)+\cos{(\Delta\theta)}(y_r-ICC_y) + ICC_y \\
 \shortintertext{where}
   ICC_x &= x_r-R\sin{\theta_r} \\
   ICC_y &= y_r+R\cos{\theta_r} \\
   \Delta\theta &= \dfrac{v_l}{R-\frac{W}{2}}\Delta t
+\end{align}
+
+In full expanded form, with some algebraic simplifications:
+
+\begin{align}
+ \theta_r &\leftarrow \theta_r + \dfrac{v_l}{R-\frac{W}{2}}\Delta t \\
+  x_r &\leftarrow \cos{(\dfrac{v_l}{R-\frac{W}{2}}\Delta t)}(R\sin{\theta_r})+\sin{(\dfrac{v_l}{R-\frac{W}{2}}\Delta t)}(-R\cos{\theta_r}) + x_r-R\sin{\theta_r} \\
+  y_r &\leftarrow -\sin{(\dfrac{v_l}{R-\frac{W}{2}}\Delta t)}(R\sin{\theta_r})+\cos{(\dfrac{v_l}{R-\frac{W}{2}}\Delta t)}(-R\cos{\theta_r}) + y_r+R\cos{\theta_r}
 \end{align}
 
 \end{document}
