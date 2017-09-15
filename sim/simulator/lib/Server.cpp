@@ -184,28 +184,28 @@ smartmouse::msgs::RobotSimState Server::UpdateInternalState(double dt) {
   // newtons equations of rotational motion to update wheel states
   double new_tl = tl + wl * dt + 1/2 * al * dt * dt;
   double new_tr = tr + wr * dt + 1/2 * ar * dt * dt;
-  double new_wl = wl + al;
-  double new_wr = wr + ar;
+  double new_wl = wl + al * dt;
+  double new_wr = wr + ar * dt;
   double new_al = al + cmd_.left().abstract_force();
   double new_ar = ar + cmd_.right().abstract_force();
 
   // forward kinematics for differential drive robot
-  double w_about_icc = 0.5 * wl + 0.5 * wl;
-  double dtheta_about_icc = w_about_icc * dt;
-  double R = 0;
+  double R;
+  double w_about_icc;
+  double dtheta_about_icc;
   double new_x, new_y;
+
   // if we're going perfectly straight R is infinity, so check first.
   // update the x & y coordinates
   if (std::abs(vl-vr) < 1e-5) {
-    R = config.TRACK_WIDTH * (vr + vl) / (2 *(vr - vl));
-    // TODO: update x & y
+    R = config.TRACK_WIDTH * (vr + vl) / (2 *(vr - vl)); // eq 12
+    w_about_icc = vl/(R-config.TRACK_WIDTH/2); //eq 11
+    dtheta_about_icc = w_about_icc * dt; //eq 11
     new_x = x + 0;
     new_y = y + 0;
   }
   else {
     double v = (vl + vr) / 2;
-    new_x = x + cos(theta) * dt * v;
-    new_y = y + sin(theta) * dt * v;
   }
 
   double new_vx = (new_x - x) / dt;
