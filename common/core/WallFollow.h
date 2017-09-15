@@ -26,6 +26,5 @@ public:
   virtual void setGoal(Solver::Goal goal) override;
 
 private:
-  unsigned int step;
   Solver::Goal goal;
 };

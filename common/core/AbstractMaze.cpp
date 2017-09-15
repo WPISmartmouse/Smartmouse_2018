@@ -177,7 +177,12 @@ bool AbstractMaze::flood_fill(route_t *path, unsigned int r0, unsigned int c0, u
 
     n = min_node;
 
-    path->insert(path->cbegin(), {1, min_dir});
+    if (!path->empty() && min_dir == path->front().d) {
+      path->front().n += 1;
+    }
+    else {
+      path->insert(path->cbegin(), {1, min_dir});
+    }
   }
 
   return solvable;
@@ -466,7 +471,7 @@ void AbstractMaze::_make_connections(AbstractMaze *maze, Node *node) {
 std::string route_to_string(route_t &route) {
   std::stringstream ss;
   for (motion_primitive_t prim : route) {
-    ss << std::to_string(prim.n) << dir_to_char(prim.d);
+    ss << (int)prim.n << dir_to_char(prim.d);
   }
 
   return ss.str();

@@ -9,6 +9,10 @@ void Flood::setup() {
   mouse->maze->reset();
   all_wall_maze = mouse->maze;
   no_wall_maze.connect_all_neighbors_in_maze();
+  all_wall_maze->connect_neighbor(AbstractMaze::CENTER, AbstractMaze::CENTER, Direction::W);
+  all_wall_maze->connect_neighbor(AbstractMaze::CENTER, AbstractMaze::CENTER, Direction::N);
+  all_wall_maze->connect_neighbor(AbstractMaze::CENTER - 1, AbstractMaze::CENTER - 1, Direction::E);
+  all_wall_maze->connect_neighbor(AbstractMaze::CENTER - 1, AbstractMaze::CENTER - 1, Direction::S);
   goal = Solver::Goal::CENTER;
 }
 
@@ -36,12 +40,8 @@ motion_primitive_t Flood::planNextStep() {
                                                     AbstractMaze::CENTER, AbstractMaze::CENTER);
       //this way commands can see this used to visualize in gazebo
       mouse->maze->path_to_next_goal = no_wall_path;
-      bool s = all_wall_maze->flood_fill_from_point(&all_wall_path, mouse->getRow(), mouse->getCol(), AbstractMaze::CENTER,
+      all_wall_maze->flood_fill_from_point(&all_wall_path, mouse->getRow(), mouse->getCol(), AbstractMaze::CENTER,
                                                     AbstractMaze::CENTER);
-      printf("%i %i\r\n", s, solvable);
-      mouse->print_maze_mouse();
-      getc(stdin);
-//      print("%i, %i\r\n", route_to_string(all_wall_maze->fastest_route).c_str());
       break;
     }
     case Solver::Goal::START: {
