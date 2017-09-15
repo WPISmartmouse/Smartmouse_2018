@@ -1,8 +1,8 @@
 #pragma once
 
 #include <common/commanduino/CommanDuino.h>
-#include <common/Solver.h>
-#include <common/Mouse.h>
+#include <common/core/Solver.h>
+#include <common/core/Mouse.h>
 
 class SpeedRun : public CommandGroup {
 public:
@@ -14,6 +14,6 @@ public:
 
 private:
   Mouse *mouse;
-  route_t path;
+  route_t *path;
   int index;
 };

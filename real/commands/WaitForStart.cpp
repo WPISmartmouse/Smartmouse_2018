@@ -1,4 +1,4 @@
-#include <common/Mouse.h>
+#include <common/core/Mouse.h>
 #include "WaitForStart.h"
 #include "Calibrate.h"
 

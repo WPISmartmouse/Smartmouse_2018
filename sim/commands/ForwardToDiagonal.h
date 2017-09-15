@@ -1,8 +1,8 @@
 #pragma once
 
 #include <common/commanduino/CommanDuino.h>
-#include <common/Mouse.h>
-#include <common/Direction.h>
+#include <common/core/Mouse.h>
+#include <common/core/Direction.h>
 #include <sim/SimMouse.h>
 #include <common/DriveStraight.h.not>
 

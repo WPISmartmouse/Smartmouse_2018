@@ -4,11 +4,9 @@
 #include <common/core/Mouse.h>
 #include <common/core/Pose.h>
 
-#include "RealMouse.h"
-
-class Forward : public Command {
+class ForwardN : public Command {
 public:
-  Forward();
+  ForwardN(unsigned int n);
 
   void initialize();
 
@@ -19,9 +17,7 @@ public:
   void end();
 
 private:
-  GlobalPose start;
-  RealMouse *mouse;
-
-  RangeData range_data;
+  unsigned int n;
+  Mouse *mouse;
 };
 

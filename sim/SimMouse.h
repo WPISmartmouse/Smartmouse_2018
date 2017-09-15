@@ -5,8 +5,8 @@
 #include <gazebo/msgs/MessageTypes.hh>
 #include "msgs/msgs.h"
 #include <gazebo/transport/TransportTypes.hh>
-#include <common/Mouse.h>
-#include <common/Pose.h>
+#include <common/core/Mouse.h>
+#include <common/core/Pose.h>
 #include <common/KinematicController/KinematicController.h>
 #include <ignition/transport/Node.hh>
 

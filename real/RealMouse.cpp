@@ -1,5 +1,5 @@
 #include <tuple>
-#include <common/Mouse.h>
+#include <common/core/Mouse.h>
 #include "RealMouse.h"
 
 RealMouse *RealMouse::instance = nullptr;

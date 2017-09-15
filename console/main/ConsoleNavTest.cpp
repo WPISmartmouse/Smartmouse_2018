@@ -7,8 +7,8 @@
 #include "ConsoleMaze.h"
 #include "ConsoleMouse.h"
 #include "ConsoleTimer.h"
-#include <common/Flood.h>
-#include <common/WallFollow.h>
+#include <common/core/Flood.h>
+#include <common/core/WallFollow.h>
 #include <common/commands/NavTestCommand.h>
 
 int main(int argc, char *argv[]) {
@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
     Command::setTimerImplementation(&timer);
 
     Scheduler *scheduler;
-    scheduler = new Scheduler(new NavTestCommand(new Flood(ConsoleMouse::inst())));
+    scheduler = new Scheduler(new SolveCommand(new Flood(ConsoleMouse::inst())));
 
     while (!scheduler->run());
 

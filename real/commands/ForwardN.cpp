@@ -1,6 +1,6 @@
 #include <real/RealMouse.h>
 #include <tuple>
-#include <common/Mouse.h>
+#include <common/core/Mouse.h>
 #include "Forward.h"
 #include "ForwardN.h"
 

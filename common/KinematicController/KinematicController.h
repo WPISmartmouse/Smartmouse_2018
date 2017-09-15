@@ -1,10 +1,10 @@
 #pragma once
 
 #include <utility>
-#include <common/util.h>
-#include <common/Pose.h>
-#include <common/RobotConfig.h>
-#include <common/Mouse.h>
+#include <common/core/util.h>
+#include <common/core/Pose.h>
+#include <common/KinematicController/RobotConfig.h>
+#include <common/core/Mouse.h>
 #include "RegulatedMotor.h"
 #include <tuple>
 

@@ -4,8 +4,8 @@
 #include <gazebo/msgs/visual.pb.h>
 #include <common/commands/NavTestCommand.h>
 #include <ignition/transport.hh>
-#include <common/Flood.h>
-#include <common/util.h>
+#include <common/core/Flood.h>
+#include <common/core/util.h>
 
 #include "SimMouse.h"
 #include "SimTimer.h"

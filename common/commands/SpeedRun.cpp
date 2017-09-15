@@ -7,7 +7,7 @@ SpeedRun::SpeedRun(Mouse *mouse) : CommandGroup("speed"), mouse(mouse) {}
 
 void SpeedRun::initialize() {
   index = 0;
-  path = *mouse->maze->fastest_route;
+  path = &mouse->maze->fastest_route;
 }
 
 bool SpeedRun::isFinished() {
@@ -18,7 +18,7 @@ bool SpeedRun::isFinished() {
                     && mouse->getCol() == AbstractMaze::MAZE_SIZE / 2;
 
     if (!returned) {
-      motion_primitive_t prim = path[index++];
+      motion_primitive_t prim = path->at(index++);
       addSequential(new Turn(prim.d));
       addSequential(new Forward());
 #ifdef CONSOLE

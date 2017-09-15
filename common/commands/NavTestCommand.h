@@ -1,7 +1,7 @@
 #pragma once
 
 #include <common/commanduino/CommanDuino.h>
-#include <common/Solver.h>
+#include <common/core/Solver.h>
 #include <list>
 
 class NavTestCommand : public CommandGroup {

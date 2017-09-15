@@ -8,6 +8,7 @@
 #include "SensorReading.h"
 #include "Node.h"
 #include "Direction.h"
+#include <vector>
 
 /**
  * \brief the maze is graph of nodes, stored internally as an matrix.
@@ -19,6 +20,8 @@ struct motion_primitive_t {
   Direction d;
 };
 typedef std::vector<motion_primitive_t> route_t;
+
+std::string route_to_string(route_t &route);
 
 class AbstractMaze {
   friend class Mouse;
@@ -36,9 +39,9 @@ public:
   constexpr static double HALF_UNIT_DIST = UNIT_DIST / 2.0;
   constexpr static double HALF_INNER_UNIT_DIST = INNER_UNIT_DIST / 2.0;
   bool solved; //boolean for if we know the fastest route
-  route_t *fastest_route; //a char array like NSEWNENNSNE, which means North, South, East...
-  route_t *fastest_theoretical_route;
-  route_t *path_to_next_goal;
+  route_t fastest_route; //a char array like NSEWNENNSNE, which means North, South, East...
+  route_t fastest_theoretical_route;
+  route_t path_to_next_goal;
 
   /** \brief allocates and initializes a node
    * allocates a maze of the given size and sets all links in graph to be null. Naturally, it's column major.

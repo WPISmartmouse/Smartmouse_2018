@@ -1,6 +1,6 @@
 #include <algorithm>
-#include <common/Mouse.h>
-#include <common/RobotConfig.h>
+#include <common/core/Mouse.h>
+#include <common/KinematicController/RobotConfig.h>
 #include "RegulatedMotor.h"
 
 const double RegulatedMotor::kP = 6.5;

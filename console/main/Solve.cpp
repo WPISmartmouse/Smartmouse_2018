@@ -6,9 +6,9 @@
 #include "ConsoleMaze.h"
 #include "ConsoleMouse.h"
 #include "ConsoleTimer.h"
-#include <common/Flood.h>
+#include <common/core/Flood.h>
 #include <cstring>
-#include <common/util.h>
+#include <common/core/util.h>
 
 int main(int argc, char *argv[]) {
 

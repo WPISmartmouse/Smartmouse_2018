@@ -2,8 +2,8 @@
 #include <random>
 #include <gazebo/gazebo_core.hh>
 #include <gazebo/msgs/gz_string.pb.h>
-#include <common/Direction.h>
-#include <common/AbstractMaze.h>
+#include <common/core/Direction.h>
+#include <common/core/AbstractMaze.h>
 
 namespace gazebo {
 

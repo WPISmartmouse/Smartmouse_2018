@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Direction.h"
+#include "common/core/Direction.h"
 #include <array>
 
 class SensorReading {

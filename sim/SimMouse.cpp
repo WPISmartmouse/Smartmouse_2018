@@ -1,6 +1,6 @@
 #include "SimMouse.h"
 #include <gazebo/msgs/msgs.hh>
-#include <common/Mouse.h>
+#include <common/core/Mouse.h>
 
 SimMouse *SimMouse::instance = nullptr;
 const std::string SimMouse::grey_color = "Gazebo/Grey";

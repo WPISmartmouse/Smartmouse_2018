@@ -2,8 +2,8 @@
 
 #include <Arduino.h>
 #include <Encoder.h>
-#include <common/Mouse.h>
-#include <common/Pose.h>
+#include <common/core/Mouse.h>
+#include <common/core/Pose.h>
 #include <common/KinematicController/KinematicController.h>
 
 

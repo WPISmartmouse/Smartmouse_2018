@@ -1,9 +1,9 @@
 #pragma once
 
 #include <math.h>
-#include "Direction.h"
-#include "AbstractMaze.h"
-#include "Pose.h"
+#include "common/core/Direction.h"
+#include "common/core/AbstractMaze.h"
+#include "common/core/Pose.h"
 
 typedef struct {
   double gerald_left;

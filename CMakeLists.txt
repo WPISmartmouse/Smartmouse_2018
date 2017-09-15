@@ -13,6 +13,9 @@ endif ()
 
 project(smartmouse)
 
+file(GLOB_RECURSE CORE_COM_SRC
+        "common/commands/*.cpp" "common/commanduino/*.cpp" "common/core/*.cpp")
+
 file(GLOB_RECURSE COM_SRC
         common/*.cpp)
 
@@ -36,7 +39,7 @@ if (NOT ${BUILD_SIM})
     import_arduino_library(SPI)
 
     add_teensy_executable(main real/main/main.cpp ${COM_SRC} ${REAL_SRC} ${REAL_LIBS_SRC})
-    set_target_properties(main PROPERTIES COMPILE_FLAGS "-include common/util.h")
+    set_target_properties(main PROPERTIES COMPILE_FLAGS "-include common/core/util.h")
 else ()
 
     include_directories(${CMAKE_SOURCE_DIR})
@@ -47,9 +50,9 @@ else ()
     ################################
     # library for console programs
     ################################
-    add_library(console ${COM_SRC} ${CONSOLE_SRC})
+    add_library(console ${CORE_COM_SRC} ${CONSOLE_SRC})
     target_compile_features(console PRIVATE cxx_strong_enums)
-    set_target_properties(console PROPERTIES COMPILE_FLAGS "-DCONSOLE -include common/util.h")
+    set_target_properties(console PROPERTIES COMPILE_FLAGS "-DCONSOLE -include common/core/util.h")
     target_include_directories(console PRIVATE console/ console/commands)
 
     ################################
@@ -86,11 +89,11 @@ else ()
 
         include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
-        add_executable(runConsoleTests test/Test.cpp ${COM_SRC} ${CONSOLE_SRC})
+        add_executable(runConsoleTests test/Test.cpp)
         target_compile_features(runConsoleTests PRIVATE cxx_strong_enums)
         target_include_directories(runConsoleTests PRIVATE console/ console/commands)
-        target_link_libraries(runConsoleTests sim gtest gtest_main)
-        set_target_properties(runConsoleTests PROPERTIES COMPILE_FLAGS "-DCONSOLE -include common/util.h")
+        target_link_libraries(runConsoleTests console gtest gtest_main)
+        set_target_properties(runConsoleTests PROPERTIES COMPILE_FLAGS "-DCONSOLE -include common/core/util.h")
 
         add_test(all-tests runConsoleTests)
     endif ()

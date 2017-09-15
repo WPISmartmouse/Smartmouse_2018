@@ -1,12 +1,12 @@
 #pragma once
 
 #include <common/commanduino/CommanDuino.h>
-#include <common/Direction.h>
+#include <common/core/Direction.h>
 
 #include <real/RealMouse.h>
 
-#include <common/RobotConfig.h>
-#include <common/AbstractMaze.h>
+#include <common/KinematicController/RobotConfig.h>
+#include <common/core/AbstractMaze.h>
 
 class ArcTurn : public Command {
 public:

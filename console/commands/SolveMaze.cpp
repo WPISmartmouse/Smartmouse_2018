@@ -18,14 +18,14 @@ bool SolveMaze::isFinished() {
     bool mazeSolved = solver->isFinished();
 
     if (!mazeSolved) {
-      Direction nextDirection = solver->planNextStep();
+      motion_primitive_t prim = solver->planNextStep();
 
       if (!solver->isSolvable()) {
         solved = false;
         return true;
       }
 
-      addSequential(new Turn(nextDirection));
+      addSequential(new Turn(prim.d));
       addSequential(new Forward());
       if (!GlobalProgramSettings.quiet) {
         addSequential(new WaitForStart());

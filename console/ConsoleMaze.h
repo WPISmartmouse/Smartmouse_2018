@@ -1,7 +1,7 @@
 #pragma once
 
 #include <fstream>
-#include <common/AbstractMaze.h>
+#include <common/core/AbstractMaze.h>
 
 class ConsoleMaze : public AbstractMaze {
 public:

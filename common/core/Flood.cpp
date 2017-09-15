@@ -1,8 +1,5 @@
+#include <cstdio>
 #include "Flood.h"
-
-#ifdef EMBED // for calloc
-#include <Arduino.h>
-#endif
 
 Flood::Flood(Mouse *mouse) : Solver(mouse), done(false), solved(false) {}
 
@@ -34,32 +31,38 @@ motion_primitive_t Flood::planNextStep() {
 
   //solve flood fill on the two mazes from mouse to goal
   switch (goal) {
-    case Solver::Goal::CENTER:
-      solvable = no_wall_maze.flood_fill_from_point(no_wall_path, mouse->getRow(), mouse->getCol(),
+    case Solver::Goal::CENTER: {
+      solvable = no_wall_maze.flood_fill_from_point(&no_wall_path, mouse->getRow(), mouse->getCol(),
                                                     AbstractMaze::CENTER, AbstractMaze::CENTER);
       //this way commands can see this used to visualize in gazebo
       mouse->maze->path_to_next_goal = no_wall_path;
-      all_wall_maze->flood_fill_from_point(all_wall_path, mouse->getRow(), mouse->getCol(), AbstractMaze::CENTER,
-                                           AbstractMaze::CENTER);
+      bool s = all_wall_maze->flood_fill_from_point(&all_wall_path, mouse->getRow(), mouse->getCol(), AbstractMaze::CENTER,
+                                                    AbstractMaze::CENTER);
+      printf("%i %i\r\n", s, solvable);
+      mouse->print_maze_mouse();
+      getc(stdin);
+//      print("%i, %i\r\n", route_to_string(all_wall_maze->fastest_route).c_str());
       break;
-    case Solver::Goal::START:
-      solvable = no_wall_maze.flood_fill_from_point(no_wall_path, mouse->getRow(), mouse->getCol(), 0, 0);
+    }
+    case Solver::Goal::START: {
+      solvable = no_wall_maze.flood_fill_from_point(&no_wall_path, mouse->getRow(), mouse->getCol(), 0, 0);
       //this way commands can see this used to visualize in gazebo
       mouse->maze->path_to_next_goal = no_wall_path;
-      all_wall_maze->flood_fill_from_point(all_wall_path, mouse->getRow(), mouse->getCol(), 0, 0);
+      all_wall_maze->flood_fill_from_point(&all_wall_path, mouse->getRow(), mouse->getCol(), 0, 0);
       break;
+    }
   }
 
   //solve from origin to center
   //this is what tells us whether or not we need to keep searching
-  no_wall_maze.flood_fill_from_origin_to_center(no_wall_maze.fastest_route);
-  all_wall_maze->flood_fill_from_origin_to_center(all_wall_maze->fastest_route);
+  no_wall_maze.flood_fill_from_origin_to_center(&no_wall_maze.fastest_route);
+  all_wall_maze->flood_fill_from_origin_to_center(&all_wall_maze->fastest_route);
 
   //this way commands can see this
   //used to visualize in gazebo
   mouse->maze->fastest_theoretical_route = no_wall_maze.fastest_route;
 
-  return no_wall_path->at(0);
+  return no_wall_path.at(0);
 }
 
 route_t Flood::solve() {
@@ -69,7 +72,7 @@ route_t Flood::solve() {
     mouse->internalForward();
   }
 
-  return *all_wall_maze->fastest_route;
+  return all_wall_maze->fastest_route;
 }
 
 bool Flood::isFinished() {

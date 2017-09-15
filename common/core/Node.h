@@ -1,7 +1,7 @@
 #pragma once
 
 #include <array>
-#include "Direction.h"
+#include "common/core/Direction.h"
 
 /**
  * \brief holds its location & neighbors, as well as a bool for indicating if it has been discovered

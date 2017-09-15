@@ -1,7 +1,7 @@
 #pragma once
 #include <common/commanduino/CommanDuino.h>
-#include <common/Mouse.h>
-#include <common/Direction.h>
+#include <common/core/Mouse.h>
+#include <common/core/Direction.h>
 
 class Turn : public Command {
 public:

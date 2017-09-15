@@ -1,5 +1,5 @@
 #include <algorithm>
-#include <common/Mouse.h>
+#include <common/core/Mouse.h>
 #include <tuple>
 #include "KinematicController.h"
 #include <cmath>

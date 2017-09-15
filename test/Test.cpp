@@ -1,15 +1,15 @@
-#include <common/AbstractMaze.h>
-#include <common/Direction.h>
+#include <common/core/AbstractMaze.h>
+#include <common/core/Direction.h>
 #include <console/ConsoleMaze.h>
 #include <console/ConsoleMouse.h>
-#include <common/Mouse.h>
+#include <common/core/Mouse.h>
 #include <fstream>
-#include <common/WallFollow.h>
-#include <common/Flood.h>
-#include <common/Node.h>
+#include <common/core/WallFollow.h>
+#include <common/core/Flood.h>
+#include <common/core/Node.h>
 #include "gtest/gtest.h"
 
-const char *FLOOD_SLN = "ESSSEESSWSSSEENNENESSEES";
+const char *FLOOD_SLN = "1E3S2E2S1W3S2E2N1E1N1E2S2E1S";
 
 const char *WALL_FOLLOW_SLN = "EEEEEEEEEWSNWSSNNWSSSEENENSWSESSEEENWWEENNNWSSWNSENNWNSENSENEEESSSSSSSSSSNNNNNWSSWWWSWWNNWWNNSSENNSSESSENNEEENSWWWSSENEEENNNWENWENWNSESSSENNNNNWSNWWSSSSSWWWNNWWWSNNNNWSSNWSWWWSEESENESNWSWSEWSSNNWSSSEENNENESSEES";
 
@@ -215,11 +215,11 @@ TEST(SolveMazeTest, WallFollowSolve) {
   ConsoleMouse::inst()->seedMaze(&maze);
   WallFollow solver(ConsoleMouse::inst());
   solver.setup();
-  char *solution = solver.solve();
+  route_t solution = solver.solve();
   solver.teardown();
 
-  ASSERT_NE(solution, (char *)NULL);
-  EXPECT_STREQ(WALL_FOLLOW_SLN, solution);
+  std::string s = route_to_string(solution);
+  EXPECT_STREQ(WALL_FOLLOW_SLN, s.c_str());
 
   fs.close();
 }
@@ -235,11 +235,11 @@ TEST(SolveMazeTest, FloodSolve) {
   ConsoleMouse::inst()->seedMaze(&maze);
   Flood solver(ConsoleMouse::inst());
   solver.setup();
-  char *solution = solver.solve();
+  route_t solution = solver.solve();
   solver.teardown();
 
-  ASSERT_NE(solution, (char *)NULL);
-  EXPECT_STREQ(FLOOD_SLN, solution);
+  std::string s = route_to_string(solution);
+  EXPECT_STREQ(FLOOD_SLN, s.c_str());
 
   fs.close();
 }
@@ -272,6 +272,11 @@ TEST(DirectionTest, DirectionLogic) {
   EXPECT_TRUE(Direction::E < Direction::S);
 }
 
+TEST(RouteStringTest, RouteStringText) {
+  route_t route = {{1, Direction::N}, {2, Direction::W}, {3, Direction::E}, {1, Direction::S}};
+  std::string s = route_to_string(route);
+  EXPECT_STREQ(s.c_str(), "1N2W3E1S");
+}
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);

@@ -1,4 +1,4 @@
-#include <common/Mouse.h>
+#include <common/core/Mouse.h>
 #include "Calibrate.h"
 
 Calibrate::Calibrate() : Command("calibrate"), mouse(RealMouse::inst()) {}

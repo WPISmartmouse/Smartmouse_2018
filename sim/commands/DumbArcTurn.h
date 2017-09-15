@@ -2,7 +2,7 @@
 
 #include <ignition/math.hh>
 #include <common/commanduino/CommanDuino.h>
-#include <common/Direction.h>
+#include <common/core/Direction.h>
 #include <common/DriveStraight.h.not>
 
 #include "SimMouse.h"

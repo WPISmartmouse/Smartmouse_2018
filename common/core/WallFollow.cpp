@@ -28,7 +28,7 @@ route_t WallFollow::solve() {
     }
   }
   teardown();
-  return *mouse->maze->fastest_route;
+  return mouse->maze->fastest_route;
 }
 
 bool WallFollow::isFinished() {
@@ -44,7 +44,7 @@ bool WallFollow::isFinished() {
 }
 
 void WallFollow::teardown() {
-  mouse->maze->fastest_route->at(step) = {1, Direction::N};
+  mouse->maze->fastest_route.at(step) = {1, Direction::N};
 }
 
 motion_primitive_t WallFollow::planNextStep() {
@@ -70,7 +70,7 @@ motion_primitive_t WallFollow::planNextStep() {
     return {0, Direction::INVALID};
   }
 
-  mouse->maze->fastest_route->at(step++) = {1, nextDir};
+  mouse->maze->fastest_route.at(step++) = {1, nextDir};
   mouse->mark_mouse_position_visited();
 
   return {1, nextDir};

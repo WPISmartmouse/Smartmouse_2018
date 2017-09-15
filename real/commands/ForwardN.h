@@ -1,8 +1,8 @@
 #pragma once
 
 #include <common/commanduino/CommanDuino.h>
-#include <common/Mouse.h>
-#include <common/Pose.h>
+#include <common/core/Mouse.h>
+#include <common/core/Pose.h>
 
 #include <real/RealMouse.h>
 

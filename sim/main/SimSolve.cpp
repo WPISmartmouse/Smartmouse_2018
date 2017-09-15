@@ -1,9 +1,9 @@
 #include <common/commanduino/CommanDuino.h>
 #include <common/commands/SolveCommand.h>
 #include <sim/commands/ForwardToDiagonal.h>
-#include <common/Flood.h>
+#include <common/core/Flood.h>
 #include <ignition/transport/Node.hh>
-#include <common/util.h>
+#include <common/core/util.h>
 
 #include "SimMouse.h"
 #include "SimTimer.h"

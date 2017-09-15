@@ -1,6 +1,6 @@
 #pragma once
 
-#include <common/RobotConfig.h>
+#include <common/KinematicController/RobotConfig.h>
 
 class RegulatedMotor {
 public:

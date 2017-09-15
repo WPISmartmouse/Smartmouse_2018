@@ -1,8 +1,8 @@
 #pragma once
 
-#include <common/Mouse.h>
-#include <common/SensorReading.h>
-#include <common/Pose.h>
+#include <common/core/Mouse.h>
+#include <common/core/SensorReading.h>
+#include <common/core/Pose.h>
 
 class ConsoleMouse : public Mouse {
 public:

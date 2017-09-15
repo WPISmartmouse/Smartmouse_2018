@@ -1,8 +1,8 @@
 #include <Arduino.h>
 #include <common/commanduino/CommanDuino.h>
 #include <real/ArduinoTimer.h>
-#include <common/AbstractMaze.h>
-#include <common/util.h>
+#include <common/core/AbstractMaze.h>
+#include <common/core/util.h>
 #include <common/commands/NavTestCommand.h>
 #include "Finish.h"
 

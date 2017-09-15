@@ -5,6 +5,8 @@
 #include <string.h>
 #include <algorithm>
 #include <random>
+#include <string>
+#include <sstream>
 
 #ifdef EMBED
 #include <Arduino.h>
@@ -163,7 +165,7 @@ bool AbstractMaze::flood_fill(route_t *path, unsigned int r0, unsigned int c0, u
       if (n->neighbor(d) != nullptr) {
         if (n->neighbor(d)->weight < min_node->weight) {
           min_node = n->neighbor(d);
-          min_dir = d;
+          min_dir = opposite_direction(d);
           deadend = false;
         }
       }
@@ -175,12 +177,7 @@ bool AbstractMaze::flood_fill(route_t *path, unsigned int r0, unsigned int c0, u
 
     n = min_node;
 
-    path->push_back({1, min_dir});
-  }
-
-  if (solvable) {
-    //the create path is from goal to start,  so now we "reverse" it
-    std::reverse(path->begin(), path->end());
+    path->insert(path->cbegin(), {1, min_dir});
   }
 
   return solvable;
@@ -464,4 +461,13 @@ void AbstractMaze::_make_connections(AbstractMaze *maze, Node *node) {
       }
     }
   }
+}
+
+std::string route_to_string(route_t &route) {
+  std::stringstream ss;
+  for (motion_primitive_t prim : route) {
+    ss << std::to_string(prim.n) << dir_to_char(prim.d);
+  }
+
+  return ss.str();
 }

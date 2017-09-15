@@ -1,7 +1,7 @@
 #pragma once
 
 #include <common/commanduino/CommanDuino.h>
-#include <common/Mouse.h>
+#include <common/core/Mouse.h>
 
 class Forward : public Command {
 public:

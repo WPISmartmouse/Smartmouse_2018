@@ -1,7 +1,7 @@
 #pragma once
 
 #include <common/commanduino/CommanDuino.h>
-#include <common/Direction.h>
+#include <common/core/Direction.h>
 
 #include <real/RealMouse.h>
 
