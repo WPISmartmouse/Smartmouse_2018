@@ -18,6 +18,7 @@ public:
 
 private:
   unsigned int n;
+  unsigned int i;
   Mouse *mouse;
 };
 

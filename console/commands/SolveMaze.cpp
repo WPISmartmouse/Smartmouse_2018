@@ -1,7 +1,7 @@
 #include "SolveMaze.h"
-#include "Forward.h"
 #include "Turn.h"
 #include "WaitForStart.h"
+#include "ForwardN.h"
 
 SolveMaze::SolveMaze(Solver *solver, Solver::Goal goal) : CommandGroup("solve"), solver(solver), movements(0),
                                                           goal(goal) {}
@@ -26,7 +26,7 @@ bool SolveMaze::isFinished() {
       }
 
       addSequential(new Turn(prim.d));
-      addSequential(new Forward());
+      addSequential(new ForwardN(prim.n));
       if (!GlobalProgramSettings.quiet) {
         addSequential(new WaitForStart());
         solver->mouse->print_maze_mouse();

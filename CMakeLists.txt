@@ -58,7 +58,7 @@ else ()
     ################################
     # text-only console programs
     ################################
-    set(CONSOLES Solve
+    set(CONSOLES ConsoleSolve
             Animate
             ConsoleNavTest
             GenerateMaze

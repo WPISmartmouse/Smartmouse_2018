@@ -1,19 +1,20 @@
 #include <console/ConsoleMouse.h>
+#include <iostream>
 #include "ForwardN.h"
 
-ForwardN::ForwardN(unsigned int n) : Command("ForwardN"), n(n), mouse(ConsoleMouse::inst())  {}
+ForwardN::ForwardN(unsigned int n) : Command("ForwardN"), n(n), i(0), mouse(ConsoleMouse::inst())  {}
 
 void ForwardN::initialize() {
-  for (unsigned int i =0; i < n ;i++) {
-    mouse->internalForward();
-  }
 }
 
 void ForwardN::execute() {
+  mouse->internalForward();
+  std::cin.get();
+  mouse->print_maze_mouse();
 }
 
 bool ForwardN::isFinished() {
-  return true;
+  return ++i > n;
 }
 
 void ForwardN::end() {}
