@@ -13,7 +13,7 @@ public:
   bool isFinished();
 
 private:
-  char *pathToStart;
+  route_t pathToStart;
   int index;
   Mouse *mouse;
 

@@ -15,9 +15,9 @@ public:
 
   virtual void setup() override;
 
-  virtual Direction planNextStep() override;
+  virtual motion_primitive_t planNextStep() override;
 
-  virtual char *solve() override;
+  virtual route_t solve() override;
 
   virtual void teardown() override;
 
@@ -26,6 +26,6 @@ public:
   virtual void setGoal(Solver::Goal goal) override;
 
 private:
-  int step;
+  unsigned int step;
   Solver::Goal goal;
 };

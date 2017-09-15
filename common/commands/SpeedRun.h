@@ -14,6 +14,6 @@ public:
 
 private:
   Mouse *mouse;
-  char *path;
+  route_t path;
   int index;
 };

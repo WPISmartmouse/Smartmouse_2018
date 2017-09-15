@@ -11,10 +11,6 @@
 #endif
 
 AbstractMaze::AbstractMaze() : solved(false) {
-  fastest_route = (char *) calloc(PATH_SIZE, sizeof(char));
-  fastest_theoretical_route = (char *) calloc(PATH_SIZE, sizeof(char));
-  path_to_next_goal = (char *) calloc(PATH_SIZE, sizeof(char));
-
   unsigned int i, j;
   for (i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
     for (j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
@@ -120,19 +116,19 @@ Node *AbstractMaze::center_node() {
   return nodes[AbstractMaze::CENTER][AbstractMaze::CENTER];
 }
 
-bool AbstractMaze::flood_fill_from_point(char *path, unsigned int r0, unsigned int c0, unsigned int r1, unsigned int c1) {
+bool AbstractMaze::flood_fill_from_point(route_t *path, unsigned int r0, unsigned int c0, unsigned int r1, unsigned int c1) {
   return flood_fill(path, r0, c0, r1, c1);
 }
 
-bool AbstractMaze::flood_fill_from_origin(char *path, unsigned int r1, unsigned int c1) {
+bool AbstractMaze::flood_fill_from_origin(route_t *path, unsigned int r1, unsigned int c1) {
   return flood_fill(path, 0, 0, r1, c1);
 }
 
-bool AbstractMaze::flood_fill_from_origin_to_center(char *path) {
+bool AbstractMaze::flood_fill_from_origin_to_center(route_t *path) {
   return flood_fill(path, 0, 0, AbstractMaze::MAZE_SIZE / 2, AbstractMaze::MAZE_SIZE / 2);
 }
 
-bool AbstractMaze::flood_fill(char *path, unsigned int r0, unsigned int c0, unsigned int r1, unsigned int c1) {
+bool AbstractMaze::flood_fill(route_t *path, unsigned int r0, unsigned int c0, unsigned int r1, unsigned int c1) {
   Node *n;
   Node *goal = nodes[r1][c1];
 
@@ -153,9 +149,9 @@ bool AbstractMaze::flood_fill(char *path, unsigned int r0, unsigned int c0, unsi
 
   //recursively visits all neighbors
   nodes[r0][c0]->assign_weights_to_neighbors(n, 0, &success);
+  path->clear();
 
   //if we solved the maze,  traverse from goal back to root and record what direction is shortest
-  char *p = path;
   while (n != nodes[r0][c0] && solvable) {
     Node *min_node = n;
     Direction min_dir = Direction::N;
@@ -179,23 +175,12 @@ bool AbstractMaze::flood_fill(char *path, unsigned int r0, unsigned int c0, unsi
 
     n = min_node;
 
-    *(p++) = dir_to_char(min_dir);
+    path->push_back({1, min_dir});
   }
-  *p = '\0';
 
   if (solvable) {
-    //!!! TODO this part is probably wrong
-
     //the create path is from goal to start,  so now we "reverse" it
-    int j = 0;
-    int hi = strlen(path) - 1;
-    int mid = strlen(path) / 2;
-    for (int i = hi; i >= mid; i--) {
-      char tmp = opposite_direction(path[i]);
-      path[i] = opposite_direction(path[j]);
-      path[j] = tmp;
-      j++;
-    }
+    std::reverse(path->begin(), path->end());
   }
 
   return solvable;

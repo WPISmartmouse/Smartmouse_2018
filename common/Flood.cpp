@@ -4,10 +4,7 @@
 #include <Arduino.h>
 #endif
 
-Flood::Flood(Mouse *mouse) : Solver(mouse), done(false), solved(false) {
-  no_wall_path = (char *) calloc(AbstractMaze::PATH_SIZE, sizeof(char));
-  all_wall_path = (char *) calloc(AbstractMaze::PATH_SIZE, sizeof(char));
-}
+Flood::Flood(Mouse *mouse) : Solver(mouse), done(false), solved(false) {}
 
 //starts at 0, 0 and explores the whole maze
 void Flood::setup() {
@@ -22,7 +19,7 @@ void Flood::setGoal(Solver::Goal goal) {
   this->goal = goal;
 }
 
-Direction Flood::planNextStep() {
+motion_primitive_t Flood::planNextStep() {
   //mark the nodes visted in both the mazes
   no_wall_maze.mark_position_visited(mouse->getRow(), mouse->getCol());
   all_wall_maze->mark_position_visited(mouse->getRow(), mouse->getCol());
@@ -62,17 +59,17 @@ Direction Flood::planNextStep() {
   //used to visualize in gazebo
   mouse->maze->fastest_theoretical_route = no_wall_maze.fastest_route;
 
-  return char_to_dir(no_wall_path[0]);
+  return no_wall_path->at(0);
 }
 
-char *Flood::solve() {
+route_t Flood::solve() {
   //mouse starts at 0, 0
   while (!isFinished()) {
-    mouse->internalTurnToFace(planNextStep());
+    mouse->internalTurnToFace(planNextStep().d);
     mouse->internalForward();
   }
 
-  return all_wall_maze->fastest_route;
+  return *all_wall_maze->fastest_route;
 }
 
 bool Flood::isFinished() {

@@ -18,17 +18,17 @@ void WallFollow::setGoal(Solver::Goal goal) {
   this->goal = goal;
 }
 
-char *WallFollow::solve() {
+route_t WallFollow::solve() {
   //run till you find the goal
   while (!isFinished()) {
-    Direction nextDir = planNextStep();
-    if (nextDir != Direction::INVALID) {
-      mouse->internalTurnToFace(nextDir);
+    motion_primitive_t prim = planNextStep();
+    if (prim.d != Direction::INVALID) {
+      mouse->internalTurnToFace(prim.d);
       mouse->internalForward();
     }
   }
   teardown();
-  return mouse->maze->fastest_route;
+  return *mouse->maze->fastest_route;
 }
 
 bool WallFollow::isFinished() {
@@ -44,10 +44,10 @@ bool WallFollow::isFinished() {
 }
 
 void WallFollow::teardown() {
-  mouse->maze->fastest_route[step] = 0;
+  mouse->maze->fastest_route->at(step) = {1, Direction::N};
 }
 
-Direction WallFollow::planNextStep() {
+motion_primitive_t WallFollow::planNextStep() {
   Direction dir = left_of_dir(mouse->getDir());
   Direction nextDir;
 
@@ -67,11 +67,11 @@ Direction WallFollow::planNextStep() {
   }
   else {
     solvable = false;
-    return Direction::INVALID;
+    return {0, Direction::INVALID};
   }
 
-  mouse->maze->fastest_route[step++] = dir_to_char(nextDir);
+  mouse->maze->fastest_route->at(step++) = {1, nextDir};
   mouse->mark_mouse_position_visited();
 
-  return nextDir;
+  return {1, nextDir};
 }

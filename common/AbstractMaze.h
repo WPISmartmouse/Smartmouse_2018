@@ -13,6 +13,13 @@
  * \brief the maze is graph of nodes, stored internally as an matrix.
  * don't forget to call free_maze(maze) after a maze is done being used
  */
+
+struct motion_primitive_t {
+  uint8_t n;
+  Direction d;
+};
+typedef std::vector<motion_primitive_t> route_t;
+
 class AbstractMaze {
   friend class Mouse;
 
@@ -29,9 +36,9 @@ public:
   constexpr static double HALF_UNIT_DIST = UNIT_DIST / 2.0;
   constexpr static double HALF_INNER_UNIT_DIST = INNER_UNIT_DIST / 2.0;
   bool solved; //boolean for if we know the fastest route
-  char *fastest_route; //a char array like NSEWNENNSNE, which means North, South, East...
-  char *fastest_theoretical_route;
-  char *path_to_next_goal;
+  route_t *fastest_route; //a char array like NSEWNENNSNE, which means North, South, East...
+  route_t *fastest_theoretical_route;
+  route_t *path_to_next_goal;
 
   /** \brief allocates and initializes a node
    * allocates a maze of the given size and sets all links in graph to be null. Naturally, it's column major.
@@ -63,11 +70,11 @@ public:
 
   //This method will take a maze and perform a traditional flood fill
   //the fill starts from r0, c0 and ends at r1, c1
-  bool flood_fill_from_point(char *path, unsigned int r0, unsigned int c0, unsigned int r1, unsigned int c1);
+  bool flood_fill_from_point(route_t *path, unsigned int r0, unsigned int c0, unsigned int r1, unsigned int c1);
 
-  bool flood_fill_from_origin(char *path, unsigned int r1, unsigned int c1);
+  bool flood_fill_from_origin(route_t *path, unsigned int r1, unsigned int c1);
 
-  bool flood_fill_from_origin_to_center(char *path);
+  bool flood_fill_from_origin_to_center(route_t *path);
 
   /** \brief connect all neighbors in the whole maze
    * \param i row
@@ -128,7 +135,7 @@ public:
   static AbstractMaze gen_random_legal_maze();
   static void _make_connections(AbstractMaze *maze, Node *node);
 
-  bool flood_fill(char *path, unsigned int r0, unsigned int c0, unsigned int r1, unsigned int c1);
+  bool flood_fill(route_t *path, unsigned int r0, unsigned int c0, unsigned int r1, unsigned int c1);
 
   Node *nodes[AbstractMaze::MAZE_SIZE][AbstractMaze::MAZE_SIZE]; // array of node pointers
 };

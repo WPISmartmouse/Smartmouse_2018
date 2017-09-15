@@ -18,9 +18,9 @@ public:
 
   virtual void setup() override;
 
-  virtual Direction planNextStep() override;
+  virtual motion_primitive_t planNextStep() override;
 
-  virtual char *solve() override;
+  virtual route_t solve() override;
 
   virtual void teardown() override;
 
@@ -38,8 +38,8 @@ private:
   /// \brief this maze is initially no walls,  and walls are removed every time the mouse moves
   AbstractMaze *all_wall_maze;
 
-  char *no_wall_path;
-  char *all_wall_path;
+  route_t *no_wall_path;
+  route_t *all_wall_path;
   Solver::Goal goal;
 
   bool solved;
