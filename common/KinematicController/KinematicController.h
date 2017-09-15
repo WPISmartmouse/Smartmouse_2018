@@ -16,6 +16,7 @@ struct drive_straight_state_t {
   double start_time_s;
   double left_speed_mps;
   double right_speed_mps;
+  double forward_v;
 };
 
 class KinematicController {
@@ -92,4 +93,5 @@ private:
   static const double DROP_SAFETY;
   static const double POST_DROP_DIST;
   double acceleration_mpss;
+  double dt_s;
 };

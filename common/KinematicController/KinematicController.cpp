@@ -89,6 +89,10 @@ KinematicController::run(double dt_s, double left_angle_rad, double right_angle_
     return abstract_forces;
   }
 
+  // save the cycle time so other functions can use is
+  // this prevents us from passing dt all over the place
+  this->dt_s = dt_s;
+
   if (enabled) {
     // equations based on https://chess.eecs.berkeley.edu/eecs149/documentation/differentialDrive.pdf
     double vl = Mouse::radToMeters(left_motor.velocity_rps);
@@ -290,7 +294,7 @@ void KinematicController::start(GlobalPose start_pose, double goalDisp) {
   drive_straight_state.dispError = goalDisp;
   drive_straight_state.goalDisp = goalDisp;
   drive_straight_state.start_pose = start_pose;
-  drive_straight_state.start_time_s = ((double)Command::getTimerImplementation()->programTimeMs()) / 1000;
+  drive_straight_state.forward_v = (left_motor.velocity_rps + right_motor.velocity_rps) /2;
 }
 
 std::pair<double, double> KinematicController::compute_wheel_velocities(Mouse *mouse) {
@@ -307,39 +311,25 @@ std::pair<double, double> KinematicController::compute_wheel_velocities(Mouse *m
 
   // given starting velocity, fixed acceleration, and final velocity
   // generate the velocity profile for achieving this as fast as possible
-  double t = ((double)Command::getTimerImplementation()->programTimeMs()) / 1000;
-  double dt_s = t - drive_straight_state.start_time_s;
-  const double vf_mps = 0.20; // TODO: make this a function of what motion primitive comes next
-  double t_max = 0; // FIXME
-  if (dt_s < t_max) {
-    if (drive_straight_state.left_speed_mps < config.MAX_SPEED) {
-      drive_straight_state.left_speed_mps += acceleration_mpss;
-    }
-    else {
-      drive_straight_state.left_speed_mps = config.MAX_SPEED;
-    }
-    if (drive_straight_state.right_speed_mps < config.MAX_SPEED) {
-      drive_straight_state.right_speed_mps += acceleration_mpss;
-    }
-    else {
-      drive_straight_state.left_speed_mps = config.MAX_SPEED;
-    }
+  double ramp_d = (pow(drive_straight_state.forward_v, 2) - pow(config.END_SPEED, 2)) / (2.0*acceleration_mpss);
+  csv_print({ramp_d, drive_straight_state.forward_v, drive_straight_state.dispError});
+  double acc = acceleration_mpss * dt_s;
+  if (drive_straight_state.dispError < ramp_d + 0.01) { // TODO: this 0.01 is a hack
+    drive_straight_state.forward_v -= acc;
   }
-  else {
-    if (drive_straight_state.left_speed_mps > vf) {
-      drive_straight_state.left_speed_mps -= acceleration_mpss;
-    }
-    else {
-      drive_straight_state.left_speed_mps = vf;
-    }
-    if (drive_straight_state.right_speed_mps > vf) {
-      drive_straight_state.right_speed_mps -= acceleration_mpss;
-    }
-    else {
-      drive_straight_state.left_speed_mps = vf;
-    }
+  else if (drive_straight_state.forward_v < config.MAX_SPEED) {
+    drive_straight_state.forward_v += acc;
   }
 
+  if (drive_straight_state.forward_v > config.MAX_SPEED) {
+    drive_straight_state.forward_v = config.MAX_SPEED;
+  }
+  else if (drive_straight_state.forward_v < config.END_SPEED) {
+     drive_straight_state.forward_v = config.END_SPEED;
+  }
+
+  drive_straight_state.left_speed_mps = drive_straight_state.forward_v;
+  drive_straight_state.right_speed_mps = drive_straight_state.forward_v;
   double correction = kPWall * yawError;
 
   if (yawError < 0) { // need to turn left
@@ -395,7 +385,7 @@ double KinematicController::dispToNextEdge(Mouse *mouse) {
 
 double KinematicController::dispToNthEdge(Mouse *mouse, unsigned int n) {
   // give the displacement to the nth edge like above...
-  return 0;
+  return dispToNextEdge(mouse) + (n-1) * AbstractMaze::UNIT_DIST;
 }
 
 double KinematicController::sidewaysDispToCenter(Mouse *mouse) {

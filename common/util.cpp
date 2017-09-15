@@ -19,5 +19,21 @@ void print(const char *fmt, ... ){
 #endif
 }
 
+void csv_print(std::vector<double> values) {
+  char buf[1024];
+  char *b = (char *)buf;
+  for (double value : values) {
+    int c = sprintf(b, "%0.3f, ", value);
+    b += c;
+  }
+  sprintf(b, "\r\n");
+#ifdef ARDUINO
+  Serial.print(buf);
+  Serial1.print(buf);
+#else
+  printf("%s", buf);
+#endif
+}
+
 global_program_settings_t GlobalProgramSettings;
 

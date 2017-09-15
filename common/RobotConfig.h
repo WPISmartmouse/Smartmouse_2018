@@ -23,6 +23,7 @@ typedef struct robot_config_t {
   double ANALOG_MAX_DIST;
   double MAX_FORCE;
   bool ARC_TURN;
+  double END_SPEED;
 } RobotConfig;
 
 extern RobotConfig config;

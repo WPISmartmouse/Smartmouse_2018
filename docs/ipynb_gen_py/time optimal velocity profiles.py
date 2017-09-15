@@ -30,14 +30,14 @@ get_ipython().run_cell_magic('tikz', '-s 400,400', '\\draw[->] (0,0) -- (10,0);\
 
 # ## Code that proves it
 
-# In[1]:
+# In[10]:
 
 import numpy as np
 import matplotlib.pyplot as plt
 np.set_printoptions(suppress=True, precision=3)
 
-def profile(Vf, Vmax, d, A, buffer=3e-3):
-    v = Vf
+def profile(V0, Vf, Vmax, d, A, buffer=3e-3):
+    v = V0
     x = 0
     a = A
     vs = [v]
@@ -71,11 +71,12 @@ def graph(title, idx):
     plt.figure()
     plt.title(title)
     Vs = [0.35, 0.5, 0.75, 1, 2]
-    for V in Vs:
-        Vf = 0.2
-        d = 0.35
-        a = 2
-        results  = profile(Vf, V, d, a)
+    Vf = 0.02
+    V0 = 0.2
+    d = 0.35
+    a = 2
+    for V in Vs:    
+        results  = profile(V0, Vf, V, d, a)
         vs = results[1]
         if V == 2: # make V=2 dashed so we can see it over V=1
             plt.plot(results[idx], label='V={}'.format(V), linestyle='dashed')

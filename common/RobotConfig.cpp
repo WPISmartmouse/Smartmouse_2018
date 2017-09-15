@@ -24,6 +24,7 @@ RobotConfig config = {
         ANALOG_MAX_DIST : 0.18,
         MAX_FORCE : 0.014,
         ARC_TURN : false,
+        END_SPEED: 0.2,
 };
 #elif defined(CONSOLE)
 
@@ -41,7 +42,7 @@ RobotConfig config = {
         GERALD_ANGLE : 0.6544985,
         MAX_SPEED : 0.60,
         MAX_HARDWARE_SPEED : 0.60,
-        MIN_SPEED : 0.013,
+        MIN_SPEED : 0.014,
         FRONT_WALL_THRESHOLD : 0.15,
         SIDE_WALL_THRESHOLD : 0.08,
         GERALD_WALL_THRESHOLD : 0.17,
@@ -51,5 +52,6 @@ RobotConfig config = {
         ANALOG_MAX_DIST : 0.18,
         MAX_FORCE : 0.016,
         ARC_TURN : false,
+        END_SPEED: 0.2,
 };
 #endif
