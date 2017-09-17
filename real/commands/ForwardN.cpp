@@ -11,7 +11,7 @@ void ForwardN::initialize() {
   start = mouse->getGlobalPose();
   mouse->kinematic_controller.enable_sensor_pose_estimate = true;
   mouse->kinematic_controller.start(start, KinematicController::dispToNthEdge(mouse, n));
-  digitalWrite(RealMouse::LED_1, 1);
+  digitalWrite(RealMouse::LED_4, 1);
 }
 
 void ForwardN::execute() {

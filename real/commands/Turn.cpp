@@ -1,7 +1,6 @@
 #include "Turn.h"
 #include "TurnInPlace.h"
 #include "Forward.h"
-#include "ForwardToDiagonal.h"
 #include "ArcTurn.h"
 #include "ForwardToCenter.h"
 
@@ -15,8 +14,6 @@ void Turn::initialize() {
     addSequential(new Forward());
   } else if (mouse->getDir() != dir) {
     if (config.ARC_TURN) {
-//      addSequential(new ForwardToDiagonal());
-//      addSequential(new ArcTurn(dir));
       addSequential(new ArcTurn(dir)) ;
     }
     else {
