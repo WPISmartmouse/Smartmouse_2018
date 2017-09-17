@@ -177,12 +177,7 @@ bool AbstractMaze::flood_fill(route_t *path, unsigned int r0, unsigned int c0, u
 
     n = min_node;
 
-    if (!path->empty() && min_dir == path->front().d) {
-      path->front().n += 1;
-    }
-    else {
-      path->insert(path->cbegin(), {1, min_dir});
-    }
+    insert_motion_primitive_front(path, {1, min_dir});
   }
 
   return solvable;
@@ -475,4 +470,44 @@ std::string route_to_string(route_t &route) {
   }
 
   return ss.str();
+}
+
+void insert_motion_primitive_back(route_t *route, motion_primitive_t prim) {
+  if (!route->empty() && prim.d == route->back().d) {
+    route->back().n += prim.n;
+  }
+  else {
+    route->insert(route->cend(), prim);
+  }
+}
+void insert_motion_primitive_front(route_t *route, motion_primitive_t prim) {
+  if (!route->empty() && prim.d == route->front().d) {
+    route->front().n += prim.n;
+  }
+  else {
+    route->insert(route->cbegin(), prim);
+  }
+}
+
+route_t AbstractMaze::truncate(unsigned int row, unsigned int col, Direction dir, route_t route) {
+  route_t trunc;
+  Node *n = nodes[row][col];
+  bool done = false;
+  for (motion_primitive_t prim : route) {
+    for (unsigned int i = 0; i < prim.n; i++) {
+      // check if this move is valid
+      if (n->wall(prim.d)) {
+        done = true;
+        break;
+      }
+
+      // if it's valid, add and simulate the move
+      n = n->neighbor(prim.d);
+      insert_motion_primitive_back(&trunc, {1, prim.d});
+    }
+    if (done) {
+      break;
+    }
+  }
+  return trunc;
 }

@@ -22,6 +22,8 @@ struct motion_primitive_t {
 typedef std::vector<motion_primitive_t> route_t;
 
 std::string route_to_string(route_t &route);
+void insert_motion_primitive_front(route_t *route, motion_primitive_t prim);
+void insert_motion_primitive_back(route_t *route, motion_primitive_t prim);
 
 class AbstractMaze {
   friend class Mouse;
@@ -112,6 +114,11 @@ public:
    * \param dir direction connect in
    */
   void remove_neighbor(unsigned int row, unsigned int col, const Direction dir);
+
+  /** \brief walks along a route in the maze and return the longest valid path
+   * Valid means you don't walk through any walls.
+   */
+  route_t truncate(unsigned int row, unsigned int col, Direction dir, route_t route);
 
   /** prints a maze
   * @param maze the maze

@@ -62,7 +62,10 @@ motion_primitive_t Flood::planNextStep() {
   //used to visualize in gazebo
   mouse->maze->fastest_theoretical_route = no_wall_maze.fastest_route;
 
-  return no_wall_path.at(0);
+  // Walk along the no_wall_path as far as possible in the all_wall_maze
+  // This will results in the longest path where we know there are no walls
+  route_t nextPath = all_wall_maze->truncate(mouse->getRow(), mouse->getCol(), mouse->getDir(), no_wall_path);
+  return nextPath.at(0);
 }
 
 route_t Flood::solve() {
