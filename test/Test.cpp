@@ -273,6 +273,42 @@ TEST(DirectionTest, DirectionLogic) {
   EXPECT_TRUE(Direction::E < Direction::S);
 }
 
+TEST(RouteUtilTest, RouteUtilAddBack) {
+  route_t route;
+  insert_motion_primitive_back(&route, {1, Direction::N});
+  EXPECT_STREQ(route_to_string(route).c_str(), "1N");
+  insert_motion_primitive_back(&route, {1, Direction::N});
+  EXPECT_STREQ(route_to_string(route).c_str(), "2N");
+  insert_motion_primitive_back(&route, {1, Direction::N});
+  EXPECT_STREQ(route_to_string(route).c_str(), "3N");
+  insert_motion_primitive_back(&route, {2, Direction::E});
+  EXPECT_STREQ(route_to_string(route).c_str(), "3N2E");
+  insert_motion_primitive_back(&route, {1, Direction::E});
+  EXPECT_STREQ(route_to_string(route).c_str(), "3N3E");
+  insert_motion_primitive_back(&route, {1, Direction::S});
+  EXPECT_STREQ(route_to_string(route).c_str(), "3N3E1S");
+  insert_motion_primitive_back(&route, {1, Direction::E});
+  EXPECT_STREQ(route_to_string(route).c_str(), "3N3E1S1E");
+}
+
+TEST(RouteUtilTest, RouteUtilAddFront) {
+  route_t route;
+  insert_motion_primitive_front(&route, {1, Direction::N});
+  EXPECT_STREQ(route_to_string(route).c_str(), "1N");
+  insert_motion_primitive_front(&route, {1, Direction::N});
+  EXPECT_STREQ(route_to_string(route).c_str(), "2N");
+  insert_motion_primitive_front(&route, {1, Direction::N});
+  EXPECT_STREQ(route_to_string(route).c_str(), "3N");
+  insert_motion_primitive_front(&route, {2, Direction::E});
+  EXPECT_STREQ(route_to_string(route).c_str(), "2E3N");
+  insert_motion_primitive_front(&route, {1, Direction::E});
+  EXPECT_STREQ(route_to_string(route).c_str(), "3E3N");
+  insert_motion_primitive_front(&route, {1, Direction::S});
+  EXPECT_STREQ(route_to_string(route).c_str(), "1S3E3N");
+  insert_motion_primitive_front(&route, {1, Direction::E});
+  EXPECT_STREQ(route_to_string(route).c_str(), "1E1S3E3N");
+}
+
 TEST(RouteStringTest, RouteStringText) {
   route_t route = {{1, Direction::N}, {2, Direction::W}, {3, Direction::E}, {1, Direction::S}};
   std::string s = route_to_string(route);
