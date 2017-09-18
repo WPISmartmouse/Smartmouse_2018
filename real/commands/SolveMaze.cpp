@@ -3,6 +3,8 @@
 #include "Turn.h"
 #include "ForwardToCenter.h"
 #include "TurnInPlace.h"
+#include "Stop.h"
+#include "ForwardN.h"
 
 SolveMaze::SolveMaze(Solver *solver, Solver::Goal goal) : CommandGroup("solve"), solver(solver), movements(0),
                                                           goal(goal) {}
@@ -21,6 +23,7 @@ bool SolveMaze::isFinished() {
 
     if (!mazeSolved) {
       motion_primitive_t prim = solver->planNextStep();
+      print("%i:%c\r\n", prim.n, dir_to_char(prim.d));
 
       if (!solver->isSolvable()) {
         solved = false;
@@ -28,10 +31,11 @@ bool SolveMaze::isFinished() {
       }
 
       if (prim.d == solver->mouse->getDir()) {
-        addSequential(new Forward());
+        addSequential(new ForwardN(prim.n));
       } else {
         addSequential(new Turn(prim.d));
       }
+//      addSequential(new Stop(500));
 
       movements++;
     } else if (!atCenter){
@@ -53,6 +57,6 @@ bool SolveMaze::isFinished() {
 }
 
 void SolveMaze::end() {
-  print("%lu\r\n", getTime());
+  print("solve time (seconds): %lu\r\n", getTime() / 1000ul);
   solver->teardown();
 }

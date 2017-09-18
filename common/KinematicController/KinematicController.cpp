@@ -312,7 +312,6 @@ std::pair<double, double> KinematicController::compute_wheel_velocities(Mouse *m
   // given starting velocity, fixed acceleration, and final velocity
   // generate the velocity profile for achieving this as fast as possible
   double ramp_d = (pow(drive_straight_state.forward_v, 2) - pow(config.END_SPEED, 2)) / (2.0*acceleration_mpss);
-  csv_print({ramp_d, drive_straight_state.forward_v, drive_straight_state.dispError});
   double acc = acceleration_mpss * dt_s;
   if (drive_straight_state.dispError < ramp_d + 0.01) { // TODO: this 0.01 is a hack
     drive_straight_state.forward_v -= acc;

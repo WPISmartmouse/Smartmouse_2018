@@ -5,11 +5,11 @@
 #include <Arduino.h>
 #endif
 
-void print(const char *fmt, ... ){
+void print(const char *fmt, ...) {
   char buf[1024]; // resulting string limited to 128 chars
   va_list args;
   va_start (args, fmt);
-  vsnprintf(buf, sizeof(buf), (const char *)fmt, args); // for the rest of the world
+  vsnprintf(buf, sizeof(buf), (const char *) fmt, args); // for the rest of the world
   va_end(args);
 #ifdef ARDUINO
   Serial.print(buf);
@@ -21,7 +21,7 @@ void print(const char *fmt, ... ){
 
 void csv_print(std::vector<double> values) {
   char buf[1024];
-  char *b = (char *)buf;
+  char *b = (char *) buf;
   for (double value : values) {
     int c = sprintf(b, "%0.3f, ", value);
     b += c;
@@ -37,3 +37,8 @@ void csv_print(std::vector<double> values) {
 
 global_program_settings_t GlobalProgramSettings;
 
+extern "C"{
+int _getpid(){ return -1;}
+int _kill(int pid, int sig){ return -1; }
+void _write_r(){}
+}

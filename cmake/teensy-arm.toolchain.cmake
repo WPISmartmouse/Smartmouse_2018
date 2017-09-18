@@ -68,7 +68,7 @@ set(CMAKE_CXX_FLAGS "${BASE_FLAGS} -fno-exceptions -fno-rtti -felide-constructor
 
 set(LINKER_DIRS "${TOOLCHAIN_ROOT}/")
 set(LINKER_FLAGS "-Os -Wl,--gc-sections ${TARGET_FLAGS} -DUSB_SERIAL -T${TEENSY_ROOT}/${MCU}.ld -L${LINKER_DIRS}" )
-set(LINKER_LIBS "-larm_cortexM4l_math -lm" )
+set(LINKER_LIBS "-larm_cortexM4l_math -lm -lstdc++ -lc -lsupc++" )
 set(CMAKE_SHARED_LINKER_FLAGS "${LINKER_FLAGS}" CACHE STRING "linker flags" FORCE)
 set(CMAKE_MODULE_LINKER_FLAGS "${LINKER_FLAGS}" CACHE STRING "linker flags" FORCE)
 set(CMAKE_EXE_LINKER_FLAGS "${LINKER_FLAGS}" CACHE STRING "linker flags" FORCE)

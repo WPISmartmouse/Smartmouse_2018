@@ -465,6 +465,10 @@ void AbstractMaze::_make_connections(AbstractMaze *maze, Node *node) {
 
 std::string route_to_string(route_t &route) {
   std::stringstream ss;
+  if (route.empty()) {
+    ss << "empty";
+  }
+
   for (motion_primitive_t prim : route) {
     ss << (int)prim.n << dir_to_char(prim.d);
   }

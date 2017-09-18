@@ -1,10 +1,12 @@
 #include <Arduino.h>
 #include <common/commanduino/CommanDuino.h>
 #include <real/ArduinoTimer.h>
+#include <real/RealMouse.h>
 #include <common/core/AbstractMaze.h>
 #include <common/core/util.h>
 #include <common/commands/NavTestCommand.h>
-#include "Finish.h"
+#include <common/core/Flood.h>
+#include <common/commands/SolveCommand.h>
 
 ArduinoTimer timer;
 AbstractMaze maze;
@@ -22,8 +24,8 @@ void setup() {
 
   GlobalProgramSettings.quiet = false;
 
-  scheduler = new Scheduler(new NavTestCommand());
-//  scheduler = new Scheduler(new SolveCommand(new Flood(mouse)));
+//  scheduler = new Scheduler(new NavTestCommand());
+  scheduler = new Scheduler(new SolveCommand(new Flood(mouse)));
 
   last_t = timer.programTimeMs();
   last_blink = timer.programTimeMs();
