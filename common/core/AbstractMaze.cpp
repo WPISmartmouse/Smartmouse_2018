@@ -293,7 +293,7 @@ void AbstractMaze::print_neighbor_maze() {
       }
       print(" ");
     }
-    print("\n");
+    print("\r\n");
   }
 }
 
@@ -304,7 +304,7 @@ void AbstractMaze::print_weight_maze() {
       int w = nodes[i][j]->weight;
       print("%03u ", w);
     }
-    print("\n");
+    print("\r\n");
   }
 }
 
@@ -322,7 +322,7 @@ void AbstractMaze::print_dist_maze() {
         print("%d ", d);
       }
     }
-    print("\n");
+    print("\r\n");
   }
 }
 
@@ -332,7 +332,7 @@ void AbstractMaze::print_pointer_maze() {
     for (j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
       print("%p ", nodes[i][j]);
     }
-    print("\n");
+    print("\r\n");
   }
 }
 
