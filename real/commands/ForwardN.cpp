@@ -27,7 +27,7 @@ bool ForwardN::isFinished() {
 }
 
 void ForwardN::end() {
-  digitalWrite(RealMouse::LED_1, 0);
+  digitalWrite(RealMouse::LED_4, 0);
   mouse->kinematic_controller.enable_sensor_pose_estimate = false;
 }
 

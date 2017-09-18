@@ -167,7 +167,7 @@ void RealMouse::setup() {
   left_encoder.init(ENCODER_LEFT_A, ENCODER_LEFT_B);
   right_encoder.init(ENCODER_RIGHT_A, ENCODER_RIGHT_B);
 
-  kinematic_controller.setAccelerationMpss(5);
+  kinematic_controller.setAccelerationMpss(2);
 
   resetToStartPose();
 

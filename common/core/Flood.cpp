@@ -64,7 +64,6 @@ motion_primitive_t Flood::planNextStep() {
   // Walk along the no_wall_path as far as possible in the all_wall_maze
   // This will results in the longest path where we know there are no walls
   route_t nextPath = all_wall_maze->truncate(mouse->getRow(), mouse->getCol(), mouse->getDir(), no_wall_path);
-  print("%s\r\n", route_to_string(nextPath).c_str());
   return nextPath.at(0);
 }
 

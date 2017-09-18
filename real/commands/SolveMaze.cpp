@@ -23,7 +23,7 @@ bool SolveMaze::isFinished() {
 
     if (!mazeSolved) {
       motion_primitive_t prim = solver->planNextStep();
-      print("%i:%c\r\n", prim.n, dir_to_char(prim.d));
+//      print("%i:%c\r\n", prim.n, dir_to_char(prim.d));
 
       if (!solver->isSolvable()) {
         solved = false;
@@ -35,7 +35,6 @@ bool SolveMaze::isFinished() {
       } else {
         addSequential(new Turn(prim.d));
       }
-//      addSequential(new Stop(500));
 
       movements++;
     } else if (!atCenter){
