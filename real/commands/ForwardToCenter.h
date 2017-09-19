@@ -18,11 +18,9 @@ public:
   void end();
 
 private:
-
   GlobalPose start;
   RealMouse *mouse;
 
   RangeData range_data;
-  const double kDisp = 4.0;
 };
 

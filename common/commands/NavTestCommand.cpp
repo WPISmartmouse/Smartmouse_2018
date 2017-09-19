@@ -1,14 +1,16 @@
+#include <real/commands/ForwardToCenter.h>
 #include "ForwardN.h"
 #include "NavTestCommand.h"
 #include "WaitForStart.h"
-#include "Stop.h"
+//#include "Stop.h"
 
 NavTestCommand::NavTestCommand() : CommandGroup("NavTestGroup") {
   addSequential(new WaitForStart());
   addSequential(new ForwardN(1));
-  addSequential(new Stop(100));
-  addSequential(new ForwardN(1));
-  addSequential(new Stop(100));
-  addSequential(new ForwardN(1));
-  addSequential(new Stop(100));
+//  addSequential(new Stop(100));
+//  addSequential(new ForwardN(1));
+//  addSequential(new Stop(100));
+//  addSequential(new ForwardN(1));
+//  addSequential(new Stop(100));
+  addSequential(new ForwardToCenter());
 }

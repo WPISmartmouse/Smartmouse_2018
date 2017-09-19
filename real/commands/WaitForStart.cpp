@@ -51,7 +51,7 @@ bool WaitForStart::isFinished() {
 }
 
 void WaitForStart::end() {
-  config.MAX_SPEED = max(speed, 0.4); // FIXME: this should be a lower number
+  config.MAX_SPEED = max(speed, 0.1); // FIXME: this should be a lower number
   for (int i = 0; i < 7; i++) {
     digitalWrite(RealMouse::LED_7 - i, 0);
   }

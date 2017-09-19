@@ -3,17 +3,9 @@
 #include <tuple>
 #include "KinematicController.h"
 #include <cmath>
-#include <common/commanduino/Command.h>
-
-#ifdef EMBED
-#include <Arduino.h>
-#include <common/commanduino/Command.h>
-#endif
 
 const double KinematicController::DROP_SAFETY = 0.8;
-const double KinematicController::POST_DROP_DIST = 0.05;
 const double KinematicController::kPWall = 0.80;
-const double KinematicController::kDWall = 50;
 const double KinematicController::kPYaw = 7.0;
 
 KinematicController::KinematicController(Mouse *mouse) : enable_sensor_pose_estimate(false), enabled(true), initialized(false),
@@ -290,12 +282,13 @@ void KinematicController::setSpeedMps(double left_setpoint_mps,
   right_motor.setSetpointMps(right_setpoint_mps);
 }
 
-void KinematicController::start(GlobalPose start_pose, double goalDisp) {
+void KinematicController::start(GlobalPose start_pose, double goalDisp, double v_final) {
   drive_straight_state.disp = 0;
   drive_straight_state.dispError = goalDisp;
   drive_straight_state.goalDisp = goalDisp;
   drive_straight_state.start_pose = start_pose;
   drive_straight_state.forward_v = (left_motor.velocity_rps + right_motor.velocity_rps) /2;
+  drive_straight_state.v_final = v_final;
 }
 
 std::pair<double, double> KinematicController::compute_wheel_velocities(Mouse *mouse) {
@@ -312,9 +305,9 @@ std::pair<double, double> KinematicController::compute_wheel_velocities(Mouse *m
 
   // given starting velocity, fixed acceleration, and final velocity
   // generate the velocity profile for achieving this as fast as possible
-  double ramp_d = (pow(drive_straight_state.forward_v, 2) - pow(config.END_SPEED, 2)) / (2.0*acceleration_mpss);
+  double ramp_d = (pow(drive_straight_state.forward_v, 2)-pow(drive_straight_state.v_final, 2))/(2.0*acceleration_mpss);
   double acc = acceleration_mpss * dt_s;
-  if (drive_straight_state.dispError < ramp_d + 0.01) { // TODO: this 0.01 is a hack
+  if (drive_straight_state.dispError < ramp_d + 0.015) { // TODO: this fudge factor is a hack
     drive_straight_state.forward_v -= acc;
   }
   else if (drive_straight_state.forward_v < config.MAX_SPEED) {
@@ -325,8 +318,8 @@ std::pair<double, double> KinematicController::compute_wheel_velocities(Mouse *m
     drive_straight_state.forward_v = config.MAX_SPEED;
   }
   // TODO: this is problematic, at 180's we always stop and this is wrong
-  else if (drive_straight_state.forward_v < config.END_SPEED) {
-     drive_straight_state.forward_v = config.END_SPEED;
+  else if (drive_straight_state.forward_v < drive_straight_state.v_final) {
+     drive_straight_state.forward_v = drive_straight_state.v_final;
   }
 
   drive_straight_state.left_speed_mps = drive_straight_state.forward_v;
@@ -338,6 +331,12 @@ std::pair<double, double> KinematicController::compute_wheel_velocities(Mouse *m
   } else {
     drive_straight_state.right_speed_mps -= correction;
   }
+
+  if (drive_straight_state.dispError < 0.05) {
+    asdf = 0;
+    csv_print({drive_straight_state.dispError, drive_straight_state.forward_v, drive_straight_state.v_final});
+  }
+  asdf++;
 
   return std::pair<double, double>(drive_straight_state.left_speed_mps, drive_straight_state.right_speed_mps);
 }

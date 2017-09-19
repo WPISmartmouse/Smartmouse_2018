@@ -17,6 +17,7 @@ struct drive_straight_state_t {
   double left_speed_mps;
   double right_speed_mps;
   double forward_v;
+  double v_final;
 };
 
 class KinematicController {
@@ -35,7 +36,7 @@ public:
 
   static double yawDiff(double y1, double y2);
 
-  void start(GlobalPose start_pose, double goalDisp);
+  void start(GlobalPose start_pose, double goalDisp, double v_final=config.END_SPEED);
 
   double sidewaysDispToCenter(Mouse *mouse);
 
