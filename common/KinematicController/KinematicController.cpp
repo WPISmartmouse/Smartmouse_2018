@@ -323,6 +323,7 @@ std::pair<double, double> KinematicController::compute_wheel_velocities(Mouse *m
   if (drive_straight_state.forward_v > config.MAX_SPEED) {
     drive_straight_state.forward_v = config.MAX_SPEED;
   }
+  // TODO: this is problematic, at 180's we always stop and this is wrong
   else if (drive_straight_state.forward_v < config.END_SPEED) {
      drive_straight_state.forward_v = config.END_SPEED;
   }

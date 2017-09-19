@@ -66,6 +66,7 @@ double RegulatedMotor::runPid(double dt_s, double angle_rad, double ground_truth
 
   abstract_force = std::max(std::min(255.0, abstract_force), -255.0);
 
+  // TODO remove this, since we have acceleration in KC
   // limit the change in setpoint
   double acc = acceleration_mpss * dt_s;
   if (regulated_setpoint_rps < setpoint_rps) {
