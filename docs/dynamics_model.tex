@@ -46,7 +46,7 @@ Deriving the kinematic equations of a differential drive robot.
     \draw [rotate around={15:(0,0)}] (4.875, 0.5) node {$v_r$};
     \draw [rotate around={15:(0,0)}] (2, -0.25) node {$R$};
     \draw [rotate around={15:(0,0)}] (4, -1) node {$W$};
-    \draw [rotate around={15:(0,0)}] (4, -.3) node {$(x_r,y_r,\theta_r)$};
+    \draw [rotate around={15:(0,0)}] (4, -.3) node {$(x,y,\theta)$};
     \draw [rotate around={15:(0,0)}] (0, 0.3) node {$ICC$};
     \draw [rotate around={15:(0,0)}] (0, -.2) node {$(x_c,y_c,\theta_c)$};
   \end{tikzpicture}
@@ -81,14 +81,14 @@ Now do some algebra...
   R &= \frac{W(v_l+v_r)}{2(v_r-v_l)} \\[1em]
 \end{align*}
 
-\textbf{Next we need to figure out how to update our $x_r$, $y_r$, and $\theta_r$ given $R$.} \\
+\textbf{Next we need to figure out how to update our $x$, $y$, and $\theta$ given $R$.} \\
 
 Before we can solve any of these, we need to figure out what $\Delta\theta$ is equal to. We will assume we are following this arc of constant radius for a given time step $\Delta t$. This is a good assumption if our time step is equal to our controller time step, during which presumably the speeds of the motors aren't changing, and so neither will our turning radius. If so, then $\Delta\theta = \omega\Delta t$, and we know
 $$\omega=\dfrac{v_l}{R-\frac{W}{2}} = \dfrac{v_r}{R+\frac{W}{2}}$$
 Lets just pick $v_l$, and put them together to get $\Delta\theta$.
 $$\Delta\theta = \dfrac{v_l}{R-\frac{W}{2}}\Delta t$$
 
-Theta is obvious: $\theta_r \leftarrow \theta_r+\Delta\theta$. The coordinates of $ICC = (x_r-R\sin{\theta_r}, y_r+R\cos{\theta_r})$. You can see this if you think that the vector to $ICC$ is 90 degrees offset from $\theta_r$ and do the trig. Let's assume in the situation diagramed above, $\theta_r=\ang{105}$, $R=4$, and $x=4.8, y=0$, so $ICC = (4.8-4\sin{(105)}, 0+4\cos{(105)}) \approx (1, -1)$. For another example, pretend the robot is right below the origin facing east at $(0,-1,0)$ and $R=1$. $ICC$ should be $(0,0)$ so let's check. $ICC = (0-1\sin{(0)}, -1+1\cos{(0)}) = (0, 0).$ Great, the math seems to check out. Now we just rotate the robot coordinates around the point $ICC$ by $\Delta\theta$, which we can do easily with a rotation matrix. Of course, we're not rotating around the origin, we're roating around $ICC$, so we first subtract out the coordinates of $ICC$ to get $(x_o, y_o) = (x_r- ICC_x, y_r-ICC_y)$. Recall that to rotate around the origin by $\Delta\theta$, we multiply our point $(x_o, y_o)$ as follows:
+Theta is obvious: $\theta \leftarrow \theta+\Delta\theta$. The coordinates of $ICC = (x-R\sin{\theta}, y+R\cos{\theta})$. You can see this if you think that the vector to $ICC$ is 90 degrees offset from $\theta$ and do the trig. Let's assume in the situation diagramed above, $\theta=\ang{105}$, $R=4$, and $x=4.8, y=0$, so $ICC = (4.8-4\sin{(105)}, 0+4\cos{(105)}) \approx (1, -1)$. For another example, pretend the robot is right below the origin facing east at $(0,-1,0)$ and $R=1$. $ICC$ should be $(0,0)$ so let's check. $ICC = (0-1\sin{(0)}, -1+1\cos{(0)}) = (0, 0).$ Great, the math seems to check out. Now we just rotate the robot coordinates around the point $ICC$ by $\Delta\theta$, which we can do easily with a rotation matrix. Of course, we're not rotating around the origin, we're roating around $ICC$, so we first subtract out the coordinates of $ICC$ to get $(x_o, y_o) = (x- ICC_x, y-ICC_y)$. Recall that to rotate around the origin by $\Delta\theta$, we multiply our point $(x_o, y_o)$ as follows:
 \begin{equation}
   \begin{bmatrix}
     \cos{\Delta\theta} & \sin{\Delta\theta} \\
@@ -107,49 +107,57 @@ Theta is obvious: $\theta_r \leftarrow \theta_r+\Delta\theta$. The coordinates o
 We then just add back the coordinates of $ICC$. Great! Now we know how to update all our coordinates. Let's summarize:
 
 \begin{align}
- \theta_r &\leftarrow \theta_r + \Delta\theta \\
-  x_r &\leftarrow \cos{(\Delta\theta)}(x_r-ICC_x)+\sin{(\Delta\theta)}(y_r-ICC_y) + ICC_x \\
-  y_r &\leftarrow -\sin{(\Delta\theta)}(x_r-ICC_x)+\cos{(\Delta\theta)}(y_r-ICC_y) + ICC_y \\
+ \theta &\leftarrow \theta + \Delta\theta \\
+  x &\leftarrow \cos{(\Delta\theta)}(x-ICC_x)+\sin{(\Delta\theta)}(y-ICC_y) + ICC_x \\
+  y &\leftarrow -\sin{(\Delta\theta)}(x-ICC_x)+\cos{(\Delta\theta)}(y-ICC_y) + ICC_y \\
 \shortintertext{where}
-  ICC_x &= x_r-R\sin{\theta_r} \\
-  ICC_y &= y_r+R\cos{\theta_r} \\
+  ICC_x &= x-R\sin{\theta} \\
+  ICC_y &= y+R\cos{\theta} \\
   \Delta\theta &= \dfrac{v_l}{R-\frac{W}{2}}\Delta t \\
   R &= \frac{W(v_l+v_r)}{2(v_r-v_l)}
 \end{align}
 
-We can expand and simplify the udpate equations for $x_r$.
+We can expand and simplify the udpate equations for $x$.
 
 \begin{align}
-  x_r &\leftarrow \cos{(\dfrac{v_l}{R-\frac{W}{2}}\Delta t)}(x_r-x_r+R\sin{\theta_r})+\sin{(\dfrac{v_l}{R-\frac{W}{2}}\Delta t)}(y_r-y_r-R\cos{\theta_r}) + x_r-R\sin{\theta_r} \\
-  x_r &\leftarrow \cos{(\dfrac{v_l}{R-\frac{W}{2}}\Delta t)}(R\sin{\theta_r})+\sin{(\dfrac{v_l}{R-\frac{W}{2}}\Delta t)}(-R\cos{\theta_r}) + x_r-R\sin{\theta_r} \\
-  x_r &\leftarrow R\cos{(\dfrac{v_l}{R-\frac{W}{2}}\Delta t)}\sin{\theta_r}-R\sin{(\dfrac{v_l}{R-\frac{W}{2}}\Delta t)}\cos{\theta_r} + x_r-R\sin{\theta_r} \\
-  x_r &\leftarrow x_r+R\cos{(\dfrac{v_l}{R-\frac{W}{2}}\Delta t)}\sin{\theta_r}-R\sin{(\dfrac{v_l}{R-\frac{W}{2}}\Delta t)}\cos{\theta_r}-R\sin{\theta_r} \\
-  x_r &\leftarrow x_r+R\Big(\cos{(\dfrac{v_l}{R-\frac{W}{2}}\Delta t)}\sin{\theta_r}-\sin{(\dfrac{v_l}{R-\frac{W}{2}}\Delta t)}\cos{\theta_r}\Big)-R\sin{\theta_r} \\
-  \shortintertext{let $\dfrac{v_l}{R-\frac{W}{2}}=a$, and $\theta_r=b$, we can use $\cos{a}\sin{b}-\sin{a}\cos{b}=-\sin{(a-b)}$}
-  x_r &\leftarrow x_r+R\Bigg(-\sin{\Big(\dfrac{v_l}{R-\frac{W}{2}}\Delta t-\theta_r}\Big)\Bigg)-R\sin{\theta_r} \\
-  x_r &\leftarrow x_r+R\Bigg(-\sin{\Big(\dfrac{v_l}{R-\frac{W}{2}}\Delta t-\theta_r}\Big)-\sin{\theta_r}\Bigg) \\
-  x_r &\leftarrow x_r-R\Bigg(\sin{\Big(\dfrac{v_l}{R-\frac{W}{2}}\Delta t-\theta_r}\Big)+\sin{\theta_r}\Bigg) \\
+  x &\leftarrow \cos{(\dfrac{v_l}{R-\frac{W}{2}}\Delta t)}(x-x+R\sin{\theta})+\sin{(\dfrac{v_l}{R-\frac{W}{2}}\Delta t)}(y-y-R\cos{\theta}) + x-R\sin{\theta} \\
+  x &\leftarrow \cos{(\dfrac{v_l}{R-\frac{W}{2}}\Delta t)}(R\sin{\theta})+\sin{(\dfrac{v_l}{R-\frac{W}{2}}\Delta t)}(-R\cos{\theta}) + x-R\sin{\theta} \\
+  x &\leftarrow R\cos{(\dfrac{v_l}{R-\frac{W}{2}}\Delta t)}\sin{\theta}-R\sin{(\dfrac{v_l}{R-\frac{W}{2}}\Delta t)}\cos{\theta} + x-R\sin{\theta} \\
+  x &\leftarrow x+R\cos{(\dfrac{v_l}{R-\frac{W}{2}}\Delta t)}\sin{\theta}-R\sin{(\dfrac{v_l}{R-\frac{W}{2}}\Delta t)}\cos{\theta}-R\sin{\theta} \\
+  x &\leftarrow x+R\Big(\cos{(\dfrac{v_l}{R-\frac{W}{2}}\Delta t)}\sin{\theta}-\sin{(\dfrac{v_l}{R-\frac{W}{2}}\Delta t)}\cos{\theta}\Big)-R\sin{\theta} \\
+  \shortintertext{let $\dfrac{v_l}{R-\frac{W}{2}}=a$, and $\theta=b$, we can use $\cos{a}\sin{b}-\sin{a}\cos{b}=-\sin{(a-b)}$}
+  x &\leftarrow x+R\Bigg(-\sin{\Big(\dfrac{v_l}{R-\frac{W}{2}}\Delta t-\theta}\Big)\Bigg)-R\sin{\theta} \\
+  x &\leftarrow x+R\Bigg(-\sin{\Big(\dfrac{v_l}{R-\frac{W}{2}}\Delta t-\theta}\Big)-\sin{\theta}\Bigg) \\
+  x &\leftarrow x-R\Bigg(\sin{\Big(\dfrac{v_l}{R-\frac{W}{2}}\Delta t-\theta}\Big)+\sin{\theta}\Bigg) \\
   \shortintertext{sub in for $R$ in the denominator}
-  x_r &\leftarrow x_r-R\Bigg(\sin{\Big(\dfrac{v_l}{\frac{W(v_l+v_r)}{2(v_r-v_l)}-\frac{W}{2}}\Delta t-\theta_r}\Big)+\sin{\theta_r}\Bigg) \\
-  x_r &\leftarrow x_r-R\Bigg(\sin{\Big(\dfrac{v_l}{\frac{W(v_l+v_r)}{2(v_r-v_l)}-\frac{W(v_r-v_l)}{2(v_r-v_l)}}\Delta t-\theta_r\Big)}+\sin{\theta_r}\Bigg) \\
-  x_r &\leftarrow x_r-R\Bigg(\sin{\Big(\dfrac{v_l}{\frac{Wv_l+Wv_r-Wv_r+Wv_l)}{2(v_r-v_l)}}\Delta t-\theta_r\Big)}+\sin{\theta_r}\Bigg) \\
-  x_r &\leftarrow x_r-R\Bigg(\sin{\Big(\dfrac{v_l}{\frac{Wv_l}{(v_r-v_l)}}\Delta t-\theta_r\Big)}+\sin{\theta_r}\Bigg) \\
-  x_r &\leftarrow x_r-R\Bigg(\sin{\Big(\frac{v_r-v_l}{W}\Delta t-\theta_r\Big)}+\sin{\theta_r}\Bigg)
+  x &\leftarrow x-R\Bigg(\sin{\Big(\dfrac{v_l}{\frac{W(v_l+v_r)}{2(v_r-v_l)}-\frac{W}{2}}\Delta t-\theta}\Big)+\sin{\theta}\Bigg) \\
+  x &\leftarrow x-R\Bigg(\sin{\Big(\dfrac{v_l}{\frac{W(v_l+v_r)}{2(v_r-v_l)}-\frac{W(v_r-v_l)}{2(v_r-v_l)}}\Delta t-\theta\Big)}+\sin{\theta}\Bigg) \\
+  x &\leftarrow x-R\Bigg(\sin{\Big(\dfrac{v_l}{\frac{Wv_l+Wv_r-Wv_r+Wv_l)}{2(v_r-v_l)}}\Delta t-\theta\Big)}+\sin{\theta}\Bigg) \\
+  x &\leftarrow x-R\Bigg(\sin{\Big(\dfrac{v_l}{\frac{Wv_l}{(v_r-v_l)}}\Delta t-\theta\Big)}+\sin{\theta}\Bigg) \\
+  x &\leftarrow x-R\Bigg(\sin{\Big(\frac{v_r-v_l}{W}\Delta t-\theta\Big)}+\sin{\theta}\Bigg)
 \end{align}
 
-We can apply the same process for $y_r$.
+We can apply the same process for $y$.
 
 \begin{align}
-  x_l &\leftarrow x_l-R\Bigg(\cos{\Big(\frac{v_r-v_l}{W}\Delta t-\theta_r\Big)}-\cos{\theta_r}\Bigg)
+  y &\leftarrow y-R\Bigg(\cos{\Big(\frac{v_r-v_l}{W}\Delta t-\theta\Big)}-\cos{\theta}\Bigg)
 \end{align}
 
 \textbf{Final Solution to the forward Kinematics:}
 \begin{align}
- \theta_r &\leftarrow \theta_r + \dfrac{v_l}{R-\frac{W}{2}}\Delta t \\
-  x_r &\leftarrow x_r-R\Bigg(\sin{\Big(\frac{v_r-v_l}{W}\Delta t-\theta_r\Big)}+\sin{\theta_r}\Bigg) \\
-  x_l &\leftarrow x_l-R\Bigg(\cos{\Big(\frac{v_r-v_l}{W}\Delta t-\theta_r\Big)}-\cos{\theta_r}\Bigg)
+ \theta &\leftarrow \theta + \dfrac{v_l}{R-\frac{W}{2}}\Delta t \\
+  x &\leftarrow x-R\Bigg(\sin{\Big(\frac{v_r-v_l}{W}\Delta t-\theta\Big)}+\sin{\theta}\Bigg) \\
+  y &\leftarrow y-R\Bigg(\cos{\Big(\frac{v_r-v_l}{W}\Delta t-\theta\Big)}-\cos{\theta}\Bigg)
 \end{align}
 
+However, there is also the case where the robot is going perfectly straight. This has to be handled seperately, because otherwise the equations above involve $R$, but $R=\infty$ if we're going straight. Luckily, the equations for moving straight are trivial:
+\begin{align}
+ \theta &\leftarrow \theta \\
+  x &\leftarrow x + v\Delta t\cos(theta) \\
+  y &\leftarrow y + v\Delta t\sin(theta) \\
+\end{align}
+
+Here, v can be $v_l$, or $v_r$ since they should be the same. In code, a simple average is used.
 
 \end{document}
 
