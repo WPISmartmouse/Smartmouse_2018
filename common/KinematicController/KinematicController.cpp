@@ -77,6 +77,7 @@ void KinematicController::reset_yaw_to(double new_yaw) {
   current_pose_estimate.yaw = new_yaw;
 }
 
+int asdf = 0;
 std::pair<double, double>
 KinematicController::run(double dt_s, double left_angle_rad, double right_angle_rad, double ground_truth_left_vel_rps,
                          double ground_truth_right_vel_rps, RangeData range_data) {

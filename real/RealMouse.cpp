@@ -100,7 +100,6 @@ std::pair<double, double> RealMouse::getWheelVelocities() {
   return kinematic_controller.getWheelVelocities();
 };
 
-int asdf = 0;
 void RealMouse::run(double dt_s) {
   double abstract_left_force, abstract_right_force;
   left_angle_rad = tick_to_rad(left_encoder.read());
@@ -168,7 +167,7 @@ void RealMouse::setup() {
   left_encoder.init(ENCODER_LEFT_A, ENCODER_LEFT_B);
   right_encoder.init(ENCODER_RIGHT_A, ENCODER_RIGHT_B);
 
-  kinematic_controller.setAccelerationMpss(2);
+  kinematic_controller.setAccelerationMpss(1);
 
   resetToStartPose();
 
