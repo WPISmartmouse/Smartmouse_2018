@@ -95,6 +95,93 @@ smartmouse::msgs::RobotSimState Server::Step() {
   return sim_state_msg;
 }
 
+smartmouse::msgs::RobotSimState Server::UpdateInternalState(double dt) {
+  // use the cmd abstract forces, apply our dynamics model, update internal state
+  double x = internal_state_.p().x();
+  double y = internal_state_.p().y();
+  double theta = internal_state_.p().theta();
+  double vx = internal_state_.v().x();
+  double vy = internal_state_.v().y();
+  double w = internal_state_.v().theta();
+  double tl = internal_state_.left_wheel().theta();
+  double wl = internal_state_.left_wheel().omega();
+  double al = internal_state_.left_wheel().alpha();
+  double tr = internal_state_.right_wheel().theta();
+  double wr = internal_state_.right_wheel().omega();
+  double ar = internal_state_.right_wheel().alpha();
+
+  double vl = wl * (M_2_PI * Mouse::WHEEL_RAD);
+  double vr = wr * (M_2_PI * Mouse::WHEEL_RAD);
+
+  // newtons equations of rotational motion to update wheel states
+  double new_tl = tl + wl * dt + 1/2 * al * dt * dt;
+  double new_tr = tr + wr * dt + 1/2 * ar * dt * dt;
+  double new_wl = wl + al * dt;
+  double new_wr = wr + ar * dt;
+  // TODO: model the speed of the motor given the input force
+  double new_al = al + cmd_.left().abstract_force();
+  double new_ar = ar + cmd_.right().abstract_force();
+
+  // forward kinematics for differential drive robot
+  double R;
+  double w_about_icc;
+  double dtheta_about_icc;
+  double new_x, new_y;
+
+  // if we're going perfectly straight R is infinity, so check first.
+  // update the x & y coordinates
+  if (std::abs(vl-vr) > 1e-5) {
+    R = config.TRACK_WIDTH * (vr + vl) / (2 *(vr - vl)); // eq 12
+    w_about_icc = vl/(R-config.TRACK_WIDTH/2); //eq 11
+    dtheta_about_icc = w_about_icc * dt; //eq 11
+    new_x = x - R*(sin((vl-vr)/config.TRACK_WIDTH*dt-theta)+sin(theta)); //eq 28
+    new_y = y - R*(cos((vl-vr)/config.TRACK_WIDTH*dt-theta)-cos(theta)); //eq 29
+  }
+  else {
+    // going perfectly straight
+    dtheta_about_icc = 0; //eq 11
+    double v = (vl + vr) / 2;
+    new_x = x + v * cos(theta) * dt;
+    new_y = y + v * sin(theta) * dt;
+  }
+
+  double new_vx = (new_x - x) / dt;
+  double new_vy = (new_y - y) / dt;
+  double new_ax = (new_vx - vx) / dt;
+  double new_ay = (new_vy - vy) / dt;
+
+  // update theta, omega, and alpha
+  double new_theta = theta + dtheta_about_icc; //eq 27
+  double new_w = (new_theta - theta) / dt;
+  double new_a = (new_w - w) / dt;
+
+  internal_state_.mutable_p()->set_x(new_x);
+  internal_state_.mutable_p()->set_y(new_y);
+  internal_state_.mutable_p()->set_theta(new_theta);
+  internal_state_.mutable_v()->set_x(new_vx);
+  internal_state_.mutable_v()->set_y(new_vy);
+  internal_state_.mutable_v()->set_theta(new_w);
+  internal_state_.mutable_a()->set_x(new_ax);
+  internal_state_.mutable_a()->set_y(new_ay);
+  internal_state_.mutable_a()->set_theta(new_a);
+  internal_state_.mutable_left_wheel()->set_theta(new_tl);
+  internal_state_.mutable_left_wheel()->set_omega(new_wl);
+  internal_state_.mutable_left_wheel()->set_alpha(new_al);
+  internal_state_.mutable_right_wheel()->set_theta(new_tr);
+  internal_state_.mutable_right_wheel()->set_omega(new_wr);
+  internal_state_.mutable_right_wheel()->set_alpha(new_ar);
+
+  smartmouse::msgs::RobotSimState sim_state_msg;
+  auto stamp = sim_state_msg.mutable_stamp();
+  stamp->set_sec(sim_time_.sec);
+  stamp->set_nsec(sim_time_.nsec);
+  sim_state_msg.set_true_x_meters(internal_state_.p().x());
+  sim_state_msg.set_true_y_meters(internal_state_.p().y());
+  sim_state_msg.set_true_yaw_rad(internal_state_.p().theta());
+
+  return sim_state_msg;
+}
+
 void Server::ResetTime() {
   sim_time_ = Time::Zero;
   steps_ = 0UL;
@@ -158,89 +245,4 @@ void Server::OnRobotCommand(const smartmouse::msgs::RobotCommand &msg) {
 
 void Server::join() {
   thread_->join();
-}
-
-smartmouse::msgs::RobotSimState Server::UpdateInternalState(double dt) {
-  // use the cmd abstract forces, apply our dynamics model, update internal state
-  double x = internal_state_.p().x();
-  double y = internal_state_.p().y();
-  double theta = internal_state_.p().theta();
-  double vx = internal_state_.v().x();
-  double vy = internal_state_.v().y();
-  double w = internal_state_.v().theta();
-  double ax = internal_state_.a().x();
-  double ay = internal_state_.a().y();
-  double a = internal_state_.a().theta();
-  double tl = internal_state_.left_wheel().theta();
-  double wl = internal_state_.left_wheel().omega();
-  double al = internal_state_.left_wheel().alpha();
-  double tr = internal_state_.right_wheel().theta();
-  double wr = internal_state_.right_wheel().omega();
-  double ar = internal_state_.right_wheel().alpha();
-
-  double vl = wl * (M_2_PI * Mouse::WHEEL_RAD);
-  double vr = wr * (M_2_PI * Mouse::WHEEL_RAD);
-
-  // newtons equations of rotational motion to update wheel states
-  double new_tl = tl + wl * dt + 1/2 * al * dt * dt;
-  double new_tr = tr + wr * dt + 1/2 * ar * dt * dt;
-  double new_wl = wl + al * dt;
-  double new_wr = wr + ar * dt;
-  double new_al = al + cmd_.left().abstract_force();
-  double new_ar = ar + cmd_.right().abstract_force();
-
-  // forward kinematics for differential drive robot
-  double R;
-  double w_about_icc;
-  double dtheta_about_icc;
-  double new_x, new_y;
-
-  // if we're going perfectly straight R is infinity, so check first.
-  // update the x & y coordinates
-  if (std::abs(vl-vr) < 1e-5) {
-    R = config.TRACK_WIDTH * (vr + vl) / (2 *(vr - vl)); // eq 12
-    w_about_icc = vl/(R-config.TRACK_WIDTH/2); //eq 11
-    dtheta_about_icc = w_about_icc * dt; //eq 11
-    new_x = x + 0;
-    new_y = y + 0;
-  }
-  else {
-    double v = (vl + vr) / 2;
-  }
-
-  double new_vx = (new_x - x) / dt;
-  double new_vy = (new_y - y) / dt;
-  double new_ax = (new_vx - vx) / dt;
-  double new_ay = (new_vy - vy) / dt;
-
-  // update theta, omega, and alpha
-  double new_theta = theta + dtheta_about_icc;
-  double new_w = (new_theta - theta) / dt;
-  double new_a = (new_w - w) / dt;
-
-  internal_state_.mutable_p()->set_x(new_x);
-  internal_state_.mutable_p()->set_y(new_y);
-  internal_state_.mutable_p()->set_theta(new_theta);
-  internal_state_.mutable_v()->set_x(new_vx);
-  internal_state_.mutable_v()->set_y(new_vy);
-  internal_state_.mutable_v()->set_theta(new_w);
-  internal_state_.mutable_a()->set_x(new_ax);
-  internal_state_.mutable_a()->set_y(new_ay);
-  internal_state_.mutable_a()->set_theta(new_a);
-  internal_state_.mutable_left_wheel()->set_theta(new_tl);
-  internal_state_.mutable_left_wheel()->set_omega(new_wl);
-  internal_state_.mutable_left_wheel()->set_alpha(new_al);
-  internal_state_.mutable_right_wheel()->set_theta(new_tr);
-  internal_state_.mutable_right_wheel()->set_omega(new_wr);
-  internal_state_.mutable_right_wheel()->set_alpha(new_ar);
-
-  smartmouse::msgs::RobotSimState sim_state_msg;
-  auto stamp = sim_state_msg.mutable_stamp();
-  stamp->set_sec(sim_time_.sec);
-  stamp->set_nsec(sim_time_.nsec);
-  sim_state_msg.set_true_x_meters(internal_state_.p().x());
-  sim_state_msg.set_true_y_meters(internal_state_.p().y());
-  sim_state_msg.set_true_yaw_rad(internal_state_.p().theta());
-
-  return sim_state_msg;
 }

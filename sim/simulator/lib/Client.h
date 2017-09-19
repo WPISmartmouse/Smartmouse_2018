@@ -44,6 +44,9 @@ class Client : public QMainWindow {
   void RealTimeFactorChanged(double real_time_factor);
   void StepCountChanged(int step_time_ms);
   void TimePerStepMsChanged(int step_time_ms);
+  void LeftForceChanged(double f);
+  void RightForceChanged(double f);
+  void SendRobotCmd();
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "NotImplementedFunctions"
@@ -64,10 +67,13 @@ class Client : public QMainWindow {
   void OnPhysics(const smartmouse::msgs::PhysicsConfig &msg);
 
   unsigned int step_count_ = 1u;
+  double left_f_;
+  double right_f_;
   ignition::transport::Node node_;
   ignition::transport::Node::Publisher maze_pub_;
   ignition::transport::Node::Publisher physics_pub_;
   ignition::transport::Node::Publisher server_control_pub_;
+  ignition::transport::Node::Publisher robot_command_pub_;
   ignition::transport::Node::Publisher robot_description_pub_;
   MazeWidget *maze_widget_;
   QSettings *settings_;

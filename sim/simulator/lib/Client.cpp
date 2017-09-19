@@ -8,18 +8,18 @@
 #include <sim/simulator/lib/Client.h>
 #include <sim/simulator/lib/TopicNames.h>
 #include <sim/simulator/msgs/msgs.h>
-#include <QtCore/QThread>
 
 #include "ui_mainwindow.h"
 
 Client::Client(QMainWindow *parent) :
-    QMainWindow(parent), ui_(new Ui::MainWindow) {
+    QMainWindow(parent), left_f_(0), right_f_(0), ui_(new Ui::MainWindow) {
   ui_->setupUi(this);
 
   server_control_pub_ = node_.Advertise<smartmouse::msgs::ServerControl>(TopicNames::kServerControl);
   physics_pub_ = node_.Advertise<smartmouse::msgs::PhysicsConfig>(TopicNames::kPhysics);
   maze_pub_ = node_.Advertise<smartmouse::msgs::Maze>(TopicNames::kMaze);
   robot_description_pub_ = node_.Advertise<smartmouse::msgs::RobotDescription>(TopicNames::kRobotDescription);
+  robot_command_pub_ = node_.Advertise<smartmouse::msgs::RobotCommand>(TopicNames::kRobotCommand);
   node_.Subscribe(TopicNames::kWorldStatistics, &Client::OnWorldStats, this);
   node_.Subscribe(TopicNames::kGuiActions, &Client::OnGuiActions, this);
   node_.Subscribe(TopicNames::kPhysics, &Client::OnPhysics, this);
@@ -231,6 +231,15 @@ void Client::ConfigureGui() {
           &Client::TimePerStepMsChanged);
   QObject::connect(this, &Client::SetRealTime, ui_->real_time_value_label, &QLabel::setText);
   QObject::connect(this, &Client::SetTime, ui_->time_value_label, &QLabel::setText);
+  connect(ui_->left_f_spinbox,
+          static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
+          this,
+          &Client::LeftForceChanged);
+  connect(ui_->right_f_spinbox,
+          static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
+          this,
+          &Client::RightForceChanged);
+  connect(ui_->send_command_button, &QPushButton::clicked, this, &Client::SendRobotCmd);
 
   QFile styleFile(":/style.qss");
   styleFile.open(QFile::ReadOnly);
@@ -269,4 +278,21 @@ void Client::RestoreSettings() {
   mouse_files_dir_ = settings_->value("gui/mouse_files_directory").toString();
   default_mouse_file_name_ = settings_->value("gui/default_mouse_file_name").toString();
   LoadDefaultMouse();
+}
+
+void Client::LeftForceChanged(double f) {
+  left_f_ = f;
+}
+
+void Client::RightForceChanged(double f) {
+  right_f_ = f;
+}
+
+void Client::SendRobotCmd() {
+  smartmouse::msgs::RobotCommand cmd;
+  auto left = cmd.mutable_left();
+  auto right = cmd.mutable_right();
+  left->set_abstract_force(left_f_);
+  right->set_abstract_force(right_f_);
+  robot_command_pub_.Publish(cmd);
 }
