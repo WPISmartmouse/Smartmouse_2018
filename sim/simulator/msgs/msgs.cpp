@@ -88,6 +88,10 @@ RobotDescription Convert(std::ifstream &fs) {
     pt->set_y(json_pt["y"]);
   }
 
+  robot_description.set_inertia(json["inertia"]);
+  robot_description.set_u_static(json["u_static"]);
+  robot_description.set_u_kinetic(json["u_kinetic"]);
+
   auto left_wheel = robot_description.mutable_left_wheel();
   auto left_wheel_pose = left_wheel->mutable_pose();
   left_wheel_pose->set_x(json["left_wheel"]["pose"]["x"]);
