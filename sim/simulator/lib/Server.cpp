@@ -128,8 +128,11 @@ smartmouse::msgs::RobotSimState Server::UpdateInternalState(double dt) {
   double new_al = al;
   double new_ar = ar;
   if (cmd_.left().abstract_force() > u_s) {
-    new_al = al + cmd_.left().abstract_force() - J*al;
-    new_ar = ar + cmd_.right().abstract_force() - J*ar;
+    if (J < 1e-3) {
+      std::cerr << "Intertia too low. This won't be numerically stable." << std::endl;
+    }
+    new_al = cmd_.left().abstract_force() / J;
+    new_ar = cmd_.right().abstract_force() / J;
   }
 
   // forward kinematics for differential drive robot
@@ -190,6 +193,7 @@ smartmouse::msgs::RobotSimState Server::UpdateInternalState(double dt) {
   sim_state_msg.set_true_yaw_rad(internal_state_.p().theta());
   sim_state_msg.set_left_wheel_velocity_mps(Mouse::radToMeters(internal_state_.left_wheel().omega()));
   sim_state_msg.set_right_wheel_velocity_mps(Mouse::radToMeters(internal_state_.right_wheel().omega()));
+  sim_state_msg.set_allocated_stamp(stamp);
 
   return sim_state_msg;
 }

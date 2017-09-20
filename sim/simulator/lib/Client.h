@@ -44,8 +44,8 @@ class Client : public QMainWindow {
   void RealTimeFactorChanged(double real_time_factor);
   void StepCountChanged(int step_time_ms);
   void TimePerStepMsChanged(int step_time_ms);
-  void LeftForceChanged(double f);
-  void RightForceChanged(double f);
+  void LeftForceChanged(int f);
+  void RightForceChanged(int f);
   void SendRobotCmd();
 
 #pragma clang diagnostic push
@@ -67,8 +67,8 @@ class Client : public QMainWindow {
   void OnPhysics(const smartmouse::msgs::PhysicsConfig &msg);
 
   unsigned int step_count_ = 1u;
-  double left_f_;
-  double right_f_;
+  int left_f_;
+  int right_f_;
   ignition::transport::Node node_;
   ignition::transport::Node::Publisher maze_pub_;
   ignition::transport::Node::Publisher physics_pub_;

@@ -48,9 +48,9 @@
 		"y": 0.0,
 		"z": 0.01
 	},
-  "inertia": 0.0,
-  "u_static": 1.0,
-  "u_kinetic": 1.0,
+  "inertia": 0.005,
+  "u_static": 0.0,
+  "u_kinetic": 2.0,
 	"range_sensors": []
 }
 

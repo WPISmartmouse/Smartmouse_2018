@@ -4,6 +4,8 @@
 #include <QLineEdit>
 #include <QTextEdit>
 #include <QScrollArea>
+#include <QtCharts/QChart>
+#include <QtCharts/QChartView>
 #include <ignition/transport/Node.hh>
 #include <QtWidgets/QLabel>
 
@@ -103,8 +105,8 @@ class StateWidget : public AbstractTab {
   ignition::transport::Node::Publisher stop_pub;
   ignition::transport::Node::Publisher reset_trace_pub;
 
-  QScrollArea *scroll_area;
-
+  QtCharts::QChartView *chartView;
+  QtCharts::QChart *chart;
   QLabel *left_wheel_velocity_label;
   QLabel *right_wheel_velocity_label;
   QLabel *col_label;

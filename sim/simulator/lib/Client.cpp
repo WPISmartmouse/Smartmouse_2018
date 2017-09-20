@@ -234,11 +234,11 @@ void Client::ConfigureGui() {
   QObject::connect(this, &Client::SetRealTime, ui_->real_time_value_label, &QLabel::setText);
   QObject::connect(this, &Client::SetTime, ui_->time_value_label, &QLabel::setText);
   connect(ui_->left_f_spinbox,
-          static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
+          static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
           this,
           &Client::LeftForceChanged);
   connect(ui_->right_f_spinbox,
-          static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
+          static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
           this,
           &Client::RightForceChanged);
   connect(ui_->send_command_button, &QPushButton::clicked, this, &Client::SendRobotCmd);
@@ -282,11 +282,11 @@ void Client::RestoreSettings() {
   LoadDefaultMouse();
 }
 
-void Client::LeftForceChanged(double f) {
+void Client::LeftForceChanged(int f) {
   left_f_ = f;
 }
 
-void Client::RightForceChanged(double f) {
+void Client::RightForceChanged(int f) {
   right_f_ = f;
 }
 
