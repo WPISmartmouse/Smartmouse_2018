@@ -1,5 +1,6 @@
 #pragma once
 
+#include <sim/simulator/lib/widgets/AbstractTab.h>
 #include <QtWidgets>
 #include <QtGui/QPaintEvent>
 #include <sim/simulator/msgs/robot_ui_state.pb.h>
@@ -8,7 +9,7 @@
 #include <msgs/robot_description.pb.h>
 #include <msgs/robot_sim_state.pb.h>
 
-class MazeWidget : public QWidget {
+class MazeWidget : public AbstractTab {
  Q_OBJECT
 
  public:
@@ -20,7 +21,7 @@ class MazeWidget : public QWidget {
 
   void paintEvent(QPaintEvent *event);
 
-  const QString getTabName();
+  const QString getTabName() override;
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "NotImplementedFunctions"

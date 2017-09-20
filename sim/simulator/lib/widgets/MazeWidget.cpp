@@ -11,7 +11,7 @@ const int MazeWidget::kPaddingPx = 24;
 const QBrush MazeWidget::kRobotBrush = QBrush(QColor("#F57C00"));
 QBrush MazeWidget::kWallBrush = QBrush(Qt::red);
 
-MazeWidget::MazeWidget() : QWidget() {
+MazeWidget::MazeWidget() : AbstractTab() {
   setSizePolicy(QSizePolicy::Policy::MinimumExpanding, QSizePolicy::Policy::MinimumExpanding);
   node_.Subscribe(TopicNames::kMaze, &MazeWidget::OnMaze, this);
   node_.Subscribe(TopicNames::kRobotDescription, &MazeWidget::OnRobotDescription, this);

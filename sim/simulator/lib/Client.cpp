@@ -201,6 +201,8 @@ void Client::LoadDefaultMaze() {
 void Client::ConfigureGui() {
   maze_widget_ = new MazeWidget();
   ui_->gui_tabs->addTab(maze_widget_, maze_widget_->getTabName());
+  state_widget_ = new StateWidget();
+  ui_->info_tabs->addTab(state_widget_, state_widget_->getTabName());
   ui_->main_tab->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Expanding);
   ui_->main_tab->setMaximumWidth(300);
 

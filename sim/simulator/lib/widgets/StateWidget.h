@@ -6,8 +6,10 @@
 #include <QScrollArea>
 #include <ignition/transport/Node.hh>
 #include <QtWidgets/QLabel>
-#include <msgs/maze_location.pb.h>
-#include <msgs/robot_sim_state.pb.h>
+
+#include <sim/simulator/msgs/maze_location.pb.h>
+#include <sim/simulator/msgs/robot_sim_state.pb.h>
+#include <sim/simulator/lib/widgets/AbstractTab.h>
 
 class SensorState : public QWidget {
  Q_OBJECT
@@ -24,11 +26,13 @@ class SensorState : public QWidget {
 
 };
 
-class StateWidget : public QWidget {
+class StateWidget : public AbstractTab {
  Q_OBJECT
 
  public:
   StateWidget();
+
+  const QString getTabName() override;
 
   static constexpr int HEIGHT = 170;
   static constexpr int MAZE_S = HEIGHT - 2;

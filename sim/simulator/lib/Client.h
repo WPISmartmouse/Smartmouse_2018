@@ -76,6 +76,7 @@ class Client : public QMainWindow {
   ignition::transport::Node::Publisher robot_command_pub_;
   ignition::transport::Node::Publisher robot_description_pub_;
   MazeWidget *maze_widget_;
+  StateWidget *state_widget_;
   QSettings *settings_;
   QString maze_files_dir_;
   QString mouse_files_dir_;

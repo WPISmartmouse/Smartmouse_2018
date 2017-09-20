@@ -188,6 +188,8 @@ smartmouse::msgs::RobotSimState Server::UpdateInternalState(double dt) {
   sim_state_msg.set_true_x_meters(internal_state_.p().x());
   sim_state_msg.set_true_y_meters(internal_state_.p().y());
   sim_state_msg.set_true_yaw_rad(internal_state_.p().theta());
+  sim_state_msg.set_left_wheel_velocity_mps(Mouse::radToMeters(internal_state_.left_wheel().omega()));
+  sim_state_msg.set_right_wheel_velocity_mps(Mouse::radToMeters(internal_state_.right_wheel().omega()));
 
   return sim_state_msg;
 }

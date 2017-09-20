@@ -9,14 +9,9 @@
 #include <QtWidgets/QPushButton>
 #include <common/math/math.h>
 
-StateWidget::StateWidget() : QWidget() {
+StateWidget::StateWidget() : AbstractTab() {
   this->node.Subscribe(TopicNames::kRobotSimState, &StateWidget::StateCallback, this);
   this->node.Subscribe(TopicNames::kMazeLocation, &StateWidget::MazeLocationCallback, this);
-  this->node.Subscribe("~/mouse/base/front_left/scan", &StateWidget::FrontLeftAnalogCallback, this);
-  this->node.Subscribe("~/mouse/base/front_right/scan", &StateWidget::FrontRightAnalogCallback, this);
-  this->node.Subscribe("~/mouse/base/back_left/scan", &StateWidget::BackLeftAnalogCallback, this);
-  this->node.Subscribe("~/mouse/base/back_right/scan", &StateWidget::BackRightAnalogCallback, this);
-  this->node.Subscribe("~/mouse/base/front/scan", &StateWidget::FrontAnalogCallback, this);
   this->node.Subscribe(TopicNames::kWorldStatistics, &StateWidget::OnStats, this);
 
   this->reset_trace_pub = this->node.Advertise<ignition::msgs::Empty>("/delete_plot");
@@ -28,15 +23,7 @@ StateWidget::StateWidget() : QWidget() {
 
   QHBoxLayout *main_layout = new QHBoxLayout();
 
-  scroll_area = new QScrollArea(this);
-  scroll_area->setLineWidth(1);
-  scroll_area->setFrameShape(QFrame::NoFrame);
-  scroll_area->setFrameShadow(QFrame::Plain);
-  scroll_area->setWidgetResizable(true);
-  scroll_area->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
-  scroll_area->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-
-  QFrame *frame = new QFrame(scroll_area);
+  QFrame *frame = new QFrame();
   frame->setFrameShape(QFrame::NoFrame);
 
   QVBoxLayout *sensor_layout = new QVBoxLayout();
@@ -50,8 +37,6 @@ StateWidget::StateWidget() : QWidget() {
   QHBoxLayout *yaw_layout = new QHBoxLayout();
   QHBoxLayout *buttons_layout = new QHBoxLayout();
 
-  scroll_area->setWidget(frame);
-
   left_wheel_velocity_label = new QLabel(tr("left wheel velocity:"));
   right_wheel_velocity_label = new QLabel(tr("right wheel velocity:"));
   row_label = new QLabel(tr("row:"));
@@ -64,33 +49,23 @@ StateWidget::StateWidget() : QWidget() {
   estimated_yaw_label = new QLabel(tr("estimated yaw:"));
 
   left_wheel_velocity_edit = new QLineEdit(tr("0.00000 m/sec"));
-  left_wheel_velocity_edit->setStyleSheet("QLineEdit {color:black;}");
   right_wheel_velocity_edit = new QLineEdit(tr("0.00000 m/sec"));
-  right_wheel_velocity_edit->setStyleSheet("QLineEdit {color:black;}");
   row_edit = new QLineEdit(tr("0"));
-  row_edit->setStyleSheet("QLineEdit {color:black;}");
   col_edit = new QLineEdit(tr("0"));
-  col_edit->setStyleSheet("QLineEdit {color:black;}");
   true_x_edit = new QLineEdit(tr("0"));
-  true_x_edit->setStyleSheet("QLineEdit {color:black;}");
+  true_x_edit->setReadOnly(true);
   true_y_edit = new QLineEdit(tr("0"));
-  true_y_edit->setStyleSheet("QLineEdit {color:black;}");
+  true_y_edit->setReadOnly(true);
   true_yaw_edit = new QLineEdit(tr("0"));
-  true_yaw_edit->setStyleSheet("QLineEdit {color:black;}");
   estimated_x_edit = new QLineEdit(tr("0"));
-  estimated_x_edit->setStyleSheet("QLineEdit {color:black;}");
   estimated_y_edit = new QLineEdit(tr("0"));
-  estimated_y_edit->setStyleSheet("QLineEdit {color:black;}");
   estimated_yaw_edit = new QLineEdit(tr("0"));
-  estimated_yaw_edit->setStyleSheet("QLineEdit {color:black;}");
 
   dir_label = new QLabel(tr("Direction:"));
   dir_edit = new QLineEdit(tr("N"));
-  dir_edit->setStyleSheet("QLineEdit {color:black;}");
 
   maze_edit = new QTextEdit(tr(""));
   maze_edit->setFont(QFont("Monospace", 6));
-  maze_edit->setStyleSheet("QLineEdit {color:black;}");
 
   sensor_state = new SensorState();
 
@@ -171,11 +146,6 @@ StateWidget::StateWidget() : QWidget() {
   main_layout->addWidget(maze_edit);
   frame->setLayout(main_layout);
   frame->setContentsMargins(0, 0, 0, 0);
-
-  QPalette pal = palette();
-  pal.setColor(QPalette::Background, Qt::darkGray);
-  this->setAutoFillBackground(true);
-  this->setPalette(pal);
 
   main_layout->setContentsMargins(2, 2, 2, 2);
   this->setLayout(main_layout);
@@ -380,6 +350,10 @@ void SensorState::paintEvent(QPaintEvent * event) {
   char br_str[8];
   snprintf(br_str, 8, "%0.2f cm", backLeftWall * 100);
   painter.drawText(55, 140, br_str);
+}
+
+const QString StateWidget::getTabName() {
+  return QString("State Widget");
 }
 
 void StateWidget::OnStats(const ignition::msgs::WorldStatistics &msg) {
