@@ -7,12 +7,12 @@
 
 # ## Going Straight
 
-# In[1]:
+# In[2]:
 
 get_ipython().magic('load_ext tikzmagic')
 
 
-# In[2]:
+# In[3]:
 
 get_ipython().run_cell_magic('tikz', '-s 400,400', '\\draw[->] (0,0) -- (10,0);\n\\draw[->] (0,0) -- (0,5);\n\n\\draw[line width=1] (0,0.5) -- (2.5,3);\n\\draw[line width=1] (2.5,3) -- (5.5,3);\n\\draw[line width=1] (5.5,3) -- (8,0.5);\n\\draw[dashed] (0,0.5) -- (10,0.5);\n\\draw[dashed] (0,3) -- (10,3);\n\\draw[dashed] (2.5,0) -- (2.5,5);\n\\draw[dashed] (5.5,0) -- (5.5,5);\n\\draw[dashed] (8,0) -- (8,5);\n\n\\draw (-0.5, 0.5) node {$V_{f}$};\n\\draw (-0.5, 3) node {$V_{max}$};\n\\draw (2.5, -0.5) node {$t_b$};\n\\draw (5.5, -0.5) node {$t_f-t_b$};\n\\draw (8, -0.5) node {$t_f$};')
 
@@ -32,7 +32,7 @@ get_ipython().run_cell_magic('tikz', '-s 400,400', '\\draw[->] (0,0) -- (10,0);\
 
 # ## Code that proves it
 
-# In[10]:
+# In[4]:
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -132,7 +132,7 @@ plt.show()
 # 
 # It can be shown that the matrix on the left is invertable, so long as $t_f-t_0 > 0$. So we can invert and solve this equation and get all the $a$ coefficients. We can then use this polynomial to generate the $q(t)$ and $\dot{q}(t)$ -- our trajectory.
 
-# In[20]:
+# In[5]:
 
 # Example: you are a point in space (one dimension) go from rest at the origin to at rest at (0.18, 0, 0) in 1 second
 import numpy as np
@@ -152,7 +152,7 @@ print(coeff)
 
 # Here you can see that the resulting coeffictions are $a_0=0$, $a_1=0$, $a_2=0.54$, $a_0=-0.36$. Intuitively, this says that we're going to have positive acceleration, but our acceleration is going to slow down over time. Let's graph it!
 
-# In[37]:
+# In[6]:
 
 import matplotlib.pyplot as plt
 dt = 0.01
@@ -170,11 +170,6 @@ plt.show()
 # Let's try another example, now with our full state space of $[x, y, \theta]$.
 
 # In[ ]:
-
-
-
-
-# In[74]:
 
 # In this example, we go from (0.18, 0.09, 0) to (0.27,0.18, -1.5707). Our starting and ending velocities are zero
 q_0 = np.array([0.09,0.09,0])
@@ -215,10 +210,25 @@ plt.ylabel("Y")
 plt.tight_layout()
 plt.show()
 
+# Gifs!
+from matplotlib.animation import FuncAnimation
+from IPython.display import HTML
+fig, ax = plt.subplots()
+
+x = np.arange(0, 20, 0.1)
+line, = ax.plot(x, x - 5, 'r-', linewidth=2)
+
+def update(i):
+    label = "t_" + str(i)
+    line.set_ydata(x - 5 + i)
+    ax.set_xlabel(label)
+    return line, ax
+
+plt.rc('text', usetex=False)
+anim = FuncAnimation(fig, update, frames=np.arange(0, 10), interval=100)
+gif_file = 'car.gif'
+anim.save(gif_file, dpi=80, writer='imagemagick')
+HTML("<img src={}/>".format(gif_file))
+
 
 # Well, they are smooth, but these are not possible to execute! The robot cannot simply translate sideways.
-
-# In[ ]:
-
-
-
