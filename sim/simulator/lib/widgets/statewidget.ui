@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>StateWidget</class>
+ <widget class="QWidget" name="StateWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>591</width>
+    <height>605</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_2">
+   <item>
+    <widget class="QGroupBox" name="stats_group">
+     <property name="title">
+      <string>GroupBox</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <layout class="QHBoxLayout" name="velocity_stats_layout">
+        <item>
+         <widget class="QLabel" name="velocity_label">
+          <property name="text">
+           <string>Wheel Velocities</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="left_velocity_edit"/>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="right_velocity_edit"/>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="maze_location_layout">
+        <item>
+         <widget class="QLabel" name="row_label">
+          <property name="text">
+           <string>Row</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="row_edit"/>
+        </item>
+        <item>
+         <widget class="QLabel" name="column_label">
+          <property name="text">
+           <string>Column</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="column_edit"/>
+        </item>
+        <item>
+         <widget class="QLabel" name="direction_label">
+          <property name="text">
+           <string>Direction</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="direction_edit"/>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="pose_layout">
+        <item>
+         <widget class="QGroupBox" name="true_pose_group">
+          <property name="title">
+           <string>Ground Truth Pose</string>
+          </property>
+          <layout class="QFormLayout" name="formLayout_2">
+           <item row="0" column="0">
+            <widget class="QLabel" name="true_x_label">
+             <property name="text">
+              <string>X</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLineEdit" name="true_x_edit"/>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="true_y_label">
+             <property name="text">
+              <string>Y</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLineEdit" name="true_y_edit"/>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="true_yaw_label">
+             <property name="text">
+              <string>Yaw</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QLineEdit" name="true_yaw_edit"/>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="estimate_pose_group">
+          <property name="title">
+           <string>Estimated Pose</string>
+          </property>
+          <layout class="QFormLayout" name="formLayout_6">
+           <item row="0" column="0">
+            <widget class="QLabel" name="estimated_x_label">
+             <property name="text">
+              <string>X</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLineEdit" name="estimated_x_edit"/>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="estimated_y_label">
+             <property name="text">
+              <string>Y</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLineEdit" name="estimated_y_edit"/>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="estimated_yaw_label">
+             <property name="text">
+              <string>Yaw</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QLineEdit" name="estimated_yaw_edit"/>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTabWidget" name="charts_tabs">
+     <widget class="QWidget" name="tab">
+      <attribute name="title">
+       <string>Tab 1</string>
+      </attribute>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

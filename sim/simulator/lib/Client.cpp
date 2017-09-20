@@ -283,11 +283,11 @@ void Client::RestoreSettings() {
 }
 
 void Client::LeftForceChanged(int f) {
-  left_f_ = f;
+  left_f_ = (uint32_t)f;
 }
 
 void Client::RightForceChanged(int f) {
-  right_f_ = f;
+  right_f_ = (uint32_t)f;
 }
 
 void Client::SendRobotCmd() {

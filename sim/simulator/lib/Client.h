@@ -67,8 +67,8 @@ class Client : public QMainWindow {
   void OnPhysics(const smartmouse::msgs::PhysicsConfig &msg);
 
   unsigned int step_count_ = 1u;
-  int left_f_;
-  int right_f_;
+  uint32_t left_f_;
+  uint32_t right_f_;
   ignition::transport::Node node_;
   ignition::transport::Node::Publisher maze_pub_;
   ignition::transport::Node::Publisher physics_pub_;
