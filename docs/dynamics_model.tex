@@ -157,7 +157,9 @@ However, there is also the case where the robot is going perfectly straight. Thi
   y &\leftarrow y + v\Delta t\sin(theta) \\
 \end{align}
 
-Here, v can be $v_l$, or $v_r$ since they should be the same. In code, a simple average is used.
+Here, $v$ can be $v_l$, or $v_r$ since they should be the same. In code, a simple average is used. \\
+
+We must also consider how to model the DC Motors. First, we model static friction by saying if the abstract force on the wheel (0-255) is less than a certain threshold that it will not move. Second, we subtract $\mu_k * \omega$ from wheel velocity since kinetic friction is proportional to wheel velocity. Lastly, we subtract $J * \alpha$ from wheel acceleration since inertia is proportional to acceleration. I know that last sentence didn't make much sense...
 
 \end{document}
 

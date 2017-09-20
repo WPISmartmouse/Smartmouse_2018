@@ -12,6 +12,7 @@
 #include <sim/simulator/msgs/maze.pb.h>
 #include <sim/simulator/msgs/robot_sim_state.pb.h>
 #include <sim/simulator/msgs/robot_command.pb.h>
+#include <msgs/robot_description.pb.h>
 
 class Server {
 
@@ -29,6 +30,7 @@ class Server {
   void OnPhysics(const smartmouse::msgs::PhysicsConfig &msg);
   void OnMaze(const smartmouse::msgs::Maze &msg);
   void OnRobotCommand(const smartmouse::msgs::RobotCommand &msg);
+  void OnRobotDescription(const smartmouse::msgs::RobotDescription &msg);
 
   ignition::transport::Node *node_ptr_;
   ignition::transport::Node::Publisher world_stats_pub_;
@@ -43,8 +45,10 @@ class Server {
   double real_time_factor_ = 1.0;
   smartmouse::msgs::Maze maze_;
   smartmouse::msgs::RobotCommand cmd_;
+  smartmouse::msgs::RobotDescription mouse_;
   void ResetTime();
 
   smartmouse::msgs::InternalPhysicsState internal_state_;
   smartmouse::msgs::RobotSimState UpdateInternalState(double dt);
+  void ResetRobot();
 };

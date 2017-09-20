@@ -18,6 +18,7 @@ void Server::RunLoop() {
   node_ptr_->Subscribe(TopicNames::kPhysics, &Server::OnPhysics, this);
   node_ptr_->Subscribe(TopicNames::kMaze, &Server::OnMaze, this);
   node_ptr_->Subscribe(TopicNames::kRobotCommand, &Server::OnRobotCommand, this);
+  node_ptr_->Subscribe(TopicNames::kRobotDescription, &Server::OnRobotDescription, this);
 
   while (true) {
     Time update_rate = Time(0, ns_of_sim_per_step_);
@@ -96,6 +97,10 @@ smartmouse::msgs::RobotSimState Server::Step() {
 }
 
 smartmouse::msgs::RobotSimState Server::UpdateInternalState(double dt) {
+  const double J = mouse_.inertia();
+  const double u_k = mouse_.u_kinetic();
+  const double u_s = mouse_.u_static();
+
   // use the cmd abstract forces, apply our dynamics model, update internal state
   double x = internal_state_.p().x();
   double y = internal_state_.p().y();
@@ -116,11 +121,16 @@ smartmouse::msgs::RobotSimState Server::UpdateInternalState(double dt) {
   // newtons equations of rotational motion to update wheel states
   double new_tl = tl + wl * dt + 1/2 * al * dt * dt;
   double new_tr = tr + wr * dt + 1/2 * ar * dt * dt;
-  double new_wl = wl + al * dt;
-  double new_wr = wr + ar * dt;
+  double new_wl = wl + al * dt - u_k * wl;
+  double new_wr = wr + ar * dt - u_k * wl;
+
   // TODO: model the speed of the motor given the input force
-  double new_al = al + cmd_.left().abstract_force();
-  double new_ar = ar + cmd_.right().abstract_force();
+  double new_al = al;
+  double new_ar = ar;
+  if (cmd_.left().abstract_force() > u_s) {
+    new_al = al + cmd_.left().abstract_force() - J*al;
+    new_ar = ar + cmd_.right().abstract_force() - J*ar;
+  }
 
   // forward kinematics for differential drive robot
   double R;
@@ -188,6 +198,26 @@ void Server::ResetTime() {
   pause_at_steps_ = 0ul;
 }
 
+void Server::ResetRobot() {
+  internal_state_.mutable_p()->set_x(0.09);
+  internal_state_.mutable_p()->set_y(0.09);
+  internal_state_.mutable_p()->set_theta(0);
+  internal_state_.mutable_v()->set_x(0);
+  internal_state_.mutable_v()->set_y(0);
+  internal_state_.mutable_v()->set_theta(0);
+  internal_state_.mutable_a()->set_x(0);
+  internal_state_.mutable_a()->set_y(0);
+  internal_state_.mutable_a()->set_theta(0);
+  internal_state_.mutable_left_wheel()->set_theta(0);
+  internal_state_.mutable_left_wheel()->set_omega(0);
+  internal_state_.mutable_left_wheel()->set_alpha(0);
+  internal_state_.mutable_right_wheel()->set_theta(0);
+  internal_state_.mutable_right_wheel()->set_omega(0);
+  internal_state_.mutable_right_wheel()->set_alpha(0);
+  cmd_.mutable_left()->set_abstract_force(0);
+  cmd_.mutable_right()->set_abstract_force(0);
+}
+
 void Server::OnServerControl(const smartmouse::msgs::ServerControl &msg) {
   // Enter critical section
   {
@@ -204,6 +234,9 @@ void Server::OnServerControl(const smartmouse::msgs::ServerControl &msg) {
     }
     if (msg.has_reset_time()) {
       ResetTime();
+    }
+    if (msg.has_reset_robot()) {
+      ResetRobot();
     }
   }
   // End critical section
@@ -239,6 +272,15 @@ void Server::OnRobotCommand(const smartmouse::msgs::RobotCommand &msg) {
   {
     std::lock_guard<std::mutex> guard(physics_mutex_);
     cmd_ = msg;
+  }
+  // End critical section
+}
+
+void Server::OnRobotDescription(const smartmouse::msgs::RobotDescription &msg) {
+  // Enter critical section
+  {
+    std::lock_guard<std::mutex> guard(physics_mutex_);
+    mouse_ = msg;
   }
   // End critical section
 }
