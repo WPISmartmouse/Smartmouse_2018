@@ -1,10 +1,12 @@
+cmake_policy(SET CMP0071 OLD)
+
 find_package(Qt5 REQUIRED COMPONENTS Core Gui)
 find_package(Qt5Test REQUIRED)
 find_package(Protobuf REQUIRED)
 find_package(ignition-msgs0 QUIET REQUIRED)
 find_package(ignition-transport3 QUIET REQUIRED)
 
-set(PROTOBUF_IMPORT_DIRS ${IGNITION-MSGS_PROTO_PATH})
+set(PROTOBUF_IMPORT_DIRS ${IGNITION-MSGS_PROTO_PATH} "/usr/include/")
 
 add_definitions(${QT_DEFINITIONS})
 include_directories(${PROTOBUF_INCLUDE_DIRS} ${Qt5Test_INCLUDE_DIRS} ${IGNITION-TRANSPORT_INCLUDE_DIRS})

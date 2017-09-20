@@ -1,6 +1,6 @@
 # allow us to import from existing ignition msgs
 file(GLOB PROTOS *.proto)
-PROTOBUF_GENERATE_CPP(PROTO_SRC PROTO_HEADER ${PROTOS})
+PROTOBUF_GENERATE_CPP(PROTO_SRC PROTO_HEADER GENERATE_DESC ${PROTOS})
 
 # Variables needed to propagate through modules
 # If more than one layer of cmake use CACHE INTERNAL ...

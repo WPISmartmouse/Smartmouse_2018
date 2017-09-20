@@ -2,6 +2,8 @@ syntax = "proto2";
 
 package smartmouse.msgs;
 
+import "google/protobuf/descriptor.proto";
+
 message Direction {
     enum Dir {
         N = 0;
@@ -11,4 +13,5 @@ message Direction {
     }
 
     optional Dir direction = 1 [default = N];
+    optional google.protobuf.FileDescriptorSet descriptors = 2;
 }
