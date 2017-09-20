@@ -5,6 +5,8 @@
 # 
 # When the maze solver commands that the robot go forward, it can say that it must go forward one or more squares depending on what it knows about the maze. When we don't know what is after the square we pass through, we must be going slow enough to handle any scenario. In other words, there is some $V_f$ that we must reach by the end of our motion. We also begin motions at this speed, since between we arrived where we are we required that we reach $V_f$ to get there. Therefore, we start and end at $V_f$, and we want to cover some distance $d$ in the fast possible time. To do so, we accelerate at our fixed $a$ until we reach max speed, or until we need to start slowing down (whichever comes first). This gives us a trapezoid shaped velocity profile.
 
+# ## Going Straight
+
 # In[1]:
 
 get_ipython().magic('load_ext tikzmagic')
@@ -89,6 +91,132 @@ graph("velocity", 1)
 graph("acceleration", 2)
 plt.show()
 
+
+# ## Taking Turns
+
+# Were we will discuss how to generate a time optimal trajectory for turns. First, let's start out with a generating trajectories that are not time optimal, but rely on specifying the final time $v_f$. For smartmouse, our state space is $[x, y, \theta]$, and a turn can be defined as starting at a point $[x_0, y_0, \theta_0]$ and going to $[x_f, y_f, \theta_0]$. Of course, we also want to specify the velocities at these point, $[\dot{x}_0, \dot{y}_0,\dot{\theta}_0]$ and $[\dot{x}_f, \dot{y}_f,\dot{\theta}_f]$. We have four constraints, so if we want to fit a smooth polynomial to those points we need a 4th order polynomial.
+# 
+# $$q(t) = a_0 + a_1t + a_2t^2 + a_3t^3$$
+# $$\dot{q}(t) = a_1 + 2a_2t + 3a_3t^2$$
+# 
+# If we sub in our constraints, we get the following system of equations.
+# 
+# \begin{align}
+# q(0) &= a_0 \\
+# \dot{q}(0) &= a_1 \\
+# q(t_f) &= a_0 + a_1t_f + a_2{t_f}^2 + a_3{t_f}^3\\
+# \dot{q}(t_f) &= a_1 + 2a_2t_f + 3a_3{t_f}^2\\
+# \end{align}
+# 
+# In matrix form that looks like:
+# \begin{equation}
+# \begin{bmatrix}
+# 1 & 0 & 0 & 0 \\
+# 0 & 1 & 0 & 0 \\
+# 1 & t_f & t_f^2 & t_f^3 \\
+# 0 & 1 & 2t_f & 3t_f^2 \\
+# \end{bmatrix}
+# \begin{bmatrix}
+# a_0 \\
+# a_1 \\
+# a_2 \\
+# a_3 \\
+# \end{bmatrix} =
+# \begin{bmatrix}
+# q(0) \\
+# \dot{q}(0) \\
+# q(t_f) \\
+# \dot{q}(t_f) \\
+# \end{bmatrix}
+# \end{equation}
+# 
+# It can be shown that the matrix on the left is invertable, so long as $t_f-t_0 > 0$. So we can invert and solve this equation and get all the $a$ coefficients. We can then use this polynomial to generate the $q(t)$ and $\dot{q}(t)$ -- our trajectory.
+
+# In[20]:
+
+# Example: you are a point in space (one dimension) go from rest at the origin to at rest at (0.18, 0, 0) in 1 second
+import numpy as np
+np.set_printoptions(suppress=True, precision=3)
+
+q_0 = np.array([0])
+q_dot_0 = np.array([0])
+q_f = np.array([0.18])
+q_dot_f = np.array([0])
+t_f = 1
+
+b = np.array([q_0, q_dot_0, q_f, q_dot_f])
+a = np.array([[1,0,0,0],[0,1,0,0],[1, t_f, pow(t_f,2),pow(t_f,3)],[0,1,2*t_f,3*pow(t_f,2)]])
+coeff = np.linalg.solve(a, b)
+print(coeff)
+
+
+# Here you can see that the resulting coeffictions are $a_0=0$, $a_1=0$, $a_2=0.54$, $a_0=-0.36$. Intuitively, this says that we're going to have positive acceleration, but our acceleration is going to slow down over time. Let's graph it!
+
+# In[37]:
+
+import matplotlib.pyplot as plt
+dt = 0.01
+ts = np.array([[1, t, pow(t,2), pow(t,3)] for t in np.arange(0, t_f+dt,  dt)])
+qs = ts@coeff
+plt.plot(ts[:,1], qs, label="x")
+plt.xlabel("time (seconds)")
+plt.xlabel("X (meters)")
+plt.legend(bbox_to_anchor=(1,1), loc=2)
+plt.show()
+
+
+# **ooooooooooh so pretty**
+# 
+# Let's try another example, now with our full state space of $[x, y, \theta]$.
+
+# In[ ]:
+
+
+
+
+# In[74]:
+
+# In this example, we go from (0.18, 0.09, 0) to (0.27,0.18, -1.5707). Our starting and ending velocities are zero
+q_0 = np.array([0.09,0.09,0])
+q_dot_0 = np.array([0,0,0])
+q_f = np.array([0.27,0.18,-1.5707])
+q_dot_f = np.array([0,0,0])
+t_f = 1
+
+b = np.array([q_0, q_dot_0, q_f, q_dot_f])
+a = np.array([[1,0,0,0],[0,1,0,0],[1, t_f, pow(t_f,2),pow(t_f,3)],[0,1,2*t_f,3*pow(t_f,2)]])
+coeff = np.linalg.solve(a, b)
+print(coeff)
+
+dt = 0.1
+ts = np.array([[1, t, pow(t,2), pow(t,3)] for t in np.arange(0, t_f+dt,  dt)])
+qs = ts@coeff
+
+plt.rc('text', usetex=True)
+plt.rc('font', family='serif')
+plt.gca().set_adjustable("box")
+plt.subplot(221)
+plt.plot(ts[:,1], qs[:,0])
+plt.xlabel("time (seconds)")
+plt.title("x")
+plt.subplot(222)
+plt.plot(ts[:,1], qs[:,1])
+plt.xlabel("time (seconds)")
+plt.title("y")
+plt.subplot(223)
+plt.plot(ts[:,1], qs[:,2])
+plt.xlabel("time (seconds)")
+plt.title(r"$\theta$")
+plt.subplot(224)
+plt.scatter(qs[:,0], qs[:,1])
+plt.axis('equal')
+plt.xlabel("X")
+plt.ylabel("Y")
+plt.tight_layout()
+plt.show()
+
+
+# Well, they are smooth, but these are not possible to execute! The robot cannot simply translate sideways.
 
 # In[ ]:
 
