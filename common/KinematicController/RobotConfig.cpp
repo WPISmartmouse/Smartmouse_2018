@@ -52,6 +52,6 @@ RobotConfig config = {
         ANALOG_MAX_DIST : 0.18,
         MAX_FORCE : 0.016,
         ARC_TURN : false,
-        END_SPEED: 0.3,
+        END_SPEED: 0.3, // this can be lowered to 0.15 to demonstrate ForwardN
 };
 #endif
