@@ -92,9 +92,9 @@ graph("acceleration", 2)
 plt.show()
 
 
-# ## Taking Turns
+# ## General Form Trajectory Planning
 
-# Were we will discuss how to generate a time optimal trajectory for turns. First, let's start out with a generating trajectories that are not time optimal, but rely on specifying the final time $v_f$. For smartmouse, our state space is $[x, y, \theta]$, and a turn can be defined as starting at a point $[x_0, y_0, \theta_0]$ and going to $[x_f, y_f, \theta_0]$. Of course, we also want to specify the velocities at these point, $[\dot{x}_0, \dot{y}_0,\dot{\theta}_0]$ and $[\dot{x}_f, \dot{y}_f,\dot{\theta}_f]$. We have four constraints, so if we want to fit a smooth polynomial to those points we need a 4th order polynomial.
+# Let's start out with a generating trajectories that are not time optimal, but rely on specifying the final time $v_f$. For smartmouse, our state space is $[x, y, \theta]$, and a turn can be defined as starting at a point $[x_0, y_0, \theta_0]$ and going to $[x_f, y_f, \theta_0]$. Of course, we also want to specify the velocities at these point, $[\dot{x}_0, \dot{y}_0,\dot{\theta}_0]$ and $[\dot{x}_f, \dot{y}_f,\dot{\theta}_f]$. We have four constraints, so if we want to fit a smooth polynomial to those points we need a 4th order polynomial.
 # 
 # $$q(t) = a_0 + a_1t + a_2t^2 + a_3t^3$$
 # $$\dot{q}(t) = a_1 + 2a_2t + 3a_3t^2$$
@@ -132,7 +132,7 @@ plt.show()
 # 
 # It can be shown that the matrix on the left is invertable, so long as $t_f-t_0 > 0$. So we can invert and solve this equation and get all the $a$ coefficients. We can then use this polynomial to generate the $q(t)$ and $\dot{q}(t)$ -- our trajectory.
 
-# In[4]:
+# In[7]:
 
 # Example: you are a point in space (one dimension) go from rest at the origin to at rest at (0.18, 0, 0) in 1 second
 import numpy as np
@@ -152,7 +152,7 @@ print(coeff)
 
 # Here you can see that the resulting coeffictions are $a_0=0$, $a_1=0$, $a_2=0.54$, $a_0=-0.36$. Intuitively, this says that we're going to have positive acceleration, but our acceleration is going to slow down over time. Let's graph it!
 
-# In[5]:
+# In[8]:
 
 import matplotlib.pyplot as plt
 dt = 0.01
@@ -169,7 +169,7 @@ plt.show()
 # 
 # Let's try another example, now with our full state space of $[x, y, \theta]$.
 
-# In[6]:
+# In[9]:
 
 # In this example, we go from (0.18, 0.09, 0) to (0.27,0.18, -1.5707). Our starting and ending velocities are zero
 q_0 = np.array([0.09,0.09,0])
@@ -210,38 +210,56 @@ plt.ylabel("Y")
 plt.tight_layout()
 plt.show()
 
-# Gifs!
-from matplotlib.animation import FuncAnimation
-from IPython.display import HTML
-fig, ax = plt.subplots()
-
-x = np.arange(0, 20, 0.1)
-line, = ax.plot(x, x - 5, 'r-', linewidth=2)
-
-def update(i):
-    label = "t_" + str(i)
-    line.set_ydata(x - 5 + i)
-    ax.set_xlabel(label)
-    return line, ax
-
-plt.rc('text', usetex=False)
-anim = FuncAnimation(fig, update, frames=np.arange(0, 10), interval=100)
-gif_file = 'car.gif'
-anim.save(gif_file, dpi=80, writer='imagemagick')
-HTML("<img src={}/>".format(gif_file))
-
 
 # Well, they are smooth, but these are not possible to execute! The robot cannot simply translate sideways.
 
-# In[ ]:
+# ## Trajectory Planning With a Simple Dynamics Model
+
+# In[47]:
+
+get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45:(0,0)}] (-.5,-1) rectangle (0.5,1);\n\\filldraw (0,0) circle (0.125);\n\n\\draw [->] (0,0) -- (0,1.5);\n\\draw [->] (0,0) -- (1.5,0);\n\\draw [->] (0,0) -- (1.5,1.5);\n\\draw (1.2, -0.2) node {$x$};\n\\draw (-0.2, 1.2) node {$y$};\n\\draw (1, 1.2) node {$v$};')
 
 
-
-
-# In[ ]:
-
-
-
+# 
+# We need to change our constraints to the system of equations. Specifically, we need our dynamics model. For now, let's assume a simplified car model.
+# 
+# $$ \dot{x} = v\cos(\theta) $$
+# $$ \dot{y} = v\sin(\theta) $$
+# 
+# This basically claims that for any instant in time the robot is moving a constant velocity along $\theta$. This isn't very accurate, but let's just start with that since the real dynamics of our robot are more complex.
+# 
+# First we will bring in the constraints from before. We must satisfy specific initial and final positions in $[x, y, \theta]$. I've used new letters for cofficients to avoid confusion.
+# 
+# \begin{align}
+# x(0) &= c_0 + c_1(0) + c_2(0)^2 + c_3(0)^3\\
+# y(0) &= d_0 + d_1(0) + d_2(0)^2 + d_3(0)^3\\
+# \theta(0) &= e_0 + e_1(0) + e_2(0)^2 + e_3(0)^3\\
+# x(t_f) &= c_0 + c_1(t_f) + c_2(t_f)^2 + c_3(t_f)^3\\
+# y(t_f) &= d_0 + d_1(t_f) + d_2(t_f)^2 + d_3(t_f)^3\\
+# \theta(t_f) &= e_0 + e_1(t_f) + e_2(t_f)^2 + e_3(t_f)^3\\
+# \end{align}
+# 
+# Notice here we have 12 unknowns, $c_0 \dots c_3$, $d_0 \dots d_3$ and $e_0 \dots e_3$. So we're gonna need 6 more equations for there to be a unique solution. Also notice we haven't defined any constraints related to our dynamics model. That would be a good place to get our other equations!
+# 
+# First, let's make sure the car moves in the direction is pointing. Formally:
+# 
+# $$v = \dot{x}\cos(\theta) + \dot{y}\sin(\theta)$$
+# 
+# We can get two equations out of this by specifying initial and final velocities
+# 
+# \begin{align}
+# v(0) &= \dot{x}(0)\cos(\theta(0)) + \dot{y}(0)\sin(\theta(0))\\
+# v(t_f) &= \dot{x}(0)\cos(\theta(0)) + \dot{y}(0)\sin(\theta(0))\\
+# \end{align}
+# 
+# We should write out the full form though, to make things terms of our coefficients.
+# 
+# \begin{align}
+# v(0) &= \Big[c_1 + 2c_2(0) + 3c_3(0)^2\Big]\cos\Big(e_0 + e_1(0) + e_2(0)^2 + e_3(0)^3\Big) + \Big[d_1 + 2d_2(0) + 3d_3(0)^2\Big]\sin\Big(e_0 + e_1(0) + e_2(0)^2 + e_3(0)^3\Big) \\
+# v(t_f) &= \Big[c_1 + 2c_2(0) + 3c_3(0)^2\Big]\cos\Big(e_0 + e_1(0) + e_2(0)^2 + e_3(0)^3\Big) + \Big[d_1 + 2d_2(0) + 3d_3(0)^2\Big]\sin\Big(e_0 + e_1(0) + e_2(0)^2 + e_3(0)^3\Big) \\
+# \end{align}
+# 
+# This leaves us needing 4 more equestions. Not sure where they should come from. Also, note the equations above are nonlinear and won't be simple to solve.
 
 # In[ ]:
 
