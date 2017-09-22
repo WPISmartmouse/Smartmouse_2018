@@ -18,19 +18,23 @@ class Server {
 
  public:
   void start();
+  void RunLoop();
+  void Step();
+  void join();
 
   std::thread *thread_;
-  void RunLoop();
-
-  smartmouse::msgs::RobotSimState Step();
-
-  void join();
  private:
   void OnServerControl(const smartmouse::msgs::ServerControl &msg);
   void OnPhysics(const smartmouse::msgs::PhysicsConfig &msg);
   void OnMaze(const smartmouse::msgs::Maze &msg);
   void OnRobotCommand(const smartmouse::msgs::RobotCommand &msg);
   void OnRobotDescription(const smartmouse::msgs::RobotDescription &msg);
+
+  void UpdateInternalState(double dt);
+  void ResetRobot();
+  void ResetTime();
+  void PublishInternalState();
+  void PublishWorldStats(Time rtf);
 
   ignition::transport::Node *node_ptr_;
   ignition::transport::Node::Publisher world_stats_pub_;
@@ -46,9 +50,6 @@ class Server {
   smartmouse::msgs::Maze maze_;
   smartmouse::msgs::RobotCommand cmd_;
   smartmouse::msgs::RobotDescription mouse_;
-  void ResetTime();
 
   smartmouse::msgs::InternalPhysicsState internal_state_;
-  smartmouse::msgs::RobotSimState UpdateInternalState(double dt);
-  void ResetRobot();
 };

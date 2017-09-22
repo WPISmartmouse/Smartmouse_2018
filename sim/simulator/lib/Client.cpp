@@ -33,8 +33,11 @@ Client::Client(QMainWindow *parent) :
   initial_physics_config.set_real_time_factor(1);
   physics_pub_.Publish(initial_physics_config);
 
+  // publish initial config of the server
   smartmouse::msgs::ServerControl initial_server_control;
   initial_server_control.set_pause(true);
+  initial_server_control.set_reset_robot(true);
+  initial_server_control.set_reset_time(true);
   server_control_pub_.Publish(initial_server_control);
 }
 

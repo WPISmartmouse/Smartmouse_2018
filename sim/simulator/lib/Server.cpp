@@ -31,8 +31,6 @@ void Server::RunLoop() {
       continue;
     }
 
-    smartmouse::msgs::RobotSimState sim_state_msg;
-
     // Begin Critical Section
     {
       std::lock_guard<std::mutex> guard(physics_mutex_);
@@ -52,7 +50,7 @@ void Server::RunLoop() {
         continue;
       }
 
-      sim_state_msg = Step();
+      Step();
     }
     // End Critical Section
 
@@ -71,32 +69,26 @@ void Server::RunLoop() {
     Time actual_step_time = actual_end_step_time - start_step_time;
     Time rtf = update_rate / actual_step_time;
 
-    // announce completion of this step
-    smartmouse::msgs::WorldStatistics world_stats_msg;
-    world_stats_msg.set_steps(steps_);
-    ignition::msgs::Time *sim_time_msg = world_stats_msg.mutable_sim_time();
-    *sim_time_msg = sim_time_.toIgnMsg();
-    world_stats_msg.set_real_time_factor(rtf.Double());
-    world_stats_pub_.Publish(world_stats_msg);
+    // This will send a message the GUI so it can update
+    PublishInternalState();
 
-    sim_state_pub_.Publish(sim_state_msg);
+    // announce completion of this step
+    PublishWorldStats(rtf);
   }
 }
 
-smartmouse::msgs::RobotSimState Server::Step() {
+void Server::Step() {
   // update sim time
   auto dt = Time(0, ns_of_sim_per_step_);
   sim_time_ += dt;
 
-  auto sim_state_msg = UpdateInternalState(dt.Double());
+  UpdateInternalState(dt.Double());
 
   // increment step counter
   ++steps_;
-
-  return sim_state_msg;
 }
 
-smartmouse::msgs::RobotSimState Server::UpdateInternalState(double dt) {
+void Server::UpdateInternalState(double dt) {
   const double J = mouse_.inertia();
   const double u_k = mouse_.u_kinetic();
   const double u_s = mouse_.u_static();
@@ -119,8 +111,8 @@ smartmouse::msgs::RobotSimState Server::UpdateInternalState(double dt) {
   double vr = wr * (M_2_PI * Mouse::WHEEL_RAD);
 
   // newtons equations of rotational motion to update wheel states
-  double new_tl = tl + wl * dt + 1/2 * al * dt * dt;
-  double new_tr = tr + wr * dt + 1/2 * ar * dt * dt;
+  double new_tl = tl + wl * dt + 1 / 2 * al * dt * dt;
+  double new_tr = tr + wr * dt + 1 / 2 * ar * dt * dt;
   double new_wl = wl + al * dt - u_k * wl;
   double new_wr = wr + ar * dt - u_k * wl;
 
@@ -143,14 +135,13 @@ smartmouse::msgs::RobotSimState Server::UpdateInternalState(double dt) {
 
   // if we're going perfectly straight R is infinity, so check first.
   // update the x & y coordinates
-  if (std::abs(vl-vr) > 1e-5) {
-    R = config.TRACK_WIDTH * (vr + vl) / (2 *(vr - vl)); // eq 12
-    w_about_icc = vl/(R-config.TRACK_WIDTH/2); //eq 11
+  if (std::abs(vl - vr) > 1e-5) {
+    R = config.TRACK_WIDTH * (vr + vl) / (2 * (vr - vl)); // eq 12
+    w_about_icc = vl / (R - config.TRACK_WIDTH / 2); //eq 11
     dtheta_about_icc = w_about_icc * dt; //eq 11
-    new_x = x - R*(sin((vl-vr)/config.TRACK_WIDTH*dt-theta)+sin(theta)); //eq 28
-    new_y = y - R*(cos((vl-vr)/config.TRACK_WIDTH*dt-theta)-cos(theta)); //eq 29
-  }
-  else {
+    new_x = x - R * (sin((vl - vr) / config.TRACK_WIDTH * dt - theta) + sin(theta)); //eq 28
+    new_y = y - R * (cos((vl - vr) / config.TRACK_WIDTH * dt - theta) - cos(theta)); //eq 29
+  } else {
     // going perfectly straight
     dtheta_about_icc = 0; //eq 11
     double v = (vl + vr) / 2;
@@ -183,23 +174,15 @@ smartmouse::msgs::RobotSimState Server::UpdateInternalState(double dt) {
   internal_state_.mutable_right_wheel()->set_theta(new_tr);
   internal_state_.mutable_right_wheel()->set_omega(new_wr);
   internal_state_.mutable_right_wheel()->set_alpha(new_ar);
-
-  smartmouse::msgs::RobotSimState sim_state_msg;
-  sim_state_msg.mutable_stamp()->set_sec(sim_time_.sec);
-  sim_state_msg.mutable_stamp()->set_nsec(sim_time_.nsec);
-  sim_state_msg.set_true_x_meters(internal_state_.p().x());
-  sim_state_msg.set_true_y_meters(internal_state_.p().y());
-  sim_state_msg.set_true_yaw_rad(internal_state_.p().theta());
-  sim_state_msg.set_left_wheel_velocity_mps(Mouse::radToMeters(internal_state_.left_wheel().omega()));
-  sim_state_msg.set_right_wheel_velocity_mps(Mouse::radToMeters(internal_state_.right_wheel().omega()));
-
-  return sim_state_msg;
 }
 
 void Server::ResetTime() {
   sim_time_ = Time::Zero;
   steps_ = 0UL;
   pause_at_steps_ = 0ul;
+
+  PublishInternalState();
+  PublishWorldStats(0);
 }
 
 void Server::ResetRobot() {
@@ -220,6 +203,30 @@ void Server::ResetRobot() {
   internal_state_.mutable_right_wheel()->set_alpha(0);
   cmd_.mutable_left()->set_abstract_force(0);
   cmd_.mutable_right()->set_abstract_force(0);
+
+  PublishInternalState();
+}
+
+void Server::PublishInternalState() {
+  smartmouse::msgs::RobotSimState sim_state_msg;
+  sim_state_msg.mutable_stamp()->set_sec(sim_time_.sec);
+  sim_state_msg.mutable_stamp()->set_nsec(sim_time_.nsec);
+  sim_state_msg.set_true_x_meters(internal_state_.p().x());
+  sim_state_msg.set_true_y_meters(internal_state_.p().y());
+  sim_state_msg.set_true_yaw_rad(internal_state_.p().theta());
+  sim_state_msg.set_left_wheel_velocity_mps(Mouse::radToMeters(internal_state_.left_wheel().omega()));
+  sim_state_msg.set_right_wheel_velocity_mps(Mouse::radToMeters(internal_state_.right_wheel().omega()));
+
+  sim_state_pub_.Publish(sim_state_msg);
+}
+
+void Server::PublishWorldStats(Time rtf) {
+  smartmouse::msgs::WorldStatistics world_stats_msg;
+  world_stats_msg.set_steps(steps_);
+  ignition::msgs::Time *sim_time_msg = world_stats_msg.mutable_sim_time();
+  *sim_time_msg = sim_time_.toIgnMsg();
+  world_stats_msg.set_real_time_factor(rtf.Double());
+  world_stats_pub_.Publish(world_stats_msg);
 }
 
 void Server::OnServerControl(const smartmouse::msgs::ServerControl &msg) {
