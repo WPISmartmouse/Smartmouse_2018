@@ -2,22 +2,28 @@ syntax = "proto2";
 
 package smartmouse.msgs;
 
+import "xytheta.proto";
 import "ignition/msgs/time.proto";
 
 message RobotSimState {
     optional ignition.msgs.Time stamp = 1;
-    required double left_wheel_velocity_mps = 2;
-    required double right_wheel_velocity_mps = 3;
-    required double left_wheel_angle_radians = 4;
-    required double right_wheel_angle_radians = 5;
-    required double front_left = 6;
-    required double front_right = 7;
-    required double gerald_left = 8;
-    required double gerald_right = 9;
-    required double back_left = 10;
-    required double back_right = 11;
-    required double front = 12;
-    required double true_x_meters = 13;
-    required double true_y_meters = 14;
-    required double true_yaw_rad = 15;
+    optional WheelPhysicsState left_wheel = 2;
+    optional WheelPhysicsState right_wheel = 3;
+    optional XYTheta p = 4; // meters
+    optional XYTheta v = 5; // meters/second
+    optional XYTheta a = 6; // meters/second^2
+    optional double front_left = 7;
+    optional double front_right = 8;
+    optional double gerald_left = 9;
+    optional double gerald_right = 10;
+    optional double back_left = 11;
+    optional double back_right = 12;
+    optional double front = 13;
+}
+
+message WheelPhysicsState {
+    optional double theta = 1; // radians
+    optional double omega = 2; // radians/second
+    optional double alpha = 3;
+    optional double current = 4; // amperes
 }

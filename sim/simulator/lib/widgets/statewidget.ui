@@ -15,27 +15,67 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
-    <widget class="QGroupBox" name="stats_group">
-     <property name="title">
-      <string>State</string>
-     </property>
+    <widget class="QWidget" name="stats_group" native="true">
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
-       <layout class="QHBoxLayout" name="velocity_stats_layout">
-        <item>
-         <widget class="QLabel" name="velocity_label">
-          <property name="text">
-           <string>Wheel Velocities</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="left_velocity_edit"/>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="right_velocity_edit"/>
-        </item>
-       </layout>
+       <widget class="QGroupBox" name="wheel_group">
+        <property name="title">
+         <string>Wheel Group</string>
+        </property>
+        <layout class="QHBoxLayout" name="wheel_layout">
+         <item>
+          <layout class="QVBoxLayout" name="wheel_labels">
+           <item>
+            <widget class="QLabel" name="velocity_label">
+             <property name="text">
+              <string>Wheel Velocities</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="acceleration_label">
+             <property name="text">
+              <string>Wheel Accelerations</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="current_label">
+             <property name="text">
+              <string>Motor Currents</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="right_edits">
+           <item>
+            <widget class="QLineEdit" name="left_velocity_edit"/>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="left_acceleration_edit"/>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="left_current_edit"/>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="left_edits">
+           <item>
+            <widget class="QLineEdit" name="right_velocity_edit"/>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="right_acceleration_edit"/>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="right_current_edit"/>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
       </item>
       <item>
        <layout class="QHBoxLayout" name="maze_location_layout">

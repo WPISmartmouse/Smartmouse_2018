@@ -154,9 +154,9 @@ void MazeWidget::OnRobotDescription(const smartmouse::msgs::RobotDescription &ms
 
 void MazeWidget::OnRobotSimState(const smartmouse::msgs::RobotSimState &msg) {
   auto xytheta = robot_state_.mutable_xytheta();
-  xytheta->set_x(msg.true_x_meters());
-  xytheta->set_y(msg.true_y_meters());
-  xytheta->set_theta(msg.true_yaw_rad());
+  xytheta->set_x(msg.p().x());
+  xytheta->set_y(msg.p().y());
+  xytheta->set_theta(msg.p().theta());
 
   emit MyUpdate();
 }

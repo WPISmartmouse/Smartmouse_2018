@@ -87,15 +87,15 @@ void SimMouse::publishIndicators() {
 
 void SimMouse::robotStateCallback(const smartmouse::msgs::RobotSimState &msg) {
   std::unique_lock<std::mutex> lk(dataMutex);
-  true_pose.x = msg.true_x_meters();
-  true_pose.y = msg.true_y_meters();
-  true_pose.yaw = msg.true_yaw_rad();
+  true_pose.x = msg.p().x();
+  true_pose.y = msg.p().y();
+  true_pose.yaw = msg.p().theta();
 
-  this->left_wheel_velocity_mps = msg.left_wheel_velocity_mps();
-  this->right_wheel_velocity_mps = msg.right_wheel_velocity_mps();
+  this->left_wheel_velocity_mps = msg.left_wheel().omega();
+  this->right_wheel_velocity_mps = msg.right_wheel().omega();
 
-  this->left_wheel_angle_rad = msg.left_wheel_angle_radians();
-  this->right_wheel_angle_rad = msg.right_wheel_angle_radians();
+  this->left_wheel_angle_rad = msg.left_wheel().theta();
+  this->right_wheel_angle_rad = msg.right_wheel().theta();
 
   this->range_data.front_left = msg.front_left();
   this->range_data.front_right = msg.front_right();

@@ -31,27 +31,20 @@ class StateWidget : public AbstractTab {
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "NotImplementedFunctions"
   void SetLeftVelocity(QString str);
-
   void SetRightVelocity(QString str);
-
+  void SetLeftCurrent(QString str);
+  void SetRightCurrent(QString str);
+  void SetLeftAcceleration(QString str);
+  void SetRightAcceleration(QString str);
   void SetRow(QString str);
-
   void SetCol(QString str);
-
   void SetDir(QString str);
-
   void SetTrueX(QString str);
-
   void SetTrueY(QString str);
-
   void SetTrueYaw(QString str);
-
   void SetEstimatedX(QString str);
-
   void SetEstimatedY(QString str);
-
   void SetEstimatedYaw(QString str);
-
   void HighlightX(QString str);
   void HighlightY(QString str);
   void HighlightYaw(QString str);

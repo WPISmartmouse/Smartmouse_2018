@@ -83,13 +83,14 @@ void Server::Step() {
   auto dt = Time(0, ns_of_sim_per_step_);
   sim_time_ += dt;
 
-  UpdateInternalState(dt.Double());
+  UpdateRobotState(dt.Double());
 
   // increment step counter
   ++steps_;
 }
 
-void Server::UpdateInternalState(double dt) {
+void Server::UpdateRobotState(double dt) {
+  // TODO: implement friction
 //  const double u_k = mouse_.motor().u_kinetic();
 //  const double u_s = mouse_.motor().u_static();
   const double motor_J = mouse_.motor().j();
@@ -98,19 +99,19 @@ void Server::UpdateInternalState(double dt) {
   const double motor_R = mouse_.motor().r();
   const double motor_L = mouse_.motor().l();
 
-  // use the cmd abstract forces, apply our dynamics model, update internal state
-  double x = internal_state_.p().x();
-  double y = internal_state_.p().y();
-  double theta = internal_state_.p().theta();
-  double vx = internal_state_.v().x();
-  double vy = internal_state_.v().y();
-  double w = internal_state_.v().theta();
-  double tl = internal_state_.left_wheel().theta();
-  double wl = internal_state_.left_wheel().omega();
-  double il = internal_state_.left_wheel().current();
-  double tr = internal_state_.right_wheel().theta();
-  double wr = internal_state_.right_wheel().omega();
-  double ir = internal_state_.right_wheel().current();
+  // use the cmd abstract forces, apply our dynamics model, update robot state
+  double x = robot_state_.p().x();
+  double y = robot_state_.p().y();
+  double theta = robot_state_.p().theta();
+  double vx = robot_state_.v().x();
+  double vy = robot_state_.v().y();
+  double w = robot_state_.v().theta();
+  double tl = robot_state_.left_wheel().theta();
+  double wl = robot_state_.left_wheel().omega();
+  double il = robot_state_.left_wheel().current();
+  double tr = robot_state_.right_wheel().theta();
+  double wr = robot_state_.right_wheel().omega();
+  double ir = robot_state_.right_wheel().current();
 
   double vl = wl * (M_2_PI * Mouse::WHEEL_RAD);
   double vr = wr * (M_2_PI * Mouse::WHEEL_RAD);
@@ -125,14 +126,14 @@ void Server::UpdateInternalState(double dt) {
   const double kVRef = 5.0;
   double voltage_l = (cmd_.left().abstract_force() * kVRef) / 255.0;
   double voltage_r = (cmd_.right().abstract_force() * kVRef) / 255.0;
-  double new_il = (voltage_l - motor_K * wl - motor_R * il) / motor_L;
-  double new_ir = (voltage_r - motor_K * wr - motor_R * ir) / motor_L;
+  double new_il = il + dt * (voltage_l - motor_K * wl - motor_R * il) / motor_L;
+  double new_ir = ir + dt * (voltage_r - motor_K * wr - motor_R * ir) / motor_L;
 
   // forward kinematics for differential drive robot
-  double R;
-  double w_about_icc;
-  double dtheta_about_icc;
-  double new_x, new_y;
+  double R = 0;
+  double w_about_icc = 0;
+  double dtheta_about_icc = 0;
+  double new_x = 0, new_y = 0;
 
   // if we're going perfectly straight R is infinity, so check first.
   // update the x & y coordinates
@@ -144,7 +145,7 @@ void Server::UpdateInternalState(double dt) {
     new_y = y - R * (cos((vl - vr) / config.TRACK_WIDTH * dt - theta) - cos(theta)); //eq 29
   } else {
     // going perfectly straight
-    dtheta_about_icc = 0; //eq 11
+    dtheta_about_icc = 0;
     double v = (vl + vr) / 2;
     new_x = x + v * cos(theta) * dt;
     new_y = y + v * sin(theta) * dt;
@@ -160,21 +161,23 @@ void Server::UpdateInternalState(double dt) {
   double new_w = (new_theta - theta) / dt;
   double new_a = (new_w - w) / dt;
 
-  internal_state_.mutable_p()->set_x(new_x);
-  internal_state_.mutable_p()->set_y(new_y);
-  internal_state_.mutable_p()->set_theta(new_theta);
-  internal_state_.mutable_v()->set_x(new_vx);
-  internal_state_.mutable_v()->set_y(new_vy);
-  internal_state_.mutable_v()->set_theta(new_w);
-  internal_state_.mutable_a()->set_x(new_ax);
-  internal_state_.mutable_a()->set_y(new_ay);
-  internal_state_.mutable_a()->set_theta(new_a);
-  internal_state_.mutable_left_wheel()->set_theta(new_tl);
-  internal_state_.mutable_left_wheel()->set_omega(new_wl);
-  internal_state_.mutable_left_wheel()->set_current(new_il);
-  internal_state_.mutable_right_wheel()->set_theta(new_tr);
-  internal_state_.mutable_right_wheel()->set_omega(new_wr);
-  internal_state_.mutable_right_wheel()->set_current(new_ir);
+  robot_state_.mutable_p()->set_x(new_x);
+  robot_state_.mutable_p()->set_y(new_y);
+  robot_state_.mutable_p()->set_theta(new_theta);
+  robot_state_.mutable_v()->set_x(new_vx);
+  robot_state_.mutable_v()->set_y(new_vy);
+  robot_state_.mutable_v()->set_theta(new_w);
+  robot_state_.mutable_a()->set_x(new_ax);
+  robot_state_.mutable_a()->set_y(new_ay);
+  robot_state_.mutable_a()->set_theta(new_a);
+  robot_state_.mutable_left_wheel()->set_theta(new_tl);
+  robot_state_.mutable_left_wheel()->set_omega(new_wl);
+  robot_state_.mutable_left_wheel()->set_alpha(new_al);
+  robot_state_.mutable_left_wheel()->set_current(new_il);
+  robot_state_.mutable_right_wheel()->set_theta(new_tr);
+  robot_state_.mutable_right_wheel()->set_omega(new_wr);
+  robot_state_.mutable_right_wheel()->set_alpha(new_ar);
+  robot_state_.mutable_right_wheel()->set_current(new_ir);
 }
 
 void Server::ResetTime() {
@@ -187,21 +190,21 @@ void Server::ResetTime() {
 }
 
 void Server::ResetRobot() {
-  internal_state_.mutable_p()->set_x(0.09);
-  internal_state_.mutable_p()->set_y(0.09);
-  internal_state_.mutable_p()->set_theta(0);
-  internal_state_.mutable_v()->set_x(0);
-  internal_state_.mutable_v()->set_y(0);
-  internal_state_.mutable_v()->set_theta(0);
-  internal_state_.mutable_a()->set_x(0);
-  internal_state_.mutable_a()->set_y(0);
-  internal_state_.mutable_a()->set_theta(0);
-  internal_state_.mutable_left_wheel()->set_theta(0);
-  internal_state_.mutable_left_wheel()->set_omega(0);
-  internal_state_.mutable_left_wheel()->set_current(0);
-  internal_state_.mutable_right_wheel()->set_theta(0);
-  internal_state_.mutable_right_wheel()->set_omega(0);
-  internal_state_.mutable_right_wheel()->set_current(0);
+  robot_state_.mutable_p()->set_x(0.09);
+  robot_state_.mutable_p()->set_y(0.09);
+  robot_state_.mutable_p()->set_theta(0);
+  robot_state_.mutable_v()->set_x(0);
+  robot_state_.mutable_v()->set_y(0);
+  robot_state_.mutable_v()->set_theta(0);
+  robot_state_.mutable_a()->set_x(0);
+  robot_state_.mutable_a()->set_y(0);
+  robot_state_.mutable_a()->set_theta(0);
+  robot_state_.mutable_left_wheel()->set_theta(0);
+  robot_state_.mutable_left_wheel()->set_omega(0);
+  robot_state_.mutable_left_wheel()->set_current(0);
+  robot_state_.mutable_right_wheel()->set_theta(0);
+  robot_state_.mutable_right_wheel()->set_omega(0);
+  robot_state_.mutable_right_wheel()->set_current(0);
   cmd_.mutable_left()->set_abstract_force(0);
   cmd_.mutable_right()->set_abstract_force(0);
 
@@ -209,16 +212,7 @@ void Server::ResetRobot() {
 }
 
 void Server::PublishInternalState() {
-  smartmouse::msgs::RobotSimState sim_state_msg;
-  sim_state_msg.mutable_stamp()->set_sec(sim_time_.sec);
-  sim_state_msg.mutable_stamp()->set_nsec(sim_time_.nsec);
-  sim_state_msg.set_true_x_meters(internal_state_.p().x());
-  sim_state_msg.set_true_y_meters(internal_state_.p().y());
-  sim_state_msg.set_true_yaw_rad(internal_state_.p().theta());
-  sim_state_msg.set_left_wheel_velocity_mps(Mouse::radToMeters(internal_state_.left_wheel().omega()));
-  sim_state_msg.set_right_wheel_velocity_mps(Mouse::radToMeters(internal_state_.right_wheel().omega()));
-
-  sim_state_pub_.Publish(sim_state_msg);
+  sim_state_pub_.Publish(robot_state_);
 }
 
 void Server::PublishWorldStats(Time rtf) {

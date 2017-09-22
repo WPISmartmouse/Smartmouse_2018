@@ -8,7 +8,6 @@
 #include <sim/simulator/lib/Time.h>
 #include <sim/simulator/msgs/server_control.pb.h>
 #include <sim/simulator/msgs/physics_config.pb.h>
-#include <sim/simulator/msgs/internal_physics_state.pb.h>
 #include <sim/simulator/msgs/maze.pb.h>
 #include <sim/simulator/msgs/robot_sim_state.pb.h>
 #include <sim/simulator/msgs/robot_command.pb.h>
@@ -31,7 +30,7 @@ class Server {
   void OnRobotCommand(const smartmouse::msgs::RobotCommand &msg);
   void OnRobotDescription(const smartmouse::msgs::RobotDescription &msg);
 
-  void UpdateInternalState(double dt);
+  void UpdateRobotState(double dt);
   void ResetRobot();
   void ResetTime();
   void PublishInternalState();
@@ -52,5 +51,5 @@ class Server {
   smartmouse::msgs::Maze maze_;
   smartmouse::msgs::RobotCommand cmd_;
   smartmouse::msgs::RobotDescription mouse_;
-  smartmouse::msgs::InternalPhysicsState internal_state_;
+  smartmouse::msgs::RobotSimState robot_state_;
 };
