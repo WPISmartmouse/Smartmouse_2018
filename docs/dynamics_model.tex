@@ -169,14 +169,14 @@ $$T=Ki$$
 $$e=K\dot{\theta}$$
 
 From the figure above we can write the following equations based on Newton's law combined with Kirchhoff's law:
-$$J\frac{d}{dt}\dot{\theta} + b\dot{\theta} = K$$
+$$J\frac{d}{dt}\dot{\theta} + b\dot{\theta} = Ki$$
 $$L\frac{d}{dt}i+Ri=V-K\dot{\theta}$$
 
 In state-space form, the equations above can be expressed by choosing the rotating speed and electric current as the state variables and the voltage as an input. The output is chosen to be the rotating speed. The general linear state-space form is $\dot{X} = AX + BW$. We can get the two equations above in this form with some algebra.
 \begin{align}
-  J\frac{d}{dt}\dot{\theta} + b\dot{\theta} &= K \\
-  \frac{d}{dt}\dot{\theta} + \frac{b\dot{\theta}}{J} &= \frac{K}{J} \\
-  \frac{d}{dt}\dot{\theta} &= \frac{K}{J} - \frac{b\dot{\theta}}{J}
+  J\frac{d}{dt}\dot{\theta} + b\dot{\theta} &= Ki \\
+  \frac{d}{dt}\dot{\theta} + \frac{b\dot{\theta}}{J} &= \frac{Ki}{J} \\
+  \frac{d}{dt}\dot{\theta} &= \frac{Ki}{J} - \frac{b\dot{\theta}}{J}
 \end{align}
 
 \begin{align}

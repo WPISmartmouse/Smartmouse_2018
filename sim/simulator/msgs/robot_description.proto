@@ -12,10 +12,18 @@ message RobotDescription {
     optional WheelDescription right_wheel = 3;
     optional ignition.msgs.Vector3d cog = 4;
     repeated XYTheta range_sensors = 5;
-    optional double inertia = 6;
-    optional double u_static = 7;
-    optional double u_kinetic = 8;
+    optional MotorDescription motor = 6;
 }
+
+message MotorDescription {
+    optional double u_kinetic = 1;
+    optional double u_static = 2;
+    optional double J = 3;
+    optional double b = 4;
+    optional double R = 5;
+    optional double L = 6;
+    optional double K = 7;
+};
 
 message WheelDescription {
    required ignition.msgs.Vector2d pose = 1;

@@ -48,9 +48,15 @@
 		"y": 0.0,
 		"z": 0.01
 	},
-  "inertia": 0.005,
-  "u_static": 0.0,
-  "u_kinetic": 2.0,
+  "motor": {
+    "u_static": 0.0,
+    "u_kinetic": 2.0,
+    "J": 0.01,
+    "b": 0.1,
+    "K": 0.01,
+    "R": 1,
+    "L": 0.5
+  },
 	"range_sensors": []
 }
 

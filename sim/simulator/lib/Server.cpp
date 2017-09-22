@@ -90,9 +90,13 @@ void Server::Step() {
 }
 
 void Server::UpdateInternalState(double dt) {
-  const double J = mouse_.inertia();
-  const double u_k = mouse_.u_kinetic();
-  const double u_s = mouse_.u_static();
+//  const double u_k = mouse_.motor().u_kinetic();
+//  const double u_s = mouse_.motor().u_static();
+  const double motor_J = mouse_.motor().j();
+  const double motor_b = mouse_.motor().b();
+  const double motor_K = mouse_.motor().k();
+  const double motor_R = mouse_.motor().r();
+  const double motor_L = mouse_.motor().l();
 
   // use the cmd abstract forces, apply our dynamics model, update internal state
   double x = internal_state_.p().x();
@@ -103,30 +107,26 @@ void Server::UpdateInternalState(double dt) {
   double w = internal_state_.v().theta();
   double tl = internal_state_.left_wheel().theta();
   double wl = internal_state_.left_wheel().omega();
-  double al = internal_state_.left_wheel().alpha();
+  double il = internal_state_.left_wheel().current();
   double tr = internal_state_.right_wheel().theta();
   double wr = internal_state_.right_wheel().omega();
-  double ar = internal_state_.right_wheel().alpha();
+  double ir = internal_state_.right_wheel().current();
 
   double vl = wl * (M_2_PI * Mouse::WHEEL_RAD);
   double vr = wr * (M_2_PI * Mouse::WHEEL_RAD);
 
-  // newtons equations of rotational motion to update wheel states
-  double new_tl = tl + wl * dt + 1 / 2 * al * dt * dt;
-  double new_tr = tr + wr * dt + 1 / 2 * ar * dt * dt;
-  double new_wl = wl + al * dt - u_k * wl;
-  double new_wr = wr + ar * dt - u_k * wl;
+  double new_al = il * motor_K/motor_J - motor_b * wl/motor_J; // equation 36
+  double new_ar = il * motor_K/motor_J - motor_b * wr/motor_J ; // equation 39
+  double new_wl = wl + new_al * dt;
+  double new_wr = wr + new_ar * dt;
+  double new_tl = tl + new_wl * dt + 1/2 * new_al * dt * dt;
+  double new_tr = tr + new_wr * dt + 1/2 * new_ar * dt * dt;
 
-  // TODO: model the speed of the motor given the input force
-  double new_al = al;
-  double new_ar = ar;
-  if (cmd_.left().abstract_force() > u_s) {
-    if (J < 1e-3) {
-      std::cerr << "Intertia too low. This won't be numerically stable." << std::endl;
-    }
-    new_al = cmd_.left().abstract_force() / J;
-    new_ar = cmd_.right().abstract_force() / J;
-  }
+  const double kVRef = 5.0;
+  double voltage_l = (cmd_.left().abstract_force() * kVRef) / 255.0;
+  double voltage_r = (cmd_.right().abstract_force() * kVRef) / 255.0;
+  double new_il = (voltage_l - motor_K * wl - motor_R * il) / motor_L;
+  double new_ir = (voltage_r - motor_K * wr - motor_R * ir) / motor_L;
 
   // forward kinematics for differential drive robot
   double R;
@@ -171,10 +171,10 @@ void Server::UpdateInternalState(double dt) {
   internal_state_.mutable_a()->set_theta(new_a);
   internal_state_.mutable_left_wheel()->set_theta(new_tl);
   internal_state_.mutable_left_wheel()->set_omega(new_wl);
-  internal_state_.mutable_left_wheel()->set_alpha(new_al);
+  internal_state_.mutable_left_wheel()->set_current(new_il);
   internal_state_.mutable_right_wheel()->set_theta(new_tr);
   internal_state_.mutable_right_wheel()->set_omega(new_wr);
-  internal_state_.mutable_right_wheel()->set_alpha(new_ar);
+  internal_state_.mutable_right_wheel()->set_current(new_ir);
 }
 
 void Server::ResetTime() {
@@ -198,10 +198,10 @@ void Server::ResetRobot() {
   internal_state_.mutable_a()->set_theta(0);
   internal_state_.mutable_left_wheel()->set_theta(0);
   internal_state_.mutable_left_wheel()->set_omega(0);
-  internal_state_.mutable_left_wheel()->set_alpha(0);
+  internal_state_.mutable_left_wheel()->set_current(0);
   internal_state_.mutable_right_wheel()->set_theta(0);
   internal_state_.mutable_right_wheel()->set_omega(0);
-  internal_state_.mutable_right_wheel()->set_alpha(0);
+  internal_state_.mutable_right_wheel()->set_current(0);
   cmd_.mutable_left()->set_abstract_force(0);
   cmd_.mutable_right()->set_abstract_force(0);
 

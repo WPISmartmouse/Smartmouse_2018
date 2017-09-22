@@ -17,6 +17,6 @@ message InternalPhysicsState
 message WheelPhysicsState {
     required double theta = 1; // radians
     required double omega = 2; // radians/second
-    required double alpha = 3; // radians/second^2
+    required double current = 4; // amperes
 }
 
