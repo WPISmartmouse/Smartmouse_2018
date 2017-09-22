@@ -28,21 +28,28 @@
            <item>
             <widget class="QLabel" name="velocity_label">
              <property name="text">
-              <string>Wheel Velocities</string>
+              <string>Velocities</string>
              </property>
             </widget>
            </item>
            <item>
             <widget class="QLabel" name="acceleration_label">
              <property name="text">
-              <string>Wheel Accelerations</string>
+              <string>Accelerations</string>
              </property>
             </widget>
            </item>
            <item>
             <widget class="QLabel" name="current_label">
              <property name="text">
-              <string>Motor Currents</string>
+              <string>Currents</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="abstract_force_label">
+             <property name="text">
+              <string>Abstract Force</string>
              </property>
             </widget>
            </item>
@@ -59,6 +66,9 @@
            <item>
             <widget class="QLineEdit" name="left_current_edit"/>
            </item>
+           <item>
+            <widget class="QLineEdit" name="left_abstract_force_edit"/>
+           </item>
           </layout>
          </item>
          <item>
@@ -71,6 +81,9 @@
            </item>
            <item>
             <widget class="QLineEdit" name="right_current_edit"/>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="right_abstract_force_edit"/>
            </item>
           </layout>
          </item>

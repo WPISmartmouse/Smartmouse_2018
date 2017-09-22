@@ -59,46 +59,24 @@ StateWidget::StateWidget() : AbstractTab(), ui_(new Ui::StateWidget) {
 }
 
 void StateWidget::StateCallback(const smartmouse::msgs::RobotSimState &msg) {
-  char left_wheel_velocity_str[14];
-  snprintf(left_wheel_velocity_str, 14, "%0.2f cm/s", Mouse::radToMeters(100 * msg.left_wheel().omega()));
-
-  char right_wheel_velocity_str[14];
-  snprintf(right_wheel_velocity_str, 14, "%0.2f cm/s", Mouse::radToMeters(100 * msg.right_wheel().omega()));
-
-  char left_wheel_accel_str[14];
-  snprintf(left_wheel_accel_str, 14, "%0.2f cm/s^2", Mouse::radToMeters(100 * msg.left_wheel().alpha()));
-
-  char right_wheel_accel_str[14];
-  snprintf(right_wheel_accel_str, 14, "%0.2f cm/s^2", Mouse::radToMeters(100 * msg.right_wheel().alpha()));
-
-  char left_current_str[14];
-  snprintf(left_current_str, 14, "%0.3f mA", msg.left_wheel().current() * 1000.0);
-
-  char right_current_str[14];
-  snprintf(right_current_str, 14, "%0.3f mA", msg.right_wheel().current() * 1000.0);
-
-  char x_str[14];
-  snprintf(x_str, 14, "%0.1f cm", msg.p().x() * 100);
-
-  char y_str[14];
-  snprintf(y_str, 14, "%0.1f cm", msg.p().y() * 100);
-
-  char yaw_str[15];
-  snprintf(yaw_str, 15, "%0.1f deg", (msg.p().theta() * 180 / M_PI));
+  double left_wheel_velocity_mps = Mouse::radToMeters(100 * msg.left_wheel().omega());
+  double right_wheel_velocity_mps = Mouse::radToMeters(100 * msg.right_wheel().omega());
+  double left_wheel_acceleration_mpss = Mouse::radToMeters(100 * msg.left_wheel().alpha());
+  double right_wheel_acceleration_mpss = Mouse::radToMeters(100 * msg.right_wheel().alpha());
 
   this->true_x = msg.p().x();
   this->true_y = msg.p().y();
   this->true_yaw = msg.p().theta();
 
-  this->SetLeftVelocity(left_wheel_velocity_str);
-  this->SetRightVelocity(right_wheel_velocity_str);
-  this->SetLeftCurrent(left_current_str);
-  this->SetRightCurrent(right_current_str);
-  this->SetLeftAcceleration(left_wheel_accel_str);
-  this->SetRightAcceleration(right_wheel_accel_str);
-  this->SetTrueX(x_str);
-  this->SetTrueY(y_str);
-  this->SetTrueYaw(yaw_str);
+  this->SetLeftVelocity(QString::asprintf("%0.3f cm/s", left_wheel_velocity_mps));
+  this->SetRightVelocity(QString::asprintf("%0.3f cm/s", right_wheel_velocity_mps));
+  this->SetLeftAcceleration(QString::asprintf("%0.3f cm/s^2", left_wheel_acceleration_mpss));
+  this->SetRightAcceleration(QString::asprintf("%0.3f cm/s^2", right_wheel_acceleration_mpss));
+  this->SetLeftCurrent(QString::asprintf("%0.3f mA", msg.left_wheel().current() * 1000));
+  this->SetRightCurrent(QString::asprintf("%0.3f mA", msg.right_wheel().current() * 1000));
+  this->SetTrueX(QString::asprintf("%0.1f cm", msg.p().x() * 100));
+  this->SetTrueY(QString::asprintf("%0.1f cm", msg.p().y() * 100));
+  this->SetTrueYaw(QString::asprintf("%0.1f deg", msg.p().theta() * 180 / M_PI));
 }
 
 

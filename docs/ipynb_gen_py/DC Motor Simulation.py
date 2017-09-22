@@ -69,6 +69,18 @@ plt.xlabel("Time (seconds)")
 plt.show()
 
 
+# In[89]:
+
+
+ts, theta_dots = simulate(const_V(5), J=0.001, b=0.05, K=0.01, R=0.02, L=0.001)
+plt.figure()
+plt.plot(ts, theta_dots)
+plt.title("Smartmouse Motor at max voltage")
+plt.ylabel("Speed (rad/s)")
+plt.xlabel("Time (seconds)")
+plt.show()
+
+
 # In[ ]:
 
 
