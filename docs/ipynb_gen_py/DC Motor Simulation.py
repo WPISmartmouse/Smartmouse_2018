@@ -11,7 +11,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-# In[51]:
+# In[54]:
 
 def simulate(V, J, b, K, R, L, theta_dot=0, i=0):
     # simulate T seconds
@@ -25,9 +25,9 @@ def simulate(V, J, b, K, R, L, theta_dot=0, i=0):
         x = np.array([theta_dot, i])
         w = V(t, i, theta_dot)
         x_dot = A@x+B*w
+#         print(x_dot, theta_dot, i)
         theta_dot += (x_dot[0] * dt)
         i += (x_dot[1] * dt)
-        print(x_dot, dt)
         theta_dots.append(theta_dot)
     
     return ts, theta_dots

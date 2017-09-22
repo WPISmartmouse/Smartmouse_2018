@@ -60,7 +60,7 @@ StateWidget::StateWidget() : AbstractTab(), ui_(new Ui::StateWidget) {
 
 void StateWidget::StateCallback(const smartmouse::msgs::RobotSimState &msg) {
   char left_wheel_velocity_str[14];
-  snprintf(left_wheel_velocity_str, 14, "%0.2f cm/s", Mouse::radToMeters(100 * msg.left_wheel().omega()));
+  snprintf(left_wheel_velocity_str, 14, "%0.2f rad/s", msg.left_wheel().omega());
 
   char right_wheel_velocity_str[14];
   snprintf(right_wheel_velocity_str, 14, "%0.2f cm/s", Mouse::radToMeters(100 * msg.right_wheel().omega()));

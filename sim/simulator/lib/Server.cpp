@@ -113,8 +113,8 @@ void Server::UpdateRobotState(double dt) {
   double wr = robot_state_.right_wheel().omega();
   double ir = robot_state_.right_wheel().current();
 
-  double vl = wl * (M_2_PI * Mouse::WHEEL_RAD);
-  double vr = wr * (M_2_PI * Mouse::WHEEL_RAD);
+  double vl = Mouse::radToMeters(wl);
+  double vr = Mouse::radToMeters(wr);
 
   double new_al = il * motor_K/motor_J - motor_b * wl/motor_J; // equation 36
   double new_ar = il * motor_K/motor_J - motor_b * wr/motor_J ; // equation 39
