@@ -6,7 +6,6 @@
 #include <QtWidgets/QHBoxLayout>
 #include <msgs/robot_command.pb.h>
 #include <lib/TopicNames.h>
-#include <QtWidgets/QPushButton>
 #include <common/math/math.h>
 
 #include "ui_statewidget.h"
@@ -79,7 +78,6 @@ void StateWidget::StateCallback(const smartmouse::msgs::RobotSimState &msg) {
   this->SetTrueYaw(QString::asprintf("%0.1f deg", msg.p().theta() * 180 / M_PI));
 }
 
-
 void StateWidget::MazeLocationCallback(const smartmouse::msgs::MazeLocation &msg) {
   // compute x and y with respect to the top left square
   char row_str[14];
@@ -101,20 +99,17 @@ void StateWidget::MazeLocationCallback(const smartmouse::msgs::MazeLocation &msg
 
   if (fabs(msg.estimated_x_meters() - true_x) > 0.01) {
     this->HighlightX("QLineEdit {color:red;}");
-  }
-  else {
+  } else {
     this->HighlightX("QLineEdit {color:black;}");
   }
   if (fabs(msg.estimated_y_meters() - true_y) > 0.01) {
     this->HighlightY("QLineEdit {color:red;}");
-  }
-  else {
+  } else {
     this->HighlightY("QLineEdit {color:black;}");
   }
   if (smartmouse::math::yawDiff(msg.estimated_yaw_rad(), true_yaw) > 0.02) {
     this->HighlightYaw("QLineEdit {color:red;}");
-  }
-  else {
+  } else {
     this->HighlightYaw("QLineEdit {color:black;}");
   }
 
