@@ -132,7 +132,7 @@ plt.show()
 # 
 # It can be shown that the matrix on the left is invertable, so long as $t_f-t_0 > 0$. So we can invert and solve this equation and get all the $a$ coefficients. We can then use this polynomial to generate the $q(t)$ and $\dot{q}(t)$ -- our trajectory.
 
-# In[7]:
+# In[4]:
 
 # Example: you are a point in space (one dimension) go from rest at the origin to at rest at (0.18, 0, 0) in 1 second
 import numpy as np
@@ -152,7 +152,7 @@ print(coeff)
 
 # Here you can see that the resulting coeffictions are $a_0=0$, $a_1=0$, $a_2=0.54$, $a_0=-0.36$. Intuitively, this says that we're going to have positive acceleration, but our acceleration is going to slow down over time. Let's graph it!
 
-# In[8]:
+# In[5]:
 
 import matplotlib.pyplot as plt
 dt = 0.01
@@ -169,7 +169,7 @@ plt.show()
 # 
 # Let's try another example, now with our full state space of $[x, y, \theta]$.
 
-# In[9]:
+# In[6]:
 
 # In this example, we go from (0.18, 0.09, 0) to (0.27,0.18, -1.5707). Our starting and ending velocities are zero
 q_0 = np.array([0.09,0.09,0])
@@ -215,7 +215,7 @@ plt.show()
 
 # ## Trajectory Planning With a Simple Dynamics Model
 
-# In[47]:
+# In[7]:
 
 get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45:(0,0)}] (-.5,-1) rectangle (0.5,1);\n\\filldraw (0,0) circle (0.125);\n\n\\draw [->] (0,0) -- (0,1.5);\n\\draw [->] (0,0) -- (1.5,0);\n\\draw [->] (0,0) -- (1.5,1.5);\n\\draw (1.2, -0.2) node {$x$};\n\\draw (-0.2, 1.2) node {$y$};\n\\draw (1, 1.2) node {$v$};')
 
@@ -260,6 +260,17 @@ get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45
 # \end{align}
 # 
 # This leaves us needing 4 more equestions. Not sure where they should come from. Also, note the equations above are nonlinear and won't be simple to solve.
+
+# ## Questions for FU
+# 
+#  - I understand we need another equation that constrains the relation between $\dot{x}$ and $\dot{y}$, but why is it $\dot{x}\sin(\theta) - \dot{y}\cos(\theta) = 0$? Can we use other equations?
+#  - How is it possible to satisfy both $\dot{x}\sin(\theta) - \dot{y}\cos(\theta) = 0$ and $\dot{x}\sin(\theta) + \dot{y}\cos(\theta) = 0$ ???? **answer** Becuase the second equation is only true at t=0 and t=T
+#  - It seems there is no constraint on $\theta$ being a smooth 3rd order polynomial? Whyyyyyyyyy?
+# 
+# ** Graph of theta over time from the matlab code **
+# ![Theta](dank_theta.jpg)
+# 
+#  - Why can't I change it to $\dot{x}\sin(\theta_{t_f}) + \dot{y}\cos(\theta_{t_f}) = 1$
 
 # In[ ]:
 
