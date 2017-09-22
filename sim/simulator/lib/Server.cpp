@@ -4,7 +4,7 @@
 #include <common/Mouse.h>
 #include <common/RobotConfig.h>
 
-void Server::start() {
+void Server::Start() {
   thread_ = new std::thread(std::bind(&Server::RunLoop, this));
   sim_time_ = Time::Zero;
 }
@@ -19,6 +19,7 @@ void Server::RunLoop() {
   node_ptr_->Subscribe(TopicNames::kMaze, &Server::OnMaze, this);
   node_ptr_->Subscribe(TopicNames::kRobotCommand, &Server::OnRobotCommand, this);
   node_ptr_->Subscribe(TopicNames::kRobotDescription, &Server::OnRobotDescription, this);
+  connected_ = true;
 
   while (true) {
     Time update_rate = Time(0, ns_of_sim_per_step_);
@@ -296,6 +297,10 @@ void Server::OnRobotDescription(const smartmouse::msgs::RobotDescription &msg) {
   // End critical section
 }
 
-void Server::join() {
+void Server::Join() {
   thread_->join();
+}
+
+bool Server::IsConnected() {
+  return connected_;
 }

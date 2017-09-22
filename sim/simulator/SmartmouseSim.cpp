@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
   do {
     // Start physics thread
     Server server;
-    server.start();
+    server.Start();
 
     QApplication app(argc, argv);
     window = new Client();
@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
     smartmouse::msgs::ServerControl quit_msg;
     quit_msg.set_quit(true);
     server_pub.Publish(quit_msg);
-    server.join();
+    server.Join();
   } while (return_code == Client::kRestartCode);
   window->Exit();
 

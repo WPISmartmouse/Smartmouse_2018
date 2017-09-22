@@ -4,6 +4,10 @@
 #include <common/AbstractMaze.h>
 #include <msgs/direction.pb.h>
 #include <msgs/msgs.h>
+#include <ignition/transport.hh>
+#include <sim/simulator/msgs/server_control.pb.h>
+#include <sim/simulator/lib/TopicNames.h>
+#include <sim/simulator/lib/Server.h>
 
 TEST(DirectionTest, DirectionMsgConversion) {
   smartmouse::msgs::Direction dir_msg;
@@ -38,6 +42,19 @@ TEST(MazeTest, MazeConversion) {
   AbstractMaze maze2 = smartmouse::msgs::Convert(maze_msg);
 
   EXPECT_EQ(maze, maze2);
+}
+
+TEST(ServerTest, QuitTest) {
+  ignition::transport::Node node;
+  auto server_pub = node.Advertise<smartmouse::msgs::ServerControl>(TopicNames::kServerControl);
+  Server server;
+  server.Start();
+  while (!server.IsConnected()) ;
+  smartmouse::msgs::ServerControl quit_msg;
+  quit_msg.set_quit(true);
+  server_pub.Publish(quit_msg);
+  server.Join();
+  ASSERT_TRUE(true);
 }
 
 int main(int argc, char **argv) {

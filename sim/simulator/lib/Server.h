@@ -17,10 +17,11 @@
 class Server {
 
  public:
-  void start();
+  void Start();
   void RunLoop();
   void Step();
-  void join();
+  void Join();
+  bool IsConnected();
 
   std::thread *thread_;
  private:
@@ -44,12 +45,12 @@ class Server {
   std::mutex physics_mutex_;
   bool pause_ = true;
   bool quit_ = false;
+  bool connected_ = false;
   unsigned int ns_of_sim_per_step_ = 1000000u;
   unsigned long pause_at_steps_ = 0ul;
   double real_time_factor_ = 1.0;
   smartmouse::msgs::Maze maze_;
   smartmouse::msgs::RobotCommand cmd_;
   smartmouse::msgs::RobotDescription mouse_;
-
   smartmouse::msgs::InternalPhysicsState internal_state_;
 };
