@@ -1,6 +1,5 @@
 #include <sstream>
 #include <cmath>
-#include <boost/algorithm/string/replace.hpp>
 #include <sim/lib/SimMouse.h>
 #include "StateWidget.h"
 #include <QtWidgets/QHBoxLayout>

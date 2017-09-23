@@ -1,5 +1,6 @@
 #include <sim/simulator/lib/widgets/SensorStateWidget.h>
 #include <QtGui/QPainter>
+#include <cmath>
 
 SensorState::SensorState() {
 }

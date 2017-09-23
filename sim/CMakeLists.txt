@@ -1,4 +1,4 @@
-cmake_policy(SET CMP0071 OLD)
+#cmake_policy(SET CMP0071 OLD)
 
 find_package(Qt5 5.9.1 REQUIRED COMPONENTS Core Gui Charts)
 find_package(Protobuf REQUIRED)
