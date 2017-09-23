@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.1)
 
-option(BUILD_SIM "build gazebo simulations" OFF)
+option(BUILD_SIM "build simulations" OFF)
 
 if (NOT ${BUILD_SIM})
     set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/cmake/teensy-arm.toolchain.cmake")
