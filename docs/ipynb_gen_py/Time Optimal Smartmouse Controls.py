@@ -132,7 +132,7 @@ plt.show()
 # 
 # It can be shown that the matrix on the left is invertable, so long as $t_f-t_0 > 0$. So we can invert and solve this equation and get all the $a$ coefficients. We can then use this polynomial to generate the $q(t)$ and $\dot{q}(t)$ -- our trajectory.
 
-# In[4]:
+# In[35]:
 
 # Example: you are a point in space (one dimension) go from rest at the origin to at rest at (0.18, 0, 0) in 1 second
 import numpy as np
@@ -146,13 +146,14 @@ t_f = 1
 
 b = np.array([q_0, q_dot_0, q_f, q_dot_f])
 a = np.array([[1,0,0,0],[0,1,0,0],[1, t_f, pow(t_f,2),pow(t_f,3)],[0,1,2*t_f,3*pow(t_f,2)]])
+print(a, b)
 coeff = np.linalg.solve(a, b)
 print(coeff)
 
 
 # Here you can see that the resulting coeffictions are $a_0=0$, $a_1=0$, $a_2=0.54$, $a_0=-0.36$. Intuitively, this says that we're going to have positive acceleration, but our acceleration is going to slow down over time. Let's graph it!
 
-# In[5]:
+# In[36]:
 
 import matplotlib.pyplot as plt
 dt = 0.01
@@ -169,7 +170,7 @@ plt.show()
 # 
 # Let's try another example, now with our full state space of $[x, y, \theta]$.
 
-# In[6]:
+# In[37]:
 
 # In this example, we go from (0.18, 0.09, 0) to (0.27,0.18, -1.5707). Our starting and ending velocities are zero
 q_0 = np.array([0.09,0.09,0])
@@ -215,7 +216,7 @@ plt.show()
 
 # ## Trajectory Planning With a Simple Dynamics Model
 
-# In[7]:
+# In[38]:
 
 get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45:(0,0)}] (-.5,-1) rectangle (0.5,1);\n\\filldraw (0,0) circle (0.125);\n\n\\draw [->] (0,0) -- (0,1.5);\n\\draw [->] (0,0) -- (1.5,0);\n\\draw [->] (0,0) -- (1.5,1.5);\n\\draw (1.2, -0.2) node {$x$};\n\\draw (-0.2, 1.2) node {$y$};\n\\draw (1, 1.2) node {$v$};')
 
@@ -233,33 +234,123 @@ get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45
 # \begin{align}
 # x(0) &= c_0 + c_1(0) + c_2(0)^2 + c_3(0)^3\\
 # y(0) &= d_0 + d_1(0) + d_2(0)^2 + d_3(0)^3\\
-# \theta(0) &= e_0 + e_1(0) + e_2(0)^2 + e_3(0)^3\\
 # x(t_f) &= c_0 + c_1(t_f) + c_2(t_f)^2 + c_3(t_f)^3\\
-# y(t_f) &= d_0 + d_1(t_f) + d_2(t_f)^2 + d_3(t_f)^3\\
-# \theta(t_f) &= e_0 + e_1(t_f) + e_2(t_f)^2 + e_3(t_f)^3\\
+# y(t_f) &= d_0 + d_1(t_f) + d_2(t_f)^2 + d_3(t_f)^3
 # \end{align}
 # 
-# Notice here we have 12 unknowns, $c_0 \dots c_3$, $d_0 \dots d_3$ and $e_0 \dots e_3$. So we're gonna need 6 more equations for there to be a unique solution. Also notice we haven't defined any constraints related to our dynamics model. That would be a good place to get our other equations!
+# Notice here we have 8 unknowns, $c_0 \dots c_3$ and $d_0 \dots d_3$. So we're gonna need 4 more equations for there to be a unique solution. Also notice we haven't defined any constraints related to our dynamics model. That would be a good place to get our other equations!
 # 
-# First, let's make sure the car moves in the direction is pointing. Formally:
+# First, let's make sure x and y components obey trigonometry.
 # 
-# $$v = \dot{x}\cos(\theta) + \dot{y}\sin(\theta)$$
+# \begin{align}
+#   v\cos(\theta)\sin(\theta) + v\cos(\theta)\sin(\theta) &= v\sin(2\theta) \\
+#   \dot{x}\sin(\theta) + \dot{y}\sin(\theta) &= v\sin(2\theta)
+# \end{align}
 # 
 # We can get two equations out of this by specifying initial and final velocities
 # 
 # \begin{align}
-# v(0) &= \dot{x}(0)\cos(\theta(0)) + \dot{y}(0)\sin(\theta(0))\\
-# v(t_f) &= \dot{x}(0)\cos(\theta(0)) + \dot{y}(0)\sin(\theta(0))\\
+# v(0)\sin(2\theta_0) &= \dot{x}_0\sin(\theta_0) + \dot{y}_0\cos(\theta_0) \\
+# v(t_f)\sin(2\theta_{t_f}) &= \dot{x}_{t_f}\sin(\theta_{t_f}) + \dot{y}_{t_f}\cos(\theta_{t_f})
 # \end{align}
 # 
 # We should write out the full form though, to make things terms of our coefficients.
 # 
 # \begin{align}
-# v(0) &= \Big[c_1 + 2c_2(0) + 3c_3(0)^2\Big]\cos\Big(e_0 + e_1(0) + e_2(0)^2 + e_3(0)^3\Big) + \Big[d_1 + 2d_2(0) + 3d_3(0)^2\Big]\sin\Big(e_0 + e_1(0) + e_2(0)^2 + e_3(0)^3\Big) \\
-# v(t_f) &= \Big[c_1 + 2c_2(0) + 3c_3(0)^2\Big]\cos\Big(e_0 + e_1(0) + e_2(0)^2 + e_3(0)^3\Big) + \Big[d_1 + 2d_2(0) + 3d_3(0)^2\Big]\sin\Big(e_0 + e_1(0) + e_2(0)^2 + e_3(0)^3\Big) \\
+# v(0)\sin(2\theta_0) &= \Big[c_1 + 2c_2(0) + 3c_3(0)^2\Big]\sin(\theta_0) + \Big[d_1 + 2d_2(0) + 3d_3(0)^2\Big]\cos(\theta_0) \\
+# v(0)\sin(2\theta_0) &= (0)c_0 + \sin(\theta_0)c_1 + (0)c_2 + (0)c_3 + (0)d_0 + \cos(\theta_0)d_1 + (0)d_2 + (0)d_3 
 # \end{align}
 # 
-# This leaves us needing 4 more equestions. Not sure where they should come from. Also, note the equations above are nonlinear and won't be simple to solve.
+# \begin{align}
+# v(t_f)\sin(2\theta_{t_f}) &= \Big[c_1 + 2c_2(t_f) + 3c_3(t_f)^2\Big]\sin(\theta_{t_f}) + \Big[d_1 + 2d_2(t_f) + 3d_3(t_f)^2\Big]\cos(\theta_{t_f}) \\
+# v(t_f)\sin(2\theta_{t_f}) &= (0)c_0 + \sin(\theta_{t_f})c_1 + 2\sin(\theta_{t_f})(t_f)c_2 + 3\sin(\theta_{t_f})(t_f)^2c_3 + (0)d_0 + \cos(\theta_{t_f})d_1 + 2\cos(\theta_{t_f})(t_f)d_2 + 3\cos(\theta_{t_f})(t_f)^2d_3 \\
+# \end{align}
+# 
+# The last two equations will just be some equation relating $\dot{x}$ to $\dot{y}$. Let's just make one up...
+# 
+# \begin{align}
+# v\cos(\theta)\sin(\theta) - v\cos(\theta)\sin(\theta) &= 0 \\
+# v\cos(\theta)\sin(\theta) - v\sin(\theta)\cos(\theta) &= 0 \\
+# \dot{x}\sin(\theta) - \dot{y}\cos(\theta) &= 0
+# \end{align}
+# 
+# and again written out fully in terms of our coefficients
+# 
+# \begin{align}
+# \Big[c_1 + 2c_2(0) + 3c_3(0)^2\Big]\sin(\theta_0) - \Big[d_1 + 2d_2(0) + 3d_3(0)^2\Big]\cos(\theta_0) &= 0 \\
+# (0)c_0 + \sin(\theta_0)c_1 + (0)c_2 + (0)c_3 - (0)d_0 - \cos(\theta_0)d_1 - (0)d_2 - (0)d_3 &= 0
+# \end{align}
+# 
+# \begin{align}
+# \Big[c_1 + 2c_2(t_f) + 3c_3(t_f)^2\Big]\sin(\theta_{t_f}) - \Big[d_1 + 2d_2(t_f) + 3d_3(t_f)^2\Big]\cos(\theta_{t_f}) &= 0 \\
+# (0)c_0 + \sin(\theta_{t_f})c_1 + 2\sin(\theta_{t_f})(t_f)c_2 + 3\sin(\theta_{t_f})(t_f)^2c_3 - (0)d_0 - \cos(\theta_{t_f})d_1 - 2\cos(\theta_{t_f})(t_f)d_2 - 3\cos(\theta_{t_f})(t_f)^2d_3 &= 0
+# \end{align}
+# 
+# Ok, that should work. Now let's write it out in matrix form.
+# 
+# \begin{equation}
+# \begin{bmatrix}
+# 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+# 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\
+# 0 & \sin(\theta_0) & 0 & 0 & 0 & \cos(\theta_0) & 0 & 0 \\
+# 0 & \sin(\theta_0) & 0 & 0 & 0 & -\cos(\theta_0) & 0 & 0 \\
+# 1 & t & {t_f}^2 & {t_f}^3 & 0 & 0 & 0 & 0 \\
+# 0 & 0 & 0 & 0 & 1 & t_f & {t_f}^2 & {t_f}^3 \\
+# 0 & \sin(\theta_{t_f}) & 2\sin(\theta_{t_f})t_f & 3\sin(\theta_{t_f}){t_f}^2 & 0 & \cos(\theta_{t_f}) & 2\cos(\theta_{t_f}){t_f} & 3\cos(\theta_{t_f}){t_f}^2 \\
+# 0 & \sin(\theta_{t_f}) & 2\sin(\theta_{t_f})t_f & 3\sin(\theta_{t_f}){t_f}^2 & 0 & -\cos(\theta_{t_f}) & -2\cos(\theta_{t_f}){t_f} & -3\cos(\theta_{t_f}){t_f}^2 \\
+# \end{bmatrix}
+# \begin{bmatrix}
+# a_0 \\
+# a_1 \\
+# a_2 \\
+# a_3 \\
+# b_0 \\
+# b_1 \\
+# b_2 \\
+# b_3 \\
+# \end{bmatrix} =
+# \begin{bmatrix}
+# x(0) \\
+# y(0) \\
+# 0 \\
+# v_0\sin(2\theta_0) \\
+# x(t_f) \\
+# y(t_f) \\
+# 0 \\
+# v_{t_f}\sin(2\theta_{t_f}) \\
+# \end{bmatrix}
+# \end{equation}
+
+# In[47]:
+
+# Let's solve this in code like we did before
+from math import sin, cos
+
+q_0 = [0, 9, 0]
+q_t_f = [9, 18, 0]
+t_f = 10
+v_0 = 0.5
+v_f = 0
+
+A = np.array([[1, 0, 0, 0, 0, 0, 0, 0],
+              [0, 0, 0, 0, 1, 0, 0, 0],
+              [0, sin(q_0[2]), 0, 0, 0, cos(q_0[2]), 0, 0],
+              [0, sin(q_0[2]), 0, 0, 0, -cos(q_0[2]), 0, 0],
+              [1, t_f, pow(t_f,2), pow(t_f,3), 0, 0, 0, 0],
+              [0, 0, 0, 0, 1, t_f, pow(t_f,2), pow(t_f,3)],
+              [0, sin(q_t_f[2]), 2*sin(q_t_f[2])*t_f, 3*sin(q_t_f[2])*pow(t_f,2), 0,  cos(q_t_f[2]),  2*cos(q_t_f[2])*t_f,  3*cos(q_t_f[2])*pow(t_f,2)],
+              [0, sin(q_t_f[2]), 2*sin(q_t_f[2])*t_f, 3*sin(q_t_f[2])*pow(t_f,2), 0, -cos(q_t_f[2]), -2*cos(q_t_f[2])*t_f, -3*cos(q_t_f[2])*pow(t_f,2)],
+             ])
+B = np.array([q_0[0], q_0[1], 0, v_0, q_t_f[0], q_t_f[1], 0, v_f])
+
+print("A")
+print(A)
+print("B")
+print(B)
+coeff = np.linalg.lstsq(A, B)[0]
+print("Coefficients")
+print(coeff)
+
 
 # ## Questions for FU
 # 
@@ -271,8 +362,3 @@ get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45
 # ![Theta](dank_theta.jpg)
 # 
 #  - Why can't I change it to $\dot{x}\sin(\theta_{t_f}) + \dot{y}\cos(\theta_{t_f}) = 1$
-
-# In[ ]:
-
-
-
