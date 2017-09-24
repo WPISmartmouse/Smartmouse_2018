@@ -32,15 +32,15 @@ get_ipython().run_cell_magic('tikz', '-s 400,400', '\\draw[->] (0,0) -- (10,0);\
 
 # ## Code that proves it
 
-# In[54]:
+# In[61]:
 
 # dependencies
 import numpy as np
 import matplotlib.pyplot as plt
-np.set_printoptions(suppress=True, precision=2)
+np.set_printoptions(suppress=True, precision=3)
 
 
-# In[55]:
+# In[62]:
 
 def profile(V0, Vf, Vmax, d, A, buffer=3e-3):
     v = V0
@@ -136,7 +136,7 @@ plt.show()
 # 
 # It can be shown that the matrix on the left is invertable, so long as $t_f-t_0 > 0$. So we can invert and solve this equation and get all the $a$ coefficients. We can then use this polynomial to generate the $q(t)$ and $\dot{q}(t)$ -- our trajectory.
 
-# In[56]:
+# In[63]:
 
 # Example: you are a point in space (one dimension) go from rest at the origin to at rest at (0.18, 0, 0) in 1 second
 q_0 = np.array([0])
@@ -154,7 +154,7 @@ print(coeff)
 
 # Here you can see that the resulting coeffictions are $a_0=0$, $a_1=0$, $a_2=0.54$, $a_0=-0.36$. Intuitively, this says that we're going to have positive acceleration, but our acceleration is going to slow down over time. Let's graph it!
 
-# In[57]:
+# In[64]:
 
 dt = 0.01
 ts = np.array([[1, t, pow(t,2), pow(t,3)] for t in np.arange(0, t_f+dt,  dt)])
@@ -170,7 +170,7 @@ plt.show()
 # 
 # Let's try another example, now with our full state space of $[x, y, \theta]$.
 
-# In[58]:
+# In[65]:
 
 # In this example, we go from (0.18, 0.09, 0) to (0.27,0.18, -1.5707). Our starting and ending velocities are zero
 q_0 = np.array([0.09,0.09,0])
@@ -216,7 +216,7 @@ plt.show()
 
 # ## Trajectory Planning With a Simple Dynamics Model
 
-# In[59]:
+# In[66]:
 
 get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45:(0,0)}] (-.5,-1) rectangle (0.5,1);\n\\filldraw (0,0) circle (0.125);\n\n\\draw [->] (0,0) -- (0,1.5);\n\\draw [->] (0,0) -- (1.5,0);\n\\draw [->] (0,0) -- (1.5,1.5);\n\\draw (1.2, -0.2) node {$x$};\n\\draw (-0.2, 1.2) node {$y$};\n\\draw (1, 1.2) node {$v$};')
 
@@ -303,10 +303,12 @@ get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45
 # 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\
 # 0 & \sin(\theta_0) & 0 & 0 & 0 & \cos(\theta_0) & 0 & 0 \\
 # 0 & \sin(\theta_0) & 0 & 0 & 0 & -\cos(\theta_0) & 0 & 0 \\
+# 0 & \cos(\theta_0) & 0 & 0 & 0 & \sin(\theta_0) & 0 & 0 \\
 # 1 & t & {t_f}^2 & {t_f}^3 & 0 & 0 & 0 & 0 \\
 # 0 & 0 & 0 & 0 & 1 & t_f & {t_f}^2 & {t_f}^3 \\
 # 0 & \sin(\theta_{t_f}) & 2\sin(\theta_{t_f})t_f & 3\sin(\theta_{t_f}){t_f}^2 & 0 & \cos(\theta_{t_f}) & 2\cos(\theta_{t_f}){t_f} & 3\cos(\theta_{t_f}){t_f}^2 \\
 # 0 & \sin(\theta_{t_f}) & 2\sin(\theta_{t_f})t_f & 3\sin(\theta_{t_f}){t_f}^2 & 0 & -\cos(\theta_{t_f}) & -2\cos(\theta_{t_f}){t_f} & -3\cos(\theta_{t_f}){t_f}^2 \\
+# 0 & \cos(\theta_{t_f}) & 2\cos(\theta_{t_f})t_f & 3\cos(\theta_{t_f}){t_f}^2 & 0 & \sin(\theta_{t_f}) & 2\sin(\theta_{t_f})t_f & 3\sin(\theta_{t_f}){t_f}^2 \\
 # \end{bmatrix}
 # \begin{bmatrix}
 # c_0 \\
@@ -323,77 +325,95 @@ get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45
 # y_0 \\
 # 0 \\
 # v_0\sin(2\theta_0) \\
+# v_0 \\
 # x_{t_f} \\
 # y_{t_f} \\
 # 0 \\
 # v_{t_f}\sin(2\theta_{t_f}) \\
+# v_{t_f}
 # \end{bmatrix}
 # \end{equation}
 
-# In[60]:
+# In[113]:
 
 # Let's solve this in code like we did before
 from math import sin, cos, pi
 
-q_0 = [0, 9, pi/4]
-q_t_f = [9, 18, pi/4]
-t_f = 10
-v_0 = 0
+q_0 = [0, 9, pi]
+q_t_f = [9, 18, 0]
+t_f = 5
+v_0 = 1
 v_f = 1
 
 A = np.array([[1, 0, 0, 0, 0, 0, 0, 0],
               [0, 0, 0, 0, 1, 0, 0, 0],
-              [0, sin(q_0[2]), 0, 0, 0, -cos(q_0[2]), 0, 0],
               [0, sin(q_0[2]), 0, 0, 0, cos(q_0[2]), 0, 0],
+              [0, sin(q_0[2]), 0, 0, 0, -cos(q_0[2]), 0, 0],
+              [0, cos(q_0[2]), 0, 0, 0, sin(q_0[2]), 0, 0],
               [1, t_f, pow(t_f,2), pow(t_f,3), 0, 0, 0, 0],
               [0, 0, 0, 0, 1, t_f, pow(t_f,2), pow(t_f,3)],
-              [0, sin(q_t_f[2]), 2*sin(q_t_f[2])*t_f, 3*sin(q_t_f[2])*pow(t_f,2), 0, -cos(q_t_f[2]), -2*cos(q_t_f[2])*t_f, -3*cos(q_t_f[2])*pow(t_f,2)],
               [0, sin(q_t_f[2]), 2*sin(q_t_f[2])*t_f, 3*sin(q_t_f[2])*pow(t_f,2), 0,  cos(q_t_f[2]),  2*cos(q_t_f[2])*t_f,  3*cos(q_t_f[2])*pow(t_f,2)],
+              [0, sin(q_t_f[2]), 2*sin(q_t_f[2])*t_f, 3*sin(q_t_f[2])*pow(t_f,2), 0, -cos(q_t_f[2]), -2*cos(q_t_f[2])*t_f, -3*cos(q_t_f[2])*pow(t_f,2)],
+              [0, cos(q_t_f[2]), 2*cos(q_t_f[2])*t_f, 3*cos(q_t_f[2])*pow(t_f,2), 0,  sin(q_t_f[2]),  2*sin(q_t_f[2])*t_f,  3*sin(q_t_f[2])*pow(t_f,2)],
              ])
-B = np.array([q_0[0], q_0[1], v_0*sin(2*q_0[2]), 0, q_t_f[0], q_t_f[1], v_f*sin(2*q_t_f[2]), 0])
+B = np.array([q_0[0], q_0[1], 0, v_0*sin(2*q_0[2]), v_0, q_t_f[0], q_t_f[1], 0, v_f*sin(2*q_t_f[2]), v_f])
 
 rank = np.linalg.matrix_rank(A)
-if rank < A.shape[1]:
-    print("RANK DEFICIENT! {} < {}".format(rank, A.shape[1]))
-    coeff = np.linalg.lstsq(A, B)[0]
+
+if rank == A.shape[1]:
+    if A.shape[0] == A.shape[1]:
+        coeff = np.linalg.solve(A, B)
+    else:
+        print("not square, using least squares.".format(A.shape))
+        coeff = np.linalg.lstsq(A, B)[0]
 else:
-    coeff = np.linalg.solve(A, B)
+    print("RANK DEFICIENT! {} < {}, using least squares".format(rank, A.shape[1]))
+    coeff = np.linalg.lstsq(A, B)[0]
     
-print(A)
+# print(rank)
+# print(A)
 print(coeff)
 
 dt = 0.01
 T = np.arange(0, t_f+dt, dt)
 xts = np.array([[1, t, pow(t,2), pow(t,3), 0, 0, 0, 0] for t in T])
+xdts = np.array([[0, 1, 2*t, 3*pow(t,2), 0, 0, 0, 0] for t in T])
 yts = np.array([[0, 0, 0, 0, 1, t, pow(t,2), pow(t,3)] for t in T])
+ydts = np.array([[0, 0, 0, 0, 0, 1, 2*t, 3*pow(t,2)] for t in T])
 xs = xts@coeff
 ys = yts@coeff
+xds = xdts@coeff
+yds = ydts@coeff
+
+print(xds[0], yds[0], xds[0]*cos(q_0[2]) + yds[0]*sin(q_0[2]))
 
 plt.figure()
-plt.plot(T, xs)
-plt.ylim(0,18)
+plt.plot(T, xs, linewidth=3)
 plt.xlabel("time (seconds)")
 plt.title("X")
 plt.show()
 
 plt.figure()
-plt.plot(T, ys)
-plt.ylim(0,18)
+plt.plot(T, ys, linewidth=3)
 plt.xlabel("time (seconds)")
 plt.title("Y")
+
+plt.figure()
+plt.plot(T, np.tanh(yds/xds), linewidth=3)
+plt.xlabel("time (seconds)")
+plt.title("Theta")
 
 plt.show()
 
 
 # ## Finally, let's graph the trajectory in X/Y
 
-# In[44]:
+# In[115]:
 
-plt.scatter(xs[1::25], ys[1::25], marker='.')
+plt.scatter(xs[1::10], ys[1::10], marker='.')
 plt.axis('equal')
 plt.xlabel("X")
 plt.ylabel("Y")
-plt.xlim(0, 18)
 plt.grid(True)
 plt.show()
 
