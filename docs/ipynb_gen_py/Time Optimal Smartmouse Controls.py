@@ -232,10 +232,10 @@ get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45
 # First we will bring in the constraints from before. We must satisfy specific initial and final positions in $[x, y, \theta]$. I've used new letters for cofficients to avoid confusion.
 # 
 # \begin{align}
-# x(0) &= c_0 + c_1(0) + c_2(0)^2 + c_3(0)^3\\
-# y(0) &= d_0 + d_1(0) + d_2(0)^2 + d_3(0)^3\\
-# x(t_f) &= c_0 + c_1(t_f) + c_2(t_f)^2 + c_3(t_f)^3\\
-# y(t_f) &= d_0 + d_1(t_f) + d_2(t_f)^2 + d_3(t_f)^3
+# x_0 &= c_0 + c_1(0) + c_2(0)^2 + c_3(0)^3\\
+# y_0 &= d_0 + d_1(0) + d_2(0)^2 + d_3(0)^3\\
+# x_{t_f} &= c_0 + c_1(t_f) + c_2(t_f)^2 + c_3(t_f)^3\\
+# y_{t_f} &= d_0 + d_1(t_f) + d_2(t_f)^2 + d_3(t_f)^3
 # \end{align}
 # 
 # Notice here we have 8 unknowns, $c_0 \dots c_3$ and $d_0 \dots d_3$. So we're gonna need more equations for there to be a unique solution. Also notice we haven't defined any constraints related to our dynamics model. That would be a good place to get our other equations!
