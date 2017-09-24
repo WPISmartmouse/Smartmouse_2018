@@ -32,11 +32,15 @@ get_ipython().run_cell_magic('tikz', '-s 400,400', '\\draw[->] (0,0) -- (10,0);\
 
 # ## Code that proves it
 
-# In[3]:
+# In[54]:
 
+# dependencies
 import numpy as np
 import matplotlib.pyplot as plt
-np.set_printoptions(suppress=True, precision=3)
+np.set_printoptions(suppress=True, precision=2)
+
+
+# In[55]:
 
 def profile(V0, Vf, Vmax, d, A, buffer=3e-3):
     v = V0
@@ -132,12 +136,9 @@ plt.show()
 # 
 # It can be shown that the matrix on the left is invertable, so long as $t_f-t_0 > 0$. So we can invert and solve this equation and get all the $a$ coefficients. We can then use this polynomial to generate the $q(t)$ and $\dot{q}(t)$ -- our trajectory.
 
-# In[35]:
+# In[56]:
 
 # Example: you are a point in space (one dimension) go from rest at the origin to at rest at (0.18, 0, 0) in 1 second
-import numpy as np
-np.set_printoptions(suppress=True, precision=3)
-
 q_0 = np.array([0])
 q_dot_0 = np.array([0])
 q_f = np.array([0.18])
@@ -153,9 +154,8 @@ print(coeff)
 
 # Here you can see that the resulting coeffictions are $a_0=0$, $a_1=0$, $a_2=0.54$, $a_0=-0.36$. Intuitively, this says that we're going to have positive acceleration, but our acceleration is going to slow down over time. Let's graph it!
 
-# In[36]:
+# In[57]:
 
-import matplotlib.pyplot as plt
 dt = 0.01
 ts = np.array([[1, t, pow(t,2), pow(t,3)] for t in np.arange(0, t_f+dt,  dt)])
 qs = ts@coeff
@@ -170,7 +170,7 @@ plt.show()
 # 
 # Let's try another example, now with our full state space of $[x, y, \theta]$.
 
-# In[37]:
+# In[58]:
 
 # In this example, we go from (0.18, 0.09, 0) to (0.27,0.18, -1.5707). Our starting and ending velocities are zero
 q_0 = np.array([0.09,0.09,0])
@@ -216,7 +216,7 @@ plt.show()
 
 # ## Trajectory Planning With a Simple Dynamics Model
 
-# In[38]:
+# In[59]:
 
 get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45:(0,0)}] (-.5,-1) rectangle (0.5,1);\n\\filldraw (0,0) circle (0.125);\n\n\\draw [->] (0,0) -- (0,1.5);\n\\draw [->] (0,0) -- (1.5,0);\n\\draw [->] (0,0) -- (1.5,1.5);\n\\draw (1.2, -0.2) node {$x$};\n\\draw (-0.2, 1.2) node {$y$};\n\\draw (1, 1.2) node {$v$};')
 
@@ -238,9 +238,18 @@ get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45
 # y(t_f) &= d_0 + d_1(t_f) + d_2(t_f)^2 + d_3(t_f)^3
 # \end{align}
 # 
-# Notice here we have 8 unknowns, $c_0 \dots c_3$ and $d_0 \dots d_3$. So we're gonna need 4 more equations for there to be a unique solution. Also notice we haven't defined any constraints related to our dynamics model. That would be a good place to get our other equations!
+# Notice here we have 8 unknowns, $c_0 \dots c_3$ and $d_0 \dots d_3$. So we're gonna need more equations for there to be a unique solution. Also notice we haven't defined any constraints related to our dynamics model. That would be a good place to get our other equations!
 # 
-# First, let's make sure x and y components obey trigonometry.
+# **TODO:** the rank of the system with 8 equations was 6, so there were multiple solutions. I'm working on adding constraints on initial final velocities to hopefully fix that.
+# 
+# First, we want to be able to specify initial velocity $v_0$ and final velocity $v_{t_f}$.
+# 
+# \begin{align}
+# v_0 &= c_1\cos(\theta_0) + d_1\sin(\theta_0) \\
+# v_{t_f} &= (0)c_0 + \cos(\theta_{t_f})c_1 + 2\cos(\theta_{t_f})t_fc_2 + 3\cos(\theta_{t_f}){t_f}^2c_3 + (0)d_0 + \sin(\theta_{t_f})d_1 + 2\sin(\theta_{t_f})t_fd_2 + 3\sin(\theta_{t_f}){t_f}^2d_3
+# \end{align}
+# 
+# Let's also make sure x and y components obey trigonometry.
 # 
 # \begin{align}
 #   v\cos(\theta)\sin(\theta) + v\cos(\theta)\sin(\theta) &= v\sin(2\theta) \\
@@ -250,8 +259,8 @@ get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45
 # We can get two equations out of this by specifying initial and final velocities
 # 
 # \begin{align}
-# v(0)\sin(2\theta_0) &= \dot{x}_0\sin(\theta_0) + \dot{y}_0\cos(\theta_0) \\
-# v(t_f)\sin(2\theta_{t_f}) &= \dot{x}_{t_f}\sin(\theta_{t_f}) + \dot{y}_{t_f}\cos(\theta_{t_f})
+# v_0\sin(2\theta_0) &= \dot{x}_0\sin(\theta_0) + \dot{y}_0\cos(\theta_0) \\
+# v_{t_f}\sin(2\theta_{t_f}) &= \dot{x}_{t_f}\sin(\theta_{t_f}) + \dot{y}_{t_f}\cos(\theta_{t_f})
 # \end{align}
 # 
 # We should write out the full form though, to make things terms of our coefficients.
@@ -263,7 +272,7 @@ get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45
 # 
 # \begin{align}
 # v(t_f)\sin(2\theta_{t_f}) &= \Big[c_1 + 2c_2(t_f) + 3c_3(t_f)^2\Big]\sin(\theta_{t_f}) + \Big[d_1 + 2d_2(t_f) + 3d_3(t_f)^2\Big]\cos(\theta_{t_f}) \\
-# v(t_f)\sin(2\theta_{t_f}) &= (0)c_0 + \sin(\theta_{t_f})c_1 + 2\sin(\theta_{t_f})(t_f)c_2 + 3\sin(\theta_{t_f})(t_f)^2c_3 + (0)d_0 + \cos(\theta_{t_f})d_1 + 2\cos(\theta_{t_f})(t_f)d_2 + 3\cos(\theta_{t_f})(t_f)^2d_3 \\
+# v(t_f)\sin(2\theta_{t_f}) &= (0)c_0 + \sin(\theta_{t_f})c_1 + 2\sin(\theta_{t_f})t_fc_2 + 3\sin(\theta_{t_f}){t_f}^2c_3 + (0)d_0 + \cos(\theta_{t_f})d_1 + 2\cos(\theta_{t_f})t_fd_2 + 3\cos(\theta_{t_f}){t_f}^2d_3 \\
 # \end{align}
 # 
 # The last two equations will just be some equation relating $\dot{x}$ to $\dot{y}$. Let's just make one up...
@@ -283,7 +292,7 @@ get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45
 # 
 # \begin{align}
 # \Big[c_1 + 2c_2(t_f) + 3c_3(t_f)^2\Big]\sin(\theta_{t_f}) - \Big[d_1 + 2d_2(t_f) + 3d_3(t_f)^2\Big]\cos(\theta_{t_f}) &= 0 \\
-# (0)c_0 + \sin(\theta_{t_f})c_1 + 2\sin(\theta_{t_f})(t_f)c_2 + 3\sin(\theta_{t_f})(t_f)^2c_3 - (0)d_0 - \cos(\theta_{t_f})d_1 - 2\cos(\theta_{t_f})(t_f)d_2 - 3\cos(\theta_{t_f})(t_f)^2d_3 &= 0
+# (0)c_0 + \sin(\theta_{t_f})c_1 + 2\sin(\theta_{t_f})t_fc_2 + 3\sin(\theta_{t_f}){t_f}^2c_3 - (0)d_0 - \cos(\theta_{t_f})d_1 - 2\cos(\theta_{t_f})t_fd_2 - 3\cos(\theta_{t_f}){t_f}^2d_3 &= 0
 # \end{align}
 # 
 # Ok, that should work. Now let's write it out in matrix form.
@@ -300,56 +309,93 @@ get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45
 # 0 & \sin(\theta_{t_f}) & 2\sin(\theta_{t_f})t_f & 3\sin(\theta_{t_f}){t_f}^2 & 0 & -\cos(\theta_{t_f}) & -2\cos(\theta_{t_f}){t_f} & -3\cos(\theta_{t_f}){t_f}^2 \\
 # \end{bmatrix}
 # \begin{bmatrix}
-# a_0 \\
-# a_1 \\
-# a_2 \\
-# a_3 \\
-# b_0 \\
-# b_1 \\
-# b_2 \\
-# b_3 \\
+# c_0 \\
+# c_1 \\
+# c_2 \\
+# c_3 \\
+# d_0 \\
+# d_1 \\
+# d_2 \\
+# d_3 \\
 # \end{bmatrix} =
 # \begin{bmatrix}
-# x(0) \\
-# y(0) \\
+# x_0 \\
+# y_0 \\
 # 0 \\
 # v_0\sin(2\theta_0) \\
-# x(t_f) \\
-# y(t_f) \\
+# x_{t_f} \\
+# y_{t_f} \\
 # 0 \\
 # v_{t_f}\sin(2\theta_{t_f}) \\
 # \end{bmatrix}
 # \end{equation}
 
-# In[47]:
+# In[60]:
 
 # Let's solve this in code like we did before
-from math import sin, cos
+from math import sin, cos, pi
 
-q_0 = [0, 9, 0]
-q_t_f = [9, 18, 0]
+q_0 = [0, 9, pi/4]
+q_t_f = [9, 18, pi/4]
 t_f = 10
-v_0 = 0.5
-v_f = 0
+v_0 = 0
+v_f = 1
 
 A = np.array([[1, 0, 0, 0, 0, 0, 0, 0],
               [0, 0, 0, 0, 1, 0, 0, 0],
-              [0, sin(q_0[2]), 0, 0, 0, cos(q_0[2]), 0, 0],
               [0, sin(q_0[2]), 0, 0, 0, -cos(q_0[2]), 0, 0],
+              [0, sin(q_0[2]), 0, 0, 0, cos(q_0[2]), 0, 0],
               [1, t_f, pow(t_f,2), pow(t_f,3), 0, 0, 0, 0],
               [0, 0, 0, 0, 1, t_f, pow(t_f,2), pow(t_f,3)],
-              [0, sin(q_t_f[2]), 2*sin(q_t_f[2])*t_f, 3*sin(q_t_f[2])*pow(t_f,2), 0,  cos(q_t_f[2]),  2*cos(q_t_f[2])*t_f,  3*cos(q_t_f[2])*pow(t_f,2)],
               [0, sin(q_t_f[2]), 2*sin(q_t_f[2])*t_f, 3*sin(q_t_f[2])*pow(t_f,2), 0, -cos(q_t_f[2]), -2*cos(q_t_f[2])*t_f, -3*cos(q_t_f[2])*pow(t_f,2)],
+              [0, sin(q_t_f[2]), 2*sin(q_t_f[2])*t_f, 3*sin(q_t_f[2])*pow(t_f,2), 0,  cos(q_t_f[2]),  2*cos(q_t_f[2])*t_f,  3*cos(q_t_f[2])*pow(t_f,2)],
              ])
-B = np.array([q_0[0], q_0[1], 0, v_0, q_t_f[0], q_t_f[1], 0, v_f])
+B = np.array([q_0[0], q_0[1], v_0*sin(2*q_0[2]), 0, q_t_f[0], q_t_f[1], v_f*sin(2*q_t_f[2]), 0])
 
-print("A")
+rank = np.linalg.matrix_rank(A)
+if rank < A.shape[1]:
+    print("RANK DEFICIENT! {} < {}".format(rank, A.shape[1]))
+    coeff = np.linalg.lstsq(A, B)[0]
+else:
+    coeff = np.linalg.solve(A, B)
+    
 print(A)
-print("B")
-print(B)
-coeff = np.linalg.lstsq(A, B)[0]
-print("Coefficients")
 print(coeff)
+
+dt = 0.01
+T = np.arange(0, t_f+dt, dt)
+xts = np.array([[1, t, pow(t,2), pow(t,3), 0, 0, 0, 0] for t in T])
+yts = np.array([[0, 0, 0, 0, 1, t, pow(t,2), pow(t,3)] for t in T])
+xs = xts@coeff
+ys = yts@coeff
+
+plt.figure()
+plt.plot(T, xs)
+plt.ylim(0,18)
+plt.xlabel("time (seconds)")
+plt.title("X")
+plt.show()
+
+plt.figure()
+plt.plot(T, ys)
+plt.ylim(0,18)
+plt.xlabel("time (seconds)")
+plt.title("Y")
+
+plt.show()
+
+
+# ## Finally, let's graph the trajectory in X/Y
+
+# In[44]:
+
+plt.scatter(xs[1::25], ys[1::25], marker='.')
+plt.axis('equal')
+plt.xlabel("X")
+plt.ylabel("Y")
+plt.xlim(0, 18)
+plt.grid(True)
+plt.show()
 
 
 # ## Questions for FU
