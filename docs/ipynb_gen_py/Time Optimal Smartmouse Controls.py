@@ -340,7 +340,7 @@ get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45
 # \end{bmatrix}
 # \end{equation}
 
-# In[110]:
+# In[127]:
 
 # Let's solve this in code like we did before
 from math import sin, cos, pi
@@ -348,22 +348,22 @@ from math import sin, cos, pi
 q_0 = [0, 0.09, 0]
 q_t_f = [0.09, 0.09, pi/2]
 t_f = 1
-v_0 = 0
-v_f = 0.4
+v_0 = 0.1
+v_f = 0.5
 
-A = np.array([[1, 0, 0, 0, 0, 0, 0, 0],
-              [0, 0, 0, 0, 1, 0, 0, 0],
-              [0, sin(q_0[2]), 0, 0, 0, cos(q_0[2]), 0, 0],
-              [0, sin(q_0[2]), 0, 0, 0, -cos(q_0[2]), 0, 0],
-              [0, 1, 0, 0, 0, 0, 0, 0],
-              [0, 0, 0, 0, 0, 1, 0, 0],
+A = np.array([[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+              [0, sin(q_0[2]), 0, 0, 0, 0, 0, cos(q_0[2]), 0, 0, 0, 0],
+              [0, sin(q_0[2]), 0, 0, 0, 0, 0, -cos(q_0[2]), 0, 0, 0, 0],
+              [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
               ##############################################
-              [1, t_f, pow(t_f,2), pow(t_f,3), 0, 0, 0, 0],
-              [0, 0, 0, 0, 1, t_f, pow(t_f,2), pow(t_f,3)],
-              [0, sin(q_t_f[2]), 2*sin(q_t_f[2])*t_f, 3*sin(q_t_f[2])*pow(t_f,2), 0,  cos(q_t_f[2]),  2*cos(q_t_f[2])*t_f,  3*cos(q_t_f[2])*pow(t_f,2)],
-              [0, sin(q_t_f[2]), 2*sin(q_t_f[2])*t_f, 3*sin(q_t_f[2])*pow(t_f,2), 0, -cos(q_t_f[2]), -2*cos(q_t_f[2])*t_f, -3*cos(q_t_f[2])*pow(t_f,2)],
-              [0, 1, 2*t_f, 3*pow(t_f,2), 0, 0, 0, 0],
-              [0, 0, 0, 0, 0, 1, 2*t_f, 3*pow(t_f,2)],
+              [1, t_f, pow(t_f,2), pow(t_f,3), pow(t_f,4), pow(t_f,5), 0, 0, 0, 0, 0, 0],
+              [0, 0, 0, 0, 0, 0, 1, t_f, pow(t_f,2), pow(t_f,3), pow(t_f,4), pow(t_f,5)],
+              [0, sin(q_t_f[2]), 2*sin(q_t_f[2])*t_f, 3*sin(q_t_f[2])*pow(t_f,2), 4*sin(q_t_f[2])*pow(t_f,3), 5*sin(q_t_f[2])*pow(t_f,4), 0, cos(q_t_f[2]), 2*cos(q_t_f[2])*t_f, 3*cos(q_t_f[2])*pow(t_f,2), 4*cos(q_t_f[2])*pow(t_f,3), 5*cos(q_t_f[2])*pow(t_f,4)],
+              [0, sin(q_t_f[2]), 2*sin(q_t_f[2])*t_f, 3*sin(q_t_f[2])*pow(t_f,2), 4*sin(q_t_f[2])*pow(t_f,3), 5*sin(q_t_f[2])*pow(t_f,4), 0, -cos(q_t_f[2]), -2*cos(q_t_f[2])*t_f, -3*cos(q_t_f[2])*pow(t_f,2), -4*cos(q_t_f[2])*pow(t_f,3), -5*cos(q_t_f[2])*pow(t_f,4)],
+              [0, 1, 2*t_f, 3*pow(t_f,2), 4*pow(t_f,3), 5*pow(t_f,4), 0, 0, 0, 0, 0, 0],
+              [0, 0, 0, 0, 0, 0, 0, 1, 2*t_f, 3*pow(t_f,2), 4*pow(t_f,3), 5*pow(t_f,4)],
              ])
 B = np.array([q_0[0],
               q_0[1],
@@ -385,23 +385,25 @@ if rank == A.shape[1]:
         coeff = np.linalg.solve(A, B)
     else:
         print("not square, using least squares.".format(A.shape))
-        coeff = np.linalg.lstsq(A, B)[0]
+        coeff, resid, rank, s = np.linalg.lstsq(A, B)
 else:
-    print("RANK DEFICIENT! {} < {}, using least squares".format(rank, A.shape[1]))
-    coeff = np.linalg.lstsq(A, B)[0]
+    print("Ranks don't match! {} versus {}, using least squares".format(rank, A.shape[1]))
+    coeff, resid, rank ,s = np.linalg.lstsq(A, B)
     
-print("RANK", rank)
-print("A", A)
-print("COEFF", coeff)
-print("     B", B)
-print("RESULT", A@coeff)
+# print("RANK", rank)
+# print("A", A)
+# print("COEFF", coeff)
+# print("     B", B)
+# print("RESULT", A@coeff)
+error = np.sum(np.power(A@coeff - B, 2))
+print(error)
 
 dt = 0.01
 T = np.arange(0, t_f+dt, dt)
-xts = np.array([[1, t, pow(t,2), pow(t,3), 0, 0, 0, 0] for t in T])
-xdts = np.array([[0, 1, 2*t, 3*pow(t,2), 0, 0, 0, 0] for t in T])
-yts = np.array([[0, 0, 0, 0, 1, t, pow(t,2), pow(t,3)] for t in T])
-ydts = np.array([[0, 0, 0, 0, 0, 1, 2*t, 3*pow(t,2)] for t in T])
+xts = np.array([[1, t, pow(t,2), pow(t,3), pow(t,4), pow(t,5), 0, 0, 0, 0, 0, 0] for t in T])
+xdts = np.array([[0, 1, 2*t, 3*pow(t,2), 4*pow(t,3), 5*pow(t,4), 0, 0, 0, 0, 0, 0] for t in T])
+yts = np.array([[0, 0, 0, 0, 0, 0, 1, t, pow(t,2), pow(t,3), pow(t,4), pow(t,5)] for t in T])
+ydts = np.array([[0, 0, 0, 0, 0, 0, 0, 1, 2*t, 3*pow(t,2), 4*pow(t,3), 5*pow(t,4)] for t in T])
 xs = xts@coeff
 ys = yts@coeff
 xds = xdts@coeff
@@ -419,7 +421,6 @@ plt.title("Y")
 
 plt.figure()
 theta = np.arctan2(yds, xds)
-print(theta[0], theta[-1])
 plt.plot(T, theta, linewidth=3, color='g')
 plt.xlabel("time (seconds)")
 plt.title("Theta")
@@ -429,7 +430,7 @@ plt.show()
 
 # ## Finally, let's graph the trajectory in X/Y
 
-# In[108]:
+# In[117]:
 
 plt.scatter(xs, ys, marker='.', linewidth=0)
 plt.axis('equal')
