@@ -39,8 +39,8 @@ class AbstractMaze {
   char *path_to_next_goal;
 
   inline static std::pair<double, double> rowColToXYCenter(unsigned int row, unsigned int col) {
-    return {row * AbstractMaze::UNIT_DIST + AbstractMaze::HALF_UNIT_DIST,
-            col * AbstractMaze::UNIT_DIST + AbstractMaze::HALF_UNIT_DIST};
+    return {col * AbstractMaze::UNIT_DIST + AbstractMaze::HALF_UNIT_DIST,
+            (AbstractMaze::MAZE_SIZE - 1 - row) * AbstractMaze::UNIT_DIST + AbstractMaze::HALF_UNIT_DIST};
   }
 
   /** \brief allocates and initializes a node

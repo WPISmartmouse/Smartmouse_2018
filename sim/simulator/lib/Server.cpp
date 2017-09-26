@@ -5,6 +5,10 @@
 #include <common/RobotConfig.h>
 #include <common/math/math.h>
 
+Server::Server() {
+  ResetRobot();
+}
+
 void Server::Start() {
   thread_ = new std::thread(std::bind(&Server::RunLoop, this));
   sim_time_ = Time::Zero;
@@ -196,7 +200,7 @@ void Server::ResetTime() {
 void Server::ResetRobot() {
   robot_state_.mutable_p()->set_x(0.09);
   robot_state_.mutable_p()->set_y(0.09);
-  robot_state_.mutable_p()->set_theta(0);
+  robot_state_.mutable_p()->set_theta(M_PI_2);
   robot_state_.mutable_v()->set_x(0);
   robot_state_.mutable_v()->set_y(0);
   robot_state_.mutable_v()->set_theta(0);

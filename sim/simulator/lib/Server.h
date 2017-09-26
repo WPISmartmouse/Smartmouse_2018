@@ -16,6 +16,7 @@
 class Server {
 
  public:
+  Server();
   void Start();
   void RunLoop();
   void Step();

@@ -24,25 +24,24 @@ MazeWidget::MazeWidget() : AbstractTab() {
 }
 
 /**
- * All drawing should be done in meters, with the origin as the center of the top-left corner.
- * The coordinate system is X increasing across columns, Y increasing across rows, and Z down into the maze.
- * Yes, Z is down so it's a right handed coordinate system. Get over it.
+ * All drawing should be done in meters, with the origin as the center of the bottom-left corner.
+ * The coordinate system is X increasing across columns, Y increasing across rows, and Z up out of the maze.
  */
 void MazeWidget::paintEvent(QPaintEvent *event) {
   QPainter painter(this);
   QTransform tf;
   {
 
-    QRect r = this->geometry();
+    QRect g = this->geometry();
 
-    int w = std::min(r.width(), r.height()) - kPaddingPx;
+    int w = std::min(g.width(), g.height()) - kPaddingPx;
     double m2p = w / AbstractMaze::MAZE_SIZE_M;
 
-    int cx = (r.width() - w) / 2;
-    int cy = (r.height() - w) / 2;
+    int ox = 0 + (g.width() - w) / 2;
+    int oy = w + (g.height() - w) / 2;
 
-    tf.translate(cx, cy);
-    tf = tf.scale(m2p, m2p);
+    tf.translate(ox, oy);
+    tf = tf.scale(m2p, -m2p);
   }
 
   // draw the background
@@ -87,7 +86,7 @@ void MazeWidget::PaintMouse(QPainter &painter, QTransform tf) {
   QRectF right_wheel_rect(rwx - rr, rwy - rt / 2, rr * 2, rt);
 
   tf.translate(robot_state_.xytheta().x(), robot_state_.xytheta().y());
-  tf.rotateRadians(-robot_state_.xytheta().theta(), Qt::ZAxis); // LHS coordinate system so use negative
+  tf.rotateRadians(robot_state_.xytheta().theta(), Qt::ZAxis);
 
   painter.fillPath(tf.map(footprint_), kRobotBrush);
   painter.fillRect(tf.mapRect(left_wheel_rect), QBrush(Qt::black));
@@ -98,36 +97,35 @@ void MazeWidget::PaintWalls(QPainter &painter, QTransform tf) {
   for (smartmouse::msgs::Wall wall : maze_.walls()) {
     smartmouse::msgs::RowCol row_col = wall.node();
     smartmouse::msgs::Direction::Dir dir = wall.direction();
-    double center_row;
-    double center_col;
-    std::tie(center_row, center_col) = AbstractMaze::rowColToXYCenter(row_col.row(), row_col.col());
+    double center_x, center_y;
+    std::tie(center_x, center_y) = AbstractMaze::rowColToXYCenter(row_col.row(), row_col.col());
 
-    double x1 = center_col, y1 = center_row, w = AbstractMaze::UNIT_DIST, h = AbstractMaze::WALL_THICKNESS;
+    double x1 = center_x, y1 = center_y, w = AbstractMaze::UNIT_DIST, h = AbstractMaze::WALL_THICKNESS;
     switch (dir) {
       case smartmouse::msgs::Direction_Dir_N: {
-        x1 = center_col - AbstractMaze::HALF_UNIT_DIST;
-        y1 = center_row - AbstractMaze::HALF_UNIT_DIST - AbstractMaze::HALF_WALL_THICKNESS;
+        x1 = center_x - AbstractMaze::HALF_UNIT_DIST;
+        y1 = center_y + AbstractMaze::HALF_UNIT_DIST - AbstractMaze::HALF_WALL_THICKNESS;
         w = AbstractMaze::UNIT_DIST;
         h = AbstractMaze::WALL_THICKNESS;
         break;
       }
       case smartmouse::msgs::Direction_Dir_S: {
-        x1 = center_col - AbstractMaze::HALF_UNIT_DIST;
-        y1 = center_row + AbstractMaze::HALF_UNIT_DIST - AbstractMaze::HALF_WALL_THICKNESS;
+        x1 = center_x - AbstractMaze::HALF_UNIT_DIST;
+        y1 = center_y - AbstractMaze::HALF_UNIT_DIST - AbstractMaze::HALF_WALL_THICKNESS;
         w = AbstractMaze::UNIT_DIST;
         h = AbstractMaze::WALL_THICKNESS;
         break;
       }
       case smartmouse::msgs::Direction_Dir_E: {
-        x1 = center_col + AbstractMaze::HALF_UNIT_DIST - AbstractMaze::HALF_WALL_THICKNESS;
-        y1 = center_row - AbstractMaze::HALF_UNIT_DIST;
+        x1 = center_x + AbstractMaze::HALF_UNIT_DIST - AbstractMaze::HALF_WALL_THICKNESS;
+        y1 = center_y - AbstractMaze::HALF_UNIT_DIST;
         w = AbstractMaze::WALL_THICKNESS;
         h = AbstractMaze::UNIT_DIST;
         break;
       }
       case smartmouse::msgs::Direction_Dir_W: {
-        x1 = center_col - AbstractMaze::HALF_UNIT_DIST - AbstractMaze::HALF_WALL_THICKNESS;
-        y1 = center_row - AbstractMaze::HALF_UNIT_DIST;
+        x1 = center_x - AbstractMaze::HALF_UNIT_DIST - AbstractMaze::HALF_WALL_THICKNESS;
+        y1 = center_y - AbstractMaze::HALF_UNIT_DIST;
         w = AbstractMaze::WALL_THICKNESS;
         h = AbstractMaze::UNIT_DIST;
         break;

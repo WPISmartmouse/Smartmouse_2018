@@ -7,6 +7,9 @@
 \usetikzlibrary{shapes,backgrounds}
 \usepackage{graphicx}
 \usepackage{amsmath}
+
+\setlength{\parindent}{0pt}
+
 \begin{document}
 
 \title{Dyanmics Equations for Smartmouse 2018}
@@ -103,11 +106,24 @@ We can use this result to get a cleaner equation for $\omega$, which right now r
 \textbf{Next we need to figure out how to update our $x$, $y$, and $\theta$ given $R$.} \\
 
 Before we can solve any of these, we need to figure out what $\Delta\theta$ is equal to. We will assume we are following this arc of constant radius for a given time step $\Delta t$. This is a good assumption if our time step is equal to our controller time step, during which presumably the speeds of the motors aren't changing, and so neither will our turning radius. If so, then $\Delta\theta = \omega\Delta t$, and we know
+
 $$\omega=\frac{v_r - v_l}{W}$$
+
 Lets just pick $v_l$, and put them together to get $\Delta\theta$.
+
 $$\Delta\theta = \frac{v_r - v_l}{W}\Delta t$$
 
-So what are our update equations? Theta is obvious: $\theta \leftarrow \theta+\Delta\theta$. The coordinates of $ICC = (x-R\sin{\theta}, y+R\cos{\theta})$. You can see this if you think that the vector to $ICC$ is 90 degrees offset from $\theta$ and do the trig. Let's assume in the situation diagramed above, $\theta=\ang{105}$, $R=4$, and $x=4.8, y=0$, so $ICC = (4.8-4\sin{(105)}, 0+4\cos{(105)}) \approx (1, -1)$. For another example, pretend the robot is right below the origin facing east at $(0,-1,0)$ and $R=1$. $ICC$ should be $(0,0)$ so let's check. $ICC = (0-1\sin{(0)}, -1+1\cos{(0)}) = (0, 0).$ Great, the math seems to check out. Now we just rotate the robot coordinates around the point $ICC$ by $\Delta\theta$, which we can do easily with a rotation matrix. Of course, we're not rotating around the origin, we're roating around $ICC$, so we first subtract out the coordinates of $ICC$ to get $(x_o, y_o) = (x- ICC_x, y-ICC_y)$. Recall that to rotate around the origin by $\Delta\theta$, we multiply our point $(x_o, y_o)$ as follows:
+So what are our update equations? \\
+
+Theta is obvious: $\theta \leftarrow \theta+\Delta\theta$. \\
+
+To discover the rest, we will consider how to x and y change when we rotate around the $ICC$. \\
+
+The coordinates of the $ICC$ are:
+
+$$(x-R\sin{\theta}, y+R\cos{\theta})$$
+
+You can see this if you think that the vector to $ICC$ is 90 degrees offset from $\theta$ and do the trig. Let's assume in the situation diagramed above, $\theta=\ang{105}$, $R=4$, and $x=4.8, y=0$, so $ICC = (4.8-4\sin{(105)}, 0+4\cos{(105)}) \approx (1, -1)$. For another example, pretend the robot is right below the origin facing east at $(0,-1,0)$ and $R=1$. $ICC$ should be $(0,0)$ so let's check. $ICC = (0-1\sin{(0)}, -1+1\cos{(0)}) = (0, 0).$ Great, the math seems to check out. Now we just rotate the robot coordinates around the point $ICC$ by $\Delta\theta$, which we can do easily with a rotation matrix. Of course, we're not rotating around the origin, we're roating around $ICC$, so we first subtract out the coordinates of $ICC$ to get $(x_o, y_o) = (x- ICC_x, y-ICC_y)$. Recall that to rotate around the origin by $\Delta\theta$, we multiply our point $(x_o, y_o)$ as follows:
 \begin{equation}
   \begin{bmatrix}
     \cos{\Delta\theta} & -\sin{\Delta\theta} \\
@@ -146,19 +162,19 @@ We can expand and simplify the udpate equations for $x$.
   x &\leftarrow x+R\Big(\cos{(\frac{v_r-v_l}{W}\Delta t)}\sin{\theta}+\sin{(\frac{v_r-v_l}{W}\Delta t)}\cos{\theta}\Big)-R\sin{\theta} \\
   \shortintertext{let $\frac{v_r-v_l}{W}=a$, and $\theta=b$, we can use $\cos{a}\sin{b}+\sin{a}\cos{b}=\sin{(a+b)}$}
   x &\leftarrow x+R\Bigg(\sin{\Big(\frac{v_r-v_l}{W}\Delta t+\theta}\Big)\Bigg)-R\sin{\theta} \\
-  x &\leftarrow x+R\Bigg(\sin{\Big(\frac{v_r-v_l}{W}\Delta t+\theta}\Big)-\sin{\theta}\Bigg) \\
+  x &\leftarrow x+R\Bigg(\sin{\Big(\frac{v_r-v_l}{W}\Delta t+\theta}\Big)-\sin{\theta}\Bigg)
 \end{align}
 
 We can apply the same process for $y$.
 
 \begin{align}
-  y &\leftarrow \sin{(\frac{v_r-v_p}{W})}(x-x+R\sin{\theta})+\cos{(\frac{v_r-v_p}{W})}(y-y-R\cos{\theta}) + y+R\cos{\theta} \\
-  y &\leftarrow \sin{(\frac{v_r-v_p}{W})}(R\sin{\theta})+\cos{(\frac{v_r-v_p}{W})}(-R\cos{\theta}) + y+R\cos{\theta} \\
-  y &\leftarrow R\sin{(\frac{v_r-v_p}{W})}(\sin{\theta})-R\cos{(\frac{v_r-v_p}{W})}(\cos{\theta}) + y+R\cos{\theta} \\
-  y &\leftarrow y + R\sin{(\frac{v_r-v_p}{W})}(\sin{\theta})-R\cos{(\frac{v_r-v_p}{W})}(\cos{\theta}) + R\cos{\theta} \\
-  y &\leftarrow y + R\Bigg(\sin{(\frac{v_r-v_p}{W})}(\sin{\theta})-\cos{(\frac{v_r-v_p}{W})}(\cos{\theta}) + \cos{\theta}\Bigg) \\
-  y &\leftarrow y + R\Bigg(-\cos{(\frac{v_r-v_p}{W} + \theta)} + \cos{\theta}\Bigg) \\
-  y &\leftarrow y - R\Bigg(\cos{(\frac{v_r-v_p}{W} + \theta)} - \cos{\theta}\Bigg)
+  y &\leftarrow \sin{(\frac{v_r-v_l}{W}\Delta t)}(x-x+R\sin{\theta})+\cos{(\frac{v_r-v_l}{W}\Delta t)}(y-y-R\cos{\theta}) + y+R\cos{\theta} \\
+  y &\leftarrow \sin{(\frac{v_r-v_l}{W}\Delta t)}(R\sin{\theta})+\cos{(\frac{v_r-v_l}{W}\Delta t)}(-R\cos{\theta}) + y+R\cos{\theta} \\
+  y &\leftarrow R\sin{(\frac{v_r-v_l}{W}\Delta t)}(\sin{\theta})-R\cos{(\frac{v_r-v_l}{W}\Delta t)}(\cos{\theta}) + y+R\cos{\theta} \\
+  y &\leftarrow y + R\sin{(\frac{v_r-v_l}{W}\Delta t)}(\sin{\theta})-R\cos{(\frac{v_r-v_l}{W}\Delta t)}(\cos{\theta}) + R\cos{\theta} \\
+  y &\leftarrow y + R\Bigg(\sin{(\frac{v_r-v_l}{W}\Delta t)}(\sin{\theta})-\cos{(\frac{v_r-v_l}{W}\Delta t)}(\cos{\theta}) + \cos{\theta}\Bigg) \\
+  y &\leftarrow y + R\Bigg(-\cos{(\frac{v_r-v_l}{W}\Delta t + \theta)} + \cos{\theta}\Bigg) \\
+  y &\leftarrow y - R\Bigg(\cos{(\frac{v_r-v_l}{W}\Delta t + \theta)} - \cos{\theta}\Bigg)
 \end{align}
 
 \textbf{Final Solution to the forward Kinematics:}
@@ -172,7 +188,7 @@ However, there is also the case where the robot is going perfectly straight. Thi
 \begin{align}
  \theta &\leftarrow \theta \\
   x &\leftarrow x + v\Delta t\cos(theta) \\
-  y &\leftarrow y + v\Delta t\sin(theta) \\
+  y &\leftarrow y + v\Delta t\sin(theta)
 \end{align}
 
 Here, $v$ can be $v_l$, or $v_r$ since they should be the same. In code, a simple average is used to correct for any slight numerical inconsistencies. \\

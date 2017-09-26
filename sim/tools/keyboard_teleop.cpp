@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
   tty.c_lflag &= ~ECHO;
   tcsetattr(STDIN_FILENO, TCSANOW, &tty);
 
-  printf("Press W,A,S,D,X then enter to send a command.\n");
+  printf("Press W,A,S,D,X then enter to send a command. Units are 0-255\n");
 
   SimTimer timer;
   Command::setTimerImplementation(&timer);
@@ -31,11 +31,11 @@ int main(int argc, char **argv) {
   bool keepGoing = true;
   int key;
 
-  double lforce_setpoint = 0;
-  double rforce_setpoint = 0;
-  double lforce = 0;
-  double rforce = 0;
-  const double u = .09;
+  int lforce_setpoint = 0;
+  int rforce_setpoint = 0;
+  int lforce = 0;
+  int rforce = 0;
+  const double u = 10;
   while (keepGoing) {
     key = std::cin.get();
 
@@ -43,14 +43,14 @@ int main(int argc, char **argv) {
       lforce_setpoint += u;
       rforce_setpoint += u;
     } else if (key == 'a') {
-      lforce_setpoint += u;
-      rforce_setpoint -= u;
+      lforce_setpoint -= u;
+      rforce_setpoint += u;
     } else if (key == 's') {
       lforce_setpoint = 0;
       rforce_setpoint = 0;
     } else if (key == 'd') {
-      lforce_setpoint -= u;
-      rforce_setpoint += u;
+      lforce_setpoint += u;
+      rforce_setpoint -= u;
     } else if (key == 'x') {
       lforce_setpoint -= u;
       rforce_setpoint -= u;
@@ -63,10 +63,27 @@ int main(int argc, char **argv) {
       rforce = rforce_setpoint;
       lforce = lforce_setpoint;
 
+      if (rforce > 255) {
+        rforce = 255;
+      }
+      else if (rforce < -255)
+      {
+        rforce = -255;
+      }
+
+      if (lforce > 255) {
+        lforce = 255;
+      }
+      else if (lforce < -255)
+      {
+        lforce = 255;
+      }
+
       smartmouse::msgs::RobotCommand cmd;
       cmd.mutable_left()->set_abstract_force(lforce);
       cmd.mutable_right()->set_abstract_force(rforce);
 
+      cmd.PrintDebugString();
       controlPub.Publish(cmd);
     }
   }

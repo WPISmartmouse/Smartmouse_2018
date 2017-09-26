@@ -3,7 +3,7 @@ package smartmouse.msgs;
 
 message Command
 {
-    optional uint32 abstract_force = 1;
+    optional int32 abstract_force = 1;
 }
 
 message RobotCommand
