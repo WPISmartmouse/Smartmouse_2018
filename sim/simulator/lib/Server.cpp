@@ -117,12 +117,12 @@ void Server::UpdateRobotState(double dt) {
   double vl = Mouse::radToMeters(wl);
   double vr = Mouse::radToMeters(wr);
 
-  double new_al = il * motor_K/motor_J - motor_b * wl/motor_J; // equation 36
-  double new_ar = ir * motor_K/motor_J - motor_b * wr/motor_J ; // equation 39
+  double new_al = il * motor_K / motor_J - motor_b * wl / motor_J; // equation 36
+  double new_ar = ir * motor_K / motor_J - motor_b * wr / motor_J; // equation 39
   double new_wl = wl + new_al * dt;
   double new_wr = wr + new_ar * dt;
-  double new_tl = tl + new_wl * dt + 1/2 * new_al * dt * dt;
-  double new_tr = tr + new_wr * dt + 1/2 * new_ar * dt * dt;
+  double new_tl = tl + new_wl * dt + 1 / 2 * new_al * dt * dt;
+  double new_tr = tr + new_wr * dt + 1 / 2 * new_ar * dt * dt;
 
   const double kVRef = 5.0;
   double voltage_l = (cmd_.left().abstract_force() * kVRef) / 255.0;
@@ -140,10 +140,10 @@ void Server::UpdateRobotState(double dt) {
   // update the x & y coordinates
   if (std::abs(vl - vr) > 1e-5) {
     R = config.TRACK_WIDTH * (vr + vl) / (2 * (vr - vl)); // eq 12
-    w_about_icc = vl / (R - config.TRACK_WIDTH / 2); //eq 11
+    w_about_icc = (vr - vl) / config.TRACK_WIDTH; //eq 11
     dtheta_about_icc = w_about_icc * dt; //eq 11
-    new_x = x - R * (sin((vl - vr) / config.TRACK_WIDTH * dt - theta) + sin(theta)); //eq 28
-    new_y = y - R * (cos((vr - vl) / config.TRACK_WIDTH * dt - theta) - cos(theta)); //eq 29
+    new_x = x + R * (sin(dtheta_about_icc + theta) - sin(theta)); //eq 28
+    new_y = y - R * (cos(dtheta_about_icc + theta) - cos(theta)); //eq 29
   } else {
     // going perfectly straight
     dtheta_about_icc = 0;

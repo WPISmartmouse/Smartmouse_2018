@@ -87,7 +87,7 @@ void MazeWidget::PaintMouse(QPainter &painter, QTransform tf) {
   QRectF right_wheel_rect(rwx - rr, rwy - rt / 2, rr * 2, rt);
 
   tf.translate(robot_state_.xytheta().x(), robot_state_.xytheta().y());
-  tf.rotateRadians(-robot_state_.xytheta().theta(), Qt::ZAxis); // LHS coordinate system so use negative
+  tf.rotateRadians(robot_state_.xytheta().theta(), Qt::ZAxis); // LHS coordinate system so use negative
 
   painter.fillPath(tf.map(footprint_), kRobotBrush);
   painter.fillRect(tf.mapRect(left_wheel_rect), QBrush(Qt::black));
