@@ -143,7 +143,7 @@ void Server::UpdateRobotState(double dt) {
     w_about_icc = vl / (R - config.TRACK_WIDTH / 2); //eq 11
     dtheta_about_icc = w_about_icc * dt; //eq 11
     new_x = x - R * (sin((vl - vr) / config.TRACK_WIDTH * dt - theta) + sin(theta)); //eq 28
-    new_y = y - R * (cos((vl - vr) / config.TRACK_WIDTH * dt - theta) - cos(theta)); //eq 29
+    new_y = y - R * (cos((vr - vl) / config.TRACK_WIDTH * dt - theta) - cos(theta)); //eq 29
   } else {
     // going perfectly straight
     dtheta_about_icc = 0;
