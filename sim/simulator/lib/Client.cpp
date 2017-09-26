@@ -35,7 +35,7 @@ Client::Client(QMainWindow *parent) :
 
   // publish initial config of the server
   smartmouse::msgs::ServerControl initial_server_control;
-  initial_server_control.set_pause(true);
+  initial_server_control.set_pause(false);
   initial_server_control.set_reset_robot(true);
   initial_server_control.set_reset_time(true);
   server_control_pub_.Publish(initial_server_control);
