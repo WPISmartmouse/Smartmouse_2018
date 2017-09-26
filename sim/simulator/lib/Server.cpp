@@ -3,6 +3,7 @@
 #include <msgs/world_statistics.pb.h>
 #include <common/Mouse.h>
 #include <common/RobotConfig.h>
+#include <common/math/math.h>
 
 void Server::Start() {
   thread_ = new std::thread(std::bind(&Server::RunLoop, this));
@@ -158,8 +159,11 @@ void Server::UpdateRobotState(double dt) {
 
   // update theta, omega, and alpha
   double new_theta = theta + dtheta_about_icc; //eq 27
-  double new_w = (new_theta - theta) / dt;
+  double new_w = smartmouse::math::yawDiff(new_theta, theta) / dt;
   double new_a = (new_w - w) / dt;
+
+  // handle wrap-around of theta
+  new_theta = smartmouse::math::wrapAngleRad(new_theta);
 
   robot_state_.mutable_p()->set_x(new_x);
   robot_state_.mutable_p()->set_y(new_y);
