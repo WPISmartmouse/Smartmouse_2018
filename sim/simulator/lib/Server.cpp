@@ -117,7 +117,7 @@ void Server::UpdateRobotState(double dt) {
   double vr = Mouse::radToMeters(wr);
 
   double new_al = il * motor_K/motor_J - motor_b * wl/motor_J; // equation 36
-  double new_ar = il * motor_K/motor_J - motor_b * wr/motor_J ; // equation 39
+  double new_ar = ir * motor_K/motor_J - motor_b * wr/motor_J ; // equation 39
   double new_wl = wl + new_al * dt;
   double new_wr = wr + new_ar * dt;
   double new_tl = tl + new_wl * dt + 1/2 * new_al * dt * dt;
