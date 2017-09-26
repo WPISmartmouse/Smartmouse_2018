@@ -152,14 +152,20 @@ We can expand and simplify the udpate equations for $x$.
 We can apply the same process for $y$.
 
 \begin{align}
-  y &\leftarrow y-R\Bigg(\cos{\Big(\frac{v_r-v_l}{W}\Delta t+\theta\Big)}-\cos{\theta}\Bigg)
+  y &\leftarrow \sin{(\frac{v_r-v_p}{W})}(x-x+R\sin{\theta})+\cos{(\frac{v_r-v_p}{W})}(y-y-R\cos{\theta}) + y+R\cos{\theta} \\
+  y &\leftarrow \sin{(\frac{v_r-v_p}{W})}(R\sin{\theta})+\cos{(\frac{v_r-v_p}{W})}(-R\cos{\theta}) + y+R\cos{\theta} \\
+  y &\leftarrow R\sin{(\frac{v_r-v_p}{W})}(\sin{\theta})-R\cos{(\frac{v_r-v_p}{W})}(\cos{\theta}) + y+R\cos{\theta} \\
+  y &\leftarrow y + R\sin{(\frac{v_r-v_p}{W})}(\sin{\theta})-R\cos{(\frac{v_r-v_p}{W})}(\cos{\theta}) + R\cos{\theta} \\
+  y &\leftarrow y + R\Bigg(\sin{(\frac{v_r-v_p}{W})}(\sin{\theta})-\cos{(\frac{v_r-v_p}{W})}(\cos{\theta}) + \cos{\theta}\Bigg) \\
+  y &\leftarrow y + R\Bigg(-\cos{(\frac{v_r-v_p}{W} + \theta)} + \cos{\theta}\Bigg) \\
+  y &\leftarrow y - R\Bigg(\cos{(\frac{v_r-v_p}{W} + \theta)} - \cos{\theta}\Bigg)
 \end{align}
 
 \textbf{Final Solution to the forward Kinematics:}
 \begin{align}
  \theta &\leftarrow \theta + \frac{v_r-v_l}{W}\Delta t \\
   x &\leftarrow x+R\Bigg(\sin{\Big(\frac{v_r-v_l}{W}\Delta t+\theta\Big)}-\sin{\theta}\Bigg) \\
-  y &\leftarrow y-R\Bigg(\cos{\Big(\frac{v_r-v_l}{W}\Delta t-\theta\Big)}-\cos{\theta}\Bigg)
+  y &\leftarrow y-R\Bigg(\cos{\Big(\frac{v_r-v_l}{W}\Delta t+\theta\Big)}-\cos{\theta}\Bigg)
 \end{align}
 
 However, there is also the case where the robot is going perfectly straight. This has to be handled seperately, because otherwise the equations above involve $R$, but $R=\infty$ if we're going straight. Luckily, the equations for moving straight are trivial:
