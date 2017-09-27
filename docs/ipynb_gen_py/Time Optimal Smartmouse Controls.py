@@ -517,7 +517,7 @@ plot_vars(fwd_1)
 plot_traj(fwd_1)
 
 
-# In[45]:
+# In[46]:
 
 # continue by turning right 90 degrees
 LOG_LVL = 5
