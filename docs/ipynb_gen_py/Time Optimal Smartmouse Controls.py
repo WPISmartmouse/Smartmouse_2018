@@ -232,23 +232,21 @@ get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45
 # First we will bring in the constraints from before. We must satisfy specific initial and final positions in $[x, y, \theta]$. I've used new letters for cofficients to avoid confusion.
 # 
 # \begin{align}
-# x_0 &= c_0 + c_1(0) + c_2(0)^2 + c_3(0)^3 \\
-# y_0 &= d_0 + d_1(0) + d_2(0)^2 + d_3(0)^3 \\
-# x_{t_f} &= c_0 + c_1(t_f) + c_2(t_f)^2 + c_3(t_f)^3 \\
-# y_{t_f} &= d_0 + d_1(t_f) + d_2(t_f)^2 + d_3(t_f)^3 \\
+# x_0 &= c_0 + c_1(0) + c_2(0)^2 + c_3(0)^3 + c_3(0)^4 + c_3(0)^5 \\
+# y_0 &= d_0 + d_1(0) + d_2(0)^2 + d_3(0)^3 + d_3(0)^4 + d_3(0)^5 \\
+# x_{t_f} &= c_0 + c_1(t_f) + c_2(t_f)^2 + c_3(t_f)^3 + c_3(t_f)^4 + c_3(t_f)^5 \\
+# y_{t_f} &= d_0 + d_1(t_f) + d_2(t_f)^2 + d_3(t_f)^3 + d_3(t_f)^4 + d_3(t_f)^5 \\
 # \end{align}
 # 
-# Notice here we have 8 unknowns, $c_0 \dots c_3$ and $d_0 \dots d_3$. So we're gonna need more equations for there to be a unique solution. Also notice we haven't defined any constraints related to our dynamics model. That would be a good place to get our other equations!
+# Notice here we have 12 unknowns, $c_0 \dots c_5$ and $d_0 \dots d_5$. So we're gonna need more equations for there to be a unique solution. Also notice we haven't defined any constraints related to our dynamics model. That would be a good place to get our other equations!
 # 
-# **TODO:** the rank of the system with 8 equations was 6, so there were multiple solutions. I'm working on adding constraints on initial final velocities to hopefully fix that.
-# 
-# First, we want to be able to specify initial velocity $v_0$ and final velocity $v_{t_f}$. It makes more sense just constrain $\dot{x}_0$,  $\dot{y}_0$,  $\dot{x}_{t_f}$,  $\dot{y}_{t_f}$. So if we want to specify that we start facing $\tfrac{\pi}{2}$ going 1m/s, we'd just specify $cos(\tfrac{\pi}{2})$ for $\dot{x}_0$ and  $sin(\tfrac{\pi}{2})$ for $\dot{y}_0$.
+# First, we want to be able to specify initial velocity $v_0$ and final velocity $v_{t_f}$. It is easlier to just constrain $\dot{x}_0$,  $\dot{y}_0$,  $\dot{x}_{t_f}$,  $\dot{y}_{t_f}$. So if we want to specify that we start facing $\tfrac{\pi}{2}$ going 1m/s, we'd just specify $cos(\tfrac{\pi}{2})$ for $\dot{x}_0$ and $sin(\tfrac{\pi}{2})$ for $\dot{y}_0$.
 # 
 # \begin{align}
 # \dot{x}_0 &= c_1 \\
 # \dot{y}_0 &= d_1 \\
-# \dot{x}_{t_f} &= (0)c_0 + (1)c_1 + 2t_fc_2 + 3{t_f}^2c_3 \\
-# \dot{y}_{t_f} &= (0)d_0 + (1)d_1 + 2t_fd_2 + 3{t_f}^2d_3
+# \dot{x}_{t_f} &= (0)c_0 + (1)c_1 + 2t_fc_2 + 3{t_f}^2c_3 + 4{t_f}^3c_4 + 5{t_f}^4c_5 \\
+# \dot{y}_{t_f} &= (0)d_0 + (1)d_1 + 2t_fd_2 + 3{t_f}^2d_3 + 4{t_f}^3d_4 + 5{t_f}^4d_5
 # \end{align}
 # 
 # Let's also make sure x and y components obey trigonometry.
@@ -265,19 +263,19 @@ get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45
 # v_{t_f}\sin(2\theta_{t_f}) &= \dot{x}_{t_f}\sin(\theta_{t_f}) + \dot{y}_{t_f}\cos(\theta_{t_f})
 # \end{align}
 # 
-# We should write out the full form though, to make things terms of our coefficients.
+# We should write out the full form though, to make things in terms of our coefficients.
 # 
 # \begin{align}
-# v(0)\sin(2\theta_0) &= \Big[c_1 + 2c_2(0) + 3c_3(0)^2\Big]\sin(\theta_0) + \Big[d_1 + 2d_2(0) + 3d_3(0)^2\Big]\cos(\theta_0) \\
-# v(0)\sin(2\theta_0) &= (0)c_0 + \sin(\theta_0)c_1 + (0)c_2 + (0)c_3 + (0)d_0 + \cos(\theta_0)d_1 + (0)d_2 + (0)d_3 
+# v(0)\sin(2\theta_0) &= \Big[c_1 + 2(0)c_2 + 3(0)^2c_3 + 4(0)^3c_4 + 5(0)^4c_5\Big]\sin(\theta_0) + \Big[d_1 + 2(0)d_2 + 3(0)^2d_3 + 4(0)^3d_4 + 5(0)^4d_5\Big]\cos(\theta_0) \\
+# v(0)\sin(2\theta_0) &= \sin(\theta_0)c_1 + \cos(\theta_0)d_1
 # \end{align}
 # 
 # \begin{align}
-# v(t_f)\sin(2\theta_{t_f}) &= \Big[c_1 + 2c_2(t_f) + 3c_3(t_f)^2\Big]\sin(\theta_{t_f}) + \Big[d_1 + 2d_2(t_f) + 3d_3(t_f)^2\Big]\cos(\theta_{t_f}) \\
-# v(t_f)\sin(2\theta_{t_f}) &= (0)c_0 + \sin(\theta_{t_f})c_1 + 2\sin(\theta_{t_f})t_fc_2 + 3\sin(\theta_{t_f}){t_f}^2c_3 + (0)d_0 + \cos(\theta_{t_f})d_1 + 2\cos(\theta_{t_f})t_fd_2 + 3\cos(\theta_{t_f}){t_f}^2d_3 \\
+# v(t_f)\sin(2\theta_{t_f}) &= \Big[c_1 + 2(t_f)c_2 + 3(t_f)^2c_3 + 4(t_f)^3c_4\ + 5(t_f)^4c_5\Big]\sin(\theta_{t_f}) + \Big[d_1 + 2(t_f)d_2 + 3(t_f)^2d_3 + 4(t_f)^3d_4 + 5(t_f)^4d_5\Big]\cos(\theta_{t_f}) \\
+# v(t_f)\sin(2\theta_{t_f}) &= \sin(\theta_{t_f})c_1 + 2\sin(\theta_{t_f})t_fc_2 + 3\sin(\theta_{t_f}){t_f}^2c_3 + 4\sin(\theta_{t_f}){t_f}^3c_4  + 5\sin(\theta_{t_f}){t_f}^4c_5 + \cos(\theta_{t_f})d_1 + 2\cos(\theta_{t_f})t_fd_2 + 3\cos(\theta_{t_f}){t_f}^2d_3 + 4\cos(\theta_{t_f}){t_f}^3d_4 + 5\cos(\theta_{t_f}){t_f}^4d_5 \\
 # \end{align}
 # 
-# The last two equations constrains the robot from moving in any direction other than its heading. Of course it must relate $\dot{x}$ to $\dot{y}$. Still not totally sure how we got this equation so I'm just copying it from some slides$\dots$
+# The last two equations constrains the robot from moving in any direction other than its heading. Of course it must relate $\dot{x}$ to $\dot{y}$. Still not totally sure how we got this equation so I'm just copying it from some slides$\dots$. However you can plug in some example values and check. For instance translating sideways violates this equation: set $\dot{x}=1$, $\dot{y}=0$, $v=1$, $\theta=\tfrac{\pi}{2}$.
 # 
 # \begin{align}
 # v\cos(\theta)\sin(\theta) - v\cos(\theta)\sin(\theta) &= 0 \\
@@ -288,63 +286,67 @@ get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45
 # and again written out fully in terms of our coefficients
 # 
 # \begin{align}
-# \Big[c_1 + 2c_2(0) + 3c_3(0)^2\Big]\sin(\theta_0) - \Big[d_1 + 2d_2(0) + 3d_3(0)^2\Big]\cos(\theta_0) &= 0 \\
-# (0)c_0 + \sin(\theta_0)c_1 + (0)c_2 + (0)c_3 - (0)d_0 - \cos(\theta_0)d_1 - (0)d_2 - (0)d_3 &= 0
+# \Big[c_1 + 2(0)c_2 + 3(0)^2c_3 + 4(0)^3c_4 + 5(0)^4c_5\Big]\sin(\theta_0) - \Big[d_1 + 2(0)d_2 + 3(0)^2d_3 + 4(0)^3d_4 + 5(0)^4d_5\Big]\cos(\theta_0) &= 0 \\
+# \sin(\theta_0)c_1 - \cos(\theta_0)d_1 &= 0
 # \end{align}
 # 
 # \begin{align}
-# \Big[c_1 + 2c_2(t_f) + 3c_3(t_f)^2\Big]\sin(\theta_{t_f}) - \Big[d_1 + 2d_2(t_f) + 3d_3(t_f)^2\Big]\cos(\theta_{t_f}) &= 0 \\
-# (0)c_0 + \sin(\theta_{t_f})c_1 + 2\sin(\theta_{t_f})t_fc_2 + 3\sin(\theta_{t_f}){t_f}^2c_3 - (0)d_0 - \cos(\theta_{t_f})d_1 - 2\cos(\theta_{t_f})t_fd_2 - 3\cos(\theta_{t_f}){t_f}^2d_3 &= 0
+# \Big[c_1 + 2(t_f)c_2 + 3(t_f)^2c_3 + 4(t_f)^3c_4 + 5(t_f)^4c_5\Big]\sin(\theta_{t_f}) - \Big[d_1 + 2(t_f)d_2 + 3(t_f)^2d_3 + 4(t_f)^3d_4 + 5(t_f)^4d_5\Big]\cos(\theta_{t_f}) &= 0 \\
+# \sin(\theta_{t_f})c_1 + 2\sin(\theta_{t_f})t_fc_2 + 3\sin(\theta_{t_f}){t_f}^2c_3 + 4\sin(\theta_{t_f}){t_f}^3c_4  + 5\sin(\theta_{t_f}){t_f}^4c_5 - \cos(\theta_{t_f})d_1 - 2\cos(\theta_{t_f})t_fd_2 - 3\cos(\theta_{t_f}){t_f}^2d_3 - 4\cos(\theta_{t_f}){t_f}^3d_4 - 5\cos(\theta_{t_f}){t_f}^4d_5 &= 0
 # \end{align}
 # 
-# Ok, that should work. Now let's write it out in matrix form.
+# Ok, that should work. Now let's write it out in matrix form. We use $c$ and $s$ to shorten $\sin$ and $\cos$.
 # 
 # \begin{equation}
 # \begin{bmatrix}
-# 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
-# 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\
-# 0 & \sin(\theta_0) & 0 & 0 & 0 & \cos(\theta_0) & 0 & 0 \\
-# 0 & \sin(\theta_0) & 0 & 0 & 0 & -\cos(\theta_0) & 0 & 0 \\
-# 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\
-# 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 \\
-# 1 & t & {t_f}^2 & {t_f}^3 & 0 & 0 & 0 & 0 \\
-# 0 & 0 & 0 & 0 & 1 & t_f & {t_f}^2 & {t_f}^3 \\
-# 0 & \sin(\theta_{t_f}) & 2\sin(\theta_{t_f})t_f & 3\sin(\theta_{t_f}){t_f}^2 & 0 & \cos(\theta_{t_f}) & 2\cos(\theta_{t_f}){t_f} & 3\cos(\theta_{t_f}){t_f}^2 \\
-# 0 & \sin(\theta_{t_f}) & 2\sin(\theta_{t_f})t_f & 3\sin(\theta_{t_f}){t_f}^2 & 0 & -\cos(\theta_{t_f}) & -2\cos(\theta_{t_f}){t_f} & -3\cos(\theta_{t_f}){t_f}^2 \\
-# 0 & 1 & 2t_f & 3{t_f}^2 & 0 & 0 & 0 & 0 \\
-# 0 & 0 & 0 & 0 & 0 & 1 & 2t_f & 3{t_f}^2
+# 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+# 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
+# 0 & s(\theta_0) & 0 & 0 & 0 & 0 & 0 & c(\theta_0) & 0 & 0 & 0 & 0\\
+# 0 & s(\theta_0) & 0 & 0 & 0 & 0 & 0 & -c(\theta_0) & 0 & 0 & 0 & 0\\
+# 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\
+# 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0\\
+# 1 & t & {t_f}^2 & {t_f}^3 & {t_f}^4 & {t_f}^5 & 0 & 0 & 0 & 0 & 0 & 0 \\
+# 0 & 0 & 0 & 0 & 0 & 0 & 1 & t_f & {t_f}^2 & {t_f}^3 & {t_f}^4 & {t_f}^5 \\
+# 0 & s(\theta_{t_f}) & 2s(\theta_{t_f})t_f & 3s(\theta_{t_f}){t_f}^2 & 4s(\theta_{t_f}){t_f}^3 & 5s(\theta_{t_f}){t_f}^4 & 0 & c(\theta_{t_f}) & 2c(\theta_{t_f}){t_f} & 3c(\theta_{t_f}){t_f}^2 & 4c(\theta_{t_f}){t_f}^3 & 5c(\theta_{t_f}){t_f}^4 \\
+# 0 & s(\theta_{t_f}) & 2s(\theta_{t_f})t_f & 3s(\theta_{t_f}){t_f}^2 & 4s(\theta_{t_f}){t_f}^3 & 5s(\theta_{t_f}){t_f}^4 & 0 & -c(\theta_{t_f}) & -2c(\theta_{t_f}){t_f} & -3c(\theta_{t_f}){t_f}^2 & -4c(\theta_{t_f}){t_f}^3 & -5c(\theta_{t_f}){t_f}^4 \\
+# 0 & 1 & 2t_f & 3{t_f}^2 & 4{t_f}^3 & 5{t_f}^4 & 0 & 0 & 0 & 0 & 0 & 0 \\
+# 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 2t_f & 3{t_f}^2 & 4{t_f}^3 & 5{t_f}^4
 # \end{bmatrix}
 # \begin{bmatrix}
 # c_0 \\
 # c_1 \\
 # c_2 \\
 # c_3 \\
+# c_4 \\
+# c_5 \\
 # d_0 \\
 # d_1 \\
 # d_2 \\
-# d_3
+# d_3 \\
+# d_4 \\
+# d_5
 # \end{bmatrix} =
 # \begin{bmatrix}
 # x_0 \\
 # y_0 \\
 # 0 \\
-# v_0\sin(2\theta_0) \\
-# \dot{x}_0 \\
-# \dot{y}_0 \\
+# v_0s(2\theta_0) \\
+# c(\theta_0)v_0 \\
+# s(\theta_0)v_0 \\
 # x_{t_f} \\
 # y_{t_f} \\
 # 0 \\
-# v_{t_f}\sin(2\theta_{t_f}) \\
-# \dot{x}_{t_f} \\
-# \dot{y}_{t_f}
+# v_{t_f}s(2\theta_{t_f}) \\
+# c(\theta_{t_f})v_{t_f} \\
+# s(\theta_{t_f})v_{t_f} \\
 # \end{bmatrix}
 # \end{equation}
 
-# In[32]:
+# In[12]:
 
 # Let's solve this in code like we did before
 def plot_x_y_theta(coeff):
-    dt = 0.01
+    dt = 0.001
     T = np.arange(0, t_f+dt, dt)
     xts = np.array([[1, t, pow(t,2), pow(t,3), pow(t,4), pow(t,5), 0, 0, 0, 0, 0, 0] for t in T])
     xdts = np.array([[0, 1, 2*t, 3*pow(t,2), 4*pow(t,3), 5*pow(t,4), 0, 0, 0, 0, 0, 0] for t in T])
@@ -354,23 +356,32 @@ def plot_x_y_theta(coeff):
     ys = yts@coeff
     xds = xdts@coeff
     yds = ydts@coeff
-
-    plt.figure(figsize=(9, 3))
-    plt.subplot(131)
+    
+    plt.rc('text', usetex=True)
+    plt.rc('font', family='serif')
+    plt.rc('axes.formatter', useoffset=False)
+    plt.figure(figsize=(10, 10))
+    
+    plt.subplot(221)
     plt.plot(T, xs, linewidth=3)
     plt.xlabel("time (seconds)")
     plt.title("X")
 
-    plt.subplot(132)
+    plt.subplot(222)
     plt.plot(T, ys, linewidth=3, color='r')
     plt.xlabel("time (seconds)")
     plt.title("Y")
 
-    plt.subplot(133)
-    theta = np.arctan2(yds, xds)
-    plt.plot(T, theta, linewidth=3, color='g')
+    plt.subplot(223)
+    plt.plot(T, xds, linewidth=3, color='g')
     plt.xlabel("time (seconds)")
-    plt.title("Theta")
+    plt.title("$\dot{x}$")
+    plt.tight_layout()
+    
+    plt.subplot(224)
+    plt.plot(T,yds, linewidth=3, color='y')
+    plt.xlabel("time (seconds)")
+    plt.title("$\dot{y}$")
     plt.tight_layout()
     
     plt.figure()
@@ -381,51 +392,60 @@ def plot_x_y_theta(coeff):
     plt.grid(True)
     
     plt.show()
-    
-from math import sin, cos, pi
-t_f = 1
 
-q_0 = [0, 0.09, 0]
-q_t_f = [0.09, 0.09, pi/2]
-v_0 = 0.5
-v_f = 0.1
+
+# In[18]:
+
+
+from math import sin, cos, pi
+t_f = 0.5
+
+q_0 = [0.09, 0.0, pi/2]
+q_t_f = [0.18, 0.09, 0]
+v_0 = 0.2
+v_f = 0.2
 
 A = np.array([[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-              [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-              [0, sin(q_0[2]), 0, 0, 0, 0, 0, cos(q_0[2]), 0, 0, 0, 0],
-              [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-              [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-              ##############################################
-              [1, t_f, pow(t_f,2), pow(t_f,3), pow(t_f,4), pow(t_f,5), 0, 0, 0, 0, 0, 0],
-              [0, 0, 0, 0, 0, 0, 1, t_f, pow(t_f,2), pow(t_f,3), pow(t_f,4), pow(t_f,5)],
-              [0, sin(q_t_f[2]), 2*sin(q_t_f[2])*t_f, 3*sin(q_t_f[2])*pow(t_f,2), 4*sin(q_t_f[2])*pow(t_f,3), 5*sin(q_t_f[2])*pow(t_f,4), 0, cos(q_t_f[2]), 2*cos(q_t_f[2])*t_f, 3*cos(q_t_f[2])*pow(t_f,2), 4*cos(q_t_f[2])*pow(t_f,3), 5*cos(q_t_f[2])*pow(t_f,4)],
-              [0, 1, 2*t_f, 3*pow(t_f,2), 4*pow(t_f,3), 5*pow(t_f,4), 0, 0, 0, 0, 0, 0],
-              [0, 0, 0, 0, 0, 0, 0, 1, 2*t_f, 3*pow(t_f,2), 4*pow(t_f,3), 5*pow(t_f,4)],
-             ])
+           [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+           [0, sin(q_0[2]), 0, 0, 0, 0, 0, cos(q_0[2]), 0, 0, 0, 0],
+           [0, sin(q_0[2]), 0, 0, 0, 0, 0, -cos(q_0[2]), 0, 0, 0, 0],
+           [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+           [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+           ##############################################
+           [1, t_f, pow(t_f,2), pow(t_f,3), pow(t_f,4), pow(t_f,5), 0, 0, 0, 0, 0, 0],
+           [0, 0, 0, 0, 0, 0, 1, t_f, pow(t_f,2), pow(t_f,3), pow(t_f,4), pow(t_f,5)],
+           [0, sin(q_t_f[2]), 2*sin(q_t_f[2])*t_f, 3*sin(q_t_f[2])*pow(t_f,2), 4*sin(q_t_f[2])*pow(t_f,3), 5*sin(q_t_f[2])*pow(t_f,4), 0, cos(q_t_f[2]), 2*cos(q_t_f[2])*t_f, 3*cos(q_t_f[2])*pow(t_f,2), 4*cos(q_t_f[2])*pow(t_f,3), 5*cos(q_t_f[2])*pow(t_f,4)],
+           [0, sin(q_t_f[2]), 2*sin(q_t_f[2])*t_f, 3*sin(q_t_f[2])*pow(t_f,2), 4*sin(q_t_f[2])*pow(t_f,3), 5*sin(q_t_f[2])*pow(t_f,4), 0, -cos(q_t_f[2]), -2*cos(q_t_f[2])*t_f, -3*cos(q_t_f[2])*pow(t_f,2), -4*cos(q_t_f[2])*pow(t_f,3), -5*cos(q_t_f[2])*pow(t_f,4)],
+           [0, 1, 2*t_f, 3*pow(t_f,2), 4*pow(t_f,3), 5*pow(t_f,4), 0, 0, 0, 0, 0, 0],
+           [0, 0, 0, 0, 0, 0, 0, 1, 2*t_f, 3*pow(t_f,2), 4*pow(t_f,3), 5*pow(t_f,4)],
+          ])
 B = np.array([q_0[0],
-              q_0[1],
-              0,
-              v_0*sin(2*q_0[2]),
-              cos(q_0[2])*v_0,
-              ##############################################
-              q_t_f[0],
-              q_t_f[1],
-              0,
-              v_f*sin(2*q_t_f[2]),
-              cos(q_0[2])*v_f,])
+           q_0[1],
+           0,
+           v_0*sin(2*q_0[2]),
+           cos(q_0[2])*v_0,
+           sin(q_0[2])*v_0,
+           ##############################################
+           q_t_f[0],
+           q_t_f[1],
+           0,
+           v_f*sin(2*q_t_f[2]),
+           cos(q_f[2])*v_f,
+           sin(q_f[2])*v_f,
+          ])
 
 rank = np.linalg.matrix_rank(A)
 
 if rank == A.shape[1]:
-    if A.shape[0] == A.shape[1]:
-        coeff = np.linalg.solve(A, B)
-    else:
-        print("not square, using least squares.".format(A.shape))
-        coeff, resid, rank, s = np.linalg.lstsq(A, B)
+ if A.shape[0] == A.shape[1]:
+     coeff = np.linalg.solve(A, B)
+ else:
+     print("not square, using least squares.".format(A.shape))
+     coeff, resid, rank, s = np.linalg.lstsq(A, B)
 else:
-    print("Ranks don't match! {} versus {}, using least squares".format(rank, A.shape[1]))
-    coeff, resid, rank ,s = np.linalg.lstsq(A, B)
-    
+ print("Ranks don't match! {} equations {} variables, using least squares".format(rank, A.shape[1]))
+ coeff, resid, rank ,s = np.linalg.lstsq(A, B)
+ 
 # print("RANK", rank)
 # print("A", A)
 # print("COEFF", coeff)
@@ -437,20 +457,7 @@ print("RMS Error of solution to equations", error)
 plot_x_y_theta(coeff)
 
 
-# ## Finally, let's graph the trajectory in X/Y
-
-# In[22]:
+# In[ ]:
 
 
 
-
-# ## Questions for FU
-# 
-#  - I understand we need another equation that constrains the relation between $\dot{x}$ and $\dot{y}$, but why is it $\dot{x}\sin(\theta) - \dot{y}\cos(\theta) = 0$? Can we use other equations?
-#  - How is it possible to satisfy both $\dot{x}\sin(\theta) - \dot{y}\cos(\theta) = 0$ and $\dot{x}\sin(\theta) + \dot{y}\cos(\theta) = 0$ ???? **answer** Becuase the second equation is only true at t=0 and t=T
-#  - It seems there is no constraint on $\theta$ being a smooth 3rd order polynomial? Whyyyyyyyyy?
-# 
-# ** Graph of theta over time from the matlab code **
-# ![Theta](dank_theta.jpg)
-# 
-#  - Why can't I change it to $\dot{x}\sin(\theta_{t_f}) + \dot{y}\cos(\theta_{t_f}) = 1$
