@@ -32,15 +32,33 @@ get_ipython().run_cell_magic('tikz', '-s 400,400', '\\draw[->] (0,0) -- (10,0);\
 
 # ## Code that proves it
 
-# In[3]:
+# In[29]:
 
-# dependencies
+# dependencies and global setup
 import numpy as np
 import matplotlib.pyplot as plt
-np.set_printoptions(suppress=True, precision=3)
+np.set_printoptions(suppress=True, precision=3, linewidth=100)
+
+LOG_LVL = 2
+   
+def debug(*args):
+    if LOG_LVL <= 0:
+        print(*args)
+
+def info(*args):
+    if LOG_LVL <= 1:
+        print(*args)
+        
+def warning(*args):
+    if LOG_LVL <= 2:
+        print(*args)
+        
+def log(*args):
+    if LOG_LVL < 100:
+        print(*args)
 
 
-# In[4]:
+# In[30]:
 
 def profile(V0, Vf, Vmax, d, A, buffer=3e-3):
     v = V0
@@ -136,41 +154,49 @@ plt.show()
 # 
 # It can be shown that the matrix on the left is invertable, so long as $t_f-t_0 > 0$. So we can invert and solve this equation and get all the $a$ coefficients. We can then use this polynomial to generate the $q(t)$ and $\dot{q}(t)$ -- our trajectory.
 
-# In[5]:
+# In[31]:
 
-# Example: you are a point in space (one dimension) go from rest at the origin to at rest at (0.18, 0, 0) in 1 second
-q_0 = np.array([0])
-q_dot_0 = np.array([0])
-q_f = np.array([0.18])
-q_dot_f = np.array([0])
-t_f = 1
+def simple_traj_solve(q_0, q_f, q_dot_0, q_dot_t_f, t_f):
+    # Example: you are a point in space (one dimension) go from rest at the origin to at rest at (0.18, 0, 0) in 1 second
+    q_0 = np.array([0])
+    q_dot_0 = np.array([0])
+    q_t_f = np.array([0.18])
+    q_dot_t_f = np.array([0])
 
-b = np.array([q_0, q_dot_0, q_f, q_dot_f])
-a = np.array([[1,0,0,0],[0,1,0,0],[1, t_f, pow(t_f,2),pow(t_f,3)],[0,1,2*t_f,3*pow(t_f,2)]])
-print(a, b)
-coeff = np.linalg.solve(a, b)
-print(coeff)
+    b = np.array([q_0, q_dot_0, q_t_f, q_dot_t_f])
+    a = np.array([[1,0,0,0],[0,1,0,0],[1, t_f, pow(t_f,2),pow(t_f,3)],[0,1,2*t_f,3*pow(t_f,2)]])
+    log(a, b)
+    coeff = np.linalg.solve(a, b)
+    log(coeff)
+    
+    return coeff
+
+simple_traj_info = (0, 0, 0.18, 0, 1)
+simple_traj_coeff = simple_traj_solve(*simple_traj_info)
 
 
 # Here you can see that the resulting coeffictions are $a_0=0$, $a_1=0$, $a_2=0.54$, $a_0=-0.36$. Intuitively, this says that we're going to have positive acceleration, but our acceleration is going to slow down over time. Let's graph it!
 
-# In[6]:
+# In[32]:
 
-dt = 0.01
-ts = np.array([[1, t, pow(t,2), pow(t,3)] for t in np.arange(0, t_f+dt,  dt)])
-qs = ts@coeff
-plt.plot(ts[:,1], qs, label="x")
-plt.xlabel("time (seconds)")
-plt.xlabel("X (meters)")
-plt.legend(bbox_to_anchor=(1,1), loc=2)
-plt.show()
+def simple_traj_plot(coeff, t_f):
+    dt = 0.01
+    ts = np.array([[1, t, pow(t,2), pow(t,3)] for t in np.arange(0, t_f+dt,  dt)])
+    qs = ts@coeff
+    plt.plot(ts[:,1], qs, label="x")
+    plt.xlabel("time (seconds)")
+    plt.xlabel("X (meters)")
+    plt.legend(bbox_to_anchor=(1,1), loc=2)
+    plt.show()
+
+simple_traj_plot(simple_traj_coeff, simple_traj_info[-1])
 
 
 # **ooooooooooh so pretty**
 # 
 # Let's try another example, now with our full state space of $[x, y, \theta]$.
 
-# In[7]:
+# In[33]:
 
 def no_dynamics():
     # In this example, we go from (0.18, 0.09, 0) to (0.27,0.18, -1.5707). Our starting and ending velocities are zero
@@ -183,7 +209,7 @@ def no_dynamics():
     b = np.array([q_0, q_dot_0, q_f, q_dot_f])
     a = np.array([[1,0,0,0],[0,1,0,0],[1, t_f, pow(t_f,2),pow(t_f,3)],[0,1,2*t_f,3*pow(t_f,2)]])
     coeff = np.linalg.solve(a, b)
-    print(coeff)
+    log(coeff)
 
     dt = 0.1
     ts = np.array([[1, t, pow(t,2), pow(t,3)] for t in np.arange(0, t_f+dt,  dt)])
@@ -217,9 +243,9 @@ no_dynamics()
 
 # Well, they are smooth, but these are not possible to execute! The robot cannot simply translate sideways.
 
-# ## Trajectory Planning With a Simple Dynamics Model
+# # Trajectory Planning With a Simple Dynamics Model
 
-# In[8]:
+# In[34]:
 
 get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45:(0,0)}] (-.5,-1) rectangle (0.5,1);\n\\filldraw (0,0) circle (0.125);\n\n\\draw [->] (0,0) -- (0,1.5);\n\\draw [->] (0,0) -- (1.5,0);\n\\draw [->] (0,0) -- (1.5,1.5);\n\\draw (1.2, -0.2) node {$x$};\n\\draw (-0.2, 1.2) node {$y$};\n\\draw (1, 1.2) node {$v$};')
 
@@ -345,20 +371,20 @@ get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45
 # \end{bmatrix}
 # \end{equation}
 
-# In[18]:
+# In[42]:
 
 # Let's solve this in code like we did before
-def plot_x_y_theta(coeff):
+def plot_vars(traj_plan):
     dt = 0.001
-    T = np.arange(0, t_f+dt, dt)
+    T = np.arange(0, traj_plan.get_t_f()+dt, dt)
     xts = np.array([[1, t, pow(t,2), pow(t,3), pow(t,4), pow(t,5), 0, 0, 0, 0, 0, 0] for t in T])
     xdts = np.array([[0, 1, 2*t, 3*pow(t,2), 4*pow(t,3), 5*pow(t,4), 0, 0, 0, 0, 0, 0] for t in T])
     yts = np.array([[0, 0, 0, 0, 0, 0, 1, t, pow(t,2), pow(t,3), pow(t,4), pow(t,5)] for t in T])
     ydts = np.array([[0, 0, 0, 0, 0, 0, 0, 1, 2*t, 3*pow(t,2), 4*pow(t,3), 5*pow(t,4)] for t in T])
-    xs = xts@coeff
-    ys = yts@coeff
-    xds = xdts@coeff
-    yds = ydts@coeff
+    xs = xts@traj_plan.get_coeff()
+    ys = yts@traj_plan.get_coeff()
+    xds = xdts@traj_plan.get_coeff()
+    yds = ydts@traj_plan.get_coeff()
     
     plt.rc('text', usetex=True)
     plt.rc('font', family='serif')
@@ -386,87 +412,117 @@ def plot_x_y_theta(coeff):
     plt.xlabel("time (seconds)")
     plt.title("$\dot{y}$")
     plt.tight_layout()
+    plt.show()
     
-    plt.figure()
-    plt.scatter(xs, ys, marker='.', linewidth=0)
-    plt.axis('equal')
+def plot_traj(traj_plan):
+    dt = 0.01
+    T = np.arange(0, traj_plan.get_t_f()+dt, dt)
+    xts = np.array([[1, t, pow(t,2), pow(t,3), pow(t,4), pow(t,5), 0, 0, 0, 0, 0, 0] for t in T])
+    yts = np.array([[0, 0, 0, 0, 0, 0, 1, t, pow(t,2), pow(t,3), pow(t,4), pow(t,5)] for t in T])
+    xs = xts@traj_plan.get_coeff()
+    ys = yts@traj_plan.get_coeff()
+    
+    plt.figure(figsize=(10, 10))
+    W = 4
+    plt.scatter(xs, ys, marker='.', linewidth=0, c=T)
+    plt.xlim(0, W * 0.18)
+    plt.ylim(0, W * 0.18)
+    plt.xticks(np.arange(W+1)*0.18)
+    plt.yticks(np.arange(W+1)*0.18)
     plt.xlabel("X")
     plt.ylabel("Y")
+    plt.title("Trajectory")
+    plt.suptitle("time goes from blue to red")
     plt.grid(True)
     
     plt.show()
 
 
-# In[38]:
+# In[43]:
 
-def traj_plan():
-    from math import sin, cos, pi
-    t_f = 1
+from math import sin, cos, pi
+
+class TrajPlan:
     
-    q_0 = [0.18, 0.09, pi/2]
-    q_t_f = [0.27, 0.18, 0]
-    v_0 = 0.1
-    v_f = 0.1
+    def solve(self, q_0, v_0, q_t_f, v_f, t_f):
+        A = np.array([[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                      [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+                      [0, sin(q_0[2]), 0, 0, 0, 0, 0, cos(q_0[2]), 0, 0, 0, 0],
+                      [0, sin(q_0[2]), 0, 0, 0, 0, 0, -cos(q_0[2]), 0, 0, 0, 0],
+                      [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                      [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+                      [1, t_f, pow(t_f,2), pow(t_f,3), pow(t_f,4), pow(t_f,5), 0, 0, 0, 0, 0, 0],
+                      [0, 0, 0, 0, 0, 0, 1, t_f, pow(t_f,2), pow(t_f,3), pow(t_f,4), pow(t_f,5)],
+                      [0, sin(q_t_f[2]), 2*sin(q_t_f[2])*t_f, 3*sin(q_t_f[2])*pow(t_f,2), 4*sin(q_t_f[2])*pow(t_f,3), 5*sin(q_t_f[2])*pow(t_f,4), 0, cos(q_t_f[2]), 2*cos(q_t_f[2])*t_f, 3*cos(q_t_f[2])*pow(t_f,2), 4*cos(q_t_f[2])*pow(t_f,3), 5*cos(q_t_f[2])*pow(t_f,4)],
+                      [0, sin(q_t_f[2]), 2*sin(q_t_f[2])*t_f, 3*sin(q_t_f[2])*pow(t_f,2), 4*sin(q_t_f[2])*pow(t_f,3), 5*sin(q_t_f[2])*pow(t_f,4), 0, -cos(q_t_f[2]), -2*cos(q_t_f[2])*t_f, -3*cos(q_t_f[2])*pow(t_f,2), -4*cos(q_t_f[2])*pow(t_f,3), -5*cos(q_t_f[2])*pow(t_f,4)],
+                      [0, 1, 2*t_f, 3*pow(t_f,2), 4*pow(t_f,3), 5*pow(t_f,4), 0, 0, 0, 0, 0, 0],
+                      [0, 0, 0, 0, 0, 0, 0, 1, 2*t_f, 3*pow(t_f,2), 4*pow(t_f,3), 5*pow(t_f,4)],
+                     ])
+        B = np.array([q_0[0],
+                      q_0[1],
+                      0,
+                      v_0*sin(2*q_0[2]),
+                      cos(q_0[2])*v_0,
+                      sin(q_0[2])*v_0,
+                      q_t_f[0],
+                      q_t_f[1],
+                      0,
+                      v_f*sin(2*q_t_f[2]),
+                      cos(q_t_f[2])*v_f,
+                      sin(q_t_f[2])*v_f,
+                     ])
 
-    A = np.array([[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                  [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-                  [0, sin(q_0[2]), 0, 0, 0, 0, 0, cos(q_0[2]), 0, 0, 0, 0],
-                  [0, sin(q_0[2]), 0, 0, 0, 0, 0, -cos(q_0[2]), 0, 0, 0, 0],
-                  [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                  [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-                  ##############################################
-                  [1, t_f, pow(t_f,2), pow(t_f,3), pow(t_f,4), pow(t_f,5), 0, 0, 0, 0, 0, 0],
-                  [0, 0, 0, 0, 0, 0, 1, t_f, pow(t_f,2), pow(t_f,3), pow(t_f,4), pow(t_f,5)],
-                  [0, sin(q_t_f[2]), 2*sin(q_t_f[2])*t_f, 3*sin(q_t_f[2])*pow(t_f,2), 4*sin(q_t_f[2])*pow(t_f,3), 5*sin(q_t_f[2])*pow(t_f,4), 0, cos(q_t_f[2]), 2*cos(q_t_f[2])*t_f, 3*cos(q_t_f[2])*pow(t_f,2), 4*cos(q_t_f[2])*pow(t_f,3), 5*cos(q_t_f[2])*pow(t_f,4)],
-                  [0, sin(q_t_f[2]), 2*sin(q_t_f[2])*t_f, 3*sin(q_t_f[2])*pow(t_f,2), 4*sin(q_t_f[2])*pow(t_f,3), 5*sin(q_t_f[2])*pow(t_f,4), 0, -cos(q_t_f[2]), -2*cos(q_t_f[2])*t_f, -3*cos(q_t_f[2])*pow(t_f,2), -4*cos(q_t_f[2])*pow(t_f,3), -5*cos(q_t_f[2])*pow(t_f,4)],
-                  [0, 1, 2*t_f, 3*pow(t_f,2), 4*pow(t_f,3), 5*pow(t_f,4), 0, 0, 0, 0, 0, 0],
-                  [0, 0, 0, 0, 0, 0, 0, 1, 2*t_f, 3*pow(t_f,2), 4*pow(t_f,3), 5*pow(t_f,4)],
-                 ])
-    B = np.array([q_0[0],
-                  q_0[1],
-                  0,
-                  v_0*sin(2*q_0[2]),
-                  cos(q_0[2])*v_0,
-                  sin(q_0[2])*v_0,
-                  ##############################################
-                  q_t_f[0],
-                  q_t_f[1],
-                  0,
-                  v_f*sin(2*q_t_f[2]),
-                  cos(q_t_f[2])*v_f,
-                  sin(q_t_f[2])*v_f,
-                 ])
+        rank = np.linalg.matrix_rank(A)
 
-    rank = np.linalg.matrix_rank(A)
-
-    if rank == A.shape[1]:
-        if A.shape[0] == A.shape[1]:
-            coeff = np.linalg.solve(A, B)
+        if rank == A.shape[1]:
+            if A.shape[0] == A.shape[1]:
+                coeff = np.linalg.solve(A, B)
+            else:
+                warning("not square, using least squares.".format(A.shape))
+                coeff, resid, rank, s = np.linalg.lstsq(A, B)
         else:
-            print("not square, using least squares.".format(A.shape))
-            coeff, resid, rank, s = np.linalg.lstsq(A, B)
-    else:
-        print("Ranks don't match! {} equations {} variables, using least squares".format(rank, A.shape[1]))
-        coeff, resid, rank ,s = np.linalg.lstsq(A, B)
+            warning("Ranks don't match! {} equations {} variables, using least squares".format(rank, A.shape[1]))
+            coeff, resid, rank ,s = np.linalg.lstsq(A, B)
 
-    # print("RANK", rank)
-    # print("A", A)
-    # print("COEFF", coeff)
-    error = np.sum(np.power(A@coeff - B, 2))
-    if error > 1e-10:
-        print("These two vectors should be equal! But there is error.")
-        print("B is: ", B)
-        print("A@coeff is:", A@coeff)
-        print("RMS Error of solution to equations", error)
-
-    plot_x_y_theta(coeff)
+        debug("rank {}".format(rank))
+        debug("A: \n{}".format(A))
+        debug("coeff: \n{}".format(coeff))
+        error = np.sum(np.power(A@coeff - B, 2))
+        if error > 1e-10:
+            info("These two vectors should be equal! But there is error.")
+        info("B is: \n{}".format(B))
+        info("A@coeff is: \n{}".format(A@coeff))
+        info("RMS Error of solution to equations")
+        info(error)
+        
+        self.coeff = coeff
+        self.t_f = t_f
+        
+    def get_coeff(self):
+        return self.coeff
     
-traj_plan()
-
-## Errors
-
-The system of equations above is under-determined, which means there is either no solution or infinitely many solutions. Because `lstsq` returns a high error, I believe the system probably has no solution. My question is simply why. How can I properly constrain initial/final position and velocity in a way that always has a solution?
-# In[ ]:
+    def get_t_f(self):
+        return self.t_f
 
 
+# ## Example Plots
+
+# In[44]:
+
+# forward 1 cell, start from rest, end at 40cm/s, do it in .5 seconds
+LOG_LVL = 5
+fwd_1 = TrajPlan()
+fwd_1.solve(q_0=[0.09, 0.09, pi/2], v_0=0, q_t_f=[0.09, 0.18, pi/2], v_f=0.4, t_f=0.5)
+plot_vars(fwd_1)
+plot_traj(fwd_1)
+
+
+# In[45]:
+
+# continue by turning right 90 degrees
+LOG_LVL = 5
+turn_right = TrajPlan()
+turn_right.solve(q_0=[0.09, 0.18, pi/2], v_0=0.4, q_t_f=[0.18, 0.27, 0], v_f=0.4, t_f=0.5)
+plot_vars(turn_right)
+plot_traj(turn_right)
 
