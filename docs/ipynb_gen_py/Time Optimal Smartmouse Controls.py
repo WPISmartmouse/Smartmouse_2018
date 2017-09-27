@@ -397,14 +397,14 @@ def plot_x_y_theta(coeff):
     plt.show()
 
 
-# In[28]:
+# In[38]:
 
 def traj_plan():
     from math import sin, cos, pi
-    t_f = 0.5
+    t_f = 1
     
-    q_0 = [0.09, 0.0, 0]
-    q_t_f = [0.18, -0.09, -pi/2]
+    q_0 = [0.18, 0.09, pi/2]
+    q_t_f = [0.27, 0.18, 0]
     v_0 = 0.1
     v_f = 0.1
 
