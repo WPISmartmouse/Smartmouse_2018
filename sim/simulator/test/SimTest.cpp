@@ -8,6 +8,7 @@
 #include <sim/simulator/msgs/server_control.pb.h>
 #include <sim/simulator/lib/TopicNames.h>
 #include <sim/simulator/lib/Server.h>
+#include <msgs/world_statistics.pb.h>
 
 TEST(DirectionTest, DirectionMsgConversion) {
   smartmouse::msgs::Direction dir_msg;
@@ -37,7 +38,8 @@ TEST(MazeTest, MazeConversion) {
   AbstractMaze maze;
   smartmouse::msgs::Maze maze_msg = smartmouse::msgs::Convert(&maze);
 
-  EXPECT_EQ(maze_msg.walls_size(), (int)(2 * (AbstractMaze::MAZE_SIZE * AbstractMaze::MAZE_SIZE + AbstractMaze::MAZE_SIZE)));
+  EXPECT_EQ(maze_msg.walls_size(),
+            (int) (2 * (AbstractMaze::MAZE_SIZE * AbstractMaze::MAZE_SIZE + AbstractMaze::MAZE_SIZE)));
 
   AbstractMaze maze2 = smartmouse::msgs::Convert(maze_msg);
 
@@ -49,12 +51,41 @@ TEST(ServerTest, QuitTest) {
   auto server_pub = node.Advertise<smartmouse::msgs::ServerControl>(TopicNames::kServerControl);
   Server server;
   server.Start();
-  while (!server.IsConnected()) ;
+  while (!server.IsConnected());
   smartmouse::msgs::ServerControl quit_msg;
   quit_msg.set_quit(true);
   server_pub.Publish(quit_msg);
   server.Join();
   ASSERT_TRUE(true);
+}
+
+TEST(ServerTest, RTFTest) {
+  ignition::transport::Node node;
+
+  double error = 0;
+  auto server_pub = node.Advertise<smartmouse::msgs::ServerControl>(TopicNames::kServerControl);
+  std::function<void(const smartmouse::msgs::WorldStatistics &)> cb = [&error](const smartmouse::msgs::WorldStatistics &msg) {
+    error += fabs(msg.real_time_factor() - 1);
+  };
+  node.Subscribe(TopicNames::kWorldStatistics, cb);
+
+  Server server;
+  server.Connect();
+  smartmouse::msgs::ServerControl unpause_msg;
+  unpause_msg.set_pause(false);
+  server_pub.Publish(unpause_msg);
+
+  size_t  N = 1000;
+  Time start = Time::GetWallTime();
+  for (size_t i = 0; i < N; i++) {
+    server.Run();
+  }
+  Time end = Time::GetWallTime();
+
+  // check that our total time is within one millisecond
+  EXPECT_NEAR((end - start).Double(), N * server.getNsOfSimPerStep() / 1000000000, 1e-3);
+  // check that our average step time is within one millisecond
+  EXPECT_LT(error / N, 1e-3);
 }
 
 int main(int argc, char **argv) {

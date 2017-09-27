@@ -5,18 +5,24 @@
 #include <common/RobotConfig.h>
 #include <common/math/math.h>
 
-Server::Server() {
+Server::Server()
+    : sim_time_(Time::Zero),
+      steps_(0ul),
+      pause_(true),
+      quit_(false),
+      connected_(false),
+      ns_of_sim_per_step_(1000000u),
+      pause_at_steps_(0),
+      real_time_factor_(1) {
   ResetRobot();
 }
 
 void Server::Start() {
   thread_ = new std::thread(std::bind(&Server::RunLoop, this));
-  sim_time_ = Time::Zero;
 }
 
-void Server::RunLoop() {
+void Server::Connect() {
   node_ptr_ = new ignition::transport::Node();
-
   world_stats_pub_ = node_ptr_->Advertise<smartmouse::msgs::WorldStatistics>(TopicNames::kWorldStatistics);
   sim_state_pub_ = node_ptr_->Advertise<smartmouse::msgs::RobotSimState>(TopicNames::kRobotSimState);
   node_ptr_->Subscribe(TopicNames::kServerControl, &Server::OnServerControl, this);
@@ -25,62 +31,67 @@ void Server::RunLoop() {
   node_ptr_->Subscribe(TopicNames::kRobotCommand, &Server::OnRobotCommand, this);
   node_ptr_->Subscribe(TopicNames::kRobotDescription, &Server::OnRobotDescription, this);
   connected_ = true;
+}
 
-  while (true) {
-    Time update_rate = Time(0, ns_of_sim_per_step_);
-    Time start_step_time = Time::GetWallTime();
-    Time desired_step_time = update_rate / real_time_factor_;
+void Server::RunLoop() {
+  Connect();
 
-    // special case when update_rate is zero, like on startup.
-    if (desired_step_time == 0) {
-      Time::MSleep(1);
-      continue;
-    }
-
-    // Begin Critical Section
-    {
-      std::lock_guard<std::mutex> guard(physics_mutex_);
-      if (quit_) {
-        break;
-      }
-
-      if (pause_at_steps_ > 0 && pause_at_steps_ == steps_) {
-        pause_at_steps_ = 0;
-        pause_ = true;
-        Time::MSleep(1);
-        continue;
-      }
-
-      if (pause_) {
-        Time::MSleep(1);
-        continue;
-      }
-
-      Step();
-    }
-    // End Critical Section
-
-    Time end_step_time = Time::GetWallTime();
-    Time used_step_time = end_step_time - start_step_time;
-
-    if (used_step_time < desired_step_time) {
-      // there is a fudge factor here to account for the time to publish world stats
-      Time sleep_time = desired_step_time - used_step_time - 50e-6;
-      Time::Sleep(sleep_time);
-    } else {
-      std::cout << "Update took " << used_step_time.Float() << ". Skipping sleep." << std::endl;
-    }
-
-    Time actual_end_step_time = Time::GetWallTime();
-    Time actual_step_time = actual_end_step_time - start_step_time;
-    Time rtf = update_rate / actual_step_time;
-
-    // This will send a message the GUI so it can update
-    PublishInternalState();
-
-    // announce completion of this step
-    PublishWorldStats(rtf);
+  bool done = false;
+  while (!done) {
+    done = Run();
   }
+}
+
+bool Server::Run() {
+  Time update_rate = Time(0, ns_of_sim_per_step_);
+  Time start_step_time = Time::GetWallTime();
+  Time desired_step_time = update_rate / real_time_factor_;
+  Time desired_end_time = start_step_time + desired_step_time;
+
+  // special case when update_rate is zero, like on startup.
+  if (desired_step_time == 0) {
+    Time::MSleep(1);
+    return false;
+  }
+
+  // Begin Critical Section
+  {
+    std::lock_guard<std::mutex> guard(physics_mutex_);
+    if (quit_) {
+      return true;
+    }
+
+    if (pause_at_steps_ > 0 && pause_at_steps_ == steps_) {
+      pause_at_steps_ = 0;
+      pause_ = true;
+      Time::MSleep(1);
+      return false;
+    }
+
+    if (pause_) {
+      Time::MSleep(1);
+      return false;
+    }
+
+    Step();
+  }
+  // End Critical Section
+
+  if (Time::GetWallTime() < desired_end_time) {
+    while (Time::GetWallTime() < desired_end_time) ;
+  } else {
+    std::cout << "Update took too long skipping sleep." << std::endl;
+  }
+
+  Time rtf = update_rate / (Time::GetWallTime() - start_step_time);
+
+  // This will send a message the GUI so it can update
+  PublishInternalState();
+
+  // announce completion of this step
+  PublishWorldStats(rtf);
+
+  return false;
 }
 
 void Server::Step() {
@@ -305,4 +316,7 @@ void Server::Join() {
 
 bool Server::IsConnected() {
   return connected_;
+}
+unsigned int Server::getNsOfSimPerStep() const {
+  return ns_of_sim_per_step_;
 }

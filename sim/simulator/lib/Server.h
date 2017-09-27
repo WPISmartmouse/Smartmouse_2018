@@ -17,11 +17,14 @@ class Server {
 
  public:
   Server();
+  void Connect();
   void Start();
   void RunLoop();
+  bool Run();
   void Step();
   void Join();
   bool IsConnected();
+  unsigned int getNsOfSimPerStep() const;
 
   std::thread *thread_;
  private:
