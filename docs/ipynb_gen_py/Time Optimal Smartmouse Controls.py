@@ -342,7 +342,7 @@ get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45
 # \end{bmatrix}
 # \end{equation}
 
-# In[12]:
+# In[23]:
 
 # Let's solve this in code like we did before
 def plot_x_y_theta(coeff):
@@ -391,10 +391,12 @@ def plot_x_y_theta(coeff):
     plt.ylabel("Y")
     plt.grid(True)
     
+    print(xds[-1], yds[-1])
+    
     plt.show()
 
 
-# In[18]:
+# In[25]:
 
 
 from math import sin, cos, pi
@@ -449,13 +451,18 @@ else:
 # print("RANK", rank)
 # print("A", A)
 # print("COEFF", coeff)
-# print("     B", B)
-# print("RESULT", A@coeff)
+print("B is: ", B)
+print("A@coeff is:", A@coeff)
 error = np.sum(np.power(A@coeff - B, 2))
+print("These two vectors should be equal! But there is error.")
 print("RMS Error of solution to equations", error)
 
 plot_x_y_theta(coeff)
 
+
+# ## Errors
+# 
+# The system of equations above is under-determined, which means there is either no solution or infinitely many solutions. Because `lstsq` returns a high error, I believe the system probably has no solution. My question is simply why. How can I properly constrain initial/final position and velocity in a way that always has a solution?
 
 # In[ ]:
 

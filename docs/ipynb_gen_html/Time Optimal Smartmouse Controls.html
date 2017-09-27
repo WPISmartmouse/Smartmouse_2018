@@ -14587,7 +14587,7 @@ s(\theta_{t_f})v_{t_f} \\
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="prompt input_prompt">In&nbsp;[23]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Let&#39;s solve this in code like we did before</span>
@@ -14637,6 +14637,8 @@ s(\theta_{t_f})v_{t_f} \\
     <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Y&quot;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
     
+    <span class="nb">print</span><span class="p">(</span><span class="n">xds</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">yds</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 
@@ -14647,7 +14649,7 @@ s(\theta_{t_f})v_{t_f} \\
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[18]:</div>
+<div class="prompt input_prompt">In&nbsp;[25]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span>   
@@ -14703,9 +14705,10 @@ s(\theta_{t_f})v_{t_f} \\
 <span class="c1"># print(&quot;RANK&quot;, rank)</span>
 <span class="c1"># print(&quot;A&quot;, A)</span>
 <span class="c1"># print(&quot;COEFF&quot;, coeff)</span>
-<span class="c1"># print(&quot;     B&quot;, B)</span>
-<span class="c1"># print(&quot;RESULT&quot;, A@coeff)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;B is: &quot;</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A@coeff is:&quot;</span><span class="p">,</span> <span class="n">A</span><span class="nd">@coeff</span><span class="p">)</span>
 <span class="n">error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">A</span><span class="nd">@coeff</span> <span class="o">-</span> <span class="n">B</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;These two vectors should be equal! But there is error.&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;RMS Error of solution to equations&quot;</span><span class="p">,</span> <span class="n">error</span><span class="p">)</span>
 
 <span class="n">plot_x_y_theta</span><span class="p">(</span><span class="n">coeff</span><span class="p">)</span>
@@ -14724,7 +14727,12 @@ s(\theta_{t_f})v_{t_f} \\
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>Ranks don&#39;t match! 8 equations 12 variables, using least squares
+B is:  [ 0.09  0.    0.    0.    0.    0.2   0.18  0.09  0.    0.    0.   -0.2 ]
+A@coeff is: [ 0.09   0.     0.     0.     0.     0.2    0.18   0.09  -0.067  0.067  0.
+ -0.067]
+These two vectors should be equal! But there is error.
 RMS Error of solution to equations 0.0266666664192
+1.92653589497e-05 -0.0666666663574
 </pre>
 </div>
 </div>
@@ -16026,6 +16034,16 @@ AABJRU5ErkJggg==
 </div>
 </div>
 
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Errors">Errors<a class="anchor-link" href="#Errors">&#182;</a></h2><p>The system of equations above is under-determined, which means there is either no solution or infinitely many solutions. Because <code>lstsq</code> returns a high error, I believe the system probably has no solution. My question is simply why. How can I properly constrain initial/final position and velocity in a way that always has a solution?</p>
+
+</div>
+</div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
