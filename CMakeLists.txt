@@ -13,6 +13,9 @@ endif ()
 
 project(smartmouse)
 
+# Dependencies used across the whole repo
+find_package(Eigen3 3.3 REQUIRED NO_MODULE)
+
 file(GLOB_RECURSE CORE_COM_SRC
         "common/commands/*.cpp" "common/commanduino/*.cpp" "common/core/*.cpp")
 
@@ -40,8 +43,8 @@ if (NOT ${BUILD_SIM})
 
     add_teensy_executable(main real/main/main.cpp ${COM_SRC} ${REAL_SRC} ${REAL_LIBS_SRC})
     set_target_properties(main PROPERTIES COMPILE_FLAGS "-include common/core/util.h")
-else ()
 
+else ()
     include_directories(${CMAKE_SOURCE_DIR})
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 

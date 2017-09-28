@@ -138,3 +138,6 @@ set_target_properties(joy_teleop PROPERTIES COMPILE_FLAGS "-include gazebo_pch.h
 target_link_libraries(joy_teleop sim ${GAZEBO_LIBRARIES} ncurses)
 target_include_directories(joy_teleop PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${PROTOBUF_INCLUDE_DIRS} commands)
 add_dependencies(joy_teleop gazebo_pch)
+
+add_executable(eigen_test main/eigen_test.cpp)
+target_link_libraries(eigen_test Eigen3::Eigen)
