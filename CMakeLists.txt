@@ -41,7 +41,8 @@ if (NOT ${BUILD_SIM})
     add_teensy_executable(main real/main/main.cpp ${COM_SRC} ${REAL_SRC} ${REAL_LIBS_SRC})
     set_target_properties(main PROPERTIES COMPILE_FLAGS "-include common/core/util.h")
 
-    add_teensy_executable(eigen_test real/main/eigen_test.cpp)
+    add_teensy_executable(eigen_test real/main/eigen_test.cpp common/core/util.cpp)
+    set_target_properties(eigen_test PROPERTIES COMPILE_FLAGS "-include common/core/util.h")
 else ()
 
     include_directories(${CMAKE_SOURCE_DIR})
