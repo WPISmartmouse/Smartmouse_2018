@@ -140,4 +140,3 @@ target_include_directories(joy_teleop PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${PROT
 add_dependencies(joy_teleop gazebo_pch)
 
 add_executable(eigen_test main/eigen_test.cpp)
-target_link_libraries(eigen_test Eigen3::Eigen)

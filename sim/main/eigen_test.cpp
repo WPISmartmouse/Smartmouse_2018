@@ -1,5 +1,5 @@
 #include <iostream>
-#include <Eigen/Dense>
+#include <common/Eigen/Eigen/Dense>
 
 int main()
 {
