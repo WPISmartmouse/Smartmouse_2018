@@ -250,8 +250,7 @@ no_dynamics()
 get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45:(0,0)}] (-.5,-1) rectangle (0.5,1);\n\\filldraw (0,0) circle (0.125);\n\n\\draw [->] (0,0) -- (0,1.5);\n\\draw [->] (0,0) -- (1.5,0);\n\\draw [->] (0,0) -- (1.5,1.5);\n\\draw (1.2, -0.2) node {$x$};\n\\draw (-0.2, 1.2) node {$y$};\n\\draw (1, 1.2) node {$v$};')
 
 
-# 
-# We need to change our constraints to the system of equations. Specifically, we need our dynamics model. For now, let's assume a simplified car model.
+# # We need to change our constraints to the system of equations. Specifically, we need our dynamics model. For now, let's assume a simplified car model.
 # 
 # $$ \dot{x} = v\cos(\theta) $$
 # $$ \dot{y} = v\sin(\theta) $$
@@ -517,7 +516,7 @@ plot_vars(fwd_1)
 plot_traj(fwd_1)
 
 
-# In[12]:
+# In[13]:
 
 # continue by turning right 90 degrees
 LOG_LVL = 5
@@ -526,3 +525,7 @@ turn_right.solve(q_0=[0.09, 0.18, pi/2], v_0=0.4, q_t_f=[0.18, 0.27, 0], v_f=0.4
 plot_vars(turn_right)
 plot_traj(turn_right)
 
+
+# # Trajectory Following
+# 
+# Now that we have a plan, we want the robot to follow it. 
