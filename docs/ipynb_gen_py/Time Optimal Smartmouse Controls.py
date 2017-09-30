@@ -32,7 +32,7 @@ get_ipython().run_cell_magic('tikz', '-s 400,400', '\\draw[->] (0,0) -- (10,0);\
 
 # ## Code that proves it
 
-# In[29]:
+# In[3]:
 
 # dependencies and global setup
 import numpy as np
@@ -58,7 +58,7 @@ def log(*args):
         print(*args)
 
 
-# In[30]:
+# In[4]:
 
 def profile(V0, Vf, Vmax, d, A, buffer=3e-3):
     v = V0
@@ -154,7 +154,7 @@ plt.show()
 # 
 # It can be shown that the matrix on the left is invertable, so long as $t_f-t_0 > 0$. So we can invert and solve this equation and get all the $a$ coefficients. We can then use this polynomial to generate the $q(t)$ and $\dot{q}(t)$ -- our trajectory.
 
-# In[31]:
+# In[5]:
 
 def simple_traj_solve(q_0, q_f, q_dot_0, q_dot_t_f, t_f):
     # Example: you are a point in space (one dimension) go from rest at the origin to at rest at (0.18, 0, 0) in 1 second
@@ -177,7 +177,7 @@ simple_traj_coeff = simple_traj_solve(*simple_traj_info)
 
 # Here you can see that the resulting coeffictions are $a_0=0$, $a_1=0$, $a_2=0.54$, $a_0=-0.36$. Intuitively, this says that we're going to have positive acceleration, but our acceleration is going to slow down over time. Let's graph it!
 
-# In[32]:
+# In[6]:
 
 def simple_traj_plot(coeff, t_f):
     dt = 0.01
@@ -196,7 +196,7 @@ simple_traj_plot(simple_traj_coeff, simple_traj_info[-1])
 # 
 # Let's try another example, now with our full state space of $[x, y, \theta]$.
 
-# In[33]:
+# In[7]:
 
 def no_dynamics():
     # In this example, we go from (0.18, 0.09, 0) to (0.27,0.18, -1.5707). Our starting and ending velocities are zero
@@ -245,7 +245,7 @@ no_dynamics()
 
 # # Trajectory Planning With a Simple Dynamics Model
 
-# In[34]:
+# In[8]:
 
 get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45:(0,0)}] (-.5,-1) rectangle (0.5,1);\n\\filldraw (0,0) circle (0.125);\n\n\\draw [->] (0,0) -- (0,1.5);\n\\draw [->] (0,0) -- (1.5,0);\n\\draw [->] (0,0) -- (1.5,1.5);\n\\draw (1.2, -0.2) node {$x$};\n\\draw (-0.2, 1.2) node {$y$};\n\\draw (1, 1.2) node {$v$};')
 
@@ -371,7 +371,7 @@ get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45
 # \end{bmatrix}
 # \end{equation}
 
-# In[42]:
+# In[52]:
 
 # Let's solve this in code like we did before
 def plot_vars(traj_plan):
@@ -389,25 +389,25 @@ def plot_vars(traj_plan):
     plt.rc('text', usetex=True)
     plt.rc('font', family='serif')
     plt.rc('axes.formatter', useoffset=False)
-    plt.figure(figsize=(10, 10))
+    plt.figure(figsize=(10, 2.5))
     
-    plt.subplot(221)
+    plt.subplot(141)
     plt.plot(T, xs, linewidth=3)
     plt.xlabel("time (seconds)")
     plt.title("X")
 
-    plt.subplot(222)
+    plt.subplot(142)
     plt.plot(T, ys, linewidth=3, color='r')
     plt.xlabel("time (seconds)")
     plt.title("Y")
 
-    plt.subplot(223)
+    plt.subplot(143)
     plt.plot(T, xds, linewidth=3, color='g')
     plt.xlabel("time (seconds)")
     plt.title("$\dot{x}$")
     plt.tight_layout()
     
-    plt.subplot(224)
+    plt.subplot(144)
     plt.plot(T,yds, linewidth=3, color='y')
     plt.xlabel("time (seconds)")
     plt.title("$\dot{y}$")
@@ -422,8 +422,8 @@ def plot_traj(traj_plan):
     xs = xts@traj_plan.get_coeff()
     ys = yts@traj_plan.get_coeff()
     
-    plt.figure(figsize=(10, 10))
-    W = 4
+    plt.figure(figsize=(5, 5))
+    W = 3
     plt.scatter(xs, ys, marker='.', linewidth=0, c=T)
     plt.xlim(0, W * 0.18)
     plt.ylim(0, W * 0.18)
@@ -438,25 +438,60 @@ def plot_traj(traj_plan):
     plt.show()
 
 
-# In[43]:
+# In[91]:
 
 from math import sin, cos, pi
 
 class TrajPlan:
     
+    @staticmethod
+    def x_constraint(t):
+        return [1, t, pow(t,2), pow(t,3), pow(t,4), pow(t,5), 0, 0, 0, 0, 0, 0]
+        
+    @staticmethod
+    def y_constraint(t):
+        return [0, 0, 0, 0, 0, 0, 1, t, pow(t,2), pow(t,3), pow(t,4), pow(t,5)]
+    
+    @staticmethod
+    def non_holonomic_constraint(theta_t, t):
+        s_t = sin(theta_t)
+        c_t = cos(theta_t)
+        t_2 = pow(t, 2)
+        t_3 = pow(t, 3)
+        t_4 = pow(t, 4)
+        return [0, s_t, 2*s_t*t, 3*s_t*t_2, 4*s_t*t_3, 5*s_t*t_4, 0, c_t, 2*c_t*t, 3*c_t*t_2, 4*c_t*t_3, 5*c_t*t_4]
+        
+    @staticmethod
+    def trig_constraint(theta_t, t):
+        s_t = sin(theta_t)
+        c_t = cos(theta_t)
+        t_2 = pow(t, 2)
+        t_3 = pow(t, 3)
+        t_4 = pow(t, 4)
+        return [0, s_t, 2*s_t*t, 3*s_t*t_2, 4*s_t*t_3, 5*s_t*t_4, 0, -c_t, -2*c_t*t, -3*c_t*t_2, -4*c_t*t_3, -5*c_t*t_4]
+            
+    @staticmethod
+    def x_dot_constraint(t):
+        return [0, 1, 2*t, 3*pow(t,2), 4*pow(t,3), 5*pow(t,4), 0, 0, 0, 0, 0, 0]
+            
+    @staticmethod
+    def y_dot_constraint(t):
+        return [0, 0, 0, 0, 0, 0, 0, 1, 2*t, 3*pow(t,2), 4*pow(t,3), 5*pow(t,4)]
+        
     def solve(self, q_0, v_0, q_t_f, v_f, t_f):
-        A = np.array([[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-                      [0, sin(q_0[2]), 0, 0, 0, 0, 0, cos(q_0[2]), 0, 0, 0, 0],
-                      [0, sin(q_0[2]), 0, 0, 0, 0, 0, -cos(q_0[2]), 0, 0, 0, 0],
-                      [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-                      [1, t_f, pow(t_f,2), pow(t_f,3), pow(t_f,4), pow(t_f,5), 0, 0, 0, 0, 0, 0],
-                      [0, 0, 0, 0, 0, 0, 1, t_f, pow(t_f,2), pow(t_f,3), pow(t_f,4), pow(t_f,5)],
-                      [0, sin(q_t_f[2]), 2*sin(q_t_f[2])*t_f, 3*sin(q_t_f[2])*pow(t_f,2), 4*sin(q_t_f[2])*pow(t_f,3), 5*sin(q_t_f[2])*pow(t_f,4), 0, cos(q_t_f[2]), 2*cos(q_t_f[2])*t_f, 3*cos(q_t_f[2])*pow(t_f,2), 4*cos(q_t_f[2])*pow(t_f,3), 5*cos(q_t_f[2])*pow(t_f,4)],
-                      [0, sin(q_t_f[2]), 2*sin(q_t_f[2])*t_f, 3*sin(q_t_f[2])*pow(t_f,2), 4*sin(q_t_f[2])*pow(t_f,3), 5*sin(q_t_f[2])*pow(t_f,4), 0, -cos(q_t_f[2]), -2*cos(q_t_f[2])*t_f, -3*cos(q_t_f[2])*pow(t_f,2), -4*cos(q_t_f[2])*pow(t_f,3), -5*cos(q_t_f[2])*pow(t_f,4)],
-                      [0, 1, 2*t_f, 3*pow(t_f,2), 4*pow(t_f,3), 5*pow(t_f,4), 0, 0, 0, 0, 0, 0],
-                      [0, 0, 0, 0, 0, 0, 0, 1, 2*t_f, 3*pow(t_f,2), 4*pow(t_f,3), 5*pow(t_f,4)],
+        # Setup the matrices to match the equation above
+        A = np.array([TrajPlan.x_constraint(0),
+                      TrajPlan.y_constraint(0),
+                      TrajPlan.non_holonomic_constraint(q_0[2], 0),
+                      TrajPlan.trig_constraint(q_0[2], 0),
+                      TrajPlan.x_dot_constraint(0),
+                      TrajPlan.y_dot_constraint(0),
+                      TrajPlan.x_constraint(t_f),
+                      TrajPlan.y_constraint(t_f),
+                      TrajPlan.non_holonomic_constraint(q_t_f[2], t_f),
+                      TrajPlan.trig_constraint(q_t_f[2], t_f),
+                      TrajPlan.x_dot_constraint(t_f),
+                      TrajPlan.y_dot_constraint(t_f),
                      ])
         B = np.array([q_0[0],
                       q_0[1],
@@ -507,17 +542,17 @@ class TrajPlan:
 
 # ## Example Plots
 
-# In[44]:
+# In[93]:
 
 # forward 1 cell, start from rest, end at 40cm/s, do it in .5 seconds
 LOG_LVL = 5
 fwd_1 = TrajPlan()
-fwd_1.solve(q_0=[0.09, 0.09, pi/2], v_0=0, q_t_f=[0.09, 0.18, pi/2], v_f=0.4, t_f=0.5)
+fwd_1.solve(q_0=[0.09, 0.09, pi/2], v_0=00., q_t_f=[0.09, 0.18, pi/2], v_f=0.4, t_f=0.5)
 plot_vars(fwd_1)
 plot_traj(fwd_1)
 
 
-# In[46]:
+# In[94]:
 
 # continue by turning right 90 degrees
 LOG_LVL = 5
