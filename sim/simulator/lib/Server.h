@@ -38,7 +38,7 @@ class Server {
   void ResetRobot();
   void ResetTime();
   void PublishInternalState();
-  void PublishWorldStats(Time rtf);
+  void PublishWorldStats(double rtf);
 
   ignition::transport::Node *node_ptr_;
   ignition::transport::Node::Publisher world_stats_pub_;

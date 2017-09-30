@@ -77,13 +77,16 @@ bool Server::Run() {
   }
   // End Critical Section
 
-  if (Time::GetWallTime() < desired_end_time) {
-    while (Time::GetWallTime() < desired_end_time) ;
-  } else {
-    std::cout << "Update took too long skipping sleep." << std::endl;
+  Time end_step_time = Time::GetWallTime();
+  if (end_step_time > desired_end_time) {
+    std::cout << "step took too long. Skipping sleep." << std::endl;
+  }
+  else {
+    Time sleep_time = (desired_end_time - end_step_time);
+    Time::Sleep(sleep_time);
   }
 
-  Time rtf = update_rate / (Time::GetWallTime() - start_step_time);
+  double rtf = update_rate.Double() / (end_step_time - start_step_time).Double();
 
   // This will send a message the GUI so it can update
   PublishInternalState();
@@ -234,12 +237,12 @@ void Server::PublishInternalState() {
   sim_state_pub_.Publish(robot_state_);
 }
 
-void Server::PublishWorldStats(Time rtf) {
+void Server::PublishWorldStats(double rtf) {
   smartmouse::msgs::WorldStatistics world_stats_msg;
   world_stats_msg.set_steps(steps_);
   ignition::msgs::Time *sim_time_msg = world_stats_msg.mutable_sim_time();
   *sim_time_msg = sim_time_.toIgnMsg();
-  world_stats_msg.set_real_time_factor(rtf.Double());
+  world_stats_msg.set_real_time_factor(rtf);
   world_stats_pub_.Publish(world_stats_msg);
 }
 
