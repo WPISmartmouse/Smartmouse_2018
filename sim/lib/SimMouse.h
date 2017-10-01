@@ -41,7 +41,7 @@ public:
 
   void publishIndicators();
 
-  void robotStateCallback(const smartmouse::msgs::RobotSimState &msg);
+  void robotSimStateCallback(const smartmouse::msgs::RobotSimState &msg);
 
   void run(double dt_s);
 
@@ -69,8 +69,6 @@ private:
 
   double abstract_left_force;
   double abstract_right_force;
-  double left_wheel_velocity_mps;
-  double right_wheel_velocity_mps;
   double left_wheel_angle_rad;
   double right_wheel_angle_rad;
 

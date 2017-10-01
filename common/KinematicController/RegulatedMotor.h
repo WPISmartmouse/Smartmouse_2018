@@ -8,7 +8,7 @@ public:
 
   bool isStopped();
 
-  double runPid(double dt_s, double angle_rad, double ground_truth_velocity_mps);
+  double runPid(double dt_s, double angle_rad);
 
   void setAcceleration(double acceleration, double brake_acceleration);
 

@@ -16,6 +16,7 @@ AbstractMaze Convert(smartmouse::msgs::Maze maze_msg);
 
 RobotDescription Convert(std::ifstream &fs);
 
-double Convert(ignition::msgs::Time time);
+double ConvertSec(ignition::msgs::Time time);
+unsigned long ConvertMSec(ignition::msgs::Time time);
 }
 }

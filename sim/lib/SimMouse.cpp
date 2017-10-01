@@ -85,14 +85,11 @@ void SimMouse::publishIndicators() {
   }
 }
 
-void SimMouse::robotStateCallback(const smartmouse::msgs::RobotSimState &msg) {
+void SimMouse::robotSimStateCallback(const smartmouse::msgs::RobotSimState &msg) {
   std::unique_lock<std::mutex> lk(dataMutex);
   true_pose.x = msg.p().x();
   true_pose.y = msg.p().y();
   true_pose.yaw = msg.p().theta();
-
-  this->left_wheel_velocity_mps = msg.left_wheel().omega();
-  this->right_wheel_velocity_mps = msg.right_wheel().omega();
 
   this->left_wheel_angle_rad = msg.left_wheel().theta();
   this->right_wheel_angle_rad = msg.right_wheel().theta();
@@ -116,8 +113,6 @@ void SimMouse::run(double dt_s) {
   std::tie(abstract_left_force, abstract_right_force) = kinematic_controller.run(dt_s,
                                                                                  this->left_wheel_angle_rad,
                                                                                  this->right_wheel_angle_rad,
-                                                                                 this->left_wheel_velocity_mps,
-                                                                                 this->right_wheel_velocity_mps,
                                                                                  range_data);
 
   // THIS IS SUPER IMPORTANT!
@@ -222,9 +217,9 @@ void SimMouse::setSpeed(double left_wheel_velocity_setpoint_mps, double right_wh
 }
 
 void SimMouse::simInit() {
-  setSpeed(0, 0);
+  setSpeed(0.09, 0.09);
 
-  kinematic_controller.setAcceleration(4.0, 8.0);
+  kinematic_controller.setAcceleration(2.0, 2.0);
 
   // we start in the middle of the first square
   resetToStartPose();

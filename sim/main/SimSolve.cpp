@@ -1,11 +1,12 @@
 #include <common/commanduino/CommanDuino.h>
 #include <common/commands/SolveCommand.h>
-#include <sim/commands/ForwardToDiagonal.h>
 #include <common/Flood.h>
 
 #include <sim/lib/SimTimer.h>
 #include <simulator/msgs/maze_location.pb.h>
 #include <simulator/msgs/robot_command.pb.h>
+#include <simulator/lib/TopicNames.h>
+#include <sim/lib/SimMouse.h>
 
 int main(int argc, char *argv[]) {
   SimTimer timer;
@@ -13,20 +14,20 @@ int main(int argc, char *argv[]) {
   SimMouse *mouse = SimMouse::inst();
 
   // Create our node for communication
-  bool success = mouse->node.Subscribe("time_ms", &SimTimer::simTimeCallback, &timer);
+  bool success = mouse->node.Subscribe(TopicNames::kWorldStatistics, &SimTimer::simTimeCallback, &timer);
   if (!success) {
-    print("Failed to subscribe to time_ms\n");
+    print("Failed to subscribe to %s\n", TopicNames::kWorldStatistics);
     return EXIT_FAILURE;
   }
 
-  success = mouse->node.Subscribe("state", &SimMouse::robotStateCallback, mouse);
+  success = mouse->node.Subscribe(TopicNames::kRobotSimState, &SimMouse::robotSimStateCallback, mouse);
   if (!success) {
-    print("Failed to subscribe to state\n");
+    print("Failed to subscribe to %s\n", TopicNames::kRobotSimState);
     return EXIT_FAILURE;
   }
 
-  mouse->cmd_pub = mouse->node.Advertise<smartmouse::msgs::RobotCommand>("robot_command");
-  mouse->maze_location_pub = mouse->node.Advertise<smartmouse::msgs::MazeLocation>("maze_location");
+  mouse->cmd_pub = mouse->node.Advertise<smartmouse::msgs::RobotCommand>(TopicNames::kRobotCommand);
+  mouse->maze_location_pub = mouse->node.Advertise<smartmouse::msgs::MazeLocation>(TopicNames::kMazeLocation);
 
   // wait for time messages to come
   while (!timer.isTimeReady());
@@ -34,7 +35,6 @@ int main(int argc, char *argv[]) {
   mouse->simInit();
 
   Scheduler scheduler(new SolveCommand(new Flood(mouse)));
-//  Scheduler scheduler(new ForwardToDiagonal());
 
   bool done = false;
   unsigned long last_t = timer.programTimeMs();
@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
     }
 
     mouse->run(dt_s);
-    done = scheduler.run();
+//    done = scheduler.run();
     last_t = now;
   }
 }

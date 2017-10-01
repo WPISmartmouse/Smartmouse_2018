@@ -113,8 +113,13 @@ RobotDescription Convert(std::ifstream &fs) {
 
   return robot_description;
 }
-double Convert(ignition::msgs::Time time) {
-  return time.sec() + time.nsec() / 1000000000;
+
+double ConvertSec(ignition::msgs::Time time) {
+  return time.sec() + time.nsec() / 1000000000ul;
+}
+
+unsigned long ConvertMSec(ignition::msgs::Time time) {
+  return time.sec() * 1000ul + time.nsec() / 1000000;
 }
 
 }

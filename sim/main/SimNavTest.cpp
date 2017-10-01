@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
     return EXIT_FAILURE;
   }
 
-  success = mouse->node.Subscribe("state", &SimMouse::robotStateCallback, mouse);
+  success = mouse->node.Subscribe("state", &SimMouse::robotSimStateCallback, mouse);
   if (!success) {
     print("Failed to subscribe to state\n");
     return EXIT_FAILURE;

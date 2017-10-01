@@ -28,7 +28,7 @@ void RegulatedMotor::reset_enc_rad(double rad) {
   last_angle_rad = rad;
 }
 
-double RegulatedMotor::runPid(double dt_s, double angle_rad, double ground_truth_velocity_mps) {
+double RegulatedMotor::runPid(double dt_s, double angle_rad) {
   if (!initialized) {
     initialized = true;
     last_angle_rad = angle_rad;
@@ -36,11 +36,7 @@ double RegulatedMotor::runPid(double dt_s, double angle_rad, double ground_truth
   }
 
   estimated_velocity_rps = (angle_rad - last_angle_rad) / dt_s;
-#ifdef EMBED //TODO: remove this crutch
   velocity_rps = estimated_velocity_rps;
-#else
-  velocity_rps = Mouse::meterToRad(ground_truth_velocity_mps);
-#endif
   error = regulated_setpoint_rps - velocity_rps;
   derivative = (last_velocity_rps - velocity_rps) / dt_s;
   smooth_derivative = 0.80 * smooth_derivative + 0.2 * derivative;
