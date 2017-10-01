@@ -99,9 +99,19 @@ void MazeWidget::PaintMouse(QPainter &painter, QTransform tf) {
   tf.translate(robot_state_.xytheta().x(), robot_state_.xytheta().y());
   tf.rotateRadians(robot_state_.xytheta().theta(), Qt::ZAxis);
 
+  painter.setPen(QPen(Qt::black));
   painter.fillPath(tf.map(footprint), kRobotBrush);
   painter.fillPath(tf.map(left_wheel_path), QBrush(Qt::black));
   painter.fillPath(tf.map(right_wheel_path), QBrush(Qt::black));
+
+  for (auto sensors : mouse_.sensors()) {
+    QTransform line_tf(tf);
+    line_tf.translate(sensors.x(), sensors.y());
+    line_tf.rotateRadians(sensors.yaw(), Qt::ZAxis);
+    QLineF line(0, 0, 0.1, 0);
+    painter.setPen(QPen(Qt::green));
+    painter.drawLine(line_tf.map(line));
+  }
 }
 
 void MazeWidget::PaintWalls(QPainter &painter, QTransform tf) {

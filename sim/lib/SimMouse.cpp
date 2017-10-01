@@ -13,7 +13,9 @@ double SimMouse::abstractForceToNewtons(double x) {
   return x * config.MAX_FORCE / 255.0;
 }
 
-SimMouse::SimMouse() : kinematic_controller(this), range_data({}) {}
+SimMouse::SimMouse() : kinematic_controller(this), range_data({}) {
+  dir = Direction::N;
+}
 
 SimMouse *SimMouse::inst() {
   if (instance == NULL) {
@@ -149,6 +151,8 @@ void SimMouse::run(double dt_s) {
   cmd.mutable_right()->set_abstract_force(abstract_right_force);
   cmd_pub.Publish(cmd);
 
+  std::cout << abstract_left_force << std::endl;
+
   update_markers();
 }
 
@@ -217,7 +221,7 @@ void SimMouse::setSpeed(double left_wheel_velocity_setpoint_mps, double right_wh
 }
 
 void SimMouse::simInit() {
-  setSpeed(0.09, 0.09);
+  setSpeed(0.60, 0.60);
 
   kinematic_controller.setAcceleration(2.0, 2.0);
 

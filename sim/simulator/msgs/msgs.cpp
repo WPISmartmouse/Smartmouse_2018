@@ -111,6 +111,14 @@ RobotDescription Convert(std::ifstream &fs) {
   right_wheel->set_radius(json["right_wheel"]["radius"]);
   right_wheel->set_thickness(json["right_wheel"]["thickness"]);
 
+  auto sensors = robot_description.mutable_sensors();
+  for (auto json_sensor : json["range_sensors"]) {
+    auto sensor = sensors->Add();
+    sensor->set_x(json_sensor["x"]);
+    sensor->set_y(json_sensor["y"]);
+    sensor->set_yaw(json_sensor["yaw"]);
+  }
+
   return robot_description;
 }
 

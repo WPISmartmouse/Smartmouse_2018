@@ -13,6 +13,13 @@ message RobotDescription {
     optional ignition.msgs.Vector3d cog = 4;
     repeated XYTheta range_sensors = 5;
     optional MotorDescription motor = 6;
+    repeated SensorDescription sensors = 7;
+}
+
+message SensorDescription {
+    optional double x = 1;
+    optional double y = 2;
+    optional double yaw = 3;
 }
 
 message MotorDescription {
