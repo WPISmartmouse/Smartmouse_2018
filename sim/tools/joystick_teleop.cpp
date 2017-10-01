@@ -22,11 +22,11 @@ int main(int argc, char **argv) {
 
   bool keepGoing = true;
 
-  double lforce_setpoint = 0; // m/sec^2
-  double rforce_setpoint = 0; // m/sec^2
-  double lforce = 0; // m/s
-  double rforce = 0; // m/s
-  const double u = .09; // m/s
+  double lforce_setpoint = 0;
+  double rforce_setpoint = 0;
+  double lforce = 0;
+  double rforce = 0;
+  const double u = 255;
 
   Joystick joystick("/dev/input/js0");
 
@@ -50,9 +50,9 @@ int main(int argc, char **argv) {
     if (event.type == JS_EVENT_BUTTON && event.number == 1) {
     } else if (event.type == JS_EVENT_AXIS) {
       if (event.number == 1) {
-        lforce_setpoint = -u * event.value / 30000.0;
+        lforce_setpoint = -u * (float)event.value / (1 << 15);
       } else if (event.number == 4) {
-        rforce_setpoint = -u * event.value / 30000.0;
+        rforce_setpoint = -u * (float)event.value / (1 << 15);
       }
     }
 
