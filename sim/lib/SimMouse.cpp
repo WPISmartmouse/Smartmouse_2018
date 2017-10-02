@@ -8,11 +8,6 @@ const std::string SimMouse::red_color = "Gazebo/Red";
 const std::string SimMouse::green_color = "Gazebo/Green";
 const std::string SimMouse::blue_color = "Gazebo/Blue";
 
-double SimMouse::abstractForceToNewtons(double x) {
-  // abstract force is from -255 to 255 per motor
-  return x * config.MAX_FORCE / 255.0;
-}
-
 SimMouse::SimMouse() : kinematic_controller(this), range_data({}) {
   dir = Direction::N;
 }
@@ -76,7 +71,7 @@ void SimMouse::indicatePath(unsigned int row, unsigned int col, std::string path
 
 bool SimMouse::isStopped() {
   return kinematic_controller.isStopped() && fabs(abstract_left_force) <= 5 &&
-      fabs(abstract_right_force) <= RegulatedMotor::MIN_ABSTRACT_FORCE;
+      fabs(abstract_right_force) <= config.MIN_ABSTRACT_FORCE;
 }
 
 void SimMouse::publishIndicators() {
@@ -151,8 +146,6 @@ void SimMouse::run(double dt_s) {
   cmd.mutable_right()->set_abstract_force(abstract_right_force);
   cmd_pub.Publish(cmd);
 
-  std::cout << abstract_left_force << std::endl;
-
   update_markers();
 }
 
@@ -222,6 +215,7 @@ void SimMouse::setSpeed(double left_wheel_velocity_setpoint_mps, double right_wh
 
 void SimMouse::simInit() {
   setSpeed(0.60, 0.60);
+  kinematic_controller.setParams(10, 0, 0, 0, 0);
 
   kinematic_controller.setAcceleration(2.0, 2.0);
 

@@ -174,6 +174,8 @@ KinematicController::run(double dt_s, double left_angle_rad, double right_angle_
     // run PID, which will update the velocities of the wheels
     abstract_forces.first = left_motor.runPid(dt_s, left_angle_rad);
     abstract_forces.second = right_motor.runPid(dt_s, right_angle_rad);
+
+    print("%0.3f\n", Mouse::radToMeters(left_motor.setpoint_rps));
   }
   else {
     abstract_forces.first = 0;
@@ -277,4 +279,9 @@ void KinematicController::setSpeedMps(double left_setpoint_mps,
                                       double right_setpoint_mps) {
   left_motor.setSetpointMps(left_setpoint_mps);
   right_motor.setSetpointMps(right_setpoint_mps);
+}
+
+void KinematicController::setParams(double kP, double kI, double kD, double ff_offset, double int_cap) {
+  left_motor.setParams(kP, kI, kD, ff_offset, int_cap);
+  right_motor.setParams(kP, kI, kD, ff_offset, int_cap);
 }

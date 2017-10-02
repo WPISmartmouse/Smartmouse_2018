@@ -34,6 +34,8 @@ public:
 
   void setSpeedMps(double left_setpoint_mps, double right_setpoint_mps);
 
+  void setParams(double kP, double kI, double kD, double ff_offset, double int_cap);
+
   RegulatedMotor left_motor;
   RegulatedMotor right_motor;
 

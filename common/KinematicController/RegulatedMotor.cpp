@@ -3,24 +3,28 @@
 #include <common/RobotConfig.h>
 #include "RegulatedMotor.h"
 
-const double RegulatedMotor::kP = 6.5;
-const double RegulatedMotor::kI = 0.00;
-const double RegulatedMotor::kD = 0.2;
-const double RegulatedMotor::ff_offset = 15;
-const double RegulatedMotor::INTEGRAL_CAP = 0.0;
-const double RegulatedMotor::DERIV_CAP = 0.0;
-const double RegulatedMotor::MIN_ABSTRACT_FORCE = 3.5;
-
-RegulatedMotor::RegulatedMotor() : initialized(false), abstract_force(0),
-                                                     acceleration(0), brake_acceleration(0),
-                                                     integral(0), last_angle_rad(0), last_error(0),
-                                                     last_velocity_rps(0),
-                                                     regulated_setpoint_rps(0), setpoint_rps(0),
-                                                     smooth_derivative(0), velocity_rps(0) {}
+RegulatedMotor::RegulatedMotor()
+    : kP(6.5),
+      kI(0.00),
+      kD(0.2),
+      ff_offset(15),
+      int_cap(0),
+      initialized(false),
+      abstract_force(0),
+      acceleration(0),
+      brake_acceleration(0),
+      integral(0),
+      last_angle_rad(0),
+      last_error(0),
+      last_velocity_rps(0),
+      regulated_setpoint_rps(0),
+      setpoint_rps(0),
+      smooth_derivative(0),
+      velocity_rps(0) {}
 
 bool RegulatedMotor::isStopped() {
   bool stopped =
-          fabs(Mouse::radToMeters(velocity_rps)) <= 0.001 && fabs(abstract_force) <= RegulatedMotor::MIN_ABSTRACT_FORCE;
+      fabs(Mouse::radToMeters(velocity_rps)) <= 0.001 && fabs(abstract_force) <= config.MIN_ABSTRACT_FORCE;
   return stopped;
 }
 
@@ -41,11 +45,13 @@ double RegulatedMotor::runPid(double dt_s, double angle_rad) {
   derivative = (last_velocity_rps - velocity_rps) / dt_s;
   smooth_derivative = 0.80 * smooth_derivative + 0.2 * derivative;
   integral += error * dt_s;
-  integral = std::max(std::min(integral, INTEGRAL_CAP), -INTEGRAL_CAP);
+  integral = std::max(std::min(integral, int_cap), -int_cap);
 
   if (fabs(regulated_setpoint_rps) <= config.MIN_SPEED) {
     abstract_force = 0;
   } else {
+    // this is horrible and hacky
+    // instead, we can use our model model to solve for the theoretical feed forward constant
     if (regulated_setpoint_rps < 0) {
       feed_forward = Mouse::radToMeters(regulated_setpoint_rps) * 100 - ff_offset;
     } else {
@@ -84,9 +90,16 @@ void RegulatedMotor::setSetpointMps(double setpoint_mps) {
   double s = 0;
   if (setpoint_mps > 0) {
     s = fmax(fmin(setpoint_mps, config.MAX_SPEED), config.MIN_SPEED);
-  }
-  else if (setpoint_mps < 0) {
+  } else if (setpoint_mps < 0) {
     s = fmin(fmax(setpoint_mps, -config.MAX_SPEED), -config.MIN_SPEED);
   }
   this->setpoint_rps = Mouse::meterToRad(s);
+}
+
+void RegulatedMotor::setParams(double kP, double kI, double kD, double ff_offset, double int_cap) {
+  this->kP = kP;
+  this->kI = kI;
+  this->kD = kD;
+  this->ff_offset = ff_offset;
+  this->int_cap = int_cap;
 }

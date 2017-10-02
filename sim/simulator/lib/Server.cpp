@@ -183,6 +183,10 @@ void Server::UpdateRobotState(double dt) {
   // handle wrap-around of theta
   new_theta = smartmouse::math::wrapAngleRad(new_theta);
 
+  // ray trace to find distance to walls
+  for (auto sensor : mouse_.sensors()) {
+  }
+
   robot_state_.mutable_p()->set_x(new_x);
   robot_state_.mutable_p()->set_y(new_y);
   robot_state_.mutable_p()->set_theta(new_theta);

@@ -16,13 +16,13 @@ public:
 
   void reset_enc_rad(double rad);
 
-  static const double kP;
-  static const double kI;
-  static const double kD;
-  static const double ff_offset;
-  static const double INTEGRAL_CAP;
-  static const double DERIV_CAP;
-  static const double MIN_ABSTRACT_FORCE;
+  void setParams(double kP, double kI, double kD, double ff_offset, double int_cap);
+
+  double kP;
+  double kI;
+  double kD;
+  double int_cap;
+  double ff_offset;
 
   bool initialized = false;
   double abstract_force;

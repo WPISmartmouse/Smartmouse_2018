@@ -11,7 +11,6 @@
 
 class SimMouse : public Mouse {
 public:
-  static double abstractForceToNewtons(double x);
 
   static const double ANALOG_MAX_DIST; // meters
   static const double MAX_FORCE;
