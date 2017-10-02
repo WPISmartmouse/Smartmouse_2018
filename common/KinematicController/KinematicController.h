@@ -4,8 +4,9 @@
 #include <common/core/util.h>
 #include <common/core/Pose.h>
 #include <common/KinematicController/RobotConfig.h>
+#include <common/KinematicController/TrajectoryPlanner.h>
 #include <common/core/Mouse.h>
-#include "RegulatedMotor.h"
+#include <common/KinematicController/RegulatedMotor.h>
 #include <tuple>
 
 struct drive_straight_state_t {
@@ -40,7 +41,7 @@ public:
 
   void start(GlobalPose start_pose, double goalDisp, double v_final=config.END_SPEED);
 
-  void planTraj(GlobalState start_state, GlobalState end_state);
+  void planTraj(Waypoints waypoints);
 
   double sidewaysDispToCenter(Mouse *mouse);
 

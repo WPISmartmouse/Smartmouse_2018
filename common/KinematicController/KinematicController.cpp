@@ -4,7 +4,6 @@
 
 #include <common/core/Mouse.h>
 #include <common/KinematicController/KinematicController.h>
-#include <common/Eigen/Eigen/Dense>
 
 const double KinematicController::DROP_SAFETY = 0.8;
 const double KinematicController::kPWall = 0.80;
@@ -293,16 +292,10 @@ void KinematicController::start(GlobalPose start_pose, double goalDisp, double v
   drive_straight_state.v_final = v_final;
 }
 
-void KinematicController::planTraj(GlobalState start_state, GlobalState end_state) {
-  Eigen::Matrix<double, 3, 2> A;
-  A << 0.68, 0.597,
-      -0.211, 0.823,
-      0.566, -0.605;
-  Eigen::Matrix<double, 3, 1> b;
-  b << -0.33,
-      0.536,
-      -0.444;
-  auto sln = A.jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV).solve(b);
+void KinematicController::planTraj(Waypoints waypoints) {
+  TrajectoryPlanner planner(waypoints);
+  Eigen::Matrix<double, 10, 1> plan = planner.plan();
+
 }
 
 std::pair<double, double> KinematicController::compute_wheel_velocities(Mouse *mouse) {
@@ -321,7 +314,9 @@ std::pair<double, double> KinematicController::compute_wheel_velocities(Mouse *m
   // generate the velocity profile for achieving this as fast as possible
   double ramp_d = (pow(drive_straight_state.forward_v, 2)-pow(drive_straight_state.v_final, 2))/(2.0*acceleration_mpss);
   double acc = acceleration_mpss * dt_s;
-  if (drive_straight_state.dispError < ramp_d + 0.015) { // TODO: this fudge factor is a hack
+  // TODO: this fudge factor is a mathematically justified hack.
+  // it compensates for the use of discrete time
+  if (drive_straight_state.dispError < ramp_d + 0.015) {
     drive_straight_state.forward_v -= acc;
   }
   else if (drive_straight_state.forward_v < config.MAX_SPEED) {

@@ -1,10 +1,6 @@
 #include <common/KinematicController/TrajectoryPlanner.h>
 
 TrajectoryPlanner::TrajectoryPlanner(Waypoints waypoints) : waypoints(waypoints) {
-  // 6 constraints per row, x, y, xdot, ydot, trig, nonholonomic
-  // 10 variables (two qunitic polynomials)
-  Eigen::Matrix<double, Eigen::Dynamic, 10> A;
-  Eigen::Matrix<double, 10, 1> b;
   for (Waypoint pt : waypoints) {
     A << x_constraint(pt.time),
         y_constraint(pt.time),
@@ -18,6 +14,10 @@ TrajectoryPlanner::TrajectoryPlanner(Waypoints waypoints) : waypoints(waypoints)
         pt.state.velocity * sin(2 * pt.state.pose.yaw);
   }
 
+}
+
+const Eigen::Matrix<double, 10, 1> TrajectoryPlanner::plan() {
+  return A.jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV).solve(b);
 }
 
 Eigen::Matrix<double, 1, 10> TrajectoryPlanner::x_constraint(double t) {
