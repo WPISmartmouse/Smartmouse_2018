@@ -62,6 +62,29 @@ TEST(ServerTest, QuitTest) {
 TEST(ServerTest, StepTimeTest) {
   ignition::transport::Node node;
 
+  auto server_pub = node.Advertise<smartmouse::msgs::ServerControl>(TopicNames::kServerControl);
+
+  Server server;
+  server.Connect();
+  smartmouse::msgs::ServerControl unpause_msg;
+  unpause_msg.set_pause(false);
+  server_pub.Publish(unpause_msg);
+
+  size_t N = 1000;
+  Time start = Time::GetWallTime();
+  for (size_t i = 0; i < N; i++) {
+    server.Run();
+  }
+  Time end = Time::GetWallTime();
+
+  // check that our total time is within one millisecond
+  double actual_total_time = (end - start).Double();
+  double expected_total_time = (double)(N * server.getNsOfSimPerStep()) / 1000000000.0;
+  EXPECT_NEAR(actual_total_time, expected_total_time, 0.1 * N);
+}
+
+TEST(ServerTest, PIDTest) {
+  ignition::transport::Node node;
 
   auto server_pub = node.Advertise<smartmouse::msgs::ServerControl>(TopicNames::kServerControl);
 
