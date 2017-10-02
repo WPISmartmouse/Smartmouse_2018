@@ -250,7 +250,8 @@ no_dynamics()
 get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45:(0,0)}] (-.5,-1) rectangle (0.5,1);\n\\filldraw (0,0) circle (0.125);\n\n\\draw [->] (0,0) -- (0,1.5);\n\\draw [->] (0,0) -- (1.5,0);\n\\draw [->] (0,0) -- (1.5,1.5);\n\\draw (1.2, -0.2) node {$x$};\n\\draw (-0.2, 1.2) node {$y$};\n\\draw (1, 1.2) node {$v$};')
 
 
-# # We need to change our constraints to the system of equations. Specifically, we need our dynamics model. For now, let's assume a simplified car model.
+# 
+# We need to change our constraints to the system of equations. Specifically, we need our dynamics model. For now, let's assume a simplified car model.
 # 
 # $$ \dot{x} = v\cos(\theta) $$
 # $$ \dot{y} = v\sin(\theta) $$
@@ -388,25 +389,25 @@ def plot_vars(traj_plan):
     plt.rc('text', usetex=True)
     plt.rc('font', family='serif')
     plt.rc('axes.formatter', useoffset=False)
-    plt.figure(figsize=(10, 10))
+    plt.figure(figsize=(10, 2.5))
     
-    plt.subplot(221)
+    plt.subplot(141)
     plt.plot(T, xs, linewidth=3)
     plt.xlabel("time (seconds)")
     plt.title("X")
 
-    plt.subplot(222)
+    plt.subplot(142)
     plt.plot(T, ys, linewidth=3, color='r')
     plt.xlabel("time (seconds)")
     plt.title("Y")
 
-    plt.subplot(223)
+    plt.subplot(143)
     plt.plot(T, xds, linewidth=3, color='g')
     plt.xlabel("time (seconds)")
     plt.title("$\dot{x}$")
     plt.tight_layout()
     
-    plt.subplot(224)
+    plt.subplot(144)
     plt.plot(T,yds, linewidth=3, color='y')
     plt.xlabel("time (seconds)")
     plt.title("$\dot{y}$")
@@ -421,8 +422,8 @@ def plot_traj(traj_plan):
     xs = xts@traj_plan.get_coeff()
     ys = yts@traj_plan.get_coeff()
     
-    plt.figure(figsize=(10, 10))
-    W = 4
+    plt.figure(figsize=(5, 5))
+    W = 3
     plt.scatter(xs, ys, marker='.', linewidth=0, c=T)
     plt.xlim(0, W * 0.18)
     plt.ylim(0, W * 0.18)
@@ -440,68 +441,65 @@ def plot_traj(traj_plan):
 # In[10]:
 
 from math import sin, cos, pi
+from collections import namedtuple
+
+WayPoint = namedtuple('WayPoint', ['x', 'y', 'theta', 'v'])
 
 class TrajPlan:
-    
-    def solve(self, q_0, v_0, q_t_f, v_f, t_f):
-        A = np.array([[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-                      [0, sin(q_0[2]), 0, 0, 0, 0, 0, cos(q_0[2]), 0, 0, 0, 0],
-                      [0, sin(q_0[2]), 0, 0, 0, 0, 0, -cos(q_0[2]), 0, 0, 0, 0],
-                      [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-                      [1, t_f, pow(t_f,2), pow(t_f,3), pow(t_f,4), pow(t_f,5), 0, 0, 0, 0, 0, 0],
-                      [0, 0, 0, 0, 0, 0, 1, t_f, pow(t_f,2), pow(t_f,3), pow(t_f,4), pow(t_f,5)],
-                      [0, sin(q_t_f[2]), 2*sin(q_t_f[2])*t_f, 3*sin(q_t_f[2])*pow(t_f,2), 4*sin(q_t_f[2])*pow(t_f,3), 5*sin(q_t_f[2])*pow(t_f,4), 0, cos(q_t_f[2]), 2*cos(q_t_f[2])*t_f, 3*cos(q_t_f[2])*pow(t_f,2), 4*cos(q_t_f[2])*pow(t_f,3), 5*cos(q_t_f[2])*pow(t_f,4)],
-                      [0, sin(q_t_f[2]), 2*sin(q_t_f[2])*t_f, 3*sin(q_t_f[2])*pow(t_f,2), 4*sin(q_t_f[2])*pow(t_f,3), 5*sin(q_t_f[2])*pow(t_f,4), 0, -cos(q_t_f[2]), -2*cos(q_t_f[2])*t_f, -3*cos(q_t_f[2])*pow(t_f,2), -4*cos(q_t_f[2])*pow(t_f,3), -5*cos(q_t_f[2])*pow(t_f,4)],
-                      [0, 1, 2*t_f, 3*pow(t_f,2), 4*pow(t_f,3), 5*pow(t_f,4), 0, 0, 0, 0, 0, 0],
-                      [0, 0, 0, 0, 0, 0, 0, 1, 2*t_f, 3*pow(t_f,2), 4*pow(t_f,3), 5*pow(t_f,4)],
-                     ])
-        B = np.array([q_0[0],
-                      q_0[1],
+-
+        
+    def solve(self, waypoints):
+        # Setup the matrices to match the equation above
+        A = []
+        b = []
+        
+        for t, pt in waypoints:
+            A += [TrajPlan.x_constraint(t),
+                      TrajPlan.y_constraint(t), 
+                      TrajPlan.non_holonomic_constraint(pt.theta, t), 
+                      TrajPlan.trig_constraint(pt.theta, t),
+                      TrajPlan.x_dot_constraint(t),
+                      TrajPlan.y_dot_constraint(t)]
+            b += [pt.x,
+                      pt.y,
                       0,
-                      v_0*sin(2*q_0[2]),
-                      cos(q_0[2])*v_0,
-                      sin(q_0[2])*v_0,
-                      q_t_f[0],
-                      q_t_f[1],
-                      0,
-                      v_f*sin(2*q_t_f[2]),
-                      cos(q_t_f[2])*v_f,
-                      sin(q_t_f[2])*v_f,
-                     ])
+                      pt.v*sin(2*pt.theta),
+                      cos(pt.theta)*pt.v,
+                      sin(pt.theta)*pt.v]
 
+        A = np.array(A)
+        b = np.array(b)
         rank = np.linalg.matrix_rank(A)
 
         if rank == A.shape[1]:
             if A.shape[0] == A.shape[1]:
-                coeff = np.linalg.solve(A, B)
+                coeff = np.linalg.solve(A, b)
             else:
                 warning("not square, using least squares.".format(A.shape))
-                coeff, resid, rank, s = np.linalg.lstsq(A, B)
+                coeff, resid, rank, s = np.linalg.lstsq(A, b)
         else:
             warning("Ranks don't match! {} equations {} variables, using least squares".format(rank, A.shape[1]))
-            coeff, resid, rank ,s = np.linalg.lstsq(A, B)
+            coeff, resid, rank, s = np.linalg.lstsq(A, b)
 
         debug("rank {}".format(rank))
         debug("A: \n{}".format(A))
         debug("coeff: \n{}".format(coeff))
-        error = np.sum(np.power(A@coeff - B, 2))
+        error = np.sum(np.power(A@coeff - b, 2))
         if error > 1e-10:
             info("These two vectors should be equal! But there is error.")
-        info("B is: \n{}".format(B))
+        info("b is: \n{}".format(b))
         info("A@coeff is: \n{}".format(A@coeff))
         info("RMS Error of solution to equations")
         info(error)
         
         self.coeff = coeff
-        self.t_f = t_f
+        self.waypoints = waypoints
         
     def get_coeff(self):
         return self.coeff
     
     def get_t_f(self):
-        return self.t_f
+        return self.waypoints[-1][0]
 
 
 # ## Example Plots
@@ -511,21 +509,129 @@ class TrajPlan:
 # forward 1 cell, start from rest, end at 40cm/s, do it in .5 seconds
 LOG_LVL = 5
 fwd_1 = TrajPlan()
-fwd_1.solve(q_0=[0.09, 0.09, pi/2], v_0=0, q_t_f=[0.09, 0.18, pi/2], v_f=0.4, t_f=0.5)
+fwd_1.solve([(0, WayPoint(0.09, 0.09, pi/2, 0)), (0.5, WayPoint(0.09, 0.18, pi/2, 0.4))])
 plot_vars(fwd_1)
 plot_traj(fwd_1)
 
 
-# In[13]:
+# In[12]:
 
 # continue by turning right 90 degrees
-LOG_LVL = 5
+LOG_LVL = 1
 turn_right = TrajPlan()
-turn_right.solve(q_0=[0.09, 0.18, pi/2], v_0=0.4, q_t_f=[0.18, 0.27, 0], v_f=0.4, t_f=0.5)
+turn_right.solve([(0, WayPoint(0.09, 0.18, pi/2, 0.4)), (0.5, WayPoint(0.18, 0.27, 0, 0.4))])
 plot_vars(turn_right)
 plot_traj(turn_right)
 
 
+# In[13]:
+
+# 3 waypoints!
+LOG_LVL = 1
+turn_right = TrajPlan()
+turn_right.solve([(0, WayPoint(0.09, 0.18, pi/2, 0.0)), (0.5, WayPoint(0.18, 0.27, 0, 0.35)), (1, WayPoint(0.27, 0.36, pi/2, 0))])
+plot_vars(turn_right)
+plot_traj(turn_right)
+
+
+# **Note for this system of equations with 3 waypoints, there is no solution. However, the error of the solution found is very small.**
+
 # # Trajectory Following
 # 
-# Now that we have a plan, we want the robot to follow it. 
+# Now that we have a trajectory, we want to design a controller that will follow it as closely as possible. To do this, I'm just going to do PID. Later we will design an optimal controller. Recall our control inputs are $v_{ff}$ and $w_{ff}$, the linear and rotational velocity. We need a way to relate our error, which we will define shortly, to these inputs. Let's pick make it a simple proportional controller with some matrix of constants $K$. In our case, $K$ is a 2 by 3 matrix. Our error will simply be the difference between our $x$, $y$, and $\theta$ values. Note we are adding these proportional changes to the current speeds $v$ and $w$. In other words, if our error is zero we don't change our speed.
+# 
+# $$
+# \begin{bmatrix}
+#   v_{ff} \\
+#   w_{ff} \\
+# \end{bmatrix}
+# = -\begin{bmatrix}
+#   k^1_1 & k^1_2 & k^1_3 \\
+#   k^2_1 & k^2_2 & k^2_3 \\
+# \end{bmatrix}* \Bigg(
+# \begin{bmatrix}
+#   x \\
+#   y \\ 
+#   \theta \\
+# \end{bmatrix} - 
+# \begin{bmatrix}
+#   x_d \\
+#   y_d \\ 
+#   \theta_d \\
+# \end{bmatrix}
+# \Bigg) +
+# \begin{bmatrix}
+#   v \\ 
+#   w \\
+# \end{bmatrix}
+# $$
+# 
+# Let's write it out in not matrix form just to make it clear.
+# 
+# $$ v = -k^1_1 (x - x_d) - k^1_2 (y - y_d) - k^1_3 (\theta - \theta_d) + v $$
+# $$ w = -k^2_1 (x - x_d) - k^2_2 (y - y_d) - k^2_3 (\theta - \theta_d) + w $$
+
+# In[ ]:
+
+
+
+
+# # LQR - The Optimal Controller
+# 
+# Now We will use a linear dynamics model for our robot and find the controller that is optimal with respect to that simplistic model.
+
+# In[14]:
+
+from math import atan2
+import scipy.linalg
+
+# source: http://www.kostasalexis.com/lqr-control.html
+def dlqr(A,B,Q,R):
+    """Solve the discrete time lqr controller.
+     
+     
+    x[k+1] = A x[k] + B u[k]
+     
+    cost = sum x[k].T*Q*x[k] + u[k].T*R*u[k]
+    """
+    #ref Bertsekas, p.151
+ 
+    #first, try to solve the ricatti equation
+    X = np.matrix(scipy.linalg.solve_discrete_are(A, B, Q, R))
+     
+    #compute the LQR gain
+    K = np.matrix(scipy.linalg.inv(B.T*X*B+R)*(B.T*X*A))
+     
+    eigVals, eigVecs = scipy.linalg.eig(A-B*K)
+     
+    return K, X, eigVals
+
+def follow_plan(plan):
+    dxdes = 1
+    dydes = 1
+    ddxdes = 1
+    ddydes = 1
+    thetades = atan2(dydes, dxdes)
+
+    vf = dxdes*cos(thetades) + dydes*sin(thetades)
+    dthetades = 1/vf*(ddydes*cos(thetades) - ddxdes*sin(thetades))
+    wf = dthetades
+
+    A = np.array([[0, 0, -vf*sin(thetades)],
+                  [0, 0, vf*cos(thetades)],
+                  [0, 0, 0]])
+
+    B = np.array([[cos(thetades), 0],
+                  [sin(thetades), 0],
+                  [0, 1]]);
+    Q= np.eye(3);
+    R = np.eye(2);
+
+    K = dlqr(A, B, Q, R)
+    u = -K * (xvec - xdes_vec) + np.array([[vf],[wf]]);
+
+
+# In[ ]:
+
+
+
