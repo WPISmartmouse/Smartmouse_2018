@@ -13,6 +13,7 @@ StateWidget::StateWidget() : AbstractTab(), ui_(new Ui::StateWidget) {
   ui_->setupUi(this);
 
   this->node.Subscribe(TopicNames::kRobotSimState, &StateWidget::StateCallback, this);
+  this->node.Subscribe(TopicNames::kRobotCommand, &StateWidget::RobotCommandCallback, this);
   this->node.Subscribe(TopicNames::kMazeLocation, &StateWidget::MazeLocationCallback, this);
   this->node.Subscribe(TopicNames::kWorldStatistics, &StateWidget::OnStats, this);
 
@@ -29,6 +30,10 @@ StateWidget::StateWidget() : AbstractTab(), ui_(new Ui::StateWidget) {
   connect(this, SIGNAL(SetLeftAcceleration(QString)), ui_->left_acceleration_edit,
           SLOT(setText(QString)), Qt::QueuedConnection);
   connect(this, SIGNAL(SetRightAcceleration(QString)), ui_->right_acceleration_edit,
+          SLOT(setText(QString)), Qt::QueuedConnection);
+  connect(this, SIGNAL(SetLeftForce(QString)), ui_->left_abstract_force_edit,
+          SLOT(setText(QString)), Qt::QueuedConnection);
+  connect(this, SIGNAL(SetRightForce(QString)), ui_->right_abstract_force_edit,
           SLOT(setText(QString)), Qt::QueuedConnection);
   connect(this, SIGNAL(SetRow(QString)), ui_->row_edit,
           SLOT(setText(QString)), Qt::QueuedConnection);
@@ -117,10 +122,15 @@ void StateWidget::MazeLocationCallback(const smartmouse::msgs::MazeLocation &msg
   this->SetEstimatedYaw(yaw_str);
 }
 
-const QString StateWidget::getTabName() {
-  return QString("State Widget");
+void StateWidget::OnStats(const smartmouse::msgs::WorldStatistics &msg) {
+  sensor_state->update();
 }
 
-void StateWidget::OnStats(const ignition::msgs::WorldStatistics &msg) {
-  sensor_state->update();
+void StateWidget::RobotCommandCallback(const smartmouse::msgs::RobotCommand &msg) {
+  this->SetLeftForce(QString::asprintf("%3i /255", msg.left().abstract_force()));
+  this->SetRightForce(QString::asprintf("%3i /255", msg.right().abstract_force()));
+}
+
+const QString StateWidget::getTabName() {
+  return QString("State Widget");
 }

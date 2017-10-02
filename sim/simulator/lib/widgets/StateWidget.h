@@ -13,6 +13,8 @@
 #include <sim/simulator/msgs/robot_sim_state.pb.h>
 #include <sim/simulator/lib/widgets/AbstractTab.h>
 #include <sim/simulator/lib/widgets/SensorStateWidget.h>
+#include <msgs/world_statistics.pb.h>
+#include <msgs/robot_command.pb.h>
 
 namespace Ui {
 class StateWidget;
@@ -36,6 +38,8 @@ class StateWidget : public AbstractTab {
   void SetRightCurrent(QString str);
   void SetLeftAcceleration(QString str);
   void SetRightAcceleration(QString str);
+  void SetLeftForce(QString str);
+  void SetRightForce(QString str);
   void SetRow(QString str);
   void SetCol(QString str);
   void SetDir(QString str);
@@ -52,7 +56,8 @@ class StateWidget : public AbstractTab {
 
  private:
 
-  void OnStats(const ignition::msgs::WorldStatistics &msg);
+  void OnStats(const smartmouse::msgs::WorldStatistics &msg);
+  void RobotCommandCallback(const smartmouse::msgs::RobotCommand &msg);
   void StateCallback(const smartmouse::msgs::RobotSimState &msg);
   void MazeLocationCallback(const smartmouse::msgs::MazeLocation &msg);
 
