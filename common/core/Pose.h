@@ -23,3 +23,13 @@ public:
   double x, y;
   double yaw;
 };
+
+class GlobalState {
+ public:
+  GlobalState();
+
+  GlobalState(GlobalPose pose, double velocity);
+
+  GlobalPose pose;
+  double velocity;
+};

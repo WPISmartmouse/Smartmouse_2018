@@ -28,6 +28,8 @@ public:
 
   static double dispToNthEdge(Mouse *mouse, unsigned int n);
 
+  static GlobalPose poseOfToNthEdge(Mouse *mouse, unsigned int n);
+
   static double fwdDispToCenter(Mouse *mouse);
 
   static double fwdDispToDiag(Mouse *mouse);
@@ -37,6 +39,8 @@ public:
   static double yawDiff(double y1, double y2);
 
   void start(GlobalPose start_pose, double goalDisp, double v_final=config.END_SPEED);
+
+  void planTraj(GlobalState start_state, GlobalState end_state);
 
   double sidewaysDispToCenter(Mouse *mouse);
 

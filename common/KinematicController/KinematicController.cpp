@@ -1,8 +1,10 @@
 #include <algorithm>
-#include <common/core/Mouse.h>
-#include <tuple>
-#include "KinematicController.h"
 #include <cmath>
+#include <tuple>
+
+#include <common/core/Mouse.h>
+#include <common/KinematicController/KinematicController.h>
+#include <common/Eigen/Eigen/Dense>
 
 const double KinematicController::DROP_SAFETY = 0.8;
 const double KinematicController::kPWall = 0.80;
@@ -291,6 +293,18 @@ void KinematicController::start(GlobalPose start_pose, double goalDisp, double v
   drive_straight_state.v_final = v_final;
 }
 
+void KinematicController::planTraj(GlobalState start_state, GlobalState end_state) {
+  Eigen::Matrix<double, 3, 2> A;
+  A << 0.68, 0.597,
+      -0.211, 0.823,
+      0.566, -0.605;
+  Eigen::Matrix<double, 3, 1> b;
+  b << -0.33,
+      0.536,
+      -0.444;
+  auto sln = A.jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV).solve(b);
+}
+
 std::pair<double, double> KinematicController::compute_wheel_velocities(Mouse *mouse) {
   GlobalPose current_pose = mouse->getGlobalPose();
   drive_straight_state.disp = fwdDisp(mouse->getDir(), current_pose, drive_straight_state.start_pose);
@@ -386,6 +400,16 @@ double KinematicController::dispToNextEdge(Mouse *mouse) {
 double KinematicController::dispToNthEdge(Mouse *mouse, unsigned int n) {
   // give the displacement to the nth edge like above...
   return dispToNextEdge(mouse) + (n-1) * AbstractMaze::UNIT_DIST;
+}
+
+GlobalPose KinematicController::poseOfToNthEdge(Mouse *mouse, unsigned int n) {
+  // give the displacement to the nth edge like above...
+  double disp = dispToNthEdge(mouse, n);
+  GlobalPose pose = mouse->getGlobalPose();
+  pose.x += cos(pose.yaw) * disp;
+  pose.y += sin(pose.yaw) * disp;
+
+  return pose;
 }
 
 double KinematicController::sidewaysDispToCenter(Mouse *mouse) {

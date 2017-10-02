@@ -12,3 +12,7 @@ GlobalPose::GlobalPose() : x(0), y(0), yaw(0) {}
 GlobalPose::GlobalPose(double x, double y) : x(x), y(y), yaw(0) {}
 
 GlobalPose::GlobalPose(double x, double y, double yaw) : x(x), y(y), yaw(yaw) {}
+
+GlobalState::GlobalState() {}
+
+GlobalState::GlobalState(GlobalPose pose, double velocity) : pose(pose), velocity(velocity) {}
