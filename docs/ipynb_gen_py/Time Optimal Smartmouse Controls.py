@@ -438,7 +438,7 @@ def plot_traj(traj_plan):
     plt.show()
 
 
-# In[10]:
+# In[15]:
 
 from math import sin, cos, pi
 from collections import namedtuple
@@ -446,7 +446,33 @@ from collections import namedtuple
 WayPoint = namedtuple('WayPoint', ['x', 'y', 'theta', 'v'])
 
 class TrajPlan:
--
+    def x_constraint(t):
+        return [1, t, pow(t, 2), pow(t, 3), pow(t, 4), pow(t, 5), 0, 0, 0, 0, 0, 0]
+
+    def y_constraint(t):
+        return [0, 0, 0, 0, 0, 0, 1, t, pow(t, 2), pow(t, 3), pow(t, 4), pow(t, 5)]
+
+    def non_holonomic_constraint(theta_t, t):
+        s_t = sin(theta_t)
+        c_t = cos(theta_t)
+        t_2 = pow(t, 2)
+        t_3 = pow(t, 3)
+        t_4 = pow(t, 4)
+        return [0, s_t, 2 * s_t * t, 3 * s_t * t_2, 4 * s_t * t_3, 5 * s_t * t_4, 0, c_t, 2 * c_t * t, 3 * c_t * t_2, 4 * c_t * t_3, 5 * c_t * t_4]
+
+    def trig_constraint(theta_t, t):
+        s_t = sin(theta_t)
+        c_t = cos(theta_t)
+        t_2 = pow(t, 2)
+        t_3 = pow(t, 3)
+        t_4 = pow(t, 4)
+        return [0, s_t, 2 * s_t * t, 3 * s_t * t_2, 4 * s_t * t_3, 5 * s_t * t_4, 0, -c_t, -2 * c_t * t, -3 * c_t * t_2, -4 * c_t * t_3, -5 * c_t * t_4]
+
+    def x_dot_constraint(t):
+        return [0, 1, 2 * t, 3 * pow(t, 2), 4 * pow(t, 3), 5 * pow(t, 4), 0, 0, 0, 0, 0, 0]
+
+    def y_dot_constraint(t):
+        return [0, 0, 0, 0, 0, 0, 0, 1, 2 * t, 3 * pow(t, 2), 4 * pow(t, 3), 5 * pow(t, 4)]
         
     def solve(self, waypoints):
         # Setup the matrices to match the equation above
@@ -504,7 +530,7 @@ class TrajPlan:
 
 # ## Example Plots
 
-# In[11]:
+# In[16]:
 
 # forward 1 cell, start from rest, end at 40cm/s, do it in .5 seconds
 LOG_LVL = 5
@@ -514,7 +540,7 @@ plot_vars(fwd_1)
 plot_traj(fwd_1)
 
 
-# In[12]:
+# In[17]:
 
 # continue by turning right 90 degrees
 LOG_LVL = 1
@@ -524,7 +550,7 @@ plot_vars(turn_right)
 plot_traj(turn_right)
 
 
-# In[13]:
+# In[18]:
 
 # 3 waypoints!
 LOG_LVL = 1
@@ -570,11 +596,6 @@ plot_traj(turn_right)
 # 
 # $$ v = -k^1_1 (x - x_d) - k^1_2 (y - y_d) - k^1_3 (\theta - \theta_d) + v $$
 # $$ w = -k^2_1 (x - x_d) - k^2_2 (y - y_d) - k^2_3 (\theta - \theta_d) + w $$
-
-# In[ ]:
-
-
-
 
 # # LQR - The Optimal Controller
 # 
