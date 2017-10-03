@@ -421,7 +421,9 @@ def plot_traj(traj_plan):
     yts = np.array([[0, 0, 0, 0, 0, 0, 1, t, pow(t,2), pow(t,3), pow(t,4), pow(t,5)] for t in T])
     xs = xts@traj_plan.get_coeff()
     ys = yts@traj_plan.get_coeff()
+    plot_traj_pts(xs, ys, T)
     
+def plot_traj_pts(xs, ys, T):
     plt.figure(figsize=(5, 5))
     W = 3
     plt.scatter(xs, ys, marker='.', linewidth=0, c=T)
@@ -438,7 +440,7 @@ def plot_traj(traj_plan):
     plt.show()
 
 
-# In[15]:
+# In[10]:
 
 from math import sin, cos, pi
 from collections import namedtuple
@@ -530,7 +532,7 @@ class TrajPlan:
 
 # ## Example Plots
 
-# In[16]:
+# In[11]:
 
 # forward 1 cell, start from rest, end at 40cm/s, do it in .5 seconds
 LOG_LVL = 5
@@ -540,7 +542,7 @@ plot_vars(fwd_1)
 plot_traj(fwd_1)
 
 
-# In[17]:
+# In[12]:
 
 # continue by turning right 90 degrees
 LOG_LVL = 1
@@ -550,7 +552,7 @@ plot_vars(turn_right)
 plot_traj(turn_right)
 
 
-# In[18]:
+# In[13]:
 
 # 3 waypoints!
 LOG_LVL = 1
@@ -564,44 +566,79 @@ plot_traj(turn_right)
 
 # # Trajectory Following
 # 
-# Now that we have a trajectory, we want to design a controller that will follow it as closely as possible. To do this, I'm just going to do PID. Later we will design an optimal controller. Recall our control inputs are $v_{ff}$ and $w_{ff}$, the linear and rotational velocity. We need a way to relate our error, which we will define shortly, to these inputs. Let's pick make it a simple proportional controller with some matrix of constants $K$. In our case, $K$ is a 2 by 3 matrix. Our error will simply be the difference between our $x$, $y$, and $\theta$ values. Note we are adding these proportional changes to the current speeds $v$ and $w$. In other words, if our error is zero we don't change our speed.
+# Now that we have a trajectory, we want to design a controller that will follow it as closely as possible. To do this, I'm just going to do a proportional controller. Later we will design an optimal controller. We want to make sure the robot is on the path, facing along the path, and going the right speed. When all of these are true the change in speed should be zero. Let's come up with an equation to relate current pose and velocity to the desired pose and velocity. Let our outputs be the linear velocity $v$ and the rotational velocity $w$.
 # 
-# $$
-# \begin{bmatrix}
-#   v_{ff} \\
-#   w_{ff} \\
-# \end{bmatrix}
-# = -\begin{bmatrix}
-#   k^1_1 & k^1_2 & k^1_3 \\
-#   k^2_1 & k^2_2 & k^2_3 \\
-# \end{bmatrix}* \Bigg(
-# \begin{bmatrix}
-#   x \\
-#   y \\ 
-#   \theta \\
-# \end{bmatrix} - 
-# \begin{bmatrix}
-#   x_d \\
-#   y_d \\ 
-#   \theta_d \\
-# \end{bmatrix}
-# \Bigg) +
-# \begin{bmatrix}
-#   v \\ 
-#   w \\
-# \end{bmatrix}
-# $$
+# $$ v = v_d * P_1$$
+# $$ w = \sqrt{(x_d - x)^2 + (y_d - d)^2} * P_3 + (\theta_d - \theta)P_2$$
 # 
-# Let's write it out in not matrix form just to make it clear.
-# 
-# $$ v = -k^1_1 (x - x_d) - k^1_2 (y - y_d) - k^1_3 (\theta - \theta_d) + v $$
-# $$ w = -k^2_1 (x - x_d) - k^2_2 (y - y_d) - k^2_3 (\theta - \theta_d) + w $$
+# where $v_d$ is desired velocity, $\theta_d$ is the desired angle, $x_d, y_d$ is current point on the trajectory, $x, y, \theta$ is the current pose of the robot, and $P_1$ and $P_2$ are constants. Essentially what we're saying with this equation is that when you're far off the trajectory you need to turn harder to get back on to it, but you also need to be aligned with it.
+
+# In[42]:
+
+from math import atan2
+
+LOG_LVL = 5
+def simulate(robot_q_0, waypoints):
+    traj = TrajPlan()
+    traj.solve(waypoints)
+    
+    dt = 0.01
+    robot_x = robot_q_0[0]
+    robot_y = robot_q_0[1]
+    robot_theta = robot_q_0[2]
+    robot_v = robot_q_0[3]
+    robot_w = robot_q_0[4]
+    T = np.arange(0, traj.get_t_f()+dt, dt)
+    x_des_list = []
+    y_des_list = []
+    robot_x_list = []
+    robot_y_list = []
+    for t in T:
+        x_des = [1, t, pow(t,2), pow(t,3), pow(t,4), pow(t,5), 0, 0, 0, 0, 0, 0] @ traj.get_coeff()
+        dx_des = [0, 1, 2*t, 3*pow(t,2), 4*pow(t,3), 5*pow(t,4), 0, 0, 0, 0, 0, 0] @ traj.get_coeff()
+        y_des = [0, 0, 0, 0, 0, 0, 1, t, pow(t,2), pow(t,3), pow(t,4), pow(t,5)] @ traj.get_coeff()
+        dy_des = [0, 0, 0, 0, 0, 0, 0, 1, 2*t, 3*pow(t,2), 4*pow(t,3), 5*pow(t,4)] @ traj.get_coeff()
+    
+        # simple Dubin's Car forward kinematics
+        robot_x += cos(robot_theta) * robot_v * dt
+        robot_y += sin(robot_theta) * robot_v * dt
+        robot_theta += robot_w * dt
+        
+        # control
+            
+        x_des_list.append(x_des)
+        y_des_list.append(y_des)
+        robot_x_list.append(robot_x)
+        robot_y_list.append(robot_y)
+            
+    plt.figure(figsize=(5, 5))
+    W = 3
+    plt.scatter(x_des_list, y_des_list, marker='.', linewidth=0, c='black', label='desired traj')
+    plt.scatter(robot_x_list, robot_y_list, marker='.', linewidth=0, c=T, label='robot traj')
+    plt.xlim(0, W * 0.18)
+    plt.ylim(0, W * 0.18)
+    plt.xticks(np.arange(W+1)*0.18)
+    plt.yticks(np.arange(W+1)*0.18)
+    plt.grid(True)
+    plt.xlabel("X")
+    plt.ylabel("Y")
+    plt.title("Trajectory Tracking")
+    plt.legend(bbox_to_anchor=(1,1), loc=2)
+
+
+# In[51]:
+
+robot_q_0 = (0.08, 0.18, pi/2, 0.2, -1.5)
+traj = [(0, WayPoint(0.09, 0.18, pi/2, 0.0)), (0.5, WayPoint(0.18, 0.27, 0, 0.35)), (1, WayPoint(0.27, 0.36, pi/2, 0))]
+simulate(robot_q_0, traj)
+plt.show()
+
 
 # # LQR - The Optimal Controller
 # 
 # Now We will use a linear dynamics model for our robot and find the controller that is optimal with respect to that simplistic model.
 
-# In[14]:
+# In[ ]:
 
 from math import atan2
 import scipy.linalg
