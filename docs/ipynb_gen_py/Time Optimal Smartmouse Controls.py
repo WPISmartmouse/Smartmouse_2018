@@ -648,22 +648,30 @@ def simulate(robot_q_0, waypoints, P_1, P_2, P_3, P_4):
     plt.legend(bbox_to_anchor=(1,1), loc=2)
 
 
-# In[257]:
+# In[296]:
 
 test_P_1=500
 test_P_2=50
-test_P_3=0.01
-test_P_4=0.01
+test_P_3=0.05
+test_P_4=0.05
 robot_q_0 = (0.08, 0.18, pi/2, 0.5, 0)
 traj = [(0, WayPoint(0.09, 0.18, pi/2, 0.5)), (0.5, WayPoint(0.18, 0.27, 0, 0.35)), (1, WayPoint(0.27, 0.36, pi/2, 0))]
 simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3, test_P_4)
 plt.show()
 
 
-# In[258]:
+# In[297]:
 
 robot_q_0 = (0.11, 0.18, pi/2, 0.2, 5)
 traj = [(0, WayPoint(0.09, 0.18, pi/2, 0.2)), (1, WayPoint(0.18, 0.27, 0, 0.35))]
+simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3, test_P_4)
+plt.show()
+
+
+# In[298]:
+
+robot_q_0 = (0.0, 0.25, 0, 0.4, -5)
+traj = [(0, WayPoint(0.0, 0.27, 0, 0.2)), (1.25, WayPoint(0.54, 0.27, 0, 0.6))]
 simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3, test_P_4)
 plt.show()
 
