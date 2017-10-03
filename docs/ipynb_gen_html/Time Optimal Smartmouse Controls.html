@@ -17037,7 +17037,7 @@ $$ w = \sqrt{(x_d - x)^2 + (y_d - y)^2}P_1 + (\theta_d - \theta)P_2$$$$ v = v_d 
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[223]:</div>
+<div class="prompt input_prompt">In&nbsp;[256]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">math</span> <span class="k">import</span> <span class="n">atan2</span>
@@ -17058,7 +17058,6 @@ $$ w = \sqrt{(x_d - x)^2 + (y_d - y)^2}P_1 + (\theta_d - \theta)P_2$$$$ v = v_d 
     <span class="n">v_acc</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">dt</span>
     <span class="n">TRACK_WIDTH</span> <span class="o">=</span> <span class="mf">0.0633</span>
     <span class="n">w_acc</span> <span class="o">=</span> <span class="n">v_acc</span> <span class="o">/</span> <span class="p">(</span><span class="n">TRACK_WIDTH</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">w_acc</span><span class="p">)</span>
     <span class="n">T</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">traj</span><span class="o">.</span><span class="n">get_t_f</span><span class="p">()</span><span class="o">+</span><span class="n">dt</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
     <span class="n">x_des_list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">y_des_list</span> <span class="o">=</span> <span class="p">[]</span>
@@ -17121,7 +17120,7 @@ $$ w = \sqrt{(x_d - x)^2 + (y_d - y)^2}P_1 + (\theta_d - \theta)P_2$$$$ v = v_d 
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[252]:</div>
+<div class="prompt input_prompt">In&nbsp;[257]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">test_P_1</span><span class="o">=</span><span class="mi">500</span>
@@ -17141,15 +17140,6 @@ $$ w = \sqrt{(x_d - x)^2 + (y_d - y)^2}P_1 + (\theta_d - \theta)P_2$$$$ v = v_d 
 <div class="output_wrapper">
 <div class="output">
 
-
-<div class="output_area">
-<div class="prompt"></div>
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>0.631911532385466
-</pre>
-</div>
-</div>
 
 <div class="output_area">
 <div class="prompt"></div>
@@ -17466,7 +17456,7 @@ CGYAAACe+D8pqYCiDPW+VAAAAABJRU5ErkJggg==
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[255]:</div>
+<div class="prompt input_prompt">In&nbsp;[258]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">robot_q_0</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.11</span><span class="p">,</span> <span class="mf">0.18</span><span class="p">,</span> <span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
@@ -17482,15 +17472,6 @@ CGYAAACe+D8pqYCiDPW+VAAAAABJRU5ErkJggg==
 <div class="output_wrapper">
 <div class="output">
 
-
-<div class="output_area">
-<div class="prompt"></div>
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>0.631911532385466
-</pre>
-</div>
-</div>
 
 <div class="output_area">
 <div class="prompt"></div>

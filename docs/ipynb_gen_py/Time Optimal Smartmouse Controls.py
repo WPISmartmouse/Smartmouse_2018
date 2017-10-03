@@ -573,7 +573,7 @@ plot_traj(turn_right)
 # 
 # where $v_d$ is desired velocity, $\theta_d$ is the desired angle, $x_d, y_d$ is current point on the trajectory, $x, y, \theta$ is the current pose of the robot, and $P_1$, $P_2$, $P_3$, and $P_4$ are constants. Essentially what we're saying with the first equation is that when you're far off the trajectory you need to turn harder to get back on to it, but you also need to be aligned with it. The second equation says if you're angle or position is off slow down.
 
-# In[223]:
+# In[256]:
 
 from math import atan2
 
@@ -593,7 +593,6 @@ def simulate(robot_q_0, waypoints, P_1, P_2, P_3, P_4):
     v_acc = 2 * dt
     TRACK_WIDTH = 0.0633
     w_acc = v_acc / (TRACK_WIDTH/2)
-    print(w_acc)
     T = np.arange(0, traj.get_t_f()+dt, dt)
     x_des_list = []
     y_des_list = []
@@ -649,7 +648,7 @@ def simulate(robot_q_0, waypoints, P_1, P_2, P_3, P_4):
     plt.legend(bbox_to_anchor=(1,1), loc=2)
 
 
-# In[252]:
+# In[257]:
 
 test_P_1=500
 test_P_2=50
@@ -661,7 +660,7 @@ simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3, test_P_4)
 plt.show()
 
 
-# In[255]:
+# In[258]:
 
 robot_q_0 = (0.11, 0.18, pi/2, 0.2, 5)
 traj = [(0, WayPoint(0.09, 0.18, pi/2, 0.2)), (1, WayPoint(0.18, 0.27, 0, 0.35))]
