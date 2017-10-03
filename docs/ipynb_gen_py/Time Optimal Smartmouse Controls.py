@@ -568,17 +568,17 @@ plot_traj(turn_right)
 # 
 # Now that we have a trajectory, we want to design a controller that will follow it as closely as possible. To do this, I'm just going to do a proportional controller. Later we will design an optimal controller. We want to make sure the robot is on the path, facing along the path, and going the right speed. When all of these are true the change in speed should be zero. Let's come up with an equation to relate current pose and velocity to the desired pose and velocity. Let our outputs be the linear velocity $v$ and the rotational velocity $w$.
 # 
-# $$ v = v_d * P_1$$
-# $$ w = \sqrt{(x_d - x)^2 + (y_d - d)^2} * P_3 + (\theta_d - \theta)P_2$$
+# $$ w = \sqrt{(x_d - x)^2 + (y_d - y)^2}P_1 + (\theta_d - \theta)P_2$$
+# $$ v = v_d - \sqrt{(x_d - x)^2 + (y_d - y)^2}P_3 - \big|\theta_d - \theta\big|P_4$$
 # 
-# where $v_d$ is desired velocity, $\theta_d$ is the desired angle, $x_d, y_d$ is current point on the trajectory, $x, y, \theta$ is the current pose of the robot, and $P_1$ and $P_2$ are constants. Essentially what we're saying with this equation is that when you're far off the trajectory you need to turn harder to get back on to it, but you also need to be aligned with it.
+# where $v_d$ is desired velocity, $\theta_d$ is the desired angle, $x_d, y_d$ is current point on the trajectory, $x, y, \theta$ is the current pose of the robot, and $P_1$, $P_2$, $P_3$, and $P_4$ are constants. Essentially what we're saying with the first equation is that when you're far off the trajectory you need to turn harder to get back on to it, but you also need to be aligned with it. The second equation says if you're angle or position is off slow down.
 
-# In[42]:
+# In[142]:
 
 from math import atan2
 
 LOG_LVL = 5
-def simulate(robot_q_0, waypoints):
+def simulate(robot_q_0, waypoints, P_1, P_2, P_3, P_4):
     traj = TrajPlan()
     traj.solve(waypoints)
     
@@ -598,6 +598,8 @@ def simulate(robot_q_0, waypoints):
         dx_des = [0, 1, 2*t, 3*pow(t,2), 4*pow(t,3), 5*pow(t,4), 0, 0, 0, 0, 0, 0] @ traj.get_coeff()
         y_des = [0, 0, 0, 0, 0, 0, 1, t, pow(t,2), pow(t,3), pow(t,4), pow(t,5)] @ traj.get_coeff()
         dy_des = [0, 0, 0, 0, 0, 0, 0, 1, 2*t, 3*pow(t,2), 4*pow(t,3), 5*pow(t,4)] @ traj.get_coeff()
+        theta_des = atan2(dy_des, dx_des)
+        v_des = cos(theta_des)*dx_des + sin(theta_des)*dy_des
     
         # simple Dubin's Car forward kinematics
         robot_x += cos(robot_theta) * robot_v * dt
@@ -605,6 +607,11 @@ def simulate(robot_q_0, waypoints):
         robot_theta += robot_w * dt
         
         # control
+        euclidian_error = np.sqrt(pow(x_des - robot_x, 2) + pow(y_des - robot_y, 2))
+        right_of_traj = (robot_x - x_des)*sin(theta_des) - (robot_y - y_des)*cos(theta_des) < 0
+        signed_euclidian_error = euclidian_error if right_of_traj else -euclidian_error
+        robot_w = signed_euclidian_error * P_1 + (theta_des - robot_theta) * P_2
+        robot_v = v_des - (euclidian_error) * P_3 - abs(theta_des - robot_theta) * P_4
             
         x_des_list.append(x_des)
         y_des_list.append(y_des)
@@ -626,11 +633,11 @@ def simulate(robot_q_0, waypoints):
     plt.legend(bbox_to_anchor=(1,1), loc=2)
 
 
-# In[51]:
+# In[147]:
 
-robot_q_0 = (0.08, 0.18, pi/2, 0.2, -1.5)
+robot_q_0 = (0.08, 0.18, pi/2, 0, 0)
 traj = [(0, WayPoint(0.09, 0.18, pi/2, 0.0)), (0.5, WayPoint(0.18, 0.27, 0, 0.35)), (1, WayPoint(0.27, 0.36, pi/2, 0))]
-simulate(robot_q_0, traj)
+simulate(robot_q_0, traj, P_1=-100, P_2=0, P_3=0, P_4=0)
 plt.show()
 
 
