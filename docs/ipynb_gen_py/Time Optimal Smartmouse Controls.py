@@ -573,7 +573,7 @@ plot_traj(turn_right)
 # 
 # where $v_d$ is desired velocity, $\theta_d$ is the desired angle, $x_d, y_d$ is current point on the trajectory, $x, y, \theta$ is the current pose of the robot, and $P_1$, $P_2$, $P_3$, and $P_4$ are constants. Essentially what we're saying with the first equation is that when you're far off the trajectory you need to turn harder to get back on to it, but you also need to be aligned with it. The second equation says if you're angle or position is off slow down.
 
-# In[142]:
+# In[223]:
 
 from math import atan2
 
@@ -588,6 +588,12 @@ def simulate(robot_q_0, waypoints, P_1, P_2, P_3, P_4):
     robot_theta = robot_q_0[2]
     robot_v = robot_q_0[3]
     robot_w = robot_q_0[4]
+    actual_robot_v = robot_q_0[3]
+    actual_robot_w = robot_q_0[4]
+    v_acc = 2 * dt
+    TRACK_WIDTH = 0.0633
+    w_acc = v_acc / (TRACK_WIDTH/2)
+    print(w_acc)
     T = np.arange(0, traj.get_t_f()+dt, dt)
     x_des_list = []
     y_des_list = []
@@ -602,16 +608,26 @@ def simulate(robot_q_0, waypoints, P_1, P_2, P_3, P_4):
         v_des = cos(theta_des)*dx_des + sin(theta_des)*dy_des
     
         # simple Dubin's Car forward kinematics
-        robot_x += cos(robot_theta) * robot_v * dt
-        robot_y += sin(robot_theta) * robot_v * dt
-        robot_theta += robot_w * dt
+        robot_x += cos(robot_theta) * actual_robot_v * dt
+        robot_y += sin(robot_theta) * actual_robot_v * dt
+        robot_theta += actual_robot_w * dt
         
         # control
         euclidian_error = np.sqrt(pow(x_des - robot_x, 2) + pow(y_des - robot_y, 2))
-        right_of_traj = (robot_x - x_des)*sin(theta_des) - (robot_y - y_des)*cos(theta_des) < 0
+        right_of_traj = (robot_x - x_des)*sin(theta_des) - (robot_y - y_des)*cos(theta_des) > 0
         signed_euclidian_error = euclidian_error if right_of_traj else -euclidian_error
         robot_w = signed_euclidian_error * P_1 + (theta_des - robot_theta) * P_2
         robot_v = v_des - (euclidian_error) * P_3 - abs(theta_des - robot_theta) * P_4
+        
+        # simple acceleration model
+        if robot_v < actual_robot_v:
+            actual_robot_v = max(robot_v, actual_robot_v - v_acc)
+        elif robot_v > actual_robot_v:
+            actual_robot_v = min(robot_v, actual_robot_v + v_acc)
+        if robot_w < actual_robot_w:
+            actual_robot_w = max(robot_w, actual_robot_w - w_acc)
+        elif robot_w > actual_robot_w:
+            actual_robot_w = min(robot_w, actual_robot_w + w_acc)
             
         x_des_list.append(x_des)
         y_des_list.append(y_des)
@@ -633,11 +649,23 @@ def simulate(robot_q_0, waypoints, P_1, P_2, P_3, P_4):
     plt.legend(bbox_to_anchor=(1,1), loc=2)
 
 
-# In[147]:
+# In[252]:
 
-robot_q_0 = (0.08, 0.18, pi/2, 0, 0)
-traj = [(0, WayPoint(0.09, 0.18, pi/2, 0.0)), (0.5, WayPoint(0.18, 0.27, 0, 0.35)), (1, WayPoint(0.27, 0.36, pi/2, 0))]
-simulate(robot_q_0, traj, P_1=-100, P_2=0, P_3=0, P_4=0)
+test_P_1=500
+test_P_2=50
+test_P_3=0.01
+test_P_4=0.01
+robot_q_0 = (0.08, 0.18, pi/2, 0.5, 0)
+traj = [(0, WayPoint(0.09, 0.18, pi/2, 0.5)), (0.5, WayPoint(0.18, 0.27, 0, 0.35)), (1, WayPoint(0.27, 0.36, pi/2, 0))]
+simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3, test_P_4)
+plt.show()
+
+
+# In[255]:
+
+robot_q_0 = (0.11, 0.18, pi/2, 0.2, 5)
+traj = [(0, WayPoint(0.09, 0.18, pi/2, 0.2)), (1, WayPoint(0.18, 0.27, 0, 0.35))]
+simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3, test_P_4)
 plt.show()
 
 
