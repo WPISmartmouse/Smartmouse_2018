@@ -695,8 +695,18 @@ plt.show()
 # # LQR - The Optimal Controller
 # 
 # Now We will use a linear dynamics model for our robot and find the controller that is optimal with respect to that simplistic model.
+# 
+# ## Steps:
+# 
+# ### 1. Write out the non-linear dynamics $\dot{x} = f(x, u)$
+# ### 2. Identify the equilibrium points $\bar{x}$ where $\dot{x} = f(\bar{x},u) = 0$
+# ### 3. Write the linearized dynamics around $\bar{x}$ as $\dot{x} \approx Ax + Bu$
+# ### 4. Check if our system is controllable by looking at the rank of the controllability matrix $C = [B, AB, A^2B, \dots, A^nB]$
+# ### 5. Pick cost parameters $Q$ and $R$
+# ### 6. Solve for $K$ given $LQR(A, B, Q, R)$
+# ### 7. Apply our new controller of the form $u = -Kx$
 
-# In[135]:
+# In[136]:
 
 from math import atan2
 import scipy.linalg
@@ -745,4 +755,9 @@ def follow_plan(plan):
 
     K = dlqr(A, B, Q, R)
     u = -K * (xvec - xdes_vec) + np.array([[vf],[wf]]);
+
+
+# In[ ]:
+
+
 
