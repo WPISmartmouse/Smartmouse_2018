@@ -762,7 +762,10 @@ plt.show()
 #        \end{bmatrix}
 # $$
 # 
-# ### 4. Check if our system is controllable by looking at the rank of the controllability matrix $C = [B, AB, A^2B, \dots, A^nB]$
+# ### 4. Check if our system is controllable by looking at the rank of the controllability matrix $C = [B, AB, A^2B, \dots, A^{n-1}B]$
+# 
+# We have three state variables so $n = 3$, which means $C = [B, AB, A^2B] = [B, 0, 0]$. The rank of $C$ is obviously $1$ which is a problem since it indicates our system is not controllable.
+# 
 # ### 5. Pick cost parameters $Q$ and $R$
 # ### 6. Solve for $K$ given $LQR(A, B, Q, R)$
 # maybe we compute K once instead of at every time step
