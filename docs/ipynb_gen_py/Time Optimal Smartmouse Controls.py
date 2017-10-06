@@ -330,6 +330,7 @@ get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45
 # 
 # Ok, that should work. Now let's write it out in matrix form. We use $c$ and $s$ to shorten $\sin$ and $\cos$.
 # 
+# \setcounter{MaxMatrixCols}{20}
 # \begin{equation}
 # \begin{bmatrix}
 # 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
@@ -702,8 +703,6 @@ plt.show()
 # 
 # ***
 # 
-# Now We will use a linear dynamics model for our robot and find the controller that is optimal with respect to that simplistic model.
-# 
 # ## Overview of the Steps:
 # 
 # ### 1. Write out the non-linear dynamics $\dot{x} = f(x, u)$
@@ -738,7 +737,7 @@ plt.show()
 # 
 # ### 2. Identify the equilibrium points $\bar{x}$ where $\dot{x} = f(\bar{x}, \bar{u}) = 0$
 # 
-# Every point $x$, $y$, and $theta$ is an equilibrium if we input no control, $\bar{u} = 0$. This is good, because it meansre we can linearize around the current position of the robot no matter where it is.
+# Every point $[x, y, \theta]$ is an equilibrium if we input no control, $\bar{u} = 0$. This is good, because it means we can linearize around the current position of the robot no matter where it is.
 # 
 # ### 3. Write the linearized dynamics around $\bar{x}$ as $\dot{x} \approx A\delta_x + B\delta_u$, where $\delta_x = (\bar{x} - x)$ and $\delta_u = (\bar{u} - u)$
 # 
@@ -764,7 +763,9 @@ plt.show()
 # 
 # ### 4. Check if our system is controllable by looking at the rank of the controllability matrix $C = [B, AB, A^2B, \dots, A^{n-1}B]$
 # 
-# We have three state variables so $n = 3$, which means $C = [B, AB, A^2B] = [B, 0, 0]$. The rank of $C$ is obviously $1$ which is a problem since it indicates our system is not controllable.
+# We have three state variables so $n = 3$, which means $C = [B, AB, A^2B] = [B, 0, 0]$.'
+# 
+# The rank of $C$ is obviously $1$ which is a problem since it should be equal to our number of state variables, which is 3. This indicates our system is not controllable.
 # 
 # ### 5. Pick cost parameters $Q$ and $R$
 # ### 6. Solve for $K$ given $LQR(A, B, Q, R)$

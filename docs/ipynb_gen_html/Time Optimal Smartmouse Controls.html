@@ -14410,50 +14410,52 @@ v\cos(\theta)\sin(\theta) - v\sin(\theta)\cos(\theta) &= 0 \\
 \Big[c_1 + 2(t_f)c_2 + 3(t_f)^2c_3 + 4(t_f)^3c_4 + 5(t_f)^4c_5\Big]\sin(\theta_{t_f}) - \Big[d_1 + 2(t_f)d_2 + 3(t_f)^2d_3 + 4(t_f)^3d_4 + 5(t_f)^4d_5\Big]\cos(\theta_{t_f}) &= 0 \\
 \sin(\theta_{t_f})c_1 + 2\sin(\theta_{t_f})t_fc_2 + 3\sin(\theta_{t_f}){t_f}^2c_3 + 4\sin(\theta_{t_f}){t_f}^3c_4  + 5\sin(\theta_{t_f}){t_f}^4c_5 - \cos(\theta_{t_f})d_1 - 2\cos(\theta_{t_f})t_fd_2 - 3\cos(\theta_{t_f}){t_f}^2d_3 - 4\cos(\theta_{t_f}){t_f}^3d_4 - 5\cos(\theta_{t_f}){t_f}^4d_5 &= 0
 \end{align}<p>Ok, that should work. Now let's write it out in matrix form. We use $c$ and $s$ to shorten $\sin$ and $\cos$.</p>
+<p>\setcounter{MaxMatrixCols}{20}
 \begin{equation}
 \begin{bmatrix}
-1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
-0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
-0 & s(\theta_0) & 0 & 0 & 0 & 0 & 0 & c(\theta_0) & 0 & 0 & 0 & 0\\
-0 & s(\theta_0) & 0 & 0 & 0 & 0 & 0 & -c(\theta_0) & 0 & 0 & 0 & 0\\
-0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\
-0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0\\
-1 & t & {t_f}^2 & {t_f}^3 & {t_f}^4 & {t_f}^5 & 0 & 0 & 0 & 0 & 0 & 0 \\
-0 & 0 & 0 & 0 & 0 & 0 & 1 & t_f & {t_f}^2 & {t_f}^3 & {t_f}^4 & {t_f}^5 \\
-0 & s(\theta_{t_f}) & 2s(\theta_{t_f})t_f & 3s(\theta_{t_f}){t_f}^2 & 4s(\theta_{t_f}){t_f}^3 & 5s(\theta_{t_f}){t_f}^4 & 0 & c(\theta_{t_f}) & 2c(\theta_{t_f}){t_f} & 3c(\theta_{t_f}){t_f}^2 & 4c(\theta_{t_f}){t_f}^3 & 5c(\theta_{t_f}){t_f}^4 \\
-0 & s(\theta_{t_f}) & 2s(\theta_{t_f})t_f & 3s(\theta_{t_f}){t_f}^2 & 4s(\theta_{t_f}){t_f}^3 & 5s(\theta_{t_f}){t_f}^4 & 0 & -c(\theta_{t_f}) & -2c(\theta_{t_f}){t_f} & -3c(\theta_{t_f}){t_f}^2 & -4c(\theta_{t_f}){t_f}^3 & -5c(\theta_{t_f}){t_f}^4 \\
-0 & 1 & 2t_f & 3{t_f}^2 & 4{t_f}^3 & 5{t_f}^4 & 0 & 0 & 0 & 0 & 0 & 0 \\
-0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 2t_f & 3{t_f}^2 & 4{t_f}^3 & 5{t_f}^4
+1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \
+0 &amp; s(\theta_0) &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; c(\theta_0) &amp; 0 &amp; 0 &amp; 0 &amp; 0\
+0 &amp; s(\theta_0) &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; -c(\theta_0) &amp; 0 &amp; 0 &amp; 0 &amp; 0\
+0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0\
+1 &amp; t &amp; {t_f}^2 &amp; {t_f}^3 &amp; {t_f}^4 &amp; {t_f}^5 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; t_f &amp; {t_f}^2 &amp; {t_f}^3 &amp; {t_f}^4 &amp; {t<em>f}^5 \
+0 &amp; s(\theta</em>{t<em>f}) &amp; 2s(\theta</em>{t_f})t<em>f &amp; 3s(\theta</em>{t_f}){t<em>f}^2 &amp; 4s(\theta</em>{t_f}){t<em>f}^3 &amp; 5s(\theta</em>{t_f}){t<em>f}^4 &amp; 0 &amp; c(\theta</em>{t<em>f}) &amp; 2c(\theta</em>{t_f}){t<em>f} &amp; 3c(\theta</em>{t_f}){t<em>f}^2 &amp; 4c(\theta</em>{t_f}){t<em>f}^3 &amp; 5c(\theta</em>{t_f}){t<em>f}^4 \
+0 &amp; s(\theta</em>{t<em>f}) &amp; 2s(\theta</em>{t_f})t<em>f &amp; 3s(\theta</em>{t_f}){t<em>f}^2 &amp; 4s(\theta</em>{t_f}){t<em>f}^3 &amp; 5s(\theta</em>{t_f}){t<em>f}^4 &amp; 0 &amp; -c(\theta</em>{t<em>f}) &amp; -2c(\theta</em>{t_f}){t<em>f} &amp; -3c(\theta</em>{t_f}){t<em>f}^2 &amp; -4c(\theta</em>{t_f}){t<em>f}^3 &amp; -5c(\theta</em>{t_f}){t_f}^4 \
+0 &amp; 1 &amp; 2t_f &amp; 3{t_f}^2 &amp; 4{t_f}^3 &amp; 5{t_f}^4 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 2t_f &amp; 3{t_f}^2 &amp; 4{t_f}^3 &amp; 5{t_f}^4
 \end{bmatrix}
 \begin{bmatrix}
-c_0 \\
-c_1 \\
-c_2 \\
-c_3 \\
-c_4 \\
-c_5 \\
-d_0 \\
-d_1 \\
-d_2 \\
-d_3 \\
-d_4 \\
+c_0 \
+c_1 \
+c_2 \
+c_3 \
+c_4 \
+c_5 \
+d_0 \
+d_1 \
+d_2 \
+d_3 \
+d_4 \
 d_5
 \end{bmatrix} =
 \begin{bmatrix}
-x_0 \\
-y_0 \\
-0 \\
-v_0s(2\theta_0) \\
-c(\theta_0)v_0 \\
-s(\theta_0)v_0 \\
-x_{t_f} \\
-y_{t_f} \\
-0 \\
-v_{t_f}s(2\theta_{t_f}) \\
-c(\theta_{t_f})v_{t_f} \\
-s(\theta_{t_f})v_{t_f} \\
+x_0 \
+y_0 \
+0 \
+v_0s(2\theta_0) \
+c(\theta_0)v_0 \
+s(\theta_0)v<em>0 \
+x</em>{t<em>f} \
+y</em>{t<em>f} \
+0 \
+v</em>{t<em>f}s(2\theta</em>{t<em>f}) \
+c(\theta</em>{t<em>f})v</em>{t<em>f} \
+s(\theta</em>{t<em>f})v</em>{t_f} \
 \end{bmatrix}
-\end{equation}
+\end{equation}</p>
+
 </div>
 </div>
 </div>
@@ -18282,7 +18284,6 @@ CGYAAACeIJgBAAB4gmAGAADgCYIZAACAJ/5/UTPbPlcdwegAAAAASUVORK5CYII=
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h1 id="LQR---The-Optimal-Controller">LQR - The Optimal Controller<a class="anchor-link" href="#LQR---The-Optimal-Controller">&#182;</a></h1><hr>
-<p>Now We will use a linear dynamics model for our robot and find the controller that is optimal with respect to that simplistic model.</p>
 <h2 id="Overview-of-the-Steps:">Overview of the Steps:<a class="anchor-link" href="#Overview-of-the-Steps:">&#182;</a></h2><h3 id="1.-Write-out-the-non-linear-dynamics-$\dot{x}-=-f(x,-u)$">1. Write out the non-linear dynamics $\dot{x} = f(x, u)$<a class="anchor-link" href="#1.-Write-out-the-non-linear-dynamics-$\dot{x}-=-f(x,-u)$">&#182;</a></h3><p>Here we are interested in the full blown system dynamics of the actual smartmouse robot. The forward kinematics, which depend on the current state $x$, $y$, and $\theta$ and the velocity inputs of the wheels $v_l$, and $v_r$ are as follows. In the general case where the two wheels have different velocities, we have this:</p>
 \begin{align}
   R &= \frac{W(v_l+v_r)}{2(v_r-v_l)} && \text{radius of turn} \\
@@ -18302,7 +18303,7 @@ CGYAAACeIJgBAAB4gmAGAADgCYIZAACAJ/5/UTPbPlcdwegAAAAASUVORK5CYII=
                 -R\Bigg(\cos{\Big(\frac{v_r-v_l}{W}\Delta t-\theta\Big)}-\cos{\theta}\Bigg) \\
                 \frac{v_l}{R-\frac{W}{2}}\Delta t \\
                 \end{bmatrix}
-\end{align}<h3 id="2.-Identify-the-equilibrium-points-$\bar{x}$-where-$\dot{x}-=-f(\bar{x},-\bar{u})-=-0$">2. Identify the equilibrium points $\bar{x}$ where $\dot{x} = f(\bar{x}, \bar{u}) = 0$<a class="anchor-link" href="#2.-Identify-the-equilibrium-points-$\bar{x}$-where-$\dot{x}-=-f(\bar{x},-\bar{u})-=-0$">&#182;</a></h3><p>Every point $x$, $y$, and $theta$ is an equilibrium if we input no control, $\bar{u} = 0$. This is good, because it meansre we can linearize around the current position of the robot no matter where it is.</p>
+\end{align}<h3 id="2.-Identify-the-equilibrium-points-$\bar{x}$-where-$\dot{x}-=-f(\bar{x},-\bar{u})-=-0$">2. Identify the equilibrium points $\bar{x}$ where $\dot{x} = f(\bar{x}, \bar{u}) = 0$<a class="anchor-link" href="#2.-Identify-the-equilibrium-points-$\bar{x}$-where-$\dot{x}-=-f(\bar{x},-\bar{u})-=-0$">&#182;</a></h3><p>Every point $[x, y, \theta]$ is an equilibrium if we input no control, $\bar{u} = 0$. This is good, because it means we can linearize around the current position of the robot no matter where it is.</p>
 <h3 id="3.-Write-the-linearized-dynamics-around-$\bar{x}$-as-$\dot{x}-\approx-A\delta_x-+-B\delta_u$,-where-$\delta_x-=-(\bar{x}---x)$-and-$\delta_u-=-(\bar{u}---u)$">3. Write the linearized dynamics around $\bar{x}$ as $\dot{x} \approx A\delta_x + B\delta_u$, where $\delta_x = (\bar{x} - x)$ and $\delta_u = (\bar{u} - u)$<a class="anchor-link" href="#3.-Write-the-linearized-dynamics-around-$\bar{x}$-as-$\dot{x}-\approx-A\delta_x-+-B\delta_u$,-where-$\delta_x-=-(\bar{x}---x)$-and-$\delta_u-=-(\bar{u}---u)$">&#182;</a></h3><p>To do this, we need the partial derivitive matrixes $A$ and $B$. But since our state dynamics doesn't depend on our state, only our control, we can ignore the $Ax$ term and just consider $B$.</p>
 $$ B = \begin{bmatrix}
          \frac{\partial f_1}{\partial v_l}\big|_{\bar{x}\bar{u}} &
@@ -18320,7 +18321,8 @@ $$ B = \begin{bmatrix}
           \frac{\Delta t}{R-\frac{W}{2}} &
           0 \\
        \end{bmatrix}
-$$<h3 id="4.-Check-if-our-system-is-controllable-by-looking-at-the-rank-of-the-controllability-matrix-$C-=-[B,-AB,-A^2B,-\dots,-A^{n-1}B]$">4. Check if our system is controllable by looking at the rank of the controllability matrix $C = [B, AB, A^2B, \dots, A^{n-1}B]$<a class="anchor-link" href="#4.-Check-if-our-system-is-controllable-by-looking-at-the-rank-of-the-controllability-matrix-$C-=-[B,-AB,-A^2B,-\dots,-A^{n-1}B]$">&#182;</a></h3><p>We have three state variables so $n = 3$, which means $C = [B, AB, A^2B] = [B, 0, 0]$. The rank of $C$ is obviously $1$ which is a problem since it indicates our system is not controllable.</p>
+$$<h3 id="4.-Check-if-our-system-is-controllable-by-looking-at-the-rank-of-the-controllability-matrix-$C-=-[B,-AB,-A^2B,-\dots,-A^{n-1}B]$">4. Check if our system is controllable by looking at the rank of the controllability matrix $C = [B, AB, A^2B, \dots, A^{n-1}B]$<a class="anchor-link" href="#4.-Check-if-our-system-is-controllable-by-looking-at-the-rank-of-the-controllability-matrix-$C-=-[B,-AB,-A^2B,-\dots,-A^{n-1}B]$">&#182;</a></h3><p>We have three state variables so $n = 3$, which means $C = [B, AB, A^2B] = [B, 0, 0]$.'</p>
+<p>The rank of $C$ is obviously $1$ which is a problem since it should be equal to our number of state variables, which is 3. This indicates our system is not controllable.</p>
 <h3 id="5.-Pick-cost-parameters-$Q$-and-$R$">5. Pick cost parameters $Q$ and $R$<a class="anchor-link" href="#5.-Pick-cost-parameters-$Q$-and-$R$">&#182;</a></h3><h3 id="6.-Solve-for-$K$-given-$LQR(A,-B,-Q,-R)$">6. Solve for $K$ given $LQR(A, B, Q, R)$<a class="anchor-link" href="#6.-Solve-for-$K$-given-$LQR(A,-B,-Q,-R)$">&#182;</a></h3><p>maybe we compute K once instead of at every time step
 could be consistent within one motion primitive</p>
 <h3 id="7.-Apply-our-new-controller-of-the-form-$u-=--Kx$">7. Apply our new controller of the form $u = -Kx$<a class="anchor-link" href="#7.-Apply-our-new-controller-of-the-form-$u-=--Kx$">&#182;</a></h3>
