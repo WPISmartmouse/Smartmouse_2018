@@ -3,16 +3,18 @@
 
 # # Time Optimal Velocity Profiles
 # 
+# ***
+# 
 # When the maze solver commands that the robot go forward, it can say that it must go forward one or more squares depending on what it knows about the maze. When we don't know what is after the square we pass through, we must be going slow enough to handle any scenario. In other words, there is some $V_f$ that we must reach by the end of our motion. We also begin motions at this speed, since between we arrived where we are we required that we reach $V_f$ to get there. Therefore, we start and end at $V_f$, and we want to cover some distance $d$ in the fast possible time. To do so, we accelerate at our fixed $a$ until we reach max speed, or until we need to start slowing down (whichever comes first). This gives us a trapezoid shaped velocity profile.
 
 # ## Going Straight
 
-# In[1]:
+# In[20]:
 
 get_ipython().magic('load_ext tikzmagic')
 
 
-# In[2]:
+# In[21]:
 
 get_ipython().run_cell_magic('tikz', '-s 400,400', '\\draw[->] (0,0) -- (10,0);\n\\draw[->] (0,0) -- (0,5);\n\n\\draw[line width=1] (0,0.5) -- (2.5,3);\n\\draw[line width=1] (2.5,3) -- (5.5,3);\n\\draw[line width=1] (5.5,3) -- (8,0.5);\n\\draw[dashed] (0,0.5) -- (10,0.5);\n\\draw[dashed] (0,3) -- (10,3);\n\\draw[dashed] (2.5,0) -- (2.5,5);\n\\draw[dashed] (5.5,0) -- (5.5,5);\n\\draw[dashed] (8,0) -- (8,5);\n\n\\draw (-0.5, 0.5) node {$V_{f}$};\n\\draw (-0.5, 3) node {$V_{max}$};\n\\draw (2.5, -0.5) node {$t_b$};\n\\draw (5.5, -0.5) node {$t_f-t_b$};\n\\draw (8, -0.5) node {$t_f$};')
 
@@ -32,7 +34,7 @@ get_ipython().run_cell_magic('tikz', '-s 400,400', '\\draw[->] (0,0) -- (10,0);\
 
 # ## Code that proves it
 
-# In[3]:
+# In[22]:
 
 # dependencies and global setup
 import numpy as np
@@ -58,7 +60,7 @@ def log(*args):
         print(*args)
 
 
-# In[4]:
+# In[23]:
 
 def profile(V0, Vf, Vmax, d, A, buffer=3e-3):
     v = V0
@@ -154,7 +156,7 @@ plt.show()
 # 
 # It can be shown that the matrix on the left is invertable, so long as $t_f-t_0 > 0$. So we can invert and solve this equation and get all the $a$ coefficients. We can then use this polynomial to generate the $q(t)$ and $\dot{q}(t)$ -- our trajectory.
 
-# In[5]:
+# In[24]:
 
 def simple_traj_solve(q_0, q_f, q_dot_0, q_dot_t_f, t_f):
     # Example: you are a point in space (one dimension) go from rest at the origin to at rest at (0.18, 0, 0) in 1 second
@@ -177,7 +179,7 @@ simple_traj_coeff = simple_traj_solve(*simple_traj_info)
 
 # Here you can see that the resulting coeffictions are $a_0=0$, $a_1=0$, $a_2=0.54$, $a_0=-0.36$. Intuitively, this says that we're going to have positive acceleration, but our acceleration is going to slow down over time. Let's graph it!
 
-# In[6]:
+# In[25]:
 
 def simple_traj_plot(coeff, t_f):
     dt = 0.01
@@ -196,7 +198,7 @@ simple_traj_plot(simple_traj_coeff, simple_traj_info[-1])
 # 
 # Let's try another example, now with our full state space of $[x, y, \theta]$.
 
-# In[7]:
+# In[26]:
 
 def no_dynamics():
     # In this example, we go from (0.18, 0.09, 0) to (0.27,0.18, -1.5707). Our starting and ending velocities are zero
@@ -244,8 +246,10 @@ no_dynamics()
 # Well, they are smooth, but these are not possible to execute! The robot cannot simply translate sideways.
 
 # # Trajectory Planning With a Simple Dynamics Model
+# 
+# ***
 
-# In[8]:
+# In[27]:
 
 get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45:(0,0)}] (-.5,-1) rectangle (0.5,1);\n\\filldraw (0,0) circle (0.125);\n\n\\draw [->] (0,0) -- (0,1.5);\n\\draw [->] (0,0) -- (1.5,0);\n\\draw [->] (0,0) -- (1.5,1.5);\n\\draw (1.2, -0.2) node {$x$};\n\\draw (-0.2, 1.2) node {$y$};\n\\draw (1, 1.2) node {$v$};')
 
@@ -371,7 +375,7 @@ get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45
 # \end{bmatrix}
 # \end{equation}
 
-# In[9]:
+# In[28]:
 
 # Let's solve this in code like we did before
 def plot_vars(traj_plan):
@@ -440,7 +444,7 @@ def plot_traj_pts(xs, ys, T):
     plt.show()
 
 
-# In[126]:
+# In[29]:
 
 from math import sin, cos, pi
 from collections import namedtuple
@@ -532,7 +536,7 @@ class TrajPlan:
 
 # ## Example Plots
 
-# In[127]:
+# In[30]:
 
 # forward 1 cell, start from rest, end at 40cm/s, do it in .5 seconds
 LOG_LVL = 5
@@ -542,7 +546,7 @@ plot_vars(fwd_1)
 plot_traj(fwd_1)
 
 
-# In[128]:
+# In[31]:
 
 # continue by turning right 90 degrees
 LOG_LVL = 1
@@ -552,7 +556,7 @@ plot_vars(turn_right)
 plot_traj(turn_right)
 
 
-# In[129]:
+# In[32]:
 
 # 3 waypoints!
 LOG_LVL = 1
@@ -566,6 +570,8 @@ plot_traj(turn_right)
 
 # # Trajectory Following
 # 
+# ***
+# 
 # Now that we have a trajectory, we want to design a controller that will follow it as closely as possible. To do this, I'm just going to do a proportional controller. Later we will design an optimal controller. We want to make sure the robot is on the path, facing along the path, and going the right speed. When all of these are true the change in speed should be zero. Let's come up with an equation to relate current pose and velocity to the desired pose and velocity. Let our outputs be the linear velocity $v$ and the rotational velocity $w$.
 # 
 # $$ w = w_d + d*P_1 + (\theta_d - \theta)P_2$$
@@ -573,7 +579,7 @@ plot_traj(turn_right)
 # 
 # where $v_d$ is desired velocity, $\theta_d$ is the desired angle, $d$ is signed distance to the planned trajectory (to the right of the plan is positive), $v_d$ and $w_d$ are the desired velocities of the robot, and $P_1$, $P_2$, and $P_3$ are constants. Essentially what we're saying with the first equation is that when you're far off the trajectory you need to turn harder to get back on to it, but you also need to be aligned with it. The second equation says if you're lagging behind your plan speed up, or slow down if you're overshooting.
 
-# In[130]:
+# In[33]:
 
 from math import atan2
 
@@ -654,7 +660,7 @@ def simulate(robot_q_0, waypoints, P_1, P_2, P_3, P_4):
     plt.legend(bbox_to_anchor=(1,1), loc=2)
 
 
-# In[131]:
+# In[34]:
 
 test_P_1=500
 test_P_2=50
@@ -666,7 +672,7 @@ simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3, test_P_4)
 plt.show()
 
 
-# In[132]:
+# In[35]:
 
 robot_q_0 = (0.11, 0.18, pi/2, 0.2, 5)
 traj = [(0, WayPoint(0.09, 0.18, pi/2, 0.2)), (1, WayPoint(0.18, 0.27, 0, 0.35))]
@@ -674,7 +680,7 @@ simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3, test_P_4)
 plt.show()
 
 
-# In[133]:
+# In[36]:
 
 robot_q_0 = (0.0, 0.25, 0, 0.5, -5)
 traj = [(0, WayPoint(0.0, 0.27, 0, 0.2)), (1.25, WayPoint(0.54, 0.27, 0, 0.2))]
@@ -682,7 +688,7 @@ simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3, test_P_4)
 plt.show()
 
 
-# In[134]:
+# In[37]:
 
 robot_q_0 = (0.45, 0.08, pi+0.25, 0.4, 0)
 traj = [(0, WayPoint(0.45, 0.09, pi, 0.4)), (0.75, WayPoint(0.27, 0.27, pi/2, 0.4))]
@@ -694,19 +700,76 @@ plt.show()
 
 # # LQR - The Optimal Controller
 # 
+# ***
+# 
 # Now We will use a linear dynamics model for our robot and find the controller that is optimal with respect to that simplistic model.
 # 
-# ## Steps:
+# ## Overview of the Steps:
 # 
 # ### 1. Write out the non-linear dynamics $\dot{x} = f(x, u)$
-# ### 2. Identify the equilibrium points $\bar{x}$ where $\dot{x} = f(\bar{x},u) = 0$
-# ### 3. Write the linearized dynamics around $\bar{x}$ as $\dot{x} \approx Ax + Bu$
+# 
+# Here we are interested in the full blown system dynamics of the actual smartmouse robot. The forward kinematics, which depend on the current state $x$, $y$, and $\theta$ and the velocity inputs of the wheels $v_l$, and $v_r$ are as follows. In the general case where the two wheels have different velocities, we have this:
+# 
+# \begin{align}
+#   R &= \frac{W(v_l+v_r)}{2(v_r-v_l)} && \text{radius of turn} \\
+#   \theta &\leftarrow \theta + \dfrac{v_l}{R-\frac{W}{2}}\Delta t \\
+#   x &\leftarrow x-R\Bigg(\sin{\Big(\frac{v_r-v_l}{W}\Delta t-\theta\Big)}+\sin{\theta}\Bigg) \\
+#   y &\leftarrow y-R\Bigg(\cos{\Big(\frac{v_r-v_l}{W}\Delta t-\theta\Big)}-\cos{\theta}\Bigg)
+# \end{align}
+# 
+# And in the special case where we're going perfectly straight:
+# 
+# \begin{align}
+#   \theta &\leftarrow \theta \\
+#   x &\leftarrow x + v\Delta t\cos(\theta) \\
+#   y &\leftarrow y + v\Delta t\sin(\theta) \\
+# \end{align}
+# 
+# We can take these equations and write them in the form of $\dot{x} = f(x,u)$. Confusingly, $x$ here is the full state vector $[x, y, \theta]$. Most controls texts simply use $x$, so I'm sticking with that.
+# 
+# \begin{align}
+#   \dot{x} &= \begin{bmatrix}\dot{x}\\ \dot{y}\\ \dot{\theta}\end{bmatrix} \\
+#           &= \begin{bmatrix}
+#                 -R\Bigg(\sin{\Big(\frac{v_r-v_l}{W}\Delta t-\theta\Big)}+\sin{\theta}\Bigg) \\
+#                 -R\Bigg(\cos{\Big(\frac{v_r-v_l}{W}\Delta t-\theta\Big)}-\cos{\theta}\Bigg) \\
+#                 \frac{v_l}{R-\frac{W}{2}}\Delta t \\
+#                 \end{bmatrix}
+# \end{align}
+# 
+# ### 2. Identify the equilibrium points $\bar{x}$ where $\dot{x} = f(\bar{x}, \bar{u}) = 0$
+# 
+# Every point $x$, $y$, and $theta$ is an equilibrium if we input no control, $\bar{u} = 0$. This is good, because it meansre we can linearize around the current position of the robot no matter where it is.
+# 
+# ### 3. Write the linearized dynamics around $\bar{x}$ as $\dot{x} \approx A\delta_x + B\delta_u$, where $\delta_x = (\bar{x} - x)$ and $\delta_u = (\bar{u} - u)$
+# 
+# To do this, we need the partial derivitive matrixes $A$ and $B$. But since our state dynamics doesn't depend on our state, only our control, we can ignore the $Ax$ term and just consider $B$.
+# 
+# $$ B = \begin{bmatrix}
+#          \frac{\partial f_1}{\partial v_l}\big|_{\bar{x}\bar{u}} &
+#          \frac{\partial f_1}{\partial v_r}\big|_{\bar{x}\bar{u}} \\
+#          \frac{\partial f_2}{\partial v_l}\big|_{\bar{x}\bar{u}} &
+#          \frac{\partial f_2}{\partial v_r}\big|_{\bar{x}\bar{u}} \\
+#          \frac{\partial f_3}{\partial v_l}\big|_{\bar{x}\bar{u}} &
+#          \frac{\partial f_3}{\partial v_r}\big|_{\bar{x}\bar{u}} \\
+#        \end{bmatrix}
+#      = \begin{bmatrix}
+#           R\cos\Big(\frac{(\bar{v_r}-\bar{v_l})\Delta t}{W}-\theta\Big)\frac{\Delta t}{W} &
+#           -R\cos\Big(\frac{(\bar{v_r}-\bar{v_l})\Delta t}{W}-\theta\Big)\frac{\Delta t}{W} \\
+#           -R\sin\Big(\frac{(\bar{v_r}-\bar{v_l})\Delta t}{W}-\theta\Big)\frac{\Delta t}{W} &
+#           R\sin\Big(\frac{(\bar{v_r}-\bar{v_l})\Delta t}{W}-\theta\Big)\frac{\Delta t}{W} \\
+#           \frac{\Delta t}{R-\frac{W}{2}} &
+#           0 \\
+#        \end{bmatrix}
+# $$
+# 
 # ### 4. Check if our system is controllable by looking at the rank of the controllability matrix $C = [B, AB, A^2B, \dots, A^nB]$
 # ### 5. Pick cost parameters $Q$ and $R$
 # ### 6. Solve for $K$ given $LQR(A, B, Q, R)$
+# maybe we compute K once instead of at every time step
+# could be consistent within one motion primitive
 # ### 7. Apply our new controller of the form $u = -Kx$
 
-# In[136]:
+# In[38]:
 
 from math import atan2
 import scipy.linalg
@@ -755,9 +818,4 @@ def follow_plan(plan):
 
     K = dlqr(A, B, Q, R)
     u = -K * (xvec - xdes_vec) + np.array([[vf],[wf]]);
-
-
-# In[ ]:
-
-
 
