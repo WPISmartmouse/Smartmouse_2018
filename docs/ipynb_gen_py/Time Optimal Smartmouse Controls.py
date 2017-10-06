@@ -781,9 +781,55 @@ plt.show()
 # 
 # ### 4. Check if our system is controllable by looking at the rank of the controllability matrix $C = [B, AB, A^2B, \dots, A^{n-1}B]$
 # 
-# We have three state variables so $n = 3$, which means $C = [B, AB, A^2B] = [B, 0, 0]$.'
+# We have three state variables so $n = 3$, which means $C = [B, AB, A^2B]$.
 # 
-# The rank of $C$ is obviously $1$ which is a problem since it should be equal to our number of state variables, which is 3. This indicates our system is not controllable.
+# $$
+# AB = \begin{bmatrix}
+#        R\bigg(\cos\Big(\frac{v_r-v_l}{W}\Delta t - \theta\Big) - \cos(\theta)\bigg)\frac{\Delta t}{R-\frac{W}{2}} & 00 \\
+#        -R\bigg(\sin\Big(\frac{v_r-v_l}{W}\Delta t - \theta\Big) + \sin(\theta)\bigg)\frac{\Delta t}{R-\frac{W}{2}} & 0 \\
+#        0 & 0 \\
+#      \end{bmatrix}
+# $$
+# 
+# 
+# $$
+# A^2B =
+#      \begin{bmatrix}
+#        0 & 0 & 0\\
+#        0 & 0 & 0\\
+#        0 & 0 & 0\\
+#      \end{bmatrix}
+#      * B
+#      = \begin{bmatrix}
+#        0 & 0 & 0\\
+#        0 & 0 & 0\\
+#        0 & 0 & 0\\
+#      \end{bmatrix}
+# $$
+# 
+# $$ C = \begin{bmatrix}
+#          \begin{bmatrix}
+#            R\cos\Big(\frac{(\bar{v_r}-\bar{v_l})\Delta t}{W}-\theta\Big)\frac{\Delta t}{W} &
+#            -R\cos\Big(\frac{(\bar{v_r}-\bar{v_l})\Delta t}{W}-\theta\Big)\frac{\Delta t}{W} \\
+#            -R\sin\Big(\frac{(\bar{v_r}-\bar{v_l})\Delta t}{W}-\theta\Big)\frac{\Delta t}{W} &
+#            R\sin\Big(\frac{(\bar{v_r}-\bar{v_l})\Delta t}{W}-\theta\Big)\frac{\Delta t}{W} \\
+#            \frac{\Delta t}{R-\frac{W}{2}} &
+#            0 \\
+#          \end{bmatrix} &
+#          \begin{bmatrix}
+#            R\bigg(\cos\Big(\frac{v_r-v_l}{W}\Delta t - \theta\Big) - \cos(\theta)\bigg)\frac{\Delta t}{R-\frac{W}{2}} & 0 \\
+#            -R\bigg(\sin\Big(\frac{v_r-v_l}{W}\Delta t - \theta\Big) + \sin(\theta)\bigg)\frac{\Delta t}{R-\frac{W}{2}} & 0 \\
+#            0 & 0 \\
+#          \end{bmatrix} &
+#          \begin{bmatrix}
+#            0 & 0 & 0\\
+#            0 & 0 & 0\\
+#            0 & 0 & 0\\
+#          \end{bmatrix}
+#        \end{bmatrix}
+# $$
+# 
+# What is the rank of this matrix? It seems to depend on specific values of $x, y, \theta$.
 # 
 # ### 5. Pick cost parameters $Q$ and $R$
 # ### 6. Solve for $K$ given $LQR(A, B, Q, R)$
