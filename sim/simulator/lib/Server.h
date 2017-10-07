@@ -5,7 +5,7 @@
 #include <ignition/transport/Node.hh>
 
 #include <common/AbstractMaze.h>
-#include <sim/simulator/lib/Time.h>
+#include <lib/common/Time.h>
 #include <sim/simulator/msgs/server_control.pb.h>
 #include <sim/simulator/msgs/physics_config.pb.h>
 #include <sim/simulator/msgs/maze.pb.h>

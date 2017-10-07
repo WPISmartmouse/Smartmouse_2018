@@ -4,7 +4,7 @@
 #include <lib/Server.h>
 #include <QtWidgets/QApplication>
 #include <lib/Client.h>
-#include <lib/TopicNames.h>
+#include <lib/common/TopicNames.h>
 
 void PrintVersionInfo() {
   printf("SmartmouseSim v 0.0.0\n");

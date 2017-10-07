@@ -10,7 +10,8 @@ add_subdirectory(msgs)
 set_source_files_properties(${PROTO_SRC} ${PROTO_HEADER}
         PROPERTIES GENERATED TRUE)
 
-add_library(simulator_lib lib/Time.cpp)
+file(GLOB SIMULATOR_COMMON_SRC lib/common/*.cpp)
+add_library(simulator_lib ${SIMULATOR_COMMON_SRC})
 target_link_libraries(simulator_lib msgs)
 
 add_library(server lib/Server.cpp)
@@ -31,7 +32,6 @@ install(TARGETS SmartmouseSim DESTINATION bin)
 # testing
 ################################
 add_executable(sim_tests test/SimTest.cpp)
-target_compile_features(sim_tests PRIVATE cxx_strong_enums)
 target_link_libraries(sim_tests gtest gtest_main server sim msgs)
 set_target_properties(sim_tests PROPERTIES COMPILE_FLAGS "-DCONSOLE -include common/util.h")
 

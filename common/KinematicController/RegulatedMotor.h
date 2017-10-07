@@ -21,8 +21,8 @@ public:
   double kP;
   double kI;
   double kD;
-  double int_cap;
   double ff_offset;
+  double int_cap;
 
   bool initialized = false;
   double abstract_force;

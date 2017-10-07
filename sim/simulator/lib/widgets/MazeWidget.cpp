@@ -4,7 +4,7 @@
 
 #include <common/AbstractMaze.h>
 #include <sim/simulator/lib/widgets/MazeWidget.h>
-#include <sim/simulator/lib/TopicNames.h>
+#include <lib/common/TopicNames.h>
 #include <sim/simulator/msgs/msgs.h>
 
 const int MazeWidget::kPaddingPx = 24;

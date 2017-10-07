@@ -5,7 +5,7 @@
 #include <sim/lib/SimTimer.h>
 #include <simulator/msgs/maze_location.pb.h>
 #include <simulator/msgs/robot_command.pb.h>
-#include <simulator/lib/TopicNames.h>
+#include <simulator/lib/common/TopicNames.h>
 #include <sim/lib/SimMouse.h>
 
 int main(int argc, char *argv[]) {

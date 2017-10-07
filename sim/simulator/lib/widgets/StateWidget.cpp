@@ -4,7 +4,7 @@
 #include "StateWidget.h"
 #include <QtWidgets/QHBoxLayout>
 #include <msgs/robot_command.pb.h>
-#include <lib/TopicNames.h>
+#include <lib/common/TopicNames.h>
 #include <common/math/math.h>
 
 #include "ui_statewidget.h"

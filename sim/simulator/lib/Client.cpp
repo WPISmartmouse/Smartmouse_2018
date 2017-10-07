@@ -6,7 +6,7 @@
 
 #include <sim/simulator/lib/Server.h>
 #include <sim/simulator/lib/Client.h>
-#include <sim/simulator/lib/TopicNames.h>
+#include <lib/common/TopicNames.h>
 #include <sim/simulator/msgs/msgs.h>
 
 #include "ui_mainwindow.h"

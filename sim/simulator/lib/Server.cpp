@@ -1,5 +1,5 @@
 #include <sim/simulator/lib/Server.h>
-#include <sim/simulator/lib/TopicNames.h>
+#include <lib/common/TopicNames.h>
 #include <msgs/world_statistics.pb.h>
 #include <common/Mouse.h>
 #include <common/RobotConfig.h>

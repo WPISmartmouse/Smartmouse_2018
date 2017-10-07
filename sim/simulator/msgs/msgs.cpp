@@ -1,4 +1,4 @@
-#include <sim/simulator/lib/json.hpp>
+#include <sim/simulator/lib/common/json.hpp>
 #include "msgs.h"
 
 namespace smartmouse {

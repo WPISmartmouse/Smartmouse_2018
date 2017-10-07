@@ -3,7 +3,7 @@
 #include <sim/lib/SimTimer.h>
 #include <joystick/joystick.hh>
 #include <simulator/msgs/robot_command.pb.h>
-#include <simulator/lib/TopicNames.h>
+#include <simulator/lib/common/TopicNames.h>
 
 int main(int argc, char **argv) {
   SimTimer timer;
