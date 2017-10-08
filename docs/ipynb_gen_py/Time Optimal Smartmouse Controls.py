@@ -11,7 +11,7 @@
 
 # In[1]:
 
-get_ipython().magic('load_ext tikzmagic')
+get_ipython().run_line_magic('load_ext', 'tikzmagic')
 
 
 # In[2]:
@@ -249,7 +249,7 @@ no_dynamics()
 # 
 # ***
 
-# In[8]:
+# In[20]:
 
 get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45:(0,0)}] (-.5,-1) rectangle (0.5,1);\n\\filldraw (0,0) circle (0.125);\n\n\\draw [->] (0,0) -- (0,1.5);\n\\draw [->] (0,0) -- (1.5,0);\n\\draw [->] (0,0) -- (1.5,1.5);\n\\draw (1.2, -0.2) node {$x$};\n\\draw (-0.2, 1.2) node {$y$};\n\\draw (1, 1.2) node {$v$};')
 
@@ -580,9 +580,9 @@ plot_traj(turn_right)
 # 
 # where $v_d$ is desired velocity, $\theta_d$ is the desired angle, $d$ is signed distance to the planned trajectory (to the right of the plan is positive), $v_d$ and $w_d$ are the desired velocities of the robot, and $P_1$, $P_2$, and $P_3$ are constants. Essentially what we're saying with the first equation is that when you're far off the trajectory you need to turn harder to get back on to it, but you also need to be aligned with it. The second equation says if you're lagging behind your plan speed up, or slow down if you're overshooting.
 
-# In[14]:
+# In[96]:
 
-from math import atan2
+from math import atan2, sqrt
 
 LOG_LVL = 5
 def simulate(robot_q_0, waypoints, P_1, P_2, P_3, P_4):
@@ -597,7 +597,7 @@ def simulate(robot_q_0, waypoints, P_1, P_2, P_3, P_4):
     robot_w = robot_q_0[4]
     actual_robot_v = robot_q_0[3]
     actual_robot_w = robot_q_0[4]
-    v_acc = 2 * dt
+    v_acc = 3 * dt
     TRACK_WIDTH = 0.0633
     w_acc = v_acc / (TRACK_WIDTH/2)
     T = np.arange(0, traj.get_t_f()+dt, dt)
@@ -613,7 +613,7 @@ def simulate(robot_q_0, waypoints, P_1, P_2, P_3, P_4):
         dy_des = [0, 0, 0, 0, 0, 0, 0, 1, 2*t, 3*pow(t,2), 4*pow(t,3), 5*pow(t,4)] @ traj.get_coeff()
         ddy_des = [0, 0, 0, 0, 0, 0, 0, 0, 2, 6*t, 12*pow(t,2), 20*pow(t,3)] @ traj.get_coeff()
         theta_des = atan2(dy_des, dx_des)
-        v_des = cos(theta_des)*dx_des + sin(theta_des)*dy_des
+        v_des = sqrt(dx_des*dx_des + dy_des*dy_des)
         w_des = 1/v_des * (ddy_des*cos(theta_des) - ddx_des*sin(theta_des));
     
         # simple Dubin's Car forward kinematics
@@ -661,19 +661,19 @@ def simulate(robot_q_0, waypoints, P_1, P_2, P_3, P_4):
     plt.legend(bbox_to_anchor=(1,1), loc=2)
 
 
-# In[15]:
+# In[97]:
 
-test_P_1=500
+test_P_1=300
 test_P_2=50
 test_P_3=10
-test_P_4=0.00
+test_P_4=10
 robot_q_0 = (0.08, 0.18, pi/2, 0.3, 0)
 traj = [(0, WayPoint(0.09, 0.18, pi/2, 0.5)), (0.5, WayPoint(0.18, 0.27, 0, 0.35)), (1, WayPoint(0.27, 0.36, pi/2, 0))]
 simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3, test_P_4)
 plt.show()
 
 
-# In[16]:
+# In[98]:
 
 robot_q_0 = (0.11, 0.18, pi/2, 0.2, 5)
 traj = [(0, WayPoint(0.09, 0.18, pi/2, 0.2)), (1, WayPoint(0.18, 0.27, 0, 0.35))]
@@ -681,18 +681,26 @@ simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3, test_P_4)
 plt.show()
 
 
-# In[17]:
+# In[108]:
 
-robot_q_0 = (0.0, 0.25, 0, 0.5, -5)
+robot_q_0 = (0.0, 0.25, 0, 0.2, 0)
 traj = [(0, WayPoint(0.0, 0.27, 0, 0.2)), (1.25, WayPoint(0.54, 0.27, 0, 0.2))]
 simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3, test_P_4)
 plt.show()
 
 
-# In[18]:
+# In[109]:
 
-robot_q_0 = (0.45, 0.08, pi+0.25, 0.4, 0)
+robot_q_0 = (0.45, 0.05, pi+0.25, 0.3, 0)
 traj = [(0, WayPoint(0.45, 0.09, pi, 0.4)), (0.75, WayPoint(0.27, 0.27, pi/2, 0.4))]
+simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3, test_P_4)
+plt.show()
+
+
+# In[125]:
+
+robot_q_0 = (0.0, 0.25, 0, 0.2, -5)
+traj = [(0, WayPoint(0.0, 0.27, 0, 0.2)), (2, WayPoint(0.48, 0.36, pi/2, 0.2))]
 simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3, test_P_4)
 plt.show()
 
@@ -737,7 +745,22 @@ plt.show()
 # 
 # ### 2. Identify the equilibrium points $\bar{x}$ where $\dot{\vec{x}} = f(\bar{x}, \bar{u}) = 0$
 # 
-# Every point $[x, y, \theta]$ is an equilibrium if we input no control, $\bar{u} = 0$. This is good, because it means we can linearize around the current position of the robot no matter where it is.
+# Because we are tracking a trajectory, we want to linearize around the trajectory we are trying to track. That means $\bar{u}$ is the control input associated with the trajectory, which means solving for the feed forward inputs. Specifically, that means we need to compute the $v_l$ and $v_r$ that would follow the trajectory at the point $\bar{x}$. To do this we must pick velocities that make instantaneous turning radius $R$ equal the instantaneous radius of the trajcetory at $\bar{x}$, and make the linear velocity at $\bar{x}$ equal the instantaneous linear velocity of the robot center $v$. To do this, we go back to our basic kinematics equations which rely on the fact that all points on the robot (center, left wheel, right wheel) have the same rotational velocity $\omega$ around the ICC.
+# 
+# \begin{align}
+#   \omega = \frac{v}{R} &= \frac{v_l}{R-\frac{W}{2}} \\
+#   \frac{v}{R}\bigg(R - \frac{W}{2}\bigg) &= v_l \\
+#   \omega = \frac{v}{R} &= \frac{v_r}{R+frac{W}{2}} \\
+#   \frac{v}{R}\bigg(R + \frac{W}{2}\bigg) &= v_r \\
+# \end{align}
+# 
+# Using these equations we can solve for the velocities of the wheels, which together make up $\bar{u}$. We just need the $R$ and $v$. These should be derived from the equation of the trajectory we are tracking. These are well studied equations, for which [a proof can be found other places on the internet](http://mathworld.wolfram.com/Curvature.html).
+# 
+# $$ R = \frac{\dot{x}\ddot{y}-\dot{y}\ddot{x}}{{\big({\dot{x}}^2 + {\dot{y}}^2\big)}^{\frac{3}{2}}} = \frac{(c_1+2c_2t+3c_3t^2+4c_4t^3)(2d_2+6d_3t+12d_4t^2) - (d_1+2d_2t+3d_3t^3+4d_4t^3)(2c_2+6c_3t+12c_4t^2)}{{\big({(c_1+2c_2t+3c_3t^2+4c_4t^3)}^2 + {(d_1+2d_2t+3d_3t^3+4d_4t^3)}^2\big)}^{\frac{3}{2}}} $$
+# 
+# $$ v = \sqrt{{(\dot{x})}^2 + {(\dot{y})}^2}  = \sqrt{{(c_1+2c_2t+3c_3t^2+4c_4t^3)}^2 + {(d_1+2d_2t+3d_3t^3+4d_4t^3)}^2} $$
+# 
+# We can plug in the coefficients of our polynomials and get values for $v$ and $R$. Then, we can plus these into the equations just above and get the feed forward wheel velocities. 
 # 
 # ### 3. Write the linearized dynamics around $\bar{x}$ as $\dot{\vec{x}} \approx A\delta_x + B\delta_u$, where $\delta_x = (\bar{x} - \vec{x})$ and $\delta_u = (\bar{u} - \vec{u})$
 # 
@@ -785,7 +808,7 @@ plt.show()
 # 
 # $$
 # AB = \begin{bmatrix}
-#        R\bigg(\cos\Big(\frac{v_r-v_l}{W}\Delta t - \theta\Big) - \cos(\theta)\bigg)\frac{\Delta t}{R-\frac{W}{2}} & 00 \\
+#        R\bigg(\cos\Big(\frac{v_r-v_l}{W}\Delta t - \theta\Big) - \cos(\theta)\bigg)\frac{\Delta t}{R-\frac{W}{2}} & 0 \\
 #        -R\bigg(\sin\Big(\frac{v_r-v_l}{W}\Delta t - \theta\Big) + \sin(\theta)\bigg)\frac{\Delta t}{R-\frac{W}{2}} & 0 \\
 #        0 & 0 \\
 #      \end{bmatrix}
@@ -832,6 +855,9 @@ plt.show()
 # What is the rank of this matrix? It seems to depend on specific values of $x, y, \theta$.
 # 
 # ### 5. Pick cost parameters $Q$ and $R$
+# 
+# These need to be tuned on the simulation or real system, but the identity matrices $I$ are good starting points.
+# 
 # ### 6. Solve for $K$ given $LQR(A, B, Q, R)$
 # maybe we compute K once instead of at every time step
 # could be consistent within one motion primitive
