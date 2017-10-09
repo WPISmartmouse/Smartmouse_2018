@@ -9,12 +9,12 @@
 
 # ## Going Straight
 
-# In[1]:
+# In[31]:
 
 get_ipython().run_line_magic('load_ext', 'tikzmagic')
 
 
-# In[2]:
+# In[32]:
 
 get_ipython().run_cell_magic('tikz', '-s 400,400', '\\draw[->] (0,0) -- (10,0);\n\\draw[->] (0,0) -- (0,5);\n\n\\draw[line width=1] (0,0.5) -- (2.5,3);\n\\draw[line width=1] (2.5,3) -- (5.5,3);\n\\draw[line width=1] (5.5,3) -- (8,0.5);\n\\draw[dashed] (0,0.5) -- (10,0.5);\n\\draw[dashed] (0,3) -- (10,3);\n\\draw[dashed] (2.5,0) -- (2.5,5);\n\\draw[dashed] (5.5,0) -- (5.5,5);\n\\draw[dashed] (8,0) -- (8,5);\n\n\\draw (-0.5, 0.5) node {$V_{f}$};\n\\draw (-0.5, 3) node {$V_{max}$};\n\\draw (2.5, -0.5) node {$t_b$};\n\\draw (5.5, -0.5) node {$t_f-t_b$};\n\\draw (8, -0.5) node {$t_f$};')
 
@@ -34,7 +34,7 @@ get_ipython().run_cell_magic('tikz', '-s 400,400', '\\draw[->] (0,0) -- (10,0);\
 
 # ## Code that proves it
 
-# In[3]:
+# In[33]:
 
 # dependencies and global setup
 import numpy as np
@@ -60,7 +60,7 @@ def log(*args):
         print(*args)
 
 
-# In[4]:
+# In[34]:
 
 def profile(V0, Vf, Vmax, d, A, buffer=3e-3):
     v = V0
@@ -156,7 +156,7 @@ plt.show()
 # 
 # It can be shown that the matrix on the left is invertable, so long as $t_f-t_0 > 0$. So we can invert and solve this equation and get all the $a$ coefficients. We can then use this polynomial to generate the $q(t)$ and $\dot{q}(t)$ -- our trajectory.
 
-# In[5]:
+# In[35]:
 
 def simple_traj_solve(q_0, q_f, q_dot_0, q_dot_t_f, t_f):
     # Example: you are a point in space (one dimension) go from rest at the origin to at rest at (0.18, 0, 0) in 1 second
@@ -179,7 +179,7 @@ simple_traj_coeff = simple_traj_solve(*simple_traj_info)
 
 # Here you can see that the resulting coeffictions are $a_0=0$, $a_1=0$, $a_2=0.54$, $a_0=-0.36$. Intuitively, this says that we're going to have positive acceleration, but our acceleration is going to slow down over time. Let's graph it!
 
-# In[6]:
+# In[36]:
 
 def simple_traj_plot(coeff, t_f):
     dt = 0.01
@@ -198,7 +198,7 @@ simple_traj_plot(simple_traj_coeff, simple_traj_info[-1])
 # 
 # Let's try another example, now with our full state space of $[x, y, \theta]$.
 
-# In[7]:
+# In[37]:
 
 def no_dynamics():
     # In this example, we go from (0.18, 0.09, 0) to (0.27,0.18, -1.5707). Our starting and ending velocities are zero
@@ -249,7 +249,7 @@ no_dynamics()
 # 
 # ***
 
-# In[8]:
+# In[38]:
 
 get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45:(0,0)}] (-.5,-1) rectangle (0.5,1);\n\\filldraw (0,0) circle (0.125);\n\n\\draw [->] (0,0) -- (0,1.5);\n\\draw [->] (0,0) -- (1.5,0);\n\\draw [->] (0,0) -- (1.5,1.5);\n\\draw (1.2, -0.2) node {$x$};\n\\draw (-0.2, 1.2) node {$y$};\n\\draw (1, 1.2) node {$v$};')
 
@@ -376,7 +376,7 @@ get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45
 # \end{bmatrix}
 # \end{equation}
 
-# In[9]:
+# In[39]:
 
 # Let's solve this in code like we did before
 def plot_vars(traj_plan):
@@ -426,26 +426,32 @@ def plot_traj(traj_plan):
     yts = np.array([[0, 0, 0, 0, 0, 0, 1, t, pow(t,2), pow(t,3), pow(t,4), pow(t,5)] for t in T])
     xs = xts@traj_plan.get_coeff()
     ys = yts@traj_plan.get_coeff()
-    plot_traj_pts(xs, ys, T)
+    plot_traj_pts(xs, ys, T, traj_plan.waypoints)
     
-def plot_traj_pts(xs, ys, T):
+def plot_traj_pts(xs, ys, T, waypoints):
     plt.figure(figsize=(5, 5))
-    W = 3
-    plt.scatter(xs, ys, marker='.', linewidth=0, c=T)
-    plt.xlim(0, W * 0.18)
-    plt.ylim(0, W * 0.18)
-    plt.xticks(np.arange(W+1)*0.18)
-    plt.yticks(np.arange(W+1)*0.18)
+    plt.title("Trajectory")
     plt.xlabel("X")
     plt.ylabel("Y")
-    plt.title("Trajectory")
-    plt.suptitle("time goes from blue to red")
-    plt.grid(True)
+    W = 3
+    plt.xlim(0, W * 0.18)
+    plt.ylim(0, W * 0.18)
+    plt.xticks(np.arange(2*W+1)*0.09)
+    plt.yticks(np.arange(2*W+1)*0.09)
+    plt.grid(True)    
+    plt.gca().set_axisbelow(True)
     
+    plt.scatter(xs, ys, marker='.', linewidth=0, c=T)
+    
+    for t, pt in waypoints:
+        arrow_dx = cos(pt.theta) * (pt.v) * 0.1
+        arrow_dy = sin(pt.theta) * (pt.v) * 0.1
+        plt.arrow(pt.x, pt.y, arrow_dx, arrow_dy, head_width=0.01, head_length=0.015, width=0.005, fc='k', ec='k')
+
     plt.show()
 
 
-# In[10]:
+# In[40]:
 
 from math import sin, cos, pi
 from collections import namedtuple
@@ -537,17 +543,17 @@ class TrajPlan:
 
 # ## Example Plots
 
-# In[11]:
+# In[53]:
 
 # forward 1 cell, start from rest, end at 40cm/s, do it in .5 seconds
 LOG_LVL = 5
 fwd_1 = TrajPlan()
-fwd_1.solve([(0, WayPoint(0.09, 0.09, pi/2, 0)), (0.5, WayPoint(0.09, 0.18, pi/2, 0.4))])
+fwd_1.solve([(0, WayPoint(0.09, 0.09, pi/2, 0)), (0.5, WayPoint(0.09, 0.27, pi/2, 0.4))])
 plot_vars(fwd_1)
 plot_traj(fwd_1)
 
 
-# In[12]:
+# In[42]:
 
 # continue by turning right 90 degrees
 LOG_LVL = 1
@@ -557,7 +563,7 @@ plot_vars(turn_right)
 plot_traj(turn_right)
 
 
-# In[13]:
+# In[43]:
 
 # 3 waypoints!
 LOG_LVL = 1
@@ -568,6 +574,20 @@ plot_traj(turn_right)
 
 
 # **Note for this system of equations with 3 waypoints, there is no solution. However, the error of the solution found is very small.**
+# 
+# Now let's find one that really sucks!
+
+# In[44]:
+
+# 4 waypoints!
+LOG_LVL = 1
+turn_right = TrajPlan()
+turn_right.solve([(0, WayPoint(0.09, 0.18, pi/2, 0.1)),
+                  (1, WayPoint(0.09, 0.27, pi/2, 0.1)),
+                  (2, WayPoint(0.18, 0.45, 0, 0.1)),
+                  (3, WayPoint(0.36, 0.45, 0, 0.1))])
+plot_traj(turn_right)
+
 
 # # Trajectory Following
 # 
@@ -580,7 +600,7 @@ plot_traj(turn_right)
 # 
 # where $v_d$ is desired velocity, $\theta_d$ is the desired angle, $d$ is signed distance to the planned trajectory (to the right of the plan is positive), $v_d$ and $w_d$ are the desired velocities of the robot, and $P_1$, $P_2$, and $P_3$ are constants. Essentially what we're saying with the first equation is that when you're far off the trajectory you need to turn harder to get back on to it, but you also need to be aligned with it. The second equation says if you're lagging behind your plan speed up, or slow down if you're overshooting.
 
-# In[14]:
+# In[45]:
 
 from math import atan2, sqrt
 
@@ -652,16 +672,17 @@ def simulate(robot_q_0, waypoints, P_1, P_2, P_3, P_4):
     plt.scatter(robot_x_list, robot_y_list, marker='.', linewidth=0, c=T, label='robot traj')
     plt.xlim(0, W * 0.18)
     plt.ylim(0, W * 0.18)
-    plt.xticks(np.arange(W+1)*0.18)
-    plt.yticks(np.arange(W+1)*0.18)
+    plt.xticks(np.arange(2*W+1)*0.09)
+    plt.yticks(np.arange(2*W+1)*0.09)
     plt.grid(True)
+    plt.gca().set_axisbelow(True)
     plt.xlabel("X")
     plt.ylabel("Y")
     plt.title("Trajectory Tracking")
     plt.legend(bbox_to_anchor=(1,1), loc=2)
 
 
-# In[15]:
+# In[46]:
 
 test_P_1=300
 test_P_2=50
@@ -673,7 +694,7 @@ simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3, test_P_4)
 plt.show()
 
 
-# In[16]:
+# In[47]:
 
 robot_q_0 = (0.11, 0.18, pi/2, 0.2, 5)
 traj = [(0, WayPoint(0.09, 0.18, pi/2, 0.2)), (1, WayPoint(0.18, 0.27, 0, 0.35))]
@@ -681,7 +702,7 @@ simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3, test_P_4)
 plt.show()
 
 
-# In[17]:
+# In[48]:
 
 robot_q_0 = (0.0, 0.25, 0, 0.2, 0)
 traj = [(0, WayPoint(0.0, 0.27, 0, 0.2)), (1.25, WayPoint(0.54, 0.27, 0, 0.2))]
@@ -689,7 +710,7 @@ simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3, test_P_4)
 plt.show()
 
 
-# In[18]:
+# In[49]:
 
 robot_q_0 = (0.45, 0.05, pi+0.25, 0.3, 0)
 traj = [(0, WayPoint(0.45, 0.09, pi, 0.4)), (0.75, WayPoint(0.27, 0.27, pi/2, 0.4))]
@@ -697,7 +718,7 @@ simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3, test_P_4)
 plt.show()
 
 
-# In[19]:
+# In[50]:
 
 robot_q_0 = (0.0, 0.25, 0, 0.2, -5)
 traj = [(0, WayPoint(0.0, 0.27, 0, 0.2)), (2, WayPoint(0.48, 0.36, pi/2, 0.2))]
@@ -732,7 +753,7 @@ plt.show()
 #   y &\leftarrow y + v\Delta t\sin(\theta) \\
 # \end{align}
 # 
-# We can take these equations and write them in the form of $\dot{\vec{x}} = f(\vec{x},\vec{u})$. Confusingly, $\vec{x}$ here is the full state vector $[x, y, \theta]$. Most controls texts simply use $\vec{x}$, so I'm sticking with that.
+# We can take these equations and write them in the form of $\dot{\vec{x}} = f(\vec{x},\vec{u})$. Confusingly, $\vec{x}$ here is the full state vector $[x, y, \theta]$. Most controls texts simply use $\vec{x}$, so I'm sticking with that. Also, we defined $u = [v_l, v_r]$
 # 
 # \begin{align}
 #   \dot{x} &= \begin{bmatrix}\dot{x}\\ \dot{y}\\ \dot{\theta}\end{bmatrix} \\
@@ -743,14 +764,14 @@ plt.show()
 #                 \end{bmatrix}
 # \end{align}
 # 
-# ### 2. Identify the equilibrium points $\bar{x}$ where $\dot{\vec{x}} = f(\bar{x}, \bar{u}) = 0$
+# ### 2. Identify the points around which we linearize our system, $(\bar{u}, \bar{x})$
 # 
 # Because we are tracking a trajectory, we want to linearize around the trajectory we are trying to track. That means $\bar{u}$ is the control input associated with the trajectory, which means solving for the feed forward inputs. Specifically, that means we need to compute the $v_l$ and $v_r$ that would follow the trajectory at the point $\bar{x}$. To do this we must pick velocities that make instantaneous turning radius $R$ equal the instantaneous radius of the trajcetory at $\bar{x}$, and make the linear velocity at $\bar{x}$ equal the instantaneous linear velocity of the robot center $v$. To do this, we go back to our basic kinematics equations which rely on the fact that all points on the robot (center, left wheel, right wheel) have the same rotational velocity $\omega$ around the ICC.
 # 
 # \begin{align}
 #   \omega = \frac{v}{R} &= \frac{v_l}{R-\frac{W}{2}} \\
 #   \frac{v}{R}\bigg(R - \frac{W}{2}\bigg) &= v_l \\
-#   \omega = \frac{v}{R} &= \frac{v_r}{R+frac{W}{2}} \\
+#   \omega = \frac{v}{R} &= \frac{v_r}{R+\frac{W}{2}} \\
 #   \frac{v}{R}\bigg(R + \frac{W}{2}\bigg) &= v_r \\
 # \end{align}
 # 
@@ -871,7 +892,7 @@ plt.show()
 # ### 7. Apply our new controller of the form $\vec{u} = -K(\vec{x} - \bar{x}) + \bar{u}$
 # 
 
-# In[58]:
+# In[51]:
 
 from math import atan2
 import scipy.linalg
@@ -916,6 +937,10 @@ def follow_plan(q_0, waypoints, P_1, P_2, P_3, P_4):
     y_bar_list = []
     x_list = []
     y_list = []
+    vl_list = []
+    vr_list = []
+    actual_vl_list = []
+    actual_vr_list = []
     for t in T:
         x_bar = [1, t, pow(t,2), pow(t,3), pow(t,4), pow(t,5), 0, 0, 0, 0, 0, 0] @ traj.get_coeff()
         dx_bar = [0, 1, 2*t, 3*pow(t,2), 4*pow(t,3), 5*pow(t,4), 0, 0, 0, 0, 0, 0] @ traj.get_coeff()
@@ -955,7 +980,8 @@ def follow_plan(q_0, waypoints, P_1, P_2, P_3, P_4):
         R = np.eye(2);
 
         K, P, eigs = dlqr(A, B, Q, R)
-        debug("eigs", eigs)
+        eigs = np.linalg.eig(A - B*K)
+        info("eigs", eigs[0])
         debug("K", K)
         x_vec = np.array([[x],[y],[theta]])
         x_bar_vec = np.array([[x_bar],[y_bar],[theta_bar]])
@@ -977,6 +1003,10 @@ def follow_plan(q_0, waypoints, P_1, P_2, P_3, P_4):
         y_bar_list.append(y_bar)
         x_list.append(x)
         y_list.append(y)    
+        vr_list.append(vr)
+        vl_list.append(vl)
+        actual_vr_list.append(actual_vr)
+        actual_vl_list.append(actual_vl)
                
     plt.figure(figsize=(5, 5))
     CELL_COUNT = 3
@@ -987,17 +1017,30 @@ def follow_plan(q_0, waypoints, P_1, P_2, P_3, P_4):
     plt.xticks(np.arange(CELL_COUNT+1)*0.18)
     plt.yticks(np.arange(CELL_COUNT+1)*0.18)
     plt.grid(True)
+    plt.gca().set_axisbelow(True)
     plt.xlabel("X")
     plt.ylabel("Y")
     plt.title("LQR Trajectory Tracking")
     plt.legend(bbox_to_anchor=(1,1), loc=2)
+    
+    plt.figure()
+    plt.plot(vr_list, label="vr")
+    plt.plot(vl_list, label="vl")
+    plt.plot(actual_vr_list, label="actual vr")
+    plt.plot(actual_vl_list, label="actual vl")
+    plt.legend(bbox_to_anchor=(1,1), loc=2)
 
 
-# In[59]:
+# In[52]:
 
 LOG_LVL=1
 robot_q_0 = (0.08, 0.18, pi/2, 0.3)
 traj = [(0, WayPoint(0.09, 0.18, pi/2, 0.5)), (0.5, WayPoint(0.18, 0.27, 0, 0.35))]
 follow_plan(robot_q_0, traj, test_P_1, test_P_2, test_P_3, test_P_4)
 plt.show()
+
+
+# In[ ]:
+
+
 
