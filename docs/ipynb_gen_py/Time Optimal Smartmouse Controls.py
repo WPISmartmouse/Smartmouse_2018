@@ -897,27 +897,88 @@ def dlqr(A,B,Q,R):
      
     return K, X, eigVals
 
-def follow_plan(plan, W=0.0633):
-    dxdes = 1
-    dydes = 1
-    ddxdes = 1
-    ddydes = 1
-    thetades = atan2(dydes, dxdes)
+def follow_plan(robot_q_0, waypoints, P_1, P_2, P_3, P_4):
+    traj = TrajPlan()
+    traj.solve(waypoints)
     
-    # instanteneous Radius 
-    R_bar = (x_dot*y_ddot - y_dot*x_ddot)/pow((pow(x_dot,2) + pow(y_dot,2)), 3/2)
+    dt = 0.01
+    robot_x = robot_q_0[0]
+    robot_y = robot_q_0[1]
+    robot_theta = robot_q_0[2]
+    robot_vl = 0 #TODO initialize correctly
+    robot_vr = 0 #TODO initialize correctly
+    actual_robot_vl = 0 #TODO initialize correctly
+    actual_robot_vr = 0 #TODO initialize correctly
+    v_acc = 2 * dt
+    TRACK_WIDTH = 0.0633
+    T = np.arange(0, traj.get_t_f()+dt, dt)
+    x_des_list = []
+    y_des_list = []
+    robot_x_list = []
+    robot_y_list = []
+    for t in T:
+        x_bar = [1, t, pow(t,2), pow(t,3), pow(t,4), pow(t,5), 0, 0, 0, 0, 0, 0] @ traj.get_coeff()
+        dx_bar = [0, 1, 2*t, 3*pow(t,2), 4*pow(t,3), 5*pow(t,4), 0, 0, 0, 0, 0, 0] @ traj.get_coeff()
+        ddx_bar = [0, 0, 0, 0, 0, 0, 0, 0, 2, 6*t, 12*pow(t,2), 20*pow(t,3)] @ traj.get_coeff()
+        y_bar = [0, 0, 0, 0, 0, 0, 1, t, pow(t,2), pow(t,3), pow(t,4), pow(t,5)] @ traj.get_coeff()
+        dy_bar = [0, 0, 0, 0, 0, 0, 0, 1, 2*t, 3*pow(t,2), 4*pow(t,3), 5*pow(t,4)] @ traj.get_coeff()
+        ddy_bar = [0, 0, 0, 0, 0, 0, 0, 0, 2, 6*t, 12*pow(t,2), 20*pow(t,3)] @ traj.get_coeff()
+        theta_bar = atan2(dy_bar, dx_bar)
+      
+        # simple Dubin's Car forward kinematics
+        robot_x = robot_x - R * (sin((vr-vl)dt/W - robot_theta) + sin(robot_theta))
+        robot_y = robot_y - R * (cos((vr-vl)dt/W - robot_theta) - cos(robot_theta))
+        robot_theta = robot_theta + vl / (R - W/2) * dt
 
-    A = np.array([[0, 0, R_bar*(cos((vr_bar - vl_bar)*dt/W - theta_bar) - cos(theta_bar))],
-                  [0, 0, -R_bar*(sin((vr_bar - vl_bar)*dt/W - theta_bar) + sin(theta_bar))],
-                  [0, 0, 0]])
+        # control
+        # instanteneous Radius 
+        R_bar = (x_dot*y_ddot - y_dot*x_ddot)/pow((pow(x_dot,2) + pow(y_dot,2)), 3/2)
 
-    B = np.array([[R_bar*cos((vr_bar - vl_bar)*dt/W - theta_bar)*dt/W, -R_bar*cos((vr_bar - vl_bar)*dt/W - theta_bar)*dt/W],
-                  [-R_bar*sin((vr_bar - vl_bar)*dt/W - theta_bar)*dt/W, R_bar*sin((vr_bar - vl_bar)*dt/W - theta_bar)*dt/W],
-                  [dt/(R-W/2), 0]]);
-    
-    Q= np.eye(3);
-    R = np.eye(2);
+        # feed forward inputs
+        v_bar = np.sqrt(x_dot*x_dot + y_dot*y_dot)
+        vl_bar = v_bar/R_bar(R_bar-W/2)
+        vr_bar = v_bar/R_bar(R_bar+W/2)
 
-    K = dlqr(A, B, Q, R)
-    u = -K * (xvec - xdes_vec) + np.array([[vl],[vr]]);
+        A = np.array([[0, 0, R_bar*(cos((vr_bar - vl_bar)*dt/W - theta_bar) - cos(theta_bar))],
+                      [0, 0, -R_bar*(sin((vr_bar - vl_bar)*dt/W - theta_bar) + sin(theta_bar))],
+                      [0, 0, 0]])
+
+        B = np.array([[R_bar*cos((vr_bar - vl_bar)*dt/W - theta_bar)*dt/W, -R_bar*cos((vr_bar - vl_bar)*dt/W - theta_bar)*dt/W],
+                      [-R_bar*sin((vr_bar - vl_bar)*dt/W - theta_bar)*dt/W, R_bar*sin((vr_bar - vl_bar)*dt/W - theta_bar)*dt/W],
+                      [dt/(R-W/2), 0]]);
+
+        Q= np.eye(3);
+        R = np.eye(2);
+
+        K = dlqr(A, B, Q, R)
+        u = -K * (xvec - xdes_vec) + np.array([[vl],[vr]]);
+        
+        # simple acceleration model
+        if robot_v < actual_robot_vl:
+            actual_robot_vl = max(robot_vl, actual_robot_vl - v_acc)
+        elif robot_v > actual_robot_vl:
+            actual_robot_vl = min(robot_vl, actual_robot_vl + v_acc)
+        if robot_w < actual_robot_vr:
+            actual_robot_vr = max(robot_vr, actual_robot_vr - v_acc)
+        elif robot_w > actual_robot_vr:
+            actual_robot_vr = min(robot_vr, actual_robot_vr + v_acc)
+            
+        x_des_list.append(x_des)
+        y_des_list.append(y_des)
+        robot_x_list.append(robot_x)
+        robot_y_list.append(robot_y)    
+               
+    plt.figure(figsize=(5, 5))
+    W = 3
+    plt.scatter(x_des_list, y_des_list, marker='.', linewidth=0, c='black', label='desired traj')
+    plt.scatter(robot_x_list, robot_y_list, marker='.', linewidth=0, c=T, label='robot traj')
+    plt.xlim(0, W * 0.18)
+    plt.ylim(0, W * 0.18)
+    plt.xticks(np.arange(W+1)*0.18)
+    plt.yticks(np.arange(W+1)*0.18)
+    plt.grid(True)
+    plt.xlabel("X")
+    plt.ylabel("Y")
+    plt.title("LQR Trajectory Tracking")
+    plt.legend(bbox_to_anchor=(1,1), loc=2)
 
