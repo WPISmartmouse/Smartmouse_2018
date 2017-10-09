@@ -249,7 +249,7 @@ no_dynamics()
 # 
 # ***
 
-# In[20]:
+# In[8]:
 
 get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45:(0,0)}] (-.5,-1) rectangle (0.5,1);\n\\filldraw (0,0) circle (0.125);\n\n\\draw [->] (0,0) -- (0,1.5);\n\\draw [->] (0,0) -- (1.5,0);\n\\draw [->] (0,0) -- (1.5,1.5);\n\\draw (1.2, -0.2) node {$x$};\n\\draw (-0.2, 1.2) node {$y$};\n\\draw (1, 1.2) node {$v$};')
 
@@ -580,7 +580,7 @@ plot_traj(turn_right)
 # 
 # where $v_d$ is desired velocity, $\theta_d$ is the desired angle, $d$ is signed distance to the planned trajectory (to the right of the plan is positive), $v_d$ and $w_d$ are the desired velocities of the robot, and $P_1$, $P_2$, and $P_3$ are constants. Essentially what we're saying with the first equation is that when you're far off the trajectory you need to turn harder to get back on to it, but you also need to be aligned with it. The second equation says if you're lagging behind your plan speed up, or slow down if you're overshooting.
 
-# In[96]:
+# In[14]:
 
 from math import atan2, sqrt
 
@@ -661,7 +661,7 @@ def simulate(robot_q_0, waypoints, P_1, P_2, P_3, P_4):
     plt.legend(bbox_to_anchor=(1,1), loc=2)
 
 
-# In[97]:
+# In[15]:
 
 test_P_1=300
 test_P_2=50
@@ -673,7 +673,7 @@ simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3, test_P_4)
 plt.show()
 
 
-# In[98]:
+# In[16]:
 
 robot_q_0 = (0.11, 0.18, pi/2, 0.2, 5)
 traj = [(0, WayPoint(0.09, 0.18, pi/2, 0.2)), (1, WayPoint(0.18, 0.27, 0, 0.35))]
@@ -681,7 +681,7 @@ simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3, test_P_4)
 plt.show()
 
 
-# In[108]:
+# In[17]:
 
 robot_q_0 = (0.0, 0.25, 0, 0.2, 0)
 traj = [(0, WayPoint(0.0, 0.27, 0, 0.2)), (1.25, WayPoint(0.54, 0.27, 0, 0.2))]
@@ -689,7 +689,7 @@ simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3, test_P_4)
 plt.show()
 
 
-# In[109]:
+# In[18]:
 
 robot_q_0 = (0.45, 0.05, pi+0.25, 0.3, 0)
 traj = [(0, WayPoint(0.45, 0.09, pi, 0.4)), (0.75, WayPoint(0.27, 0.27, pi/2, 0.4))]
@@ -697,7 +697,7 @@ simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3, test_P_4)
 plt.show()
 
 
-# In[125]:
+# In[19]:
 
 robot_q_0 = (0.0, 0.25, 0, 0.2, -5)
 traj = [(0, WayPoint(0.0, 0.27, 0, 0.2)), (2, WayPoint(0.48, 0.36, pi/2, 0.2))]
@@ -762,7 +762,7 @@ plt.show()
 # 
 # We can plug in the coefficients of our polynomials and get values for $v$ and $R$. Then, we can plus these into the equations just above and get the feed forward wheel velocities. 
 # 
-# ### 3. Write the linearized dynamics around $\bar{x}$ as $\dot{\vec{x}} \approx A\delta_x + B\delta_u$, where $\delta_x = (\bar{x} - \vec{x})$ and $\delta_u = (\bar{u} - \vec{u})$
+# ### 3. Write the linearized dynamics around $\bar{x}$ as $\dot{\vec{x}} \approx A\delta_x + B\delta_u$, where $\delta_x = (\vec{x} - \bar{x})$ and $\delta_u = (\vec{u} - \bar{u})$
 # 
 # To do this, we need the partial derivitive matrixes $A$ and $B$.
 # 
@@ -778,8 +778,8 @@ plt.show()
 #          \frac{\partial f_3}{\partial \theta}\big|_{\bar{x}\bar{u}} \\
 #        \end{bmatrix}
 #      = \begin{bmatrix}
-#         0 & 0 & R\bigg(\cos\Big(\frac{v_r-v_l}{W}\Delta t - \theta\Big) - \cos(\theta)\bigg) \\ 
-#         0 & 0 & -R\bigg(\sin\Big(\frac{v_r-v_l}{W}\Delta t - \theta\Big) + \sin(\theta)\bigg) \\ 
+#         0 & 0 & R\bigg(\cos\Big(\frac{\bar{v}_r-\bar{v}_l}{W}\Delta t - \bar{\theta}\Big) - \cos(\bar{\theta})\bigg) \\ 
+#         0 & 0 & -R\bigg(\sin\Big(\frac{\bar{v}_r-\bar{v}_l}{W}\Delta t - \bar{\theta}\Big) + \sin(\bar{\theta})\bigg) \\ 
 #         0 & 0 & 0 \\
 #        \end{bmatrix}
 # $$
@@ -793,10 +793,10 @@ plt.show()
 #          \frac{\partial f_3}{\partial v_r}\big|_{\bar{x}\bar{u}} \\
 #        \end{bmatrix}
 #      = \begin{bmatrix}
-#           R\cos\Big(\frac{(\bar{v_r}-\bar{v_l})\Delta t}{W}-\theta\Big)\frac{\Delta t}{W} &
-#           -R\cos\Big(\frac{(\bar{v_r}-\bar{v_l})\Delta t}{W}-\theta\Big)\frac{\Delta t}{W} \\
-#           -R\sin\Big(\frac{(\bar{v_r}-\bar{v_l})\Delta t}{W}-\theta\Big)\frac{\Delta t}{W} &
-#           R\sin\Big(\frac{(\bar{v_r}-\bar{v_l})\Delta t}{W}-\theta\Big)\frac{\Delta t}{W} \\
+#           R\cos\Big(\frac{(\bar{v}_r-\bar{v}_l)\Delta t}{W}-\bar{\theta}\Big)\frac{\Delta t}{W} &
+#           -R\cos\Big(\frac{(\bar{v}_r-\bar{v}_l)\Delta t}{W}-\bar{\theta}\Big)\frac{\Delta t}{W} \\
+#           -R\sin\Big(\frac{(\bar{v}_r-\bar{v}_l)\Delta t}{W}-\bar{\theta}\Big)\frac{\Delta t}{W} &
+#           R\sin\Big(\frac{(\bar{v}_r-\bar{v}_l)\Delta t}{W}-\bar{\theta}\Big)\frac{\Delta t}{W} \\
 #           \frac{\Delta t}{R-\frac{W}{2}} &
 #           0 \\
 #        \end{bmatrix}
@@ -859,11 +859,19 @@ plt.show()
 # These need to be tuned on the simulation or real system, but the identity matrices $I$ are good starting points.
 # 
 # ### 6. Solve for $K$ given $LQR(A, B, Q, R)$
-# maybe we compute K once instead of at every time step
-# could be consistent within one motion primitive
-# ### 7. Apply our new controller of the form $u = -Kx$
+# 
+# We want to minimize the quadratice cost function $J$, which is defined as follows.
+# 
+# $$ J = \sum_0^N(\vec{x}_t - \bar{x}_t)^TQ(\vec{x}_t - \bar{x}_t) + \sum_0^N(\vec{u}_t - \bar{u}_t)^TR(\vec{u}_t - \bar{u}_t) $$
+# 
+# We can do this with least squares, or dynamics programming. DP is more efficient O(Nn^3). N is some finite horizon, and n is the number of state dimensions (3 for us).
+# 
+# maybe we compute K once instead of at every time step. could be consistent within one motion primitive.
+# 
+# ### 7. Apply our new controller of the form $\vec{u} = -K(\vec{x} - \bar{x}) + \bar{u}$
+# 
 
-# In[19]:
+# In[21]:
 
 from math import atan2
 import scipy.linalg
@@ -889,27 +897,27 @@ def dlqr(A,B,Q,R):
      
     return K, X, eigVals
 
-def follow_plan(plan):
+def follow_plan(plan, W=0.0633):
     dxdes = 1
     dydes = 1
     ddxdes = 1
     ddydes = 1
     thetades = atan2(dydes, dxdes)
+    
+    # instanteneous Radius 
+    R_bar = (x_dot*y_ddot - y_dot*x_ddot)/pow((pow(x_dot,2) + pow(y_dot,2)), 3/2)
 
-    vf = dxdes*cos(thetades) + dydes*sin(thetades)
-    dthetades = 1/vf*(ddydes*cos(thetades) - ddxdes*sin(thetades))
-    wf = dthetades
-
-    A = np.array([[0, 0, -vf*sin(thetades)],
-                  [0, 0, vf*cos(thetades)],
+    A = np.array([[0, 0, R_bar*(cos((vr_bar - vl_bar)*dt/W - theta_bar) - cos(theta_bar))],
+                  [0, 0, -R_bar*(sin((vr_bar - vl_bar)*dt/W - theta_bar) + sin(theta_bar))],
                   [0, 0, 0]])
 
-    B = np.array([[cos(thetades), 0],
-                  [sin(thetades), 0],
-                  [0, 1]]);
+    B = np.array([[R_bar*cos((vr_bar - vl_bar)*dt/W - theta_bar)*dt/W, -R_bar*cos((vr_bar - vl_bar)*dt/W - theta_bar)*dt/W],
+                  [-R_bar*sin((vr_bar - vl_bar)*dt/W - theta_bar)*dt/W, R_bar*sin((vr_bar - vl_bar)*dt/W - theta_bar)*dt/W],
+                  [dt/(R-W/2), 0]]);
+    
     Q= np.eye(3);
     R = np.eye(2);
 
     K = dlqr(A, B, Q, R)
-    u = -K * (xvec - xdes_vec) + np.array([[vf],[wf]]);
+    u = -K * (xvec - xdes_vec) + np.array([[vl],[vr]]);
 
