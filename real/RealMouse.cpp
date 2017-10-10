@@ -114,7 +114,7 @@ void RealMouse::run(double dt_s) {
   range_data.front = ir_converter.adcToMeters(analogRead(FRONT_ANALOG_PIN));
 
   std::tie(abstract_left_force, abstract_right_force) = kinematic_controller.run(dt_s, left_angle_rad,
-                                                                                 right_angle_rad, 0, 0, range_data);
+                                                                                 right_angle_rad, range_data);
 
   // THIS IS SUPER IMPORTANT!
   // update row/col information
