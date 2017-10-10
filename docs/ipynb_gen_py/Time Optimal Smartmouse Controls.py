@@ -9,12 +9,12 @@
 
 # ## Going Straight
 
-# In[31]:
+# In[1]:
 
 get_ipython().run_line_magic('load_ext', 'tikzmagic')
 
 
-# In[32]:
+# In[2]:
 
 get_ipython().run_cell_magic('tikz', '-s 400,400', '\\draw[->] (0,0) -- (10,0);\n\\draw[->] (0,0) -- (0,5);\n\n\\draw[line width=1] (0,0.5) -- (2.5,3);\n\\draw[line width=1] (2.5,3) -- (5.5,3);\n\\draw[line width=1] (5.5,3) -- (8,0.5);\n\\draw[dashed] (0,0.5) -- (10,0.5);\n\\draw[dashed] (0,3) -- (10,3);\n\\draw[dashed] (2.5,0) -- (2.5,5);\n\\draw[dashed] (5.5,0) -- (5.5,5);\n\\draw[dashed] (8,0) -- (8,5);\n\n\\draw (-0.5, 0.5) node {$V_{f}$};\n\\draw (-0.5, 3) node {$V_{max}$};\n\\draw (2.5, -0.5) node {$t_b$};\n\\draw (5.5, -0.5) node {$t_f-t_b$};\n\\draw (8, -0.5) node {$t_f$};')
 
@@ -34,7 +34,7 @@ get_ipython().run_cell_magic('tikz', '-s 400,400', '\\draw[->] (0,0) -- (10,0);\
 
 # ## Code that proves it
 
-# In[33]:
+# In[3]:
 
 # dependencies and global setup
 import numpy as np
@@ -60,7 +60,7 @@ def log(*args):
         print(*args)
 
 
-# In[34]:
+# In[4]:
 
 def profile(V0, Vf, Vmax, d, A, buffer=3e-3):
     v = V0
@@ -156,7 +156,7 @@ plt.show()
 # 
 # It can be shown that the matrix on the left is invertable, so long as $t_f-t_0 > 0$. So we can invert and solve this equation and get all the $a$ coefficients. We can then use this polynomial to generate the $q(t)$ and $\dot{q}(t)$ -- our trajectory.
 
-# In[35]:
+# In[5]:
 
 def simple_traj_solve(q_0, q_f, q_dot_0, q_dot_t_f, t_f):
     # Example: you are a point in space (one dimension) go from rest at the origin to at rest at (0.18, 0, 0) in 1 second
@@ -179,7 +179,7 @@ simple_traj_coeff = simple_traj_solve(*simple_traj_info)
 
 # Here you can see that the resulting coeffictions are $a_0=0$, $a_1=0$, $a_2=0.54$, $a_0=-0.36$. Intuitively, this says that we're going to have positive acceleration, but our acceleration is going to slow down over time. Let's graph it!
 
-# In[36]:
+# In[6]:
 
 def simple_traj_plot(coeff, t_f):
     dt = 0.01
@@ -198,7 +198,7 @@ simple_traj_plot(simple_traj_coeff, simple_traj_info[-1])
 # 
 # Let's try another example, now with our full state space of $[x, y, \theta]$.
 
-# In[37]:
+# In[7]:
 
 def no_dynamics():
     # In this example, we go from (0.18, 0.09, 0) to (0.27,0.18, -1.5707). Our starting and ending velocities are zero
@@ -249,7 +249,7 @@ no_dynamics()
 # 
 # ***
 
-# In[38]:
+# In[8]:
 
 get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45:(0,0)}] (-.5,-1) rectangle (0.5,1);\n\\filldraw (0,0) circle (0.125);\n\n\\draw [->] (0,0) -- (0,1.5);\n\\draw [->] (0,0) -- (1.5,0);\n\\draw [->] (0,0) -- (1.5,1.5);\n\\draw (1.2, -0.2) node {$x$};\n\\draw (-0.2, 1.2) node {$y$};\n\\draw (1, 1.2) node {$v$};')
 
@@ -376,7 +376,7 @@ get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45
 # \end{bmatrix}
 # \end{equation}
 
-# In[39]:
+# In[9]:
 
 # Let's solve this in code like we did before
 def plot_vars(traj_plan):
@@ -451,7 +451,7 @@ def plot_traj_pts(xs, ys, T, waypoints):
     plt.show()
 
 
-# In[40]:
+# In[10]:
 
 from math import sin, cos, pi
 from collections import namedtuple
@@ -543,7 +543,7 @@ class TrajPlan:
 
 # ## Example Plots
 
-# In[53]:
+# In[11]:
 
 # forward 1 cell, start from rest, end at 40cm/s, do it in .5 seconds
 LOG_LVL = 5
@@ -553,7 +553,7 @@ plot_vars(fwd_1)
 plot_traj(fwd_1)
 
 
-# In[42]:
+# In[12]:
 
 # continue by turning right 90 degrees
 LOG_LVL = 1
@@ -563,7 +563,7 @@ plot_vars(turn_right)
 plot_traj(turn_right)
 
 
-# In[43]:
+# In[13]:
 
 # 3 waypoints!
 LOG_LVL = 1
@@ -577,7 +577,7 @@ plot_traj(turn_right)
 # 
 # Now let's find one that really sucks!
 
-# In[44]:
+# In[14]:
 
 # 4 waypoints!
 LOG_LVL = 1
@@ -600,76 +600,76 @@ plot_traj(turn_right)
 # 
 # where $v_d$ is desired velocity, $\theta_d$ is the desired angle, $d$ is signed distance to the planned trajectory (to the right of the plan is positive), $v_d$ and $w_d$ are the desired velocities of the robot, and $P_1$, $P_2$, and $P_3$ are constants. Essentially what we're saying with the first equation is that when you're far off the trajectory you need to turn harder to get back on to it, but you also need to be aligned with it. The second equation says if you're lagging behind your plan speed up, or slow down if you're overshooting.
 
-# In[45]:
+# In[31]:
 
 from math import atan2, sqrt
 
 LOG_LVL = 5
-def simulate(robot_q_0, waypoints, P_1, P_2, P_3, P_4):
+def simulate(q_0, waypoints, P_1, P_2, P_3, P_4):
     traj = TrajPlan()
     traj.solve(waypoints)
     
     dt = 0.01
-    robot_x = robot_q_0[0]
-    robot_y = robot_q_0[1]
-    robot_theta = robot_q_0[2]
-    robot_v = robot_q_0[3]
-    robot_w = robot_q_0[4]
-    actual_robot_v = robot_q_0[3]
-    actual_robot_w = robot_q_0[4]
+    x = q_0[0]
+    y = q_0[1]
+    theta = q_0[2]
+    v = q_0[3]
+    w = q_0[4]
+    actual_v = q_0[3]
+    actual_w = q_0[4]
     v_acc = 3 * dt
     TRACK_WIDTH = 0.0633
     w_acc = v_acc / (TRACK_WIDTH/2)
     T = np.arange(0, traj.get_t_f()+dt, dt)
-    x_des_list = []
-    y_des_list = []
-    robot_x_list = []
-    robot_y_list = []
+    x_bar_list = []
+    y_bar_list = []
+    x_list = []
+    y_list = []
     for t in T:
-        x_des = [1, t, pow(t,2), pow(t,3), pow(t,4), pow(t,5), 0, 0, 0, 0, 0, 0] @ traj.get_coeff()
-        dx_des = [0, 1, 2*t, 3*pow(t,2), 4*pow(t,3), 5*pow(t,4), 0, 0, 0, 0, 0, 0] @ traj.get_coeff()
-        ddx_des = [0, 0, 0, 0, 0, 0, 0, 0, 2, 6*t, 12*pow(t,2), 20*pow(t,3)] @ traj.get_coeff()
-        y_des = [0, 0, 0, 0, 0, 0, 1, t, pow(t,2), pow(t,3), pow(t,4), pow(t,5)] @ traj.get_coeff()
-        dy_des = [0, 0, 0, 0, 0, 0, 0, 1, 2*t, 3*pow(t,2), 4*pow(t,3), 5*pow(t,4)] @ traj.get_coeff()
-        ddy_des = [0, 0, 0, 0, 0, 0, 0, 0, 2, 6*t, 12*pow(t,2), 20*pow(t,3)] @ traj.get_coeff()
-        theta_des = atan2(dy_des, dx_des)
-        v_des = sqrt(dx_des*dx_des + dy_des*dy_des)
-        w_des = 1/v_des * (ddy_des*cos(theta_des) - ddx_des*sin(theta_des));
+        x_bar = [1, t, pow(t,2), pow(t,3), pow(t,4), pow(t,5), 0, 0, 0, 0, 0, 0] @ traj.get_coeff()
+        dx_bar = [0, 1, 2*t, 3*pow(t,2), 4*pow(t,3), 5*pow(t,4), 0, 0, 0, 0, 0, 0] @ traj.get_coeff()
+        ddx_bar = [0, 0, 0, 0, 0, 0, 0, 0, 2, 6*t, 12*pow(t,2), 20*pow(t,3)] @ traj.get_coeff()
+        y_bar = [0, 0, 0, 0, 0, 0, 1, t, pow(t,2), pow(t,3), pow(t,4), pow(t,5)] @ traj.get_coeff()
+        dy_bar = [0, 0, 0, 0, 0, 0, 0, 1, 2*t, 3*pow(t,2), 4*pow(t,3), 5*pow(t,4)] @ traj.get_coeff()
+        ddy_bar = [0, 0, 0, 0, 0, 0, 0, 0, 2, 6*t, 12*pow(t,2), 20*pow(t,3)] @ traj.get_coeff()
+        theta_bar = atan2(dy_bar, dx_bar)
+        v_bar = sqrt(dx_bar*dx_bar + dy_bar*dy_bar)
+        w_bar = 1/v_bar * (ddy_bar*cos(theta_bar) - ddx_bar*sin(theta_bar));
     
         # simple Dubin's Car forward kinematics
-        robot_x += cos(robot_theta) * actual_robot_v * dt
-        robot_y += sin(robot_theta) * actual_robot_v * dt
-        robot_theta += actual_robot_w * dt
+        x += cos(theta) * actual_v * dt
+        y += sin(theta) * actual_v * dt
+        theta += actual_w * dt
         
         # control
-        euclidian_error = np.sqrt(pow(x_des - robot_x, 2) + pow(y_des - robot_y, 2))
-        transformed_x = (robot_x - x_des) * cos(-theta_des) + (robot_y - y_des) * -sin(-theta_des)
-        transformed_y = (robot_x - x_des) * sin(-theta_des) + (robot_y - y_des) * cos(-theta_des)
+        euclidian_error = np.sqrt(pow(x_bar - x, 2) + pow(y_bar - y, 2))
+        transformed_x = (x - x_bar) * cos(-theta_bar) + (y - y_bar) * -sin(-theta_bar)
+        transformed_y = (x - x_bar) * sin(-theta_bar) + (y - y_bar) * cos(-theta_bar)
         right_of_traj = transformed_y < 0
         signed_euclidian_error = euclidian_error if right_of_traj else -euclidian_error
         lag_error = -transformed_x
-        robot_w = w_des + signed_euclidian_error * P_1 + (theta_des - robot_theta) * P_2
-        robot_v = v_des + lag_error * P_3
+        w = w_bar + signed_euclidian_error * P_1 + (theta_bar - theta) * P_2
+        v = v_bar + lag_error * P_3
         
         # simple acceleration model
-        if robot_v < actual_robot_v:
-            actual_robot_v = max(robot_v, actual_robot_v - v_acc)
-        elif robot_v > actual_robot_v:
-            actual_robot_v = min(robot_v, actual_robot_v + v_acc)
-        if robot_w < actual_robot_w:
-            actual_robot_w = max(robot_w, actual_robot_w - w_acc)
-        elif robot_w > actual_robot_w:
-            actual_robot_w = min(robot_w, actual_robot_w + w_acc)
+        if v < actual_v:
+            actual_v = max(v, actual_v - v_acc)
+        elif v > actual_v:
+            actual_v = min(v, actual_v + v_acc)
+        if w < actual_w:
+            actual_w = max(w, actual_w - w_acc)
+        elif w > actual_w:
+            actual_w = min(w, actual_w + w_acc)
             
-        x_des_list.append(x_des)
-        y_des_list.append(y_des)
-        robot_x_list.append(robot_x)
-        robot_y_list.append(robot_y)
+        x_bar_list.append(x_bar)
+        y_bar_list.append(y_bar)
+        x_list.append(x)
+        y_list.append(y)
             
     plt.figure(figsize=(5, 5))
     W = 3
-    plt.scatter(x_des_list, y_des_list, marker='.', linewidth=0, c='black', label='desired traj')
-    plt.scatter(robot_x_list, robot_y_list, marker='.', linewidth=0, c=T, label='robot traj')
+    plt.scatter(x_bar_list, y_bar_list, marker='.', linewidth=0, c='black', label='desired traj')
+    plt.scatter(x_list, y_list, marker='.', linewidth=0, c=T, label='robot traj')
     plt.xlim(0, W * 0.18)
     plt.ylim(0, W * 0.18)
     plt.xticks(np.arange(2*W+1)*0.09)
@@ -682,7 +682,7 @@ def simulate(robot_q_0, waypoints, P_1, P_2, P_3, P_4):
     plt.legend(bbox_to_anchor=(1,1), loc=2)
 
 
-# In[46]:
+# In[32]:
 
 test_P_1=300
 test_P_2=50
@@ -694,7 +694,7 @@ simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3, test_P_4)
 plt.show()
 
 
-# In[47]:
+# In[33]:
 
 robot_q_0 = (0.11, 0.18, pi/2, 0.2, 5)
 traj = [(0, WayPoint(0.09, 0.18, pi/2, 0.2)), (1, WayPoint(0.18, 0.27, 0, 0.35))]
@@ -702,7 +702,7 @@ simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3, test_P_4)
 plt.show()
 
 
-# In[48]:
+# In[34]:
 
 robot_q_0 = (0.0, 0.25, 0, 0.2, 0)
 traj = [(0, WayPoint(0.0, 0.27, 0, 0.2)), (1.25, WayPoint(0.54, 0.27, 0, 0.2))]
@@ -710,7 +710,7 @@ simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3, test_P_4)
 plt.show()
 
 
-# In[49]:
+# In[35]:
 
 robot_q_0 = (0.45, 0.05, pi+0.25, 0.3, 0)
 traj = [(0, WayPoint(0.45, 0.09, pi, 0.4)), (0.75, WayPoint(0.27, 0.27, pi/2, 0.4))]
@@ -718,7 +718,7 @@ simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3, test_P_4)
 plt.show()
 
 
-# In[50]:
+# In[36]:
 
 robot_q_0 = (0.0, 0.25, 0, 0.2, -5)
 traj = [(0, WayPoint(0.0, 0.27, 0, 0.2)), (2, WayPoint(0.48, 0.36, pi/2, 0.2))]
@@ -892,7 +892,7 @@ plt.show()
 # ### 7. Apply our new controller of the form $\vec{u} = -K(\vec{x} - \bar{x}) + \bar{u}$
 # 
 
-# In[51]:
+# In[24]:
 
 from math import atan2
 import scipy.linalg
@@ -1031,7 +1031,7 @@ def follow_plan(q_0, waypoints, P_1, P_2, P_3, P_4):
     plt.legend(bbox_to_anchor=(1,1), loc=2)
 
 
-# In[52]:
+# In[25]:
 
 LOG_LVL=1
 robot_q_0 = (0.08, 0.18, pi/2, 0.3)
