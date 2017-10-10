@@ -113,44 +113,39 @@ TEST(RayTracingTest, DistanceToWallTest) {
     ignition::math::Line2d wall({1, -0.5}, {1, 0.5});
     ignition::math::Vector2d sensor_pt(0, 0);
     ignition::math::Vector2d sensor_direction(1, 0);
-    double dist = 0;
-    bool intersects = RayTracing::distance_to_wall(wall, sensor_pt, sensor_direction, &dist);
+    auto dist = RayTracing::distance_to_wall(wall, sensor_pt, sensor_direction);
 
-    EXPECT_TRUE(intersects);
-    EXPECT_EQ(dist, 1);
+    EXPECT_TRUE(dist);
+    EXPECT_EQ(*dist, 1);
   }
 
   {
     ignition::math::Line2d wall({1, -0.5}, {1, 0.5});
     ignition::math::Vector2d sensor_pt(0, 0);
     ignition::math::Vector2d sensor_direction(-1, 0);
-    double dist = 123;
-    bool intersects = RayTracing::distance_to_wall(wall, sensor_pt, sensor_direction, &dist);
+    auto dist = RayTracing::distance_to_wall(wall, sensor_pt, sensor_direction);
 
-    EXPECT_FALSE(intersects);
-    EXPECT_EQ(dist, 123);
+    EXPECT_FALSE(dist);
   }
 
   {
     ignition::math::Line2d wall({0, 1}, {2, 3});
     ignition::math::Vector2d sensor_pt(2, 1);
     ignition::math::Vector2d sensor_direction(-1, 1);
-    double dist;
-    bool intersects = RayTracing::distance_to_wall(wall, sensor_pt, sensor_direction, &dist);
+    std::experimental::optional<double> dist = RayTracing::distance_to_wall(wall, sensor_pt, sensor_direction);
 
-    EXPECT_TRUE(intersects);
-    EXPECT_NEAR(dist, 1.414213, 1e-6);
+    ASSERT_TRUE(dist);
+    EXPECT_NEAR(*dist, 1.414213, 1e-6);
   }
 
   {
     ignition::math::Line2d wall({0, 0}, {0, 0.18});
     ignition::math::Vector2d sensor_pt(0.09, 0.09);
     ignition::math::Vector2d sensor_direction(-1, 0);
-    double dist;
-    bool intersects = RayTracing::distance_to_wall(wall, sensor_pt, sensor_direction, &dist);
+    auto dist = RayTracing::distance_to_wall(wall, sensor_pt, sensor_direction);
 
-    EXPECT_TRUE(intersects);
-    EXPECT_EQ(dist, 0.09);
+    ASSERT_TRUE(dist);
+    EXPECT_EQ(*dist, 0.09);
   }
 }
 
