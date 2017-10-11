@@ -376,7 +376,7 @@ get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45
 # \end{bmatrix}
 # \end{equation}
 
-# In[56]:
+# In[9]:
 
 # Let's solve this in code like we did before
 def plot_vars(traj_plan):
@@ -451,7 +451,7 @@ def plot_traj_pts(xs, ys, T, waypoints):
     plt.show()
 
 
-# In[57]:
+# In[10]:
 
 from math import sin, cos, pi
 from collections import namedtuple
@@ -543,7 +543,7 @@ class TrajPlan:
 
 # ## Example Plots
 
-# In[58]:
+# In[11]:
 
 # forward 1 cell, start from rest, end at 40cm/s, do it in .5 seconds
 LOG_LVL = 5
@@ -553,7 +553,7 @@ plot_vars(fwd_1)
 plot_traj(fwd_1)
 
 
-# In[59]:
+# In[12]:
 
 # continue by turning right 90 degrees
 LOG_LVL = 1
@@ -563,7 +563,7 @@ plot_vars(turn_right)
 plot_traj(turn_right)
 
 
-# In[60]:
+# In[13]:
 
 # 3 waypoints!
 LOG_LVL = 1
@@ -577,7 +577,7 @@ plot_traj(turn_right)
 # 
 # Now let's find one that really sucks!
 
-# In[61]:
+# In[14]:
 
 # 4 waypoints!
 LOG_LVL = 1
@@ -600,12 +600,12 @@ plot_traj(turn_right)
 # 
 # where $v_d$ is desired velocity, $\theta_d$ is the desired angle, $d$ is signed distance to the planned trajectory (to the right of the plan is positive), $v_d$ and $w_d$ are the desired velocities of the robot, and $P_1$, $P_2$, and $P_3$ are constants. Essentially what we're saying with the first equation is that when you're far off the trajectory you need to turn harder to get back on to it, but you also need to be aligned with it. The second equation says if you're lagging behind your plan speed up, or slow down if you're overshooting.
 
-# In[45]:
+# In[117]:
 
 from math import atan2, sqrt
 
 LOG_LVL = 5
-def simulate(q_0, waypoints, P_1, P_2, P_3, P_4):
+def simulate(q_0, waypoints, P_1, P_2, P_3, A=3):
     traj = TrajPlan()
     traj.solve(waypoints)
     
@@ -617,7 +617,7 @@ def simulate(q_0, waypoints, P_1, P_2, P_3, P_4):
     w = q_0[4]
     actual_v = q_0[3]
     actual_w = q_0[4]
-    v_acc = 3 * dt
+    v_acc = A * dt
     TRACK_WIDTH = 0.0633
     w_acc = v_acc / (TRACK_WIDTH/2)
     T = np.arange(0, traj.get_t_f()+dt, dt)
@@ -682,47 +682,63 @@ def simulate(q_0, waypoints, P_1, P_2, P_3, P_4):
     plt.legend(bbox_to_anchor=(1,1), loc=2)
 
 
-# In[46]:
+# In[118]:
 
 test_P_1=300
 test_P_2=50
 test_P_3=10
-test_P_4=10
 robot_q_0 = (0.08, 0.18, pi/2, 0.3, 0)
 traj = [(0, WayPoint(0.09, 0.18, pi/2, 0.5)), (0.5, WayPoint(0.18, 0.27, 0, 0.35)), (1, WayPoint(0.27, 0.36, pi/2, 0))]
-simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3, test_P_4)
+simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3)
 plt.show()
 
 
-# In[17]:
+# In[119]:
 
 robot_q_0 = (0.11, 0.18, pi/2, 0.2, 5)
 traj = [(0, WayPoint(0.09, 0.18, pi/2, 0.2)), (1, WayPoint(0.18, 0.27, 0, 0.35))]
-simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3, test_P_4)
+simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3)
 plt.show()
 
 
-# In[18]:
+# In[120]:
 
 robot_q_0 = (0.0, 0.25, 0, 0.2, 0)
 traj = [(0, WayPoint(0.0, 0.27, 0, 0.2)), (1.25, WayPoint(0.54, 0.27, 0, 0.2))]
-simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3, test_P_4)
+simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3)
 plt.show()
 
 
-# In[19]:
+# In[121]:
 
 robot_q_0 = (0.45, 0.05, pi+0.25, 0.3, 0)
 traj = [(0, WayPoint(0.45, 0.09, pi, 0.4)), (0.75, WayPoint(0.27, 0.27, pi/2, 0.4))]
-simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3, test_P_4)
+simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3)
 plt.show()
 
 
-# In[20]:
+# In[122]:
 
 robot_q_0 = (0.0, 0.25, 0, 0.2, -5)
 traj = [(0, WayPoint(0.0, 0.27, 0, 0.2)), (2, WayPoint(0.48, 0.36, pi/2, 0.2))]
-simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3, test_P_4)
+simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3)
+plt.show()
+
+
+# In[126]:
+
+robot_q_0 = (0.25, 0.28, -pi*4/7, 0.5, 0)
+traj = [(0, WayPoint(0.27, 0.27, -pi/2, 0.8)), (0.35, WayPoint(0.45, 0.09, 0, 0.8))]
+simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3, A=6)
+plt.show()
+
+
+# In[163]:
+
+# no initial error
+robot_q_0 = (0.11, 0.18, pi/2, 0.8, 0)
+traj = [(0, WayPoint(0.09, 0.18, pi/2, 0.8)), (0.25, WayPoint(0.18, 0.27, 0, 0.6)), (.5, WayPoint(0.27, 0.36, pi/2, 0.4))]
+simulate(robot_q_0, traj, 10, 1000, 6, A=5)
 plt.show()
 
 
@@ -892,7 +908,7 @@ plt.show()
 # ### 7. Apply our new controller of the form $\vec{u} = -K(\vec{x} - \bar{x}) + \bar{u}$
 # 
 
-# In[21]:
+# In[32]:
 
 from math import atan2
 import scipy.linalg
@@ -981,8 +997,8 @@ def follow_plan(q_0, waypoints, P_1, P_2, P_3, P_4):
 
         K, P, eigs = dlqr(A, B, Q, R)
         eigs = np.linalg.eig(A - B*K)
-        info("eigs", eigs[0])
-        debug("K", K)
+#         info("eigs", eigs[0])
+#         debug("K", K)
         x_vec = np.array([[x],[y],[theta]])
         x_bar_vec = np.array([[x_bar],[y_bar],[theta_bar]])
         u = -K * (x_vec - x_bar_vec) + np.array([[vl_bar],[vr_bar]]);
@@ -1011,7 +1027,7 @@ def follow_plan(q_0, waypoints, P_1, P_2, P_3, P_4):
     plt.figure(figsize=(5, 5))
     CELL_COUNT = 3
     plt.scatter(x_bar_list, y_bar_list, marker='.', linewidth=0, c='black', label='desired traj')
-    plt.scatter(x_list, y_list, marker='.', linewidth=0, c=T, label='robot traj')
+    plt.scatter(x_list, y_list, marker='.', linewidth=0, label='robot traj')
     plt.xlim(0, CELL_COUNT * 0.18)
     plt.ylim(0, CELL_COUNT * 0.18)
     plt.xticks(np.arange(CELL_COUNT+1)*0.18)
@@ -1031,7 +1047,7 @@ def follow_plan(q_0, waypoints, P_1, P_2, P_3, P_4):
     plt.legend(bbox_to_anchor=(1,1), loc=2)
 
 
-# In[22]:
+# In[33]:
 
 LOG_LVL=1
 robot_q_0 = (0.08, 0.18, pi/2, 0.3)
@@ -1040,7 +1056,11 @@ follow_plan(robot_q_0, traj, test_P_1, test_P_2, test_P_3, test_P_4)
 plt.show()
 
 
-# In[ ]:
+# In[34]:
 
-
+LOG_LVL=1
+robot_q_0 = (0.07, 0.18, pi/2, 0.2)
+traj = [(0, WayPoint(0.09, 0.18, pi/2, 0.2)), (0.5, WayPoint(0.09, 0.36, pi/2, 0.2))]
+follow_plan(robot_q_0, traj, test_P_1, test_P_2, test_P_3, test_P_4)
+plt.show()
 
