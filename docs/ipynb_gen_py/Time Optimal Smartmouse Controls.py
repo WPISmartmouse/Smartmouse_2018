@@ -376,7 +376,7 @@ get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45
 # \end{bmatrix}
 # \end{equation}
 
-# In[9]:
+# In[56]:
 
 # Let's solve this in code like we did before
 def plot_vars(traj_plan):
@@ -420,7 +420,7 @@ def plot_vars(traj_plan):
     plt.show()
     
 def plot_traj(traj_plan):
-    dt = 0.01
+    dt = 0.03
     T = np.arange(0, traj_plan.get_t_f()+dt, dt)
     xts = np.array([[1, t, pow(t,2), pow(t,3), pow(t,4), pow(t,5), 0, 0, 0, 0, 0, 0] for t in T])
     yts = np.array([[0, 0, 0, 0, 0, 0, 1, t, pow(t,2), pow(t,3), pow(t,4), pow(t,5)] for t in T])
@@ -433,7 +433,7 @@ def plot_traj_pts(xs, ys, T, waypoints):
     plt.title("Trajectory")
     plt.xlabel("X")
     plt.ylabel("Y")
-    W = 3
+    W = 2
     plt.xlim(0, W * 0.18)
     plt.ylim(0, W * 0.18)
     plt.xticks(np.arange(2*W+1)*0.09)
@@ -441,17 +441,17 @@ def plot_traj_pts(xs, ys, T, waypoints):
     plt.grid(True)    
     plt.gca().set_axisbelow(True)
     
-    plt.scatter(xs, ys, marker='.', linewidth=0, c=T)
-    
     for t, pt in waypoints:
         arrow_dx = cos(pt.theta) * (pt.v) * 0.1
         arrow_dy = sin(pt.theta) * (pt.v) * 0.1
-        plt.arrow(pt.x, pt.y, arrow_dx, arrow_dy, head_width=0.01, head_length=0.015, width=0.005, fc='k', ec='k')
+        plt.arrow(pt.x, pt.y, arrow_dx, arrow_dy, head_width=0.005, head_length=0.005, width=0.001, fc='k', ec='k')    
+    
+    plt.scatter(xs, ys, marker='.', linewidth=0)
 
     plt.show()
 
 
-# In[10]:
+# In[57]:
 
 from math import sin, cos, pi
 from collections import namedtuple
@@ -543,17 +543,17 @@ class TrajPlan:
 
 # ## Example Plots
 
-# In[11]:
+# In[58]:
 
 # forward 1 cell, start from rest, end at 40cm/s, do it in .5 seconds
 LOG_LVL = 5
 fwd_1 = TrajPlan()
-fwd_1.solve([(0, WayPoint(0.09, 0.09, pi/2, 0)), (0.5, WayPoint(0.09, 0.27, pi/2, 0.4))])
+fwd_1.solve([(0, WayPoint(0.09, 0.09, pi/2, 0)), (0.5, WayPoint(0.09, 0.27, pi/2, 0.6))])
 plot_vars(fwd_1)
 plot_traj(fwd_1)
 
 
-# In[12]:
+# In[59]:
 
 # continue by turning right 90 degrees
 LOG_LVL = 1
@@ -563,12 +563,12 @@ plot_vars(turn_right)
 plot_traj(turn_right)
 
 
-# In[13]:
+# In[60]:
 
 # 3 waypoints!
 LOG_LVL = 1
 turn_right = TrajPlan()
-turn_right.solve([(0, WayPoint(0.09, 0.18, pi/2, 0.0)), (0.5, WayPoint(0.18, 0.27, 0, 0.35)), (1, WayPoint(0.27, 0.36, pi/2, 0))])
+turn_right.solve([(0, WayPoint(0.09, 0.09, pi/2, 0.0)), (0.5, WayPoint(0.18, 0.18, 0, 0.35)), (1, WayPoint(0.27, 0.27, pi/2, 0))])
 plot_vars(turn_right)
 plot_traj(turn_right)
 
@@ -577,15 +577,15 @@ plot_traj(turn_right)
 # 
 # Now let's find one that really sucks!
 
-# In[14]:
+# In[55]:
 
 # 4 waypoints!
 LOG_LVL = 1
 turn_right = TrajPlan()
-turn_right.solve([(0, WayPoint(0.09, 0.18, pi/2, 0.1)),
-                  (1, WayPoint(0.09, 0.27, pi/2, 0.1)),
-                  (2, WayPoint(0.18, 0.45, 0, 0.1)),
-                  (3, WayPoint(0.36, 0.45, 0, 0.1))])
+turn_right.solve([(0, WayPoint(0.09, 0.0, pi/2, 0.1)),
+                  (1, WayPoint(0.09, 0.18, pi/2, 0.1)),
+                  (2, WayPoint(0.18, 0.27, 0, 0.1)),
+                  (3, WayPoint(0.36, 0.27, 0, 0.1))])
 plot_traj(turn_right)
 
 
@@ -595,12 +595,12 @@ plot_traj(turn_right)
 # 
 # Now that we have a trajectory, we want to design a controller that will follow it as closely as possible. To do this, I'm just going to do a proportional controller. Later we will design an optimal controller. We want to make sure the robot is on the path, facing along the path, and going the right speed. When all of these are true the change in speed should be zero. Let's come up with an equation to relate current pose and velocity to the desired pose and velocity. Let our outputs be the linear velocity $v$ and the rotational velocity $w$.
 # 
-# $$ w = w_d + d*P_1 + (\theta_d - \theta)P_2$$
-# $$ v = v_d + l*P_3$$
+# $$ w = \bar{w} + d*P_1 + (\bar{\theta} - \theta)P_2$$
+# $$ v = \bar{v} + l*P_3$$
 # 
 # where $v_d$ is desired velocity, $\theta_d$ is the desired angle, $d$ is signed distance to the planned trajectory (to the right of the plan is positive), $v_d$ and $w_d$ are the desired velocities of the robot, and $P_1$, $P_2$, and $P_3$ are constants. Essentially what we're saying with the first equation is that when you're far off the trajectory you need to turn harder to get back on to it, but you also need to be aligned with it. The second equation says if you're lagging behind your plan speed up, or slow down if you're overshooting.
 
-# In[31]:
+# In[45]:
 
 from math import atan2, sqrt
 
@@ -682,7 +682,7 @@ def simulate(q_0, waypoints, P_1, P_2, P_3, P_4):
     plt.legend(bbox_to_anchor=(1,1), loc=2)
 
 
-# In[32]:
+# In[46]:
 
 test_P_1=300
 test_P_2=50
@@ -694,7 +694,7 @@ simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3, test_P_4)
 plt.show()
 
 
-# In[33]:
+# In[17]:
 
 robot_q_0 = (0.11, 0.18, pi/2, 0.2, 5)
 traj = [(0, WayPoint(0.09, 0.18, pi/2, 0.2)), (1, WayPoint(0.18, 0.27, 0, 0.35))]
@@ -702,7 +702,7 @@ simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3, test_P_4)
 plt.show()
 
 
-# In[34]:
+# In[18]:
 
 robot_q_0 = (0.0, 0.25, 0, 0.2, 0)
 traj = [(0, WayPoint(0.0, 0.27, 0, 0.2)), (1.25, WayPoint(0.54, 0.27, 0, 0.2))]
@@ -710,7 +710,7 @@ simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3, test_P_4)
 plt.show()
 
 
-# In[35]:
+# In[19]:
 
 robot_q_0 = (0.45, 0.05, pi+0.25, 0.3, 0)
 traj = [(0, WayPoint(0.45, 0.09, pi, 0.4)), (0.75, WayPoint(0.27, 0.27, pi/2, 0.4))]
@@ -718,7 +718,7 @@ simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3, test_P_4)
 plt.show()
 
 
-# In[36]:
+# In[20]:
 
 robot_q_0 = (0.0, 0.25, 0, 0.2, -5)
 traj = [(0, WayPoint(0.0, 0.27, 0, 0.2)), (2, WayPoint(0.48, 0.36, pi/2, 0.2))]
@@ -892,7 +892,7 @@ plt.show()
 # ### 7. Apply our new controller of the form $\vec{u} = -K(\vec{x} - \bar{x}) + \bar{u}$
 # 
 
-# In[24]:
+# In[21]:
 
 from math import atan2
 import scipy.linalg
@@ -1031,7 +1031,7 @@ def follow_plan(q_0, waypoints, P_1, P_2, P_3, P_4):
     plt.legend(bbox_to_anchor=(1,1), loc=2)
 
 
-# In[25]:
+# In[22]:
 
 LOG_LVL=1
 robot_q_0 = (0.08, 0.18, pi/2, 0.3)
