@@ -577,7 +577,7 @@ plot_traj(turn_right)
 # 
 # Now let's find one that really sucks!
 
-# In[55]:
+# In[61]:
 
 # 4 waypoints!
 LOG_LVL = 1
@@ -585,7 +585,7 @@ turn_right = TrajPlan()
 turn_right.solve([(0, WayPoint(0.09, 0.0, pi/2, 0.1)),
                   (1, WayPoint(0.09, 0.18, pi/2, 0.1)),
                   (2, WayPoint(0.18, 0.27, 0, 0.1)),
-                  (3, WayPoint(0.36, 0.27, 0, 0.1))])
+                  (3, WayPoint(0.27, 0.27, 0, 0.1))])
 plot_traj(turn_right)
 
 
