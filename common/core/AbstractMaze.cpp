@@ -496,7 +496,7 @@ bool AbstractMaze::operator==(const AbstractMaze &other) const {
       for (Direction d = Direction::First; d != Direction::Last; d++) {
         bool n1 = static_cast<bool>(nodes[i][j]->neighbor(d));
         bool n2 = static_cast<bool>(other.nodes[i][j]->neighbor(d));
-        if (!(n1 ^ n2)) {
+        if (n1 ^ n2) {
           return false;
         }
       }
