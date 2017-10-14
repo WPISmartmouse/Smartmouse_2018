@@ -2,7 +2,6 @@
 
 #include <common/commanduino/CommanDuino.h>
 #include <common/core/Solver.h>
-#include "SolveMaze.h"
 
 class SolveCommand : public CommandGroup {
 public:

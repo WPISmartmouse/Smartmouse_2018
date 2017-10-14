@@ -22,6 +22,7 @@ typedef struct robot_config_t {
   double TRACK_WIDTH;
   double ANALOG_MAX_DIST;
   double MAX_FORCE;
+  double MIN_ABSTRACT_FORCE;
   bool ARC_TURN;
   double END_SPEED;
 } RobotConfig;

@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.1)
 
-option(BUILD_SIM "build gazebo simulations" OFF)
+option(BUILD_SIM "build simulations" OFF)
+set(CMAKE_CXX_STANDARD 14)
 
 if (NOT ${BUILD_SIM})
     set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/cmake/teensy-arm.toolchain.cmake")
@@ -13,11 +14,9 @@ endif ()
 
 project(smartmouse)
 
-file(GLOB_RECURSE CORE_COM_SRC
-        "common/commands/*.cpp" "common/commanduino/*.cpp" "common/core/*.cpp")
-
-file(GLOB_RECURSE COM_SRC
-        common/*.cpp)
+file(GLOB_RECURSE CORE_COM_SRC "common/commands/*.cpp" "common/commanduino/*.cpp" "common/core/*.cpp")
+file(GLOB COM_SRC common/*.cpp common/math/*.cpp common/commanduino/*.cpp common/KinematicController/*.cpp)
+file(GLOB COM_COMMAND_SRC common/commands/*.cpp)
 
 if (NOT ${BUILD_SIM})
     include(Teensy)
@@ -44,14 +43,10 @@ if (NOT ${BUILD_SIM})
     add_teensy_executable(eigen_test real/main/eigen_test.cpp common/core/util.cpp)
     set_target_properties(eigen_test PROPERTIES COMPILE_FLAGS "-include common/core/util.h")
 else ()
-
-    include_directories(${CMAKE_SOURCE_DIR})
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
-
-    file(GLOB CONSOLE_SRC console/*.cpp console/commands/*.cpp)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-unknown-pragmas -std=c++1y")
 
     ################################
-    # library for console programs
+    # gtest
     ################################
     add_library(console ${CORE_COM_SRC} ${CONSOLE_SRC})
     target_compile_features(console PRIVATE cxx_strong_enums)
@@ -59,21 +54,9 @@ else ()
     target_include_directories(console PRIVATE console/ console/commands)
 
     ################################
-    # text-only console programs
+    # console
     ################################
-    set(CONSOLES ConsoleSolve
-            Animate
-            ConsoleNavTest
-            GenerateMaze
-            ReadAndPrint)
-
-    foreach (MAIN ${CONSOLES})
-        add_executable(${MAIN} "console/main/${MAIN}.cpp")
-        target_link_libraries(${MAIN} console)
-        target_compile_features(${MAIN} PRIVATE cxx_strong_enums)
-        set_target_properties(${MAIN} PROPERTIES COMPILE_FLAGS "-DCONSOLE")
-        target_include_directories(${MAIN} PRIVATE console/ console/commands)
-    endforeach ()
+    add_subdirectory(console)
 
     ################################
     # all simulation stuff

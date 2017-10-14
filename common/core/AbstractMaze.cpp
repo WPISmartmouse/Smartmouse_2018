@@ -2,7 +2,9 @@
   @author Peter Mitrano
   */
 #include "AbstractMaze.h"
+
 #include <string.h>
+#include <string>
 #include <algorithm>
 #include <random>
 #include <string>
@@ -20,6 +22,35 @@ AbstractMaze::AbstractMaze() : solved(false) {
     }
   }
 }
+
+#ifndef ARDUINO
+AbstractMaze::AbstractMaze(std::ifstream &fs) : AbstractMaze() {
+  std::string line;
+
+  //look West and North to connect any nodes
+  for (unsigned int i = 0; i < MAZE_SIZE; i++) { //read in each line
+    std::getline(fs, line);
+
+    if (!fs.good()) {
+      print("getline failed");
+      return;
+    }
+
+    unsigned int charPos = 0;
+    for (unsigned int j = 0; j < MAZE_SIZE; j++) {
+      if (line.at(charPos) != '|') {
+        connect_neighbor(i, j, Direction::W);
+      }
+      charPos++;
+      if (line.at(charPos) != '_') {
+        connect_neighbor(i, j, Direction::S);
+      }
+      charPos++;
+    }
+  }
+  printf("\n");
+}
+#endif
 
 int AbstractMaze::get_node(Node **out, unsigned int row, unsigned int col) {
   if (col < 0 || col >= MAZE_SIZE || row < 0 || row >= MAZE_SIZE) {
@@ -66,7 +97,7 @@ void AbstractMaze::update(SensorReading sr) {
   for (Direction d = Direction::First; d < Direction::Last; d++) {
     //if a wall exists in that direction, add a wall
     if (sr.isWall(d)) {
-      remove_neighbor(sr.row, sr.col, d);
+      disconnect_neighbor(sr.row, sr.col, d);
     }
       //if no wall exists in that direction remove it
     else {
@@ -75,43 +106,6 @@ void AbstractMaze::update(SensorReading sr) {
       connect_neighbor(sr.row, sr.col, d);
     }
   }
-}
-
-Node *AbstractMaze::maze_diff(AbstractMaze *maze2) {
-  Node *new_goal = nullptr;
-
-  unsigned int i, j;
-  int max = -1;
-  for (i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
-    for (j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
-
-      Node *n1 = nullptr;
-      this->get_node(&n1, i, j);
-      Node *n2 = nullptr;
-      maze2->get_node(&n2, i, j);
-
-      //don't look at nodes you've already actually visited
-      if (!n1->visited && !n2->visited) {
-        int count1 = 0, count2 = 0;
-
-        Direction d;
-        for (d = Direction::First; d < Direction::Last; d++) {
-          if (n1->neighbor(d) == nullptr) count1++;
-          if (n2->neighbor(d) == nullptr) count2++;
-        }
-
-        int diff = abs(count2 - count1);
-
-        if (diff > max) {
-          max = diff;
-          //doesn't matter n1 or n2, all we're using are the row/col
-          new_goal = n1;
-        }
-      }
-    }
-  }
-
-  return new_goal;
 }
 
 Node *AbstractMaze::center_node() {
@@ -183,7 +177,7 @@ bool AbstractMaze::flood_fill(route_t *path, unsigned int r0, unsigned int c0, u
   return solvable;
 }
 
-void AbstractMaze::remove_neighbor(unsigned int row, unsigned int col, const Direction dir) {
+void AbstractMaze::disconnect_neighbor(unsigned int row, unsigned int col, const Direction dir) {
   Node *n1 = nullptr;
   int n1_status = get_node(&n1, row, col);
   Node *n2 = nullptr;
@@ -198,19 +192,6 @@ void AbstractMaze::remove_neighbor(unsigned int row, unsigned int col, const Dir
   }
 }
 
-void AbstractMaze::disconnect_neighbor(unsigned int row, unsigned int col, const Direction dir) {
-  Node *n1 = nullptr;
-  int n1_status = get_node(&n1, row, col);
-  Node *n2 = nullptr;
-  int n2_status = get_node_in_direction(&n2, row, col, dir);
-
-  Direction opposite = opposite_direction(dir);
-
-  if ((n1_status != Node::OUT_OF_BOUNDS) && (n2_status != Node::OUT_OF_BOUNDS)) {
-    n1->neighbors[static_cast<int>(dir)] = nullptr;
-    n2->neighbors[static_cast<int>(opposite)] = nullptr;
-  }
-}
 void AbstractMaze::connect_neighbor(unsigned int row, unsigned int col, const Direction dir) {
   Node *n1 = nullptr;
   int n1_status = get_node(&n1, row, col);
@@ -431,10 +412,6 @@ AbstractMaze AbstractMaze::gen_random_legal_maze() {
   maze.connect_neighbor(MAZE_SIZE / 2, MAZE_SIZE / 2, Direction::W);
   maze.connect_neighbor(MAZE_SIZE / 2 - 1, MAZE_SIZE / 2 - 1, Direction::S);
   maze.connect_neighbor(MAZE_SIZE / 2 - 1, MAZE_SIZE / 2 - 1, Direction::E);
-
-  // TODO: make a legal start. This right now might make the maze unsolvable...
-//  maze.connect_neighbor(0, 0, Direction::E);
-//  maze.disconnect_neighbor(0, 0, Direction::S);
 
   return maze;
 }

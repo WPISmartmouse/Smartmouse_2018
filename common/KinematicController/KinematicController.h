@@ -63,9 +63,7 @@ public:
 
   void reset_yaw_to(double new_yaw);
 
-  std::pair<double, double>
-  run(double dt_s, double left_angle_rad, double right_angle_rad, double ground_truth_left_vel_rps,
-      double ground_truth_right_vel_rps, RangeData range_data);
+  std::pair<double, double> run(double dt_s, double left_angle_rad, double right_angle_rad, RangeData range_data);
 
   void setAccelerationMpss(double acceleration_mpss);
 
@@ -76,6 +74,7 @@ public:
   static const double kPYaw;
 
   drive_straight_state_t drive_straight_state;
+  void setParams(double kP, double kI, double kD, double ff_offset, double int_cap);
 
   RegulatedMotor left_motor;
   RegulatedMotor right_motor;

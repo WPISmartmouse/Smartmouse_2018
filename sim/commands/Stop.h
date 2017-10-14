@@ -2,7 +2,7 @@
 
 #include <ignition/math.hh>
 #include <common/commanduino/CommanDuino.h>
-#include "SimMouse.h"
+#include <sim/lib/SimMouse.h>
 
 class Stop : public Command {
 public:

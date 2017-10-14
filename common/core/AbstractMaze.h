@@ -5,6 +5,10 @@
 
 #include <stdio.h>
 
+#ifndef ARDUINO
+#include <fstream>
+#endif
+
 #include "SensorReading.h"
 #include "Node.h"
 #include "Direction.h"
@@ -28,7 +32,7 @@ void insert_motion_primitive_back(route_t *route, motion_primitive_t prim);
 class AbstractMaze {
   friend class Mouse;
 
-public:
+ public:
 
   constexpr static unsigned int MAZE_SIZE = 11;
   constexpr static unsigned int PATH_SIZE = 256;
@@ -36,21 +40,29 @@ public:
   constexpr static unsigned int CENTER = MAZE_SIZE / 2;
   constexpr static double UNIT_DIST = 0.18;
   constexpr static double WALL_THICKNESS = 0.012;
-  constexpr static double HALF_WALL_THICKNESS = WALL_THICKNESS/2.0;
+  constexpr static double HALF_WALL_THICKNESS = WALL_THICKNESS / 2.0;
   constexpr static double INNER_UNIT_DIST = UNIT_DIST - WALL_THICKNESS;
   constexpr static double HALF_UNIT_DIST = UNIT_DIST / 2.0;
+  constexpr static double MAZE_SIZE_M = MAZE_SIZE * UNIT_DIST;
   constexpr static double HALF_INNER_UNIT_DIST = INNER_UNIT_DIST / 2.0;
   bool solved; //boolean for if we know the fastest route
   route_t fastest_route; //a char array like NSEWNENNSNE, which means North, South, East...
   route_t fastest_theoretical_route;
   route_t path_to_next_goal;
 
+  inline static std::pair<double, double> rowColToXYCenter(unsigned int row, unsigned int col) {
+    return {col * AbstractMaze::UNIT_DIST + AbstractMaze::HALF_UNIT_DIST,
+            (AbstractMaze::MAZE_SIZE - 1 - row) * AbstractMaze::UNIT_DIST + AbstractMaze::HALF_UNIT_DIST};
+  }
+
   /** \brief allocates and initializes a node
    * allocates a maze of the given size and sets all links in graph to be null. Naturally, it's column major.
    */
   AbstractMaze();
 
-  Node *center_node();
+#ifndef ARDUINO // this can't exist on arduino
+  AbstractMaze(std::ifstream &fs);
+#endif
 
   void mark_origin_known();
 
@@ -60,7 +72,6 @@ public:
    * \param dir direction connect in
    */
   void connect_neighbor(unsigned int row, unsigned int col, const Direction dir);
-  void disconnect_neighbor(unsigned int row, unsigned int col, const Direction dir);
 
   void reset();
 
@@ -87,11 +98,6 @@ public:
    */
   void connect_all_neighbors_in_maze();
 
-  /** \brief output a maze that has the fewest walls
-   * actually I have no idea how this works
-   */
-  Node *maze_diff(AbstractMaze *maze2);
-
   /** \brief get node by its position
    * \return 0 on success, OUT_OF_BOUNDS, or -1 on NULL
    */
@@ -110,10 +116,10 @@ public:
    */
   void connect_all_neighbors(unsigned int row, unsigned int col);
 
-  /** \brief remove any neighbor in the given direction
+  /** \brief disconnect any neighbor in the given direction
    * \param dir direction connect in
    */
-  void remove_neighbor(unsigned int row, unsigned int col, const Direction dir);
+  void disconnect_neighbor(unsigned int row, unsigned int col, const Direction dir);
 
   /** \brief walks along a route in the maze and return the longest valid path
    * Valid means you don't walk through any walls.
@@ -126,6 +132,8 @@ public:
   void print_maze();
   void print_maze_str(char *buff);
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
   /** duh*/
   void print_pointer_maze();
 
@@ -141,11 +149,14 @@ public:
 
   /** duh*/
   void print_dist_maze();
+#pragma clang diagnostic pop
 
   static AbstractMaze gen_random_legal_maze();
   static void _make_connections(AbstractMaze *maze, Node *node);
 
   bool flood_fill(route_t *path, unsigned int r0, unsigned int c0, unsigned int r1, unsigned int c1);
+
+  bool operator==(const AbstractMaze &other) const;
 
   Node *nodes[AbstractMaze::MAZE_SIZE][AbstractMaze::MAZE_SIZE]; // array of node pointers
 };

@@ -1,0 +1,17 @@
+syntax = "proto2";
+
+package smartmouse.msgs;
+
+import "direction.proto";
+import "row_col.proto";
+
+message Maze {
+    optional string name = 1;
+    optional int32 size = 2;
+    repeated Wall walls = 3;
+}
+
+message Wall {
+    optional smartmouse.msgs.RowCol node = 1;
+    optional Direction.Dir direction = 2;
+}

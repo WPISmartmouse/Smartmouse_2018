@@ -1,7 +1,7 @@
-#include "WaitForStart.h"
-#include "SpeedRun.h"
-#include "Turn.h"
-#include "Forward.h"
+#include <common/commands/SpeedRun.h>
+#include <commands/WaitForStart.h>
+#include <commands/Turn.h>
+#include <commands/Forward.h>
 
 SpeedRun::SpeedRun(Mouse *mouse) : CommandGroup("speed"), mouse(mouse) {}
 

@@ -1,0 +1,8 @@
+syntax = "proto2";
+
+package smartmouse.msgs;
+
+message RowCol {
+    required uint32 row = 1;
+    required uint32 col = 2;
+}

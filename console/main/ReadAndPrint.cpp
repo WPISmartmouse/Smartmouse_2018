@@ -1,7 +1,6 @@
 #include <fstream>
-#include "ConsoleMouse.h"
 
-#include "ConsoleMaze.h"
+#include <console/ConsoleMouse.h>
 
 int main(int argc, char *argv[]) {
   std::string maze_file;
@@ -11,11 +10,11 @@ int main(int argc, char *argv[]) {
     maze_file = std::string(argv[1]);
   }
 
-  std::fstream fs;
-  fs.open(maze_file, std::fstream::in);
+  std::ifstream fs;
+  fs.open(maze_file, std::ifstream::in);
 
   if (fs.good()) {
-    ConsoleMaze maze(fs);
+    AbstractMaze maze(fs);
     ConsoleMouse::inst()->seedMaze(&maze);
     maze.print_maze();
     fs.close();

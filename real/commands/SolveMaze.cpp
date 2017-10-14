@@ -1,10 +1,8 @@
-#include "SolveMaze.h"
-#include "Forward.h"
-#include "Turn.h"
-#include "ForwardToCenter.h"
-#include "TurnInPlace.h"
-#include "Stop.h"
-#include "ForwardN.h"
+#include <commands/SolveMaze.h>
+#include <commands/Forward.h>
+#include <commands/Turn.h>
+#include <commands/ForwardToCenter.h>
+#include <commands/TurnInPlace.h>
 
 SolveMaze::SolveMaze(Solver *solver, Solver::Goal goal) : CommandGroup("solve"), solver(solver), movements(0),
                                                           goal(goal) {}

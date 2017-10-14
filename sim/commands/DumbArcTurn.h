@@ -5,7 +5,7 @@
 #include <common/core/Direction.h>
 #include <common/DriveStraight.h.not>
 
-#include "SimMouse.h"
+#include <sim/lib/SimMouse.h>
 
 class DumbArcTurn : public Command {
 public:

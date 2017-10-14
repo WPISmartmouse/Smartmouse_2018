@@ -1,6 +1,8 @@
+#include <cmath>
 #include <algorithm>
 #include <cmath>
 #include <tuple>
+#include <common/math/math.h>
 
 #include <common/core/Mouse.h>
 #include <common/KinematicController/KinematicController.h>
@@ -14,7 +16,7 @@ KinematicController::KinematicController(Mouse *mouse) : enable_sensor_pose_esti
                                                          d_until_left_drop(0), d_until_right_drop(0) {
   current_pose_estimate.x = 0;
   current_pose_estimate.y = 0;
-  current_pose_estimate.yaw = 0;
+  current_pose_estimate.yaw = M_PI_2;
 }
 
 GlobalPose KinematicController::getGlobalPose() {
@@ -23,7 +25,7 @@ GlobalPose KinematicController::getGlobalPose() {
 
 LocalPose KinematicController::getLocalPose() {
   LocalPose local_pose_estimate;
-  local_pose_estimate.yaw_from_straight = yawDiff(dir_to_yaw(mouse->getDir()), current_pose_estimate.yaw);
+  local_pose_estimate.yaw_from_straight = smartmouse::math::yawDiff(dir_to_yaw(mouse->getDir()), current_pose_estimate.yaw);
   switch (mouse->getDir()) {
     case Direction::N:
       local_pose_estimate.to_back = (row + 1) * AbstractMaze::UNIT_DIST - current_pose_estimate.y;
@@ -72,8 +74,7 @@ void KinematicController::reset_yaw_to(double new_yaw) {
 
 int asdf = 0;
 std::pair<double, double>
-KinematicController::run(double dt_s, double left_angle_rad, double right_angle_rad, double ground_truth_left_vel_rps,
-                         double ground_truth_right_vel_rps, RangeData range_data) {
+KinematicController::run(double dt_s, double left_angle_rad, double right_angle_rad, RangeData range_data) {
   static std::pair<double, double> abstract_forces;
 
   if (!initialized) {
@@ -135,7 +136,7 @@ KinematicController::run(double dt_s, double left_angle_rad, double right_angle_
       double d_wall_front = 0;
       bool wall_in_front = false;
       if (range_data.front < 0.08) {
-        double yaw_error = KinematicController::yawDiff(current_pose_estimate.yaw, dir_to_yaw(mouse->getDir()));
+        double yaw_error = smartmouse::math::yawDiff(current_pose_estimate.yaw, dir_to_yaw(mouse->getDir()));
         d_wall_front = cos(yaw_error) * range_data.front + config.FRONT_ANALOG_X;
         wall_in_front = true;
       }
@@ -175,8 +176,10 @@ KinematicController::run(double dt_s, double left_angle_rad, double right_angle_
     }
 
     // run PID, which will update the velocities of the wheels
-    abstract_forces.first = left_motor.runPid(dt_s, left_angle_rad, ground_truth_left_vel_rps);
-    abstract_forces.second = right_motor.runPid(dt_s, right_angle_rad, ground_truth_right_vel_rps);
+    abstract_forces.first = left_motor.runPid(dt_s, left_angle_rad);
+    abstract_forces.second = right_motor.runPid(dt_s, right_angle_rad);
+
+    print("%0.3f\n", Mouse::radToMeters(left_motor.setpoint_rps));
   }
   else {
     abstract_forces.first = 0;
@@ -418,4 +421,9 @@ double KinematicController::fwdDispToCenter(Mouse *mouse) {
 
 double KinematicController::fwdDispToDiag(Mouse *mouse) {
   return (AbstractMaze::HALF_UNIT_DIST - (config.TRACK_WIDTH / 2.0)) - mouse->getLocalPose().to_back;
+}
+
+void KinematicController::setParams(double kP, double kI, double kD, double ff_offset, double int_cap) {
+  left_motor.setParams(kP, kI, kD, ff_offset, int_cap);
+  right_motor.setParams(kP, kI, kD, ff_offset, int_cap);
 }

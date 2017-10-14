@@ -1,0 +1,29 @@
+syntax = "proto2";
+
+package smartmouse.msgs;
+
+import "xytheta.proto";
+import "ignition/msgs/time.proto";
+
+message RobotSimState {
+    optional ignition.msgs.Time stamp = 1;
+    optional WheelPhysicsState left_wheel = 2;
+    optional WheelPhysicsState right_wheel = 3;
+    optional XYTheta p = 4; // meters
+    optional XYTheta v = 5; // meters/second
+    optional XYTheta a = 6; // meters/second^2
+    optional double front_left = 7;
+    optional double front_right = 8;
+    optional double gerald_left = 9;
+    optional double gerald_right = 10;
+    optional double back_left = 11;
+    optional double back_right = 12;
+    optional double front = 13;
+}
+
+message WheelPhysicsState {
+    optional double theta = 1; // radians
+    optional double omega = 2; // radians/second
+    optional double alpha = 3;
+    optional double current = 4; // amperes
+}

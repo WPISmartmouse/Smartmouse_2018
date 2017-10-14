@@ -1,5 +1,4 @@
-#include <SimMouse.h>
-#include <sim/SimMouse.h>
+#include <sim/lib/SimMouse.h>
 #include "Forward.h"
 
 Forward::Forward() : Command("Forward"), mouse(SimMouse::inst()) {}

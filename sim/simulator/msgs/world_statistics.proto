@@ -1,0 +1,9 @@
+syntax = "proto2";
+import "ignition/msgs/time.proto";
+package smartmouse.msgs;
+
+message WorldStatistics {
+    optional uint64 steps = 1;
+    optional ignition.msgs.Time sim_time = 2;
+    optional double real_time_factor = 3; // RTF acutally acheived
+}

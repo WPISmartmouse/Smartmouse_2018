@@ -1,42 +1,34 @@
 #include <iostream>
-#include <gazebo/transport/TransportTypes.hh>
-#include <gazebo/msgs/joint_cmd.pb.h>
-#include <gazebo/msgs/visual.pb.h>
 #include <common/commands/NavTestCommand.h>
 #include <ignition/transport.hh>
 #include <common/core/Flood.h>
 #include <common/core/util.h>
 
-#include "SimMouse.h"
-#include "SimTimer.h"
+#include <sim/lib/SimMouse.h>
+#include <sim/lib/SimTimer.h>
+#include <simulator/msgs/robot_command.pb.h>
+#include <simulator/msgs/maze_location.pb.h>
 
 int main(int argc, char *argv[]) {
-  // Load gazebo
-  bool connected = gazebo::client::setup(argc, argv);
-  if (!connected) {
-    print("failed to connect to gazebo. Is it running?\n");
-    exit(0);
-  }
-
   SimTimer timer;
   Command::setTimerImplementation(&timer);
   SimMouse *mouse = SimMouse::inst();
 
   // Create our node for communication
-  gazebo::transport::NodePtr node(new gazebo::transport::Node());
-  node->Init();
-
-  ignition::transport::Node ign_node;
-  bool success = ign_node.Subscribe("/time_ms", &SimTimer::simTimeCallback, &timer);
+  bool success = mouse->node.Subscribe("time_ms", &SimTimer::simTimeCallback, &timer);
   if (!success) {
-    print("Failed to subscribe to /time_ms\n");
+    print("Failed to subscribe to time_ms\n");
     return EXIT_FAILURE;
   }
 
-  gazebo::transport::SubscriberPtr poseSub = node->Subscribe("~/mouse/state", &SimMouse::robotStateCallback, mouse);
+  success = mouse->node.Subscribe("state", &SimMouse::robotSimStateCallback, mouse);
+  if (!success) {
+    print("Failed to subscribe to state\n");
+    return EXIT_FAILURE;
+  }
 
-  mouse->joint_cmd_pub = node->Advertise<gazebo::msgs::JointCmd>("~/mouse/joint_cmd");
-  mouse->maze_location_pub = node->Advertise<gzmaze::msgs::MazeLocation>("~/maze_location");
+  mouse->cmd_pub = mouse->node.Advertise<smartmouse::msgs::RobotCommand>("robot_command");
+  mouse->maze_location_pub = mouse->node.Advertise<smartmouse::msgs::MazeLocation>("maze_location");
 
   // wait for time messages to come
   while (!timer.isTimeReady());

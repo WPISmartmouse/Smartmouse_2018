@@ -32,10 +32,10 @@ public:
 
 private:
 
-  /// \brief this maze is initially no walls,  and walls are filled out every time the mouse moves
+  /// \brief this maze is initially no walls, and walls are filled out every time the mouse moves
   AbstractMaze no_wall_maze;
 
-  /// \brief this maze is initially no walls,  and walls are removed every time the mouse moves
+  /// \brief this maze is initially all walls, and walls are removed every time the mouse moves
   AbstractMaze *all_wall_maze;
 
   route_t no_wall_path;

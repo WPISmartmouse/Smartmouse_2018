@@ -1,0 +1,13 @@
+syntax = "proto2";
+package smartmouse.msgs;
+
+message Command
+{
+    optional int32 abstract_force = 1;
+}
+
+message RobotCommand
+{
+    optional Command left = 1;
+    optional Command right = 2;
+}

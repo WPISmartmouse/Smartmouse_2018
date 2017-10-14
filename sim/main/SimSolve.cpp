@@ -1,39 +1,33 @@
 #include <common/commanduino/CommanDuino.h>
 #include <common/commands/SolveCommand.h>
-#include <sim/commands/ForwardToDiagonal.h>
-#include <common/core/Flood.h>
-#include <ignition/transport/Node.hh>
-#include <common/core/util.h>
+#include <common/Flood.h>
 
-#include "SimMouse.h"
-#include "SimTimer.h"
+#include <sim/lib/SimTimer.h>
+#include <simulator/msgs/maze_location.pb.h>
+#include <simulator/msgs/robot_command.pb.h>
+#include <simulator/lib/common/TopicNames.h>
+#include <sim/lib/SimMouse.h>
 
 int main(int argc, char *argv[]) {
-  // Load gazebo
-  bool connected = gazebo::client::setup(argc, argv);
-  if (!connected) {
-    print("failed to connect to gazebo. Is it running?\n");
-    exit(0);
-  }
-
   SimTimer timer;
   Command::setTimerImplementation(&timer);
   SimMouse *mouse = SimMouse::inst();
 
   // Create our node for communication
-  gazebo::transport::NodePtr node(new gazebo::transport::Node());
-  node->Init();
-
-  bool success = mouse->ign_node.Subscribe("/time_ms", &SimTimer::simTimeCallback, &timer);
+  bool success = mouse->node.Subscribe(TopicNames::kWorldStatistics, &SimTimer::simTimeCallback, &timer);
   if (!success) {
-    print("Failed to subscribe to /time_ms\n");
+    print("Failed to subscribe to %s\n", TopicNames::kWorldStatistics);
     return EXIT_FAILURE;
   }
 
-  gazebo::transport::SubscriberPtr poseSub = node->Subscribe("~/mouse/state", &SimMouse::robotStateCallback, mouse);
+  success = mouse->node.Subscribe(TopicNames::kRobotSimState, &SimMouse::robotSimStateCallback, mouse);
+  if (!success) {
+    print("Failed to subscribe to %s\n", TopicNames::kRobotSimState);
+    return EXIT_FAILURE;
+  }
 
-  mouse->joint_cmd_pub = node->Advertise<gazebo::msgs::JointCmd>("~/mouse/joint_cmd");
-  mouse->maze_location_pub = node->Advertise<gzmaze::msgs::MazeLocation>("~/maze_location");
+  mouse->cmd_pub = mouse->node.Advertise<smartmouse::msgs::RobotCommand>(TopicNames::kRobotCommand);
+  mouse->maze_location_pub = mouse->node.Advertise<smartmouse::msgs::MazeLocation>(TopicNames::kMazeLocation);
 
   // wait for time messages to come
   while (!timer.isTimeReady());
@@ -41,7 +35,6 @@ int main(int argc, char *argv[]) {
   mouse->simInit();
 
   Scheduler scheduler(new SolveCommand(new Flood(mouse)));
-//  Scheduler scheduler(new ForwardToDiagonal());
 
   bool done = false;
   unsigned long last_t = timer.programTimeMs();
@@ -55,7 +48,7 @@ int main(int argc, char *argv[]) {
     }
 
     mouse->run(dt_s);
-    done = scheduler.run();
+//    done = scheduler.run();
     last_t = now;
   }
 }

@@ -1,5 +1,4 @@
-#include "ConsoleMouse.h"
-#include "ConsoleMaze.h"
+#include <console/ConsoleMouse.h>
 #include <iostream>
 
 int main(int argc, char *argv[]) {
@@ -7,12 +6,12 @@ int main(int argc, char *argv[]) {
   srand(time(0));
 
   std::string maze_file;
-  std::fstream fs;
+  std::ofstream fs;
   bool save = false;
   if (argc == 2) {
     maze_file = argv[1];
 
-    fs.open(maze_file, std::fstream::out);
+    fs.open(maze_file, std::ofstream::out);
 
     if (fs.good()) {
       save = true;

@@ -4,11 +4,10 @@
 
 #include <common/commanduino/CommanDuino.h>
 #include <common/commands/SolveCommand.h>
-#include "ConsoleMaze.h"
-#include "ConsoleMouse.h"
-#include "ConsoleTimer.h"
-#include <common/core/Flood.h>
-#include <common/core/WallFollow.h>
+#include <console/ConsoleMouse.h>
+#include <console/ConsoleTimer.h>
+#include <common/Flood.h>
+#include <common/WallFollow.h>
 #include <common/commands/NavTestCommand.h>
 
 int main(int argc, char *argv[]) {
@@ -22,11 +21,11 @@ int main(int argc, char *argv[]) {
       maze_file = std::string(argv[1]);
   }
 
-  std::fstream fs;
-  fs.open(maze_file, std::fstream::in);
+  std::ifstream fs;
+  fs.open(maze_file, std::ifstream::in);
 
   if (fs.good()) {
-    ConsoleMaze maze(fs);
+    AbstractMaze maze(fs);
     ConsoleMouse::inst()->seedMaze(&maze);
     ConsoleTimer timer;
     Command::setTimerImplementation(&timer);

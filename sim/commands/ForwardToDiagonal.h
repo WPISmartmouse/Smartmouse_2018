@@ -1,10 +1,10 @@
 #pragma once
 
 #include <common/commanduino/CommanDuino.h>
-#include <common/core/Mouse.h>
-#include <common/core/Direction.h>
-#include <sim/SimMouse.h>
-#include <common/DriveStraight.h.not>
+#include <common/Mouse.h>
+#include <common/Direction.h>
+#include <sim/lib/SimMouse.h>
+#include <common/DriveStraight.h>
 
 class ForwardToDiagonal : public Command {
 public:

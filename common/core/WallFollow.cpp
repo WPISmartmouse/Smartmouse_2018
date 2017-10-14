@@ -34,12 +34,13 @@ route_t WallFollow::solve() {
 bool WallFollow::isFinished() {
   unsigned int r = mouse->getRow();
   unsigned int c = mouse->getCol();
-  const unsigned int C = AbstractMaze::MAZE_SIZE/2;
-  switch (goal) {
-    case Solver::Goal::CENTER:
-      return !solvable || ((r >= C - 1 && r <= C) && (c >= C - 1 && c <= C));
-    case Solver::Goal::START:
-      return !solvable || (r == 0 && c == 0);
+  const unsigned int C = AbstractMaze::MAZE_SIZE / 2;
+  if (goal == Solver::Goal::CENTER) {
+    return !solvable || ((r >= C - 1 && r <= C) && (c >= C - 1 && c <= C));
+  } else if (goal == Solver::Goal::START) {
+    return !solvable || (r == 0 && c == 0);
+  } else {
+    return true;
   }
 }
 
@@ -60,11 +61,10 @@ motion_primitive_t WallFollow::planNextStep() {
   } else if (!sr.isWall(opposite_direction(dir))) {
     //if you can't go left or forward try right
     nextDir = opposite_direction(dir);
-  } else if (!sr.isWall(opposite_direction(mouse->getDir()))){
+  } else if (!sr.isWall(opposite_direction(mouse->getDir()))) {
     //you must do a 180
     nextDir = opposite_direction(mouse->getDir());
-  }
-  else {
+  } else {
     solvable = false;
     return {0, Direction::INVALID};
   }

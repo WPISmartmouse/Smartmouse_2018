@@ -1,0 +1,9 @@
+syntax = "proto2";
+
+package smartmouse.msgs;
+
+message XYTheta {
+    required double x = 1;
+    required double y = 2;
+    required double theta = 3;
+}
