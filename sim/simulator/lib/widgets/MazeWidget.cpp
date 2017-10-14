@@ -96,8 +96,8 @@ void MazeWidget::PaintMouse(QPainter &painter, QTransform tf) {
   right_wheel_path.lineTo(rwx + rr, rwy + rt / 2);
   right_wheel_path.lineTo(rwx + rr, rwy - rt / 2);
 
-  tf.translate(robot_state_.xytheta().x(), robot_state_.xytheta().y());
-  tf.rotateRadians(robot_state_.xytheta().theta(), Qt::ZAxis);
+  tf.translate(robot_state_.p().x(), robot_state_.p().y());
+  tf.rotateRadians(robot_state_.p().theta(), Qt::ZAxis);
 
   painter.setPen(QPen(Qt::black));
   painter.fillPath(tf.map(footprint), kRobotBrush);
@@ -172,10 +172,7 @@ void MazeWidget::OnRobotDescription(const smartmouse::msgs::RobotDescription &ms
 }
 
 void MazeWidget::OnRobotSimState(const smartmouse::msgs::RobotSimState &msg) {
-  auto xytheta = robot_state_.mutable_xytheta();
-  xytheta->set_x(msg.p().x());
-  xytheta->set_y(msg.p().y());
-  xytheta->set_theta(msg.p().theta());
+  robot_state_ = msg;
 
   emit MyUpdate();
 }

@@ -3,7 +3,7 @@
 #include <sim/simulator/lib/widgets/AbstractTab.h>
 #include <QtWidgets>
 #include <QtGui/QPaintEvent>
-#include <sim/simulator/msgs/robot_ui_state.pb.h>
+#include <sim/simulator/msgs/robot_sim_state.pb.h>
 #include <sim/simulator/msgs/maze.pb.h>
 #include <ignition/transport/Node.hh>
 #include <msgs/robot_description.pb.h>
@@ -39,7 +39,7 @@ class MazeWidget : public AbstractTab {
 
   ignition::transport::Node node_;
   smartmouse::msgs::Maze maze_;
-  smartmouse::msgs::RobotUiState robot_state_;
+  smartmouse::msgs::RobotSimState robot_state_;
   smartmouse::msgs::RobotDescription mouse_;
 };
 
