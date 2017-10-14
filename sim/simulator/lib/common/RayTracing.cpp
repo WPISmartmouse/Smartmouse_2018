@@ -9,7 +9,8 @@ std::experimental::optional<double> RayTracing::distance_to_wall(const ignition:
   u_proj *= AbstractMaze::MAZE_SIZE_M;
 
   ignition::math::Vector2d intersection_point;
-  bool intersects = wall.Intersect(ignition::math::Line2d(pt, pt + u_proj), intersection_point);
+  ignition::math::Line2d sensor_ray(pt, pt + u_proj);
+  bool intersects = wall.Intersect(sensor_ray, intersection_point);
 
   if (intersects) {
     double dist = pt.Distance(intersection_point);
