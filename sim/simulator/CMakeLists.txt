@@ -33,6 +33,6 @@ install(TARGETS SmartmouseSim DESTINATION bin)
 ################################
 add_executable(sim_tests test/SimTest.cpp)
 target_link_libraries(sim_tests gtest gtest_main server sim msgs)
-set_target_properties(sim_tests PROPERTIES COMPILE_FLAGS "-DCONSOLE -include common/util.h")
+set_target_properties(sim_tests PROPERTIES COMPILE_FLAGS "-DCONSOLE -include ${UTIL_HEADER}")
 
 install(TARGETS sim_tests DESTINATION bin)

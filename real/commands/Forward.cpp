@@ -1,6 +1,4 @@
 #include <real/RealMouse.h>
-#include <tuple>
-#include <common/core/Mouse.h>
 #include "Forward.h"
 
 Forward::Forward() : Command("Forward"), mouse(RealMouse::inst()) {}

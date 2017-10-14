@@ -1,5 +1,5 @@
 #include <lib/common/RayTracing.h>
-#include <common/AbstractMaze.h>
+#include <common/core/AbstractMaze.h>
 
 std::experimental::optional<double> RayTracing::distance_to_wall(const ignition::math::Line2d wall,
                                   const ignition::math::Vector2d pt,

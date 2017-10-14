@@ -12,8 +12,6 @@ void ForwardToCenter::initialize() {
 }
 
 void ForwardToCenter::execute() {
-  range_data = mouse->getRangeData();
-
   double l, r;
   std::tie(l, r) = mouse->kinematic_controller.compute_wheel_velocities(this->mouse);
   mouse->setSpeed(l, r);

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <common/AbstractMaze.h>
+#include <common/core/AbstractMaze.h>
 #include <sim/simulator/msgs/maze.pb.h>
 #include <sim/simulator/msgs/robot_description.pb.h>
 

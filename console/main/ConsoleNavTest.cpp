@@ -6,8 +6,8 @@
 #include <common/commands/SolveCommand.h>
 #include <console/ConsoleMouse.h>
 #include <console/ConsoleTimer.h>
-#include <common/Flood.h>
-#include <common/WallFollow.h>
+#include <common/core/Flood.h>
+#include <common/core/WallFollow.h>
 #include <common/commands/NavTestCommand.h>
 
 int main(int argc, char *argv[]) {

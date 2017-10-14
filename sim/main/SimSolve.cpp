@@ -1,6 +1,6 @@
 #include <common/commanduino/CommanDuino.h>
 #include <common/commands/SolveCommand.h>
-#include <common/Flood.h>
+#include <common/core/Flood.h>
 
 #include <sim/lib/SimTimer.h>
 #include <simulator/msgs/maze_location.pb.h>

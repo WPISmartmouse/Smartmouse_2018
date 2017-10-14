@@ -1,5 +1,5 @@
 #include <commands/SolveMaze.h>
-#include <commands/Forward.h>
+#include <commands/ForwardN.h>
 #include <commands/Turn.h>
 #include <commands/ForwardToCenter.h>
 #include <commands/TurnInPlace.h>

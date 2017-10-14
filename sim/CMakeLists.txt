@@ -20,16 +20,16 @@ add_subdirectory(simulator)
 ##################################
 # libraries for common & simulation sources
 ##################################
-add_library(sim_common ${COM_SRC})
-set_target_properties(sim_common PROPERTIES COMPILE_FLAGS "-include common/util.h")
+add_library(sim_common ${COM_COMMANDS_SRC} ${CORE_COM_SRC} ${COM_SRC})
+set_target_properties(sim_common PROPERTIES COMPILE_FLAGS "-include ${UTIL_HEADER}")
 
 add_library(sim_common_commands ${COM_COMMAND_SRC})
 target_link_libraries(sim_common_commands msgs)
-set_target_properties(sim_common_commands PROPERTIES COMPILE_FLAGS "-include common/util.h")
+set_target_properties(sim_common_commands PROPERTIES COMPILE_FLAGS "-include ${UTIL_HEADER}")
 
 file(GLOB SIM_SRC lib/*.cpp commands/*.cpp)
 add_library(sim ${SIM_SRC})
-set_target_properties(sim PROPERTIES COMPILE_FLAGS "-include common/util.h")
+set_target_properties(sim PROPERTIES COMPILE_FLAGS "-include ${UTIL_HEADER}")
 target_link_libraries(sim sim_common sim_common_commands ${IGNITION-TRANSPORT_LIBRARIES} msgs)
 
 #################################

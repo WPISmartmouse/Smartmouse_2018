@@ -5,7 +5,7 @@
 #include <common/commands/SolveCommand.h>
 #include <console/ConsoleMouse.h>
 #include <console/ConsoleTimer.h>
-#include <common/Flood.h>
+#include <common/core/Flood.h>
 #include <cstring>
 #include <common/core/util.h>
 

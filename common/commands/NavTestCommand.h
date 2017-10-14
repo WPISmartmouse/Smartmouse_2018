@@ -7,6 +7,4 @@
 class NavTestCommand : public CommandGroup {
 public:
   NavTestCommand();
-
-private:
 };

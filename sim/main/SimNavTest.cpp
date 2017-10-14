@@ -34,11 +34,11 @@ int main(int argc, char *argv[]) {
   while (!timer.isTimeReady());
 
   mouse->simInit();
-  Scheduler scheduler(new NavTestCommand(new Flood(mouse)));
+  Scheduler scheduler(new NavTestCommand());
 
   bool done = false;
   unsigned long last_t = timer.programTimeMs();
-  while (true) {
+  while (!done) {
 
     unsigned long now = timer.programTimeMs();
     double dt_s = (now - last_t) / 1000.0;
@@ -50,12 +50,7 @@ int main(int argc, char *argv[]) {
 
     mouse->run(dt_s);
 
-    if (!done) {
-      done = scheduler.run();
-      if (done) {
-        print("done\n.");
-      }
-    }
+    done = scheduler.run();
 
     last_t = now;
   }

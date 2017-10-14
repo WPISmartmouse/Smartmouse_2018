@@ -5,21 +5,21 @@ ForwardToCenter::ForwardToCenter() : Command("FwdToCenter"), mouse(SimMouse::ins
 
 void ForwardToCenter::initialize() {
   start = mouse->getGlobalPose();
-  driver.start(start, DriveStraight::fwdDispToCenter(mouse));
+  mouse->kinematic_controller.enable_sensor_pose_estimate = true;
+  mouse->kinematic_controller.start(start, KinematicController::fwdDispToCenter(mouse), 0.0);
 }
 
 void ForwardToCenter::execute() {
-  double l_adjust, r_adjust;
-  std::tie(l_adjust, r_adjust) = driver.compute_wheel_velocities(this->mouse);
-  l_adjust = config.MAX_SPEED - l_adjust;
-  r_adjust = config.MAX_SPEED - r_adjust;
-  double l = driver.dispError * kDisp - l_adjust;
-  double r = driver.dispError * kDisp - r_adjust;
+  double l, r;
+  std::tie(l, r) = mouse->kinematic_controller.compute_wheel_velocities(this->mouse);
   mouse->setSpeed(l, r);
 }
 
 bool ForwardToCenter::isFinished() {
-  return driver.dispError <= 0;
+  double vl, vr;
+  std::tie(vl, vr) = mouse->getWheelVelocities();
+  return fabs(mouse->kinematic_controller.drive_straight_state.dispError) <= 0.01
+      or (fabs(vl) < 0.01 and fabs(vr) < 0.01);
 }
 
 void ForwardToCenter::end() {

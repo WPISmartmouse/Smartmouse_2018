@@ -1,4 +1,4 @@
-#include <common/RobotConfig.h>
+#include <common/KinematicController/RobotConfig.h>
 
 RobotConfig config = {
         FRONT_ANALOG_ANGLE : 1.35255,

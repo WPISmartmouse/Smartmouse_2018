@@ -2,7 +2,7 @@
 
 #include <QtGui/QPainter>
 
-#include <common/AbstractMaze.h>
+#include <common/core/AbstractMaze.h>
 #include <sim/simulator/lib/widgets/MazeWidget.h>
 #include <lib/common/TopicNames.h>
 #include <sim/simulator/msgs/msgs.h>

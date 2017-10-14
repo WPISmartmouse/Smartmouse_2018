@@ -108,10 +108,6 @@ void AbstractMaze::update(SensorReading sr) {
   }
 }
 
-Node *AbstractMaze::center_node() {
-  return nodes[AbstractMaze::CENTER][AbstractMaze::CENTER];
-}
-
 bool AbstractMaze::flood_fill_from_point(route_t *path, unsigned int r0, unsigned int c0, unsigned int r1, unsigned int c1) {
   return flood_fill(path, r0, c0, r1, c1);
 }
@@ -491,4 +487,20 @@ route_t AbstractMaze::truncate(unsigned int row, unsigned int col, Direction dir
     }
   }
   return trunc;
+}
+
+bool AbstractMaze::operator==(const AbstractMaze &other) const {
+  unsigned int i, j;
+  for (i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
+    for (j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
+      for (Direction d = Direction::First; d != Direction::Last; d++) {
+        bool n1 = static_cast<bool>(nodes[i][j]->neighbor(d));
+        bool n2 = static_cast<bool>(other.nodes[i][j]->neighbor(d));
+        if (!(n1 ^ n2)) {
+          return false;
+        }
+      }
+    }
+  }
+  return true;
 }

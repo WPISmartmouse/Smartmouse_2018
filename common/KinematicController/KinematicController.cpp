@@ -298,7 +298,6 @@ void KinematicController::start(GlobalPose start_pose, double goalDisp, double v
 void KinematicController::planTraj(Waypoints waypoints) {
   TrajectoryPlanner planner(waypoints);
   Eigen::Matrix<double, 10, 1> plan = planner.plan();
-
 }
 
 std::pair<double, double> KinematicController::compute_wheel_velocities(Mouse *mouse) {

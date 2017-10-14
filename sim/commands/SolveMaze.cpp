@@ -20,17 +20,19 @@ bool SolveMaze::isFinished() {
     bool mazeSolved = solver->isFinished();
 
     if (!mazeSolved) {
-      Direction nextDirection = solver->planNextStep();
+      motion_primitive_t prim = solver->planNextStep();
 
       if (!solver->isSolvable()) {
         solved = false;
         return true;
       }
 
-      if (nextDirection == solver->mouse->getDir()) {
-        addSequential(new Forward());
+      if (prim.d == solver->mouse->getDir()) {
+        for (size_t i = 0; i < prim.n; i++) {
+          addSequential(new Forward());
+        }
       } else {
-        addSequential(new Turn(nextDirection));
+        addSequential(new Turn(prim.d));
       }
 
       movements++;

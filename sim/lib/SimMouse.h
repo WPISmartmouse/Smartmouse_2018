@@ -2,8 +2,8 @@
 
 #include <mutex>
 #include <condition_variable>
-#include <common/Mouse.h>
-#include <common/Pose.h>
+#include <common/core/Mouse.h>
+#include <common/core/Pose.h>
 #include <common/KinematicController/KinematicController.h>
 #include <ignition/transport/Node.hh>
 
@@ -34,7 +34,7 @@ public:
   std::pair<double, double> getWheelVelocities();
 
   void indicatePath(unsigned int starting_row, unsigned int starting_col,
-                    std::string path, std::string);
+                    route_t path, std::string);
 
   bool isStopped();
 

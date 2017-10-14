@@ -20,7 +20,5 @@ public:
 private:
   GlobalPose start;
   RealMouse *mouse;
-
-  RangeData range_data;
 };
 

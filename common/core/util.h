@@ -1,6 +1,5 @@
 #pragma once
 
-#include <common/commanduino/TimerInterface.h>
 #include <vector>
 
 void print(const char *fmt, ...);

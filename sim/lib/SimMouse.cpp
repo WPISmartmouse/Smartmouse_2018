@@ -52,20 +52,22 @@ std::pair<double, double> SimMouse::getWheelVelocities() {
   return kinematic_controller.getWheelVelocities();
 };
 
-void SimMouse::indicatePath(unsigned int row, unsigned int col, std::string path, std::string color) {
-  for (char &c : path) {
-    switch (c) {
-      case 'N':row--;
-        break;
-      case 'E':col++;
-        break;
-      case 'S':row++;
-        break;
-      case 'W':col--;
-        break;
-      default:break;
+void SimMouse::indicatePath(unsigned int row, unsigned int col, route_t path, std::string color) {
+  for (motion_primitive_t prim : path) {
+    for (size_t i = 0; i < prim.n; i++) {
+      switch (prim.d) {
+        case Direction::N:row--;
+          break;
+        case Direction::E:col++;
+          break;
+        case Direction::S:row++;
+          break;
+        case Direction::W:col--;
+          break;
+        default:break;
+      }
+      indicators[row][col]->mutable_material()->mutable_script()->set_name(color);
     }
-    indicators[row][col]->mutable_material()->mutable_script()->set_name(color);
   }
 }
 
@@ -217,7 +219,7 @@ void SimMouse::simInit() {
   setSpeed(0.60, 0.60);
   kinematic_controller.setParams(10, 0, 0, 0, 0);
 
-  kinematic_controller.setAcceleration(2.0, 2.0);
+  kinematic_controller.setAccelerationMpss(2.0);
 
   // we start in the middle of the first square
   resetToStartPose();

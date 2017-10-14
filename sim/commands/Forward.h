@@ -3,7 +3,6 @@
 #include <common/commanduino/CommanDuino.h>
 #include <common/core/Mouse.h>
 #include <common/core/Pose.h>
-#include <common/DriveStraight.h.not>
 
 #include <sim/lib/SimMouse.h>
 
@@ -25,6 +24,5 @@ private:
   SimMouse *mouse;
 
   RangeData range_data;
-  DriveStraight follower;
 };
 

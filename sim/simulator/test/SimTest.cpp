@@ -1,7 +1,7 @@
 #include <fstream>
 
 #include "gtest/gtest.h"
-#include <common/AbstractMaze.h>
+#include <common/core/AbstractMaze.h>
 #include <msgs/direction.pb.h>
 #include <msgs/msgs.h>
 #include <ignition/transport.hh>

@@ -1,8 +1,8 @@
 #include <sim/simulator/lib/Server.h>
 #include <lib/common/TopicNames.h>
 #include <msgs/world_statistics.pb.h>
-#include <common/Mouse.h>
-#include <common/RobotConfig.h>
+#include <common/core/Mouse.h>
+#include <common/KinematicController/RobotConfig.h>
 #include <common/math/math.h>
 
 Server::Server()
