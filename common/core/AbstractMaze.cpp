@@ -504,3 +504,8 @@ bool AbstractMaze::operator==(const AbstractMaze &other) const {
   }
   return true;
 }
+
+std::pair<double, double> AbstractMaze::rowColToXYCenter(unsigned int row, unsigned int col) {
+  return {col * AbstractMaze::UNIT_DIST + AbstractMaze::HALF_UNIT_DIST,
+          row * AbstractMaze::UNIT_DIST + AbstractMaze::HALF_UNIT_DIST};
+}

@@ -40,6 +40,8 @@ class Server {
   void PublishInternalState();
   void PublishWorldStats(double rtf);
 
+  double ComputeSensorRange(smartmouse::msgs::SensorDescription sensor);
+
   ignition::transport::Node *node_ptr_;
   ignition::transport::Node::Publisher world_stats_pub_;
   ignition::transport::Node::Publisher sim_state_pub_;

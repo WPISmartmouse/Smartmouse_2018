@@ -30,20 +30,20 @@ smartmouse::msgs::Maze Convert(AbstractMaze *maze, std::string name, int size) {
     }
   }
 
-  unsigned int i;
-  for (i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
-    Wall *left_col_wall = maze_msg.add_walls();
-    smartmouse::msgs::RowCol *left_col_node = left_col_wall->mutable_node();
-    left_col_node->set_row(i);
-    left_col_node->set_col(0);
-    left_col_wall->set_direction(Direction_Dir_W);
-
-    Wall *top_row_wall = maze_msg.add_walls();
-    smartmouse::msgs::RowCol *top_row_node = top_row_wall->mutable_node();
-    top_row_node->set_row(0);
-    top_row_node->set_col(i);
-    top_row_wall->set_direction(Direction_Dir_N);
-  }
+//  unsigned int i;
+//  for (i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
+//    Wall *left_col_wall = maze_msg.add_walls();
+//    smartmouse::msgs::RowCol *left_col_node = left_col_wall->mutable_node();
+//    left_col_node->set_row(i);
+//    left_col_node->set_col(0);
+//    left_col_wall->set_direction(Direction_Dir_W);
+//
+//    Wall *bottom_row_wall = maze_msg.add_walls();
+//    smartmouse::msgs::RowCol *bottom_row_node = bottom_row_wall->mutable_node();
+//    bottom_row_node->set_row(0);
+//    bottom_row_node->set_col(i);
+//    bottom_row_wall->set_direction(Direction_Dir_N);
+//  }
 
   return maze_msg;
 }
@@ -111,13 +111,40 @@ RobotDescription Convert(std::ifstream &fs) {
   right_wheel->set_radius(json["right_wheel"]["radius"]);
   right_wheel->set_thickness(json["right_wheel"]["thickness"]);
 
-  auto sensors = robot_description.mutable_sensors();
-  for (auto json_sensor : json["range_sensors"]) {
-    auto sensor = sensors->Add();
-    sensor->set_x(json_sensor["x"]);
-    sensor->set_y(json_sensor["y"]);
-    sensor->set_yaw(json_sensor["yaw"]);
-  }
+  auto front = robot_description.mutable_sensors()->mutable_front()->mutable_p();
+  front->set_x(json["range_sensors"]["front"]["x"]);
+  front->set_y(json["range_sensors"]["front"]["y"]);
+  front->set_theta(json["range_sensors"]["front"]["theta"]);
+
+  auto back_right = robot_description.mutable_sensors()->mutable_back_right()->mutable_p();
+  back_right->set_x(json["range_sensors"]["back_right"]["x"]);
+  back_right->set_y(json["range_sensors"]["back_right"]["y"]);
+  back_right->set_theta(json["range_sensors"]["back_right"]["theta"]);
+
+  auto back_left = robot_description.mutable_sensors()->mutable_back_left()->mutable_p();
+  back_left->set_x(json["range_sensors"]["back_left"]["x"]);
+  back_left->set_y(json["range_sensors"]["back_left"]["y"]);
+  back_left->set_theta(json["range_sensors"]["back_left"]["theta"]);
+
+  auto gerald_right = robot_description.mutable_sensors()->mutable_gerald_right()->mutable_p();
+  gerald_right->set_x(json["range_sensors"]["gerald_right"]["x"]);
+  gerald_right->set_y(json["range_sensors"]["gerald_right"]["y"]);
+  gerald_right->set_theta(json["range_sensors"]["gerald_right"]["theta"]);
+
+  auto gerald_left = robot_description.mutable_sensors()->mutable_gerald_left()->mutable_p();
+  gerald_left->set_x(json["range_sensors"]["gerald_left"]["x"]);
+  gerald_left->set_y(json["range_sensors"]["gerald_left"]["y"]);
+  gerald_left->set_theta(json["range_sensors"]["gerald_left"]["theta"]);
+
+  auto front_right = robot_description.mutable_sensors()->mutable_front_right()->mutable_p();
+  front_right->set_x(json["range_sensors"]["front_right"]["x"]);
+  front_right->set_y(json["range_sensors"]["front_right"]["y"]);
+  front_right->set_theta(json["range_sensors"]["front_right"]["theta"]);
+
+  auto front_left = robot_description.mutable_sensors()->mutable_front_left()->mutable_p();
+  front_left->set_x(json["range_sensors"]["front_left"]["x"]);
+  front_left->set_y(json["range_sensors"]["front_left"]["y"]);
+  front_left->set_theta(json["range_sensors"]["front_left"]["theta"]);
 
   return robot_description;
 }
@@ -128,6 +155,60 @@ double ConvertSec(ignition::msgs::Time time) {
 
 unsigned long ConvertMSec(ignition::msgs::Time time) {
   return time.sec() * 1000ul + time.nsec() / 1000000;
+}
+
+std::vector<ignition::math::Line2d> MazeToLines(smartmouse::msgs::Maze maze) {
+  std::vector<ignition::math::Line2d> lines;
+
+  for (auto wall : maze.walls()) {
+    double x1, y1, x2, y2;
+    std::tie(x1, y1, x2, y2) = WallToCoordinates(wall);
+    lines.push_back(ignition::math::Line2d(x1, y1, x2, y1));
+    lines.push_back(ignition::math::Line2d(x2, y1, x2, y2));
+    lines.push_back(ignition::math::Line2d(x2, y2, x1, y2));
+    lines.push_back(ignition::math::Line2d(x1, y2, x1, y1));
+  }
+
+  return lines;
+}
+
+std::tuple<double, double, double, double> WallToCoordinates(smartmouse::msgs::Wall wall) {
+  double center_x, center_y;
+  std::tie(center_x, center_y) = AbstractMaze::rowColToXYCenter(wall.node().row(), wall.node().col());
+
+  double x1 = 0, y1 = 0, x2 = 0, y2 = 0;
+  switch (wall.direction()) {
+    case smartmouse::msgs::Direction_Dir_N: {
+      x1 = center_x - AbstractMaze::HALF_UNIT_DIST - AbstractMaze::HALF_WALL_THICKNESS;
+      y1 = center_y + AbstractMaze::HALF_UNIT_DIST + AbstractMaze::HALF_WALL_THICKNESS;
+      x2 = center_x + AbstractMaze::HALF_UNIT_DIST + AbstractMaze::HALF_WALL_THICKNESS;
+      y2 = center_y + AbstractMaze::HALF_UNIT_DIST - AbstractMaze::HALF_WALL_THICKNESS;
+      break;
+    }
+    case smartmouse::msgs::Direction_Dir_S: {
+      x1 = center_x - AbstractMaze::HALF_UNIT_DIST - AbstractMaze::HALF_WALL_THICKNESS;
+      y1 = center_y - AbstractMaze::HALF_UNIT_DIST + AbstractMaze::HALF_WALL_THICKNESS;
+      x2 = center_x + AbstractMaze::HALF_UNIT_DIST + AbstractMaze::HALF_WALL_THICKNESS;
+      y2 = center_y - AbstractMaze::HALF_UNIT_DIST - AbstractMaze::HALF_WALL_THICKNESS;
+      break;
+    }
+    case smartmouse::msgs::Direction_Dir_E: {
+      x1 = center_x + AbstractMaze::HALF_UNIT_DIST - AbstractMaze::HALF_WALL_THICKNESS;
+      y1 = center_y + AbstractMaze::HALF_UNIT_DIST + AbstractMaze::HALF_WALL_THICKNESS;
+      x2 = center_x + AbstractMaze::HALF_UNIT_DIST + AbstractMaze::HALF_WALL_THICKNESS;
+      y2 = center_y - AbstractMaze::HALF_UNIT_DIST - AbstractMaze::HALF_WALL_THICKNESS;
+      break;
+    }
+    case smartmouse::msgs::Direction_Dir_W: {
+      x1 = center_x - AbstractMaze::HALF_UNIT_DIST - AbstractMaze::HALF_WALL_THICKNESS;
+      y1 = center_y + AbstractMaze::HALF_UNIT_DIST + AbstractMaze::HALF_WALL_THICKNESS;
+      x2 = center_x - AbstractMaze::HALF_UNIT_DIST + AbstractMaze::HALF_WALL_THICKNESS;
+      y2 = center_y - AbstractMaze::HALF_UNIT_DIST - AbstractMaze::HALF_WALL_THICKNESS;
+      break;
+    }
+  }
+
+  return std::tuple<double, double, double, double>{x1, y1, x2, y2};
 }
 
 }

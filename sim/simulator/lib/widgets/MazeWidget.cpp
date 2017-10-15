@@ -89,7 +89,6 @@ void MazeWidget::PaintMouse(QPainter &painter, QTransform tf) {
   left_wheel_path.lineTo(lwx + lr, lwy + lt / 2);
   left_wheel_path.lineTo(lwx + lr, lwy - lt / 2);
 
-
   QPainterPath right_wheel_path;
   right_wheel_path.moveTo(rwx - rr, rwy - rt / 2);
   right_wheel_path.lineTo(rwx - rr, rwy + rt / 2);
@@ -104,11 +103,22 @@ void MazeWidget::PaintMouse(QPainter &painter, QTransform tf) {
   painter.fillPath(tf.map(left_wheel_path), QBrush(Qt::black));
   painter.fillPath(tf.map(right_wheel_path), QBrush(Qt::black));
 
-  for (auto sensors : mouse_.sensors()) {
+  std::vector<std::pair<smartmouse::msgs::XYTheta, double>> sensor_poses;
+  sensor_poses.push_back({mouse_.sensors().front().p(), robot_state_.front()});
+  sensor_poses.push_back({mouse_.sensors().front_left().p(), robot_state_.front_left()});
+  sensor_poses.push_back({mouse_.sensors().front_right().p(), robot_state_.front_right()});
+  sensor_poses.push_back({mouse_.sensors().back_left().p(), robot_state_.back_left()});
+  sensor_poses.push_back({mouse_.sensors().back_right().p(), robot_state_.back_right()});
+  sensor_poses.push_back({mouse_.sensors().gerald_left().p(), robot_state_.gerald_left()});
+  sensor_poses.push_back({mouse_.sensors().gerald_right().p(), robot_state_.gerald_right()});
+
+  for (auto pair : sensor_poses) {
+    auto sensor_pose = pair.first;
+    double sensor_range = pair.second;
     QTransform line_tf(tf);
-    line_tf.translate(sensors.x(), sensors.y());
-    line_tf.rotateRadians(sensors.yaw(), Qt::ZAxis);
-    QLineF line(0, 0, 0.1, 0);
+    line_tf.translate(sensor_pose.x(), sensor_pose.y());
+    line_tf.rotateRadians(sensor_pose.theta(), Qt::ZAxis);
+    QLineF line(0, 0, sensor_range, 0);
     painter.setPen(QPen(Qt::green));
     painter.drawLine(line_tf.map(line));
   }
@@ -116,44 +126,16 @@ void MazeWidget::PaintMouse(QPainter &painter, QTransform tf) {
 
 void MazeWidget::PaintWalls(QPainter &painter, QTransform tf) {
   for (smartmouse::msgs::Wall wall : maze_.walls()) {
-    smartmouse::msgs::RowCol row_col = wall.node();
-    smartmouse::msgs::Direction::Dir dir = wall.direction();
-    double center_x, center_y;
-    std::tie(center_x, center_y) = AbstractMaze::rowColToXYCenter(row_col.row(), row_col.col());
+    double x1, y1, x2, y2;
+    std::tie(x1, y1, x2, y2) = smartmouse::msgs::WallToCoordinates(wall);
 
-    double x1 = center_x, y1 = center_y, w = AbstractMaze::UNIT_DIST, h = AbstractMaze::WALL_THICKNESS;
-    switch (dir) {
-      case smartmouse::msgs::Direction_Dir_N: {
-        x1 = center_x - AbstractMaze::HALF_UNIT_DIST;
-        y1 = center_y + AbstractMaze::HALF_UNIT_DIST - AbstractMaze::HALF_WALL_THICKNESS;
-        w = AbstractMaze::UNIT_DIST;
-        h = AbstractMaze::WALL_THICKNESS;
-        break;
-      }
-      case smartmouse::msgs::Direction_Dir_S: {
-        x1 = center_x - AbstractMaze::HALF_UNIT_DIST;
-        y1 = center_y - AbstractMaze::HALF_UNIT_DIST - AbstractMaze::HALF_WALL_THICKNESS;
-        w = AbstractMaze::UNIT_DIST;
-        h = AbstractMaze::WALL_THICKNESS;
-        break;
-      }
-      case smartmouse::msgs::Direction_Dir_E: {
-        x1 = center_x + AbstractMaze::HALF_UNIT_DIST - AbstractMaze::HALF_WALL_THICKNESS;
-        y1 = center_y - AbstractMaze::HALF_UNIT_DIST;
-        w = AbstractMaze::WALL_THICKNESS;
-        h = AbstractMaze::UNIT_DIST;
-        break;
-      }
-      case smartmouse::msgs::Direction_Dir_W: {
-        x1 = center_x - AbstractMaze::HALF_UNIT_DIST - AbstractMaze::HALF_WALL_THICKNESS;
-        y1 = center_y - AbstractMaze::HALF_UNIT_DIST;
-        w = AbstractMaze::WALL_THICKNESS;
-        h = AbstractMaze::UNIT_DIST;
-        break;
-      }
-    }
-
-    painter.fillRect(tf.mapRect(QRectF(x1, y1, w, h)), kWallBrush);
+    QPainterPath wall_path;
+    wall_path.moveTo(x1, y1);
+    wall_path.lineTo(x2, y1);
+    wall_path.lineTo(x2, y2);
+    wall_path.lineTo(x1, y2);
+    wall_path.lineTo(x1, y1);
+    painter.fillPath(tf.map(wall_path), kWallBrush);
   }
 }
 

@@ -50,10 +50,7 @@ class AbstractMaze {
   route_t fastest_theoretical_route;
   route_t path_to_next_goal;
 
-  inline static std::pair<double, double> rowColToXYCenter(unsigned int row, unsigned int col) {
-    return {col * AbstractMaze::UNIT_DIST + AbstractMaze::HALF_UNIT_DIST,
-            (AbstractMaze::MAZE_SIZE - 1 - row) * AbstractMaze::UNIT_DIST + AbstractMaze::HALF_UNIT_DIST};
-  }
+  static std::pair<double, double> rowColToXYCenter(unsigned int row, unsigned int col);
 
   /** \brief allocates and initializes a node
    * allocates a maze of the given size and sets all links in graph to be null. Naturally, it's column major.

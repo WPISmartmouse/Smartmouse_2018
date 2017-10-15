@@ -11,7 +11,7 @@
 #include <msgs/world_statistics.pb.h>
 #include <lib/common/RayTracing.h>
 
-TEST(DirectionTest, DirectionMsgConversion) {
+TEST(MsgsTest, DirectionMsgConversion) {
   smartmouse::msgs::Direction dir_msg;
   EXPECT_EQ(dir_msg.direction(), smartmouse::msgs::Direction_Dir_N);
 
@@ -28,14 +28,14 @@ TEST(DirectionTest, DirectionMsgConversion) {
   EXPECT_EQ(dir_msg.direction(), smartmouse::msgs::Direction_Dir_W);
 }
 
-TEST(DirectionTest, DirectionEnumConversion) {
+TEST(MsgsTest, DirectionEnumConversion) {
   EXPECT_EQ(smartmouse::msgs::Convert(smartmouse::msgs::Direction_Dir_N), ::Direction::N);
   EXPECT_EQ(smartmouse::msgs::Convert(smartmouse::msgs::Direction_Dir_E), ::Direction::E);
   EXPECT_EQ(smartmouse::msgs::Convert(smartmouse::msgs::Direction_Dir_S), ::Direction::S);
   EXPECT_EQ(smartmouse::msgs::Convert(smartmouse::msgs::Direction_Dir_W), ::Direction::W);
 }
 
-TEST(MazeTest, MazeConversion) {
+TEST(MsgsTest, MazeConversion) {
   AbstractMaze maze;
   smartmouse::msgs::Maze maze_msg = smartmouse::msgs::Convert(&maze);
 
@@ -45,6 +45,46 @@ TEST(MazeTest, MazeConversion) {
   AbstractMaze maze2 = smartmouse::msgs::Convert(maze_msg);
 
   EXPECT_EQ(maze, maze2);
+}
+
+TEST(MsgsTest, WallToCoordinates) {
+  smartmouse::msgs::Wall wall;
+  double x1, y1, x2, y2;
+  wall.set_direction(smartmouse::msgs::Direction_Dir_S);
+  wall.mutable_node()->set_row(0);
+  wall.mutable_node()->set_col(0);
+  std::tie(x1, y1, x2, y2) = smartmouse::msgs::WallToCoordinates(wall);
+  EXPECT_EQ(x1, -0.006);
+  EXPECT_EQ(y1, 0.006);
+  EXPECT_EQ(x2, 0.186);
+  EXPECT_EQ(y2, -0.006);
+
+  wall.set_direction(smartmouse::msgs::Direction_Dir_W);
+  wall.mutable_node()->set_row(0);
+  wall.mutable_node()->set_col(0);
+  std::tie(x1, y1, x2, y2) = smartmouse::msgs::WallToCoordinates(wall);
+  EXPECT_EQ(x1, -0.006);
+  EXPECT_EQ(y1, 0.186);
+  EXPECT_EQ(x2, 0.006);
+  EXPECT_EQ(y2, -0.006);
+
+  wall.set_direction(smartmouse::msgs::Direction_Dir_E);
+  wall.mutable_node()->set_row(0);
+  wall.mutable_node()->set_col(0);
+  std::tie(x1, y1, x2, y2) = smartmouse::msgs::WallToCoordinates(wall);
+  EXPECT_EQ(x1, 0.174);
+  EXPECT_EQ(y1, 0.186);
+  EXPECT_EQ(x2, 0.186);
+  EXPECT_EQ(y2, -0.006);
+
+  wall.set_direction(smartmouse::msgs::Direction_Dir_N);
+  wall.mutable_node()->set_row(0);
+  wall.mutable_node()->set_col(0);
+  std::tie(x1, y1, x2, y2) = smartmouse::msgs::WallToCoordinates(wall);
+  EXPECT_EQ(x1, -0.006);
+  EXPECT_EQ(y1, 0.186);
+  EXPECT_EQ(x2, 0.186);
+  EXPECT_EQ(y2, 0.174);
 }
 
 TEST(ServerTest, QuitTest) {

@@ -1,9 +1,13 @@
+#include <limits>
+
 #include <sim/simulator/lib/Server.h>
 #include <lib/common/TopicNames.h>
 #include <msgs/world_statistics.pb.h>
 #include <common/core/Mouse.h>
 #include <common/KinematicController/RobotConfig.h>
 #include <common/math/math.h>
+#include <lib/common/RayTracing.h>
+#include <msgs/msgs.h>
 
 Server::Server()
     : sim_time_(Time::Zero),
@@ -79,7 +83,7 @@ bool Server::Run() {
 
   Time end_step_time = Time::GetWallTime();
   if (end_step_time > desired_end_time) {
-    std::cout << "step took too long. Skipping sleep." << std::endl;
+//    std::cout << "step took too long. Skipping sleep." << std::endl;
   }
   else {
     Time sleep_time = (desired_end_time - end_step_time);
@@ -183,9 +187,13 @@ void Server::UpdateRobotState(double dt) {
   // handle wrap-around of theta
   new_theta = smartmouse::math::wrapAngleRad(new_theta);
 
-  // ray trace to find distance to walls
-  for (auto sensor : mouse_.sensors()) {
-  }
+  // Ray trace to find distance to walls
+  // iterate over every line segment in the maze (all edges of all walls)
+  // find the intersection of that wall with each sensor
+  // if the intersection exists, and the distance is the shortest range for that sensor, replace the current range
+  robot_state_.set_front(ComputeSensorRange(mouse_.sensors().front()));
+  robot_state_.set_front_left(ComputeSensorRange(mouse_.sensors().front_left()));
+  robot_state_.set_front_right(ComputeSensorRange(mouse_.sensors().front_right()));
 
   robot_state_.mutable_p()->set_x(new_x);
   robot_state_.mutable_p()->set_y(new_y);
@@ -324,6 +332,23 @@ void Server::Join() {
 bool Server::IsConnected() {
   return connected_;
 }
+
 unsigned int Server::getNsOfSimPerStep() const {
   return ns_of_sim_per_step_;
+}
+
+double Server::ComputeSensorRange(smartmouse::msgs::SensorDescription sensor) {
+  double range = std::numeric_limits<double>::max();
+  std::vector<ignition::math::Line2d> maze_lines = smartmouse::msgs::MazeToLines(maze_);
+  for (auto line : maze_lines) {
+    ignition::math::Vector2d s_origin(sensor.p().x(), sensor.p().y());
+    ignition::math::Vector2d s_direction(cos(sensor.p().theta()), sin(sensor.p().theta()));
+    ignition::math::Vector2d pt;
+    std::experimental::optional<double> r = RayTracing::distance_to_wall(line, s_origin, s_direction);
+    if (r && *r < range) {
+      range = *r;
+    }
+  }
+
+  return range;
 }

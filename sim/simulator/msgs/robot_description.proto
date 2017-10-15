@@ -11,15 +11,25 @@ message RobotDescription {
     optional WheelDescription left_wheel = 2;
     optional WheelDescription right_wheel = 3;
     optional ignition.msgs.Vector3d cog = 4;
-    repeated XYTheta range_sensors = 5;
     optional MotorDescription motor = 6;
-    repeated SensorDescription sensors = 7;
+    optional SensorsDescription sensors = 7;
+}
+
+message SensorsDescription {
+    optional SensorDescription front = 1;
+    optional SensorDescription gerald_left = 2;
+    optional SensorDescription gerald_right = 3;
+    optional SensorDescription front_left = 4;
+    optional SensorDescription front_right = 5;
+    optional SensorDescription back_left = 6;
+    optional SensorDescription back_right = 7;
 }
 
 message SensorDescription {
-    optional double x = 1;
-    optional double y = 2;
-    optional double yaw = 3;
+    optional XYTheta p = 1;
+    optional double min_range_m = 2;
+    optional double max_range_m = 3;
+    optional double beam_angle_rad = 6;
 }
 
 message MotorDescription {
