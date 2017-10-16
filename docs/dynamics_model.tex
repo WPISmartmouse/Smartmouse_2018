@@ -17,6 +17,7 @@
 
 \maketitle
 
+\section{Forward Kinematics}
 Deriving the kinematic equations of a differential drive robot.
 
 \hfill
@@ -26,10 +27,10 @@ Deriving the kinematic equations of a differential drive robot.
     % coordinate frame and grid%
     \definecolor{lg}{rgb}{0.9,0.9,0.9}
     \draw[step=1,lg,very thin] (-1,0) grid (6,3);
-    \draw [very thick,->] (-1,1) -- (-1,2);
-    \draw [very thick,->] (-1,1) -- (0,1);
-    \draw (-1.1, 2.1) node {$y$};
-    \draw (0.1, 1.1) node {$x$};
+    \draw [very thick,->] (-1,3) -- (-1,2);
+    \draw [very thick,->] (-1,3) -- (0,3);
+    \draw (-1.2, 2.1) node {$row$};
+    \draw (0.1, 3.1) node {$col$};
 
     % robot and stuff %
     \draw [line width=1mm, draw=gray,rotate around={15:(0,0)}]{(3.5,0)--(4.5, 0)};
@@ -50,12 +51,14 @@ Deriving the kinematic equations of a differential drive robot.
     \draw [rotate around={15:(0,0)}] (4.875, 0.5) node {$v_r$};
     \draw [rotate around={15:(0,0)}] (2, -0.25) node {$R$};
     \draw [rotate around={15:(0,0)}] (4, -1) node {$W$};
-    \draw [rotate around={15:(0,0)}] (4, -.3) node {$(x,y,\theta)$};
+    \draw [rotate around={15:(0,0)}] (4, -.3) node {$(c,r,\theta)$};
     \draw [rotate around={15:(0,0)}] (0, 0.3) node {$ICC$};
-    \draw [rotate around={15:(0,0)}] (0, -.2) node {$(x_c,y_c,\theta_c)$};
+    \draw [rotate around={15:(0,0)}] (0, -.2) node {$(c_{ICC},r_{ICC},\theta_{ICC})$};
   \end{tikzpicture}
   \centering
 \end{figure}
+
+It's worth noting up front that we do not consider an X/Y plane. It is not a useful coordinate system for smartmouse. We think instead of row/column, where rows increase going down and columns increase going left to right. The top left cell is 0,0. Normally, we think of these as integer values, but we can also think of them as floating point values if we want to talk about the exact position in a cell. With that out of the way, let's do the derivation.
 
 At an instant in time we say that the robot is turning around some point $ICC$, the instanteous center. The radius $R$ about that point is what we want to solve for. We start with the knowedge that since the robot doesn't tear itself apart while driving, the rate $\omega$ at which both wheels (and the robot) move around $ICC$ is the same.
 \begin{equation} \label{eq:1}
@@ -99,7 +102,7 @@ We can use this result to get a cleaner equation for $\omega$, which right now r
 \end{align*}
 
 
-\textbf{Next we need to figure out how to update our $x$, $y$, and $\theta$ given $R$.} \\
+\textbf{Next we need to figure out how to update our $c$, $r$, and $\theta$ given $R$.} \\
 
 Before we can solve any of these, we need to figure out what $\Delta\theta$ is equal to. We will assume we are following this arc of constant radius for a given time step $\Delta t$. This is a good assumption if our time step is equal to our controller time step, during which presumably the speeds of the motors aren't changing, and so neither will our turning radius. If so, then $\Delta\theta = \omega\Delta t$, and we know
 
@@ -113,82 +116,82 @@ So what are our update equations? \\
 
 Theta is obvious: $\theta \leftarrow \theta+\Delta\theta$. \\
 
-To discover the rest, we will consider how to x and y change when we rotate around the $ICC$. \\
+To discover the rest, we will consider how to c and r change when we rotate around the $ICC$. \\
 
 The coordinates of the $ICC$ are:
 
-$$(x-R\sin{\theta}, y+R\cos{\theta})$$
+$$(c_{ICC}, r_{ICC}) = (c-R\sin{\theta}, r-R\cos{\theta})$$
 
-You can see this if you think that the vector to $ICC$ is 90 degrees offset from $\theta$ and do the trig. Let's assume in the situation diagramed above, $\theta=\ang{105}$, $R=4$, and $x=4.8, y=0$, so $ICC = (4.8-4\sin{(105)}, 0+4\cos{(105)}) \approx (1, -1)$. For another example, pretend the robot is right below the origin facing east at $(0,-1,0)$ and $R=1$. $ICC$ should be $(0,0)$ so let's check. $ICC = (0-1\sin{(0)}, -1+1\cos{(0)}) = (0, 0).$ Great, the math seems to check out. Now we just rotate the robot coordinates around the point $ICC$ by $\Delta\theta$, which we can do easily with a rotation matrix. Of course, we're not rotating around the origin, we're roating around $ICC$, so we first subtract out the coordinates of $ICC$ to get $(x_o, y_o) = (x- ICC_x, y-ICC_y)$. Recall that to rotate around the origin by $\Delta\theta$, we multiply our point $(x_o, y_o)$ as follows:
+You can see this if you think that the vector to $ICC$ is 90 degrees offset from $\theta$ and do the trig. Let's assume in the situation diagramed above, $\theta=\ang{105}$, $R=4$, and $c=4.8, r=0$, so $ICC = (4.8-4\sin{(105)}, 0-4\cos{(105)}) \approx (1, 1)$. For another example, pretend the robot is right below the origin facing east at $(0,1,0)$ and $R=1$. $ICC$ should be $(0,0)$ so let's check. $ICC = (0-1\sin{(0)}, 1-1\cos{(0)}) = (0, 0).$ Great, the math seems to check out. Now we just rotate the robot coordinates around the point $ICC$ by $\Delta\theta$, which we can do easily with a rotation matrix. Of course, we're not rotating around the origin, we're roating around $ICC$, so we first subtract out the coordinates of $ICC$ to get $(c_o, r_o) = (c-c_{ICC}, r-r_{ICC})$. Recall that to rotate around the origin by $\Delta\theta$, we multiply our point $(c_o, r_o)$ as follows:
 \begin{equation}
   \begin{bmatrix}
     \cos{\Delta\theta} & -\sin{\Delta\theta} \\
     \sin{\Delta\theta} & \cos{\Delta\theta} \\
   \end{bmatrix}
   \begin{bmatrix}
-    x_o \\
-    y_o \\
+    c_o \\
+    r_o \\
   \end{bmatrix}
   =
   \begin{bmatrix}
-    x_{new} \\
-    y_{new} \\
+    c_{new} \\
+    r_{new} \\
   \end{bmatrix}
 \end{equation}
 We then just add back the coordinates of $ICC$. Great! Now we know how to update all our coordinates. Let's summarize:
 
 \begin{align}
  \theta &\leftarrow \theta + \Delta\theta \\
-  x &\leftarrow \cos{(\Delta\theta)}(x-ICC_x)-\sin{(\Delta\theta)}(y-ICC_y) + ICC_x \\
-  y &\leftarrow \sin{(\Delta\theta)}(x-ICC_x)+\cos{(\Delta\theta)}(y-ICC_y) + ICC_y \\
+  c &\leftarrow \cos{(\Delta\theta)}(c-c_{ICC})-\sin{(\Delta\theta)}(r-r_{ICC}) + c_{ICC} \\
+  r &\leftarrow \sin{(\Delta\theta)}(c-c_{ICC})+\cos{(\Delta\theta)}(r-r_{ICC}) + r_{ICC} \\
 \shortintertext{where}
-  ICC_x &= x-R\sin{\theta} \\
-  ICC_y &= y+R\cos{\theta} \\
+  c_{ICC} &= c-R\sin{\theta} \\
+  r_{ICC} &= r-R\cos{\theta} \\
   \Delta\theta &= \frac{v_r-v_l}{W}\Delta t \\
   R &= \frac{W(v_l+v_r)}{2(v_r-v_l)}
 \end{align}
 
-We can expand and simplify the udpate equations for $x$.
+We can expand and simplify the update equations for $c$.
 
 \begin{align}
-  x &\leftarrow \cos{(\frac{v_r-v_l}{W}\Delta t)}(x-x+R\sin{\theta})-\sin{(\frac{v_r-v_l}{W}\Delta t)}(y-y-R\cos{\theta}) + x-R\sin{\theta} \\
-  x &\leftarrow \cos{(\frac{v_r-v_l}{W}\Delta t)}(R\sin{\theta})-\sin{(\frac{v_r-v_l}{W}\Delta t)}(-R\cos{\theta}) + x-R\sin{\theta} \\
-  x &\leftarrow R\cos{(\frac{v_r-v_l}{W}\Delta t)}\sin{\theta}+R\sin{(\frac{v_r-v_l}{W}\Delta t)}\cos{\theta} + x-R\sin{\theta} \\
-  x &\leftarrow x+R\cos{(\frac{v_r-v_l}{W}\Delta t)}\sin{\theta}+R\sin{(\frac{v_r-v_l}{W}\Delta t)}\cos{\theta}-R\sin{\theta} \\
-  x &\leftarrow x+R\Big(\cos{(\frac{v_r-v_l}{W}\Delta t)}\sin{\theta}+\sin{(\frac{v_r-v_l}{W}\Delta t)}\cos{\theta}\Big)-R\sin{\theta} \\
-  \shortintertext{let $\frac{v_r-v_l}{W}=a$, and $\theta=b$, we can use $\cos{a}\sin{b}+\sin{a}\cos{b}=\sin{(a+b)}$}
-  x &\leftarrow x+R\Bigg(\sin{\Big(\frac{v_r-v_l}{W}\Delta t+\theta}\Big)\Bigg)-R\sin{\theta} \\
-  x &\leftarrow x+R\Bigg(\sin{\Big(\frac{v_r-v_l}{W}\Delta t+\theta}\Big)-\sin{\theta}\Bigg)
+  c &\leftarrow \cos{(\frac{v_r-v_l}{W}\Delta t)}(c-c+R\sin{\theta})-\sin{(\frac{v_r-v_l}{W}\Delta t)}(r-r+R\cos{\theta}) + c-R\sin{\theta} \\
+  c &\leftarrow \cos{(\frac{v_r-v_l}{W}\Delta t)}(R\sin{\theta})-\sin{(\frac{v_r-v_l}{W}\Delta t)}(R\cos{\theta}) + c-R\sin{\theta} \\
+  c &\leftarrow R\cos{(\frac{v_r-v_l}{W}\Delta t)}\sin{\theta}-R\sin{(\frac{v_r-v_l}{W}\Delta t)}\cos{\theta} + c-R\sin{\theta} \\
+  c &\leftarrow c+R\cos{(\frac{v_r-v_l}{W}\Delta t)}\sin{\theta}-R\sin{(\frac{v_r-v_l}{W}\Delta t)}\cos{\theta}-R\sin{\theta} \\
+  c &\leftarrow c+R\Big(\cos{(\frac{v_r-v_l}{W}\Delta t)}\sin{\theta}-\sin{(\frac{v_r-v_l}{W}\Delta t)}\cos{\theta}\Big)-R\sin{\theta} \\
+  \shortintertext{let $\frac{v_r-v_l}{W}=a$, and $\theta=b$, we can use $\cos{a}\sin{b}-\sin{a}\cos{b}=-\sin{(a-b)}$}
+  c &\leftarrow c-R\Bigg(\sin{\Big(\frac{v_r-v_l}{W}\Delta t-\theta}\Big)\Bigg)-R\sin{\theta} \\
+  c &\leftarrow c+-R\Bigg(\sin{\Big(\frac{v_r-v_l}{W}\Delta t-\theta}\Big)+\sin{\theta}\Bigg)
 \end{align}
 
-We can apply the same process for $y$.
+We can apply the same process for $r$.
 
 \begin{align}
-  y &\leftarrow \sin{(\frac{v_r-v_l}{W}\Delta t)}(x-x+R\sin{\theta})+\cos{(\frac{v_r-v_l}{W}\Delta t)}(y-y-R\cos{\theta}) + y+R\cos{\theta} \\
-  y &\leftarrow \sin{(\frac{v_r-v_l}{W}\Delta t)}(R\sin{\theta})+\cos{(\frac{v_r-v_l}{W}\Delta t)}(-R\cos{\theta}) + y+R\cos{\theta} \\
-  y &\leftarrow R\sin{(\frac{v_r-v_l}{W}\Delta t)}(\sin{\theta})-R\cos{(\frac{v_r-v_l}{W}\Delta t)}(\cos{\theta}) + y+R\cos{\theta} \\
-  y &\leftarrow y + R\sin{(\frac{v_r-v_l}{W}\Delta t)}(\sin{\theta})-R\cos{(\frac{v_r-v_l}{W}\Delta t)}(\cos{\theta}) + R\cos{\theta} \\
-  y &\leftarrow y + R\Bigg(\sin{(\frac{v_r-v_l}{W}\Delta t)}(\sin{\theta})-\cos{(\frac{v_r-v_l}{W}\Delta t)}(\cos{\theta}) + \cos{\theta}\Bigg) \\
-  y &\leftarrow y + R\Bigg(-\cos{(\frac{v_r-v_l}{W}\Delta t + \theta)} + \cos{\theta}\Bigg) \\
-  y &\leftarrow y - R\Bigg(\cos{(\frac{v_r-v_l}{W}\Delta t + \theta)} - \cos{\theta}\Bigg)
+  r &\leftarrow \sin{(\frac{v_r-v_l}{W}\Delta t)}(c-c+R\sin{\theta})+\cos{(\frac{v_r-v_l}{W}\Delta t)}(r-r+R\cos{\theta}) + r-R\cos{\theta} \\
+  r &\leftarrow \sin{(\frac{v_r-v_l}{W}\Delta t)}(R\sin{\theta})+\cos{(\frac{v_r-v_l}{W}\Delta t)}(R\cos{\theta}) + r-R\cos{\theta} \\
+  r &\leftarrow R\sin{(\frac{v_r-v_l}{W}\Delta t)}(\sin{\theta})+R\cos{(\frac{v_r-v_l}{W}\Delta t)}(\cos{\theta}) + r-R\cos{\theta} \\
+  r &\leftarrow r + R\sin{(\frac{v_r-v_l}{W}\Delta t)}(\sin{\theta})+R\cos{(\frac{v_r-v_l}{W}\Delta t)}(\cos{\theta}) - R\cos{\theta} \\
+  r &\leftarrow r + R\Bigg(\sin{(\frac{v_r-v_l}{W}\Delta t)}(\sin{\theta})+\cos{(\frac{v_r-v_l}{W}\Delta t)}(\cos{\theta}) - \cos{\theta}\Bigg) \\
+  r &\leftarrow r + R\Bigg(\cos{(\frac{v_r-v_l}{W}\Delta t - \theta)} - \cos{\theta}\Bigg)
 \end{align}
 
 \textbf{Final Solution to the forward Kinematics:}
 \begin{align}
  \theta &\leftarrow \theta + \frac{v_r-v_l}{W}\Delta t \\
-  x &\leftarrow x+R\Bigg(\sin{\Big(\frac{v_r-v_l}{W}\Delta t+\theta\Big)}-\sin{\theta}\Bigg) \\
-  y &\leftarrow y-R\Bigg(\cos{\Big(\frac{v_r-v_l}{W}\Delta t+\theta\Big)}-\cos{\theta}\Bigg)
+  c &\leftarrow c + -R\Bigg(\sin{\Big(\frac{v_r-v_l}{W}\Delta t-\theta\Big)}+\sin{\theta}\Bigg) \\
+  r &\leftarrow r + R\Bigg(\cos{\Big(\frac{v_r-v_l}{W}\Delta t-\theta\Big)}-\cos{\theta}\Bigg)
 \end{align}
 
 However, there is also the case where the robot is going perfectly straight. This has to be handled seperately, because otherwise the equations above involve $R$, but $R=\infty$ if we're going straight. Luckily, the equations for moving straight are trivial:
 \begin{align}
  \theta &\leftarrow \theta \\
-  x &\leftarrow x + v\Delta t\cos(theta) \\
-  y &\leftarrow y + v\Delta t\sin(theta)
+  c &\leftarrow c + v\Delta t\cos(theta) \\
+  r &\leftarrow r - v\Delta t\sin(theta)
 \end{align}
 
 Here, $v$ can be $v_l$, or $v_r$ since they should be the same. In code, a simple average is used to correct for any slight numerical inconsistencies. \\
 
+\section{DC Motor Modeling}
 We must also consider how to model the DC Motors. \\
 
 \includegraphics[scale=0.5]{./dc_motor_model.png}
