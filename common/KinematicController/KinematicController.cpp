@@ -16,7 +16,7 @@ KinematicController::KinematicController(Mouse *mouse) : enable_sensor_pose_esti
                                                          d_until_left_drop(0), d_until_right_drop(0) {
   current_pose_estimate.col = 0;
   current_pose_estimate.row = 0;
-  current_pose_estimate.yaw = M_PI_2;
+  current_pose_estimate.yaw = 0;
 }
 
 GlobalPose KinematicController::getGlobalPose() {

@@ -23,10 +23,6 @@ MazeWidget::MazeWidget() : AbstractTab() {
                    static_cast<void (QWidget::*)()>(&QWidget::update), Qt::QueuedConnection);
 }
 
-/**
- * All drawing should be done in meters, with the origin as the center of the bottom-left corner.
- * The coordinate system is X increasing across columns, Y increasing across rows, and Z up out of the maze.
- */
 void MazeWidget::paintEvent(QPaintEvent *event) {
   QPainter painter(this);
   QTransform tf;
@@ -35,26 +31,26 @@ void MazeWidget::paintEvent(QPaintEvent *event) {
     QRect g = this->geometry();
 
     int w = std::min(g.width(), g.height()) - kPaddingPx;
-    double m2p = w / smartmouse::maze::SIZE_M;
+    double cell_units_to_pixels = w / smartmouse::maze::SIZE_CU;
 
-    int ox = 0 + (g.width() - w) / 2;
-    int oy = w + (g.height() - w) / 2;
+    int origin_col = (g.width() - w) / 2;
+    int origin_row = (g.height() - w) / 2;
 
-    tf.translate(ox, oy);
-    tf = tf.scale(m2p, -m2p);
+    tf.translate(origin_col, origin_row);
+    tf = tf.scale(cell_units_to_pixels, cell_units_to_pixels);
   }
 
   // draw the background
-  QRectF base = QRectF(0, 0, smartmouse::maze::SIZE_M, smartmouse::maze::SIZE_M);
+  QRectF base = QRectF(0, 0, smartmouse::maze::SIZE_CU, smartmouse::maze::SIZE_CU);
   painter.fillRect(tf.mapRect(base), QApplication::palette().background());
 
   // Draw the thin-line grid over the whole maze
   for (unsigned int i = 0; i <= smartmouse::maze::SIZE; i++) {
-    QLineF h_line(0, i * smartmouse::maze::UNIT_DIST_M, smartmouse::maze::SIZE_M, i * smartmouse::maze::UNIT_DIST_M);
+    QLineF h_line(0, i, smartmouse::maze::SIZE_CU, i);
     painter.setPen(QApplication::palette().light().color());
     painter.drawLine(tf.map(h_line));
 
-    QLineF v_line((i * smartmouse::maze::UNIT_DIST_M), 0, (i * smartmouse::maze::UNIT_DIST_M), smartmouse::maze::SIZE_M);
+    QLineF v_line(i, 0, i, smartmouse::maze::SIZE_CU);
     painter.drawLine(tf.map(v_line));
   }
 
@@ -96,7 +92,8 @@ void MazeWidget::PaintMouse(QPainter &painter, QTransform tf) {
   right_wheel_path.lineTo(rwx + rr, rwy - rt / 2);
 
   tf.translate(robot_state_.p().x(), robot_state_.p().y());
-  tf.rotateRadians(robot_state_.p().theta(), Qt::ZAxis);
+  tf.rotateRadians(-robot_state_.p().theta(), Qt::ZAxis);
+  tf.scale(1/smartmouse::maze::UNIT_DIST_M, 1/smartmouse::maze::UNIT_DIST_M);
 
   painter.setPen(QPen(Qt::black));
   painter.fillPath(tf.map(footprint), kRobotBrush);
@@ -117,7 +114,7 @@ void MazeWidget::PaintMouse(QPainter &painter, QTransform tf) {
     double sensor_range = pair.second;
     QTransform line_tf(tf);
     line_tf.translate(sensor_pose.x(), sensor_pose.y());
-    line_tf.rotateRadians(sensor_pose.theta(), Qt::ZAxis);
+    line_tf.rotateRadians(-sensor_pose.theta(), Qt::ZAxis);
     QLineF line(0, 0, sensor_range, 0);
     painter.setPen(QPen(Qt::green));
     painter.drawLine(line_tf.map(line));
@@ -126,15 +123,15 @@ void MazeWidget::PaintMouse(QPainter &painter, QTransform tf) {
 
 void MazeWidget::PaintWalls(QPainter &painter, QTransform tf) {
   for (smartmouse::msgs::Wall wall : maze_.walls()) {
-    double x1, y1, x2, y2;
-    std::tie(x1, y1, x2, y2) = smartmouse::msgs::WallToCoordinates(wall);
+    double c1, r1, c2, r2;
+    std::tie(c1, r1, c2, r2) = smartmouse::msgs::WallToCoordinates(wall);
 
     QPainterPath wall_path;
-    wall_path.moveTo(x1, y1);
-    wall_path.lineTo(x2, y1);
-    wall_path.lineTo(x2, y2);
-    wall_path.lineTo(x1, y2);
-    wall_path.lineTo(x1, y1);
+    wall_path.moveTo(c1, r1);
+    wall_path.lineTo(c2, r1);
+    wall_path.lineTo(c2, r2);
+    wall_path.lineTo(c1, r2);
+    wall_path.lineTo(c1, r1);
     painter.fillPath(tf.map(wall_path), kWallBrush);
   }
 }

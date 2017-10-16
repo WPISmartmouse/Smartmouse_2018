@@ -211,9 +211,9 @@ void Server::ResetTime() {
 }
 
 void Server::ResetRobot() {
-  robot_state_.mutable_p()->set_x(0.09);
-  robot_state_.mutable_p()->set_y(0.09);
-  robot_state_.mutable_p()->set_theta(M_PI_2);
+  robot_state_.mutable_p()->set_x(0.5);
+  robot_state_.mutable_p()->set_y(0.5);
+  robot_state_.mutable_p()->set_theta(0);
   robot_state_.mutable_v()->set_x(0);
   robot_state_.mutable_v()->set_y(0);
   robot_state_.mutable_v()->set_theta(0);

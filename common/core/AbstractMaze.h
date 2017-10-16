@@ -33,7 +33,7 @@ namespace smartmouse {
 namespace maze {
 
 constexpr static unsigned int SIZE = 16;
-static const unsigned long BUFF_SIZE = (SIZE * 2 + 3) * SIZE;
+const unsigned long BUFF_SIZE = (SIZE * 2 + 3) * SIZE;
 constexpr static unsigned int CENTER = SIZE / 2;
 constexpr static double UNIT_DIST_M = 0.18;
 constexpr static double WALL_THICKNESS_M = 0.012;
@@ -49,8 +49,9 @@ constexpr double toCellUnits(double meters) {
   return meters / UNIT_DIST_M;
 }
 
-constexpr static double WALL_THICKNESS_CU = toCellUnits(WALL_THICKNESS_M);
-constexpr static double HALF_WALL_THICKNESS_CU = toCellUnits(HALF_WALL_THICKNESS_M);
+constexpr double WALL_THICKNESS_CU = toCellUnits(WALL_THICKNESS_M);
+constexpr double HALF_WALL_THICKNESS_CU = toCellUnits(HALF_WALL_THICKNESS_M);
+constexpr double SIZE_CU = toCellUnits(SIZE_M);
 
 }
 }

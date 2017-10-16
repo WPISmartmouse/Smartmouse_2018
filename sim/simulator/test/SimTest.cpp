@@ -85,6 +85,15 @@ TEST(MsgsTest, WallToCoordinates) {
   EXPECT_EQ(r1, -smartmouse::maze::HALF_WALL_THICKNESS_CU);
   EXPECT_EQ(c2, 1 + smartmouse::maze::HALF_WALL_THICKNESS_CU);
   EXPECT_EQ(r2, smartmouse::maze::HALF_WALL_THICKNESS_CU);
+
+  wall.set_direction(smartmouse::msgs::Direction_Dir_N);
+  wall.mutable_node()->set_row(4);
+  wall.mutable_node()->set_col(2);
+  std::tie(c1, r1, c2, r2) = smartmouse::msgs::WallToCoordinates(wall);
+  EXPECT_EQ(c1, 2 - smartmouse::maze::HALF_WALL_THICKNESS_CU);
+  EXPECT_EQ(r1, 4 - smartmouse::maze::HALF_WALL_THICKNESS_CU);
+  EXPECT_EQ(c2, 3 + smartmouse::maze::HALF_WALL_THICKNESS_CU);
+  EXPECT_EQ(r2, 4 + smartmouse::maze::HALF_WALL_THICKNESS_CU);
 }
 
 TEST(ServerTest, QuitTest) {
