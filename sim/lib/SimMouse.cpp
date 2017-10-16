@@ -121,7 +121,7 @@ void SimMouse::setSpeed(double left_wheel_velocity_setpoint_mps, double right_wh
 
 void SimMouse::simInit() {
   kinematic_controller.setParams(0, 0, 0, 0, 0);
-  kinematic_controller.setAccelerationMpss(2.0);
+  kinematic_controller.setAccelerationMpss(10);
 
   // we start in the middle of the first square
   resetToStartPose();

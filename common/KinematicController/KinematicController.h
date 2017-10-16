@@ -39,7 +39,7 @@ public:
 
   static std::tuple<double, double, double> forwardKinematics(double vl, double vr, double yaw, double dt);
 
-  void start(GlobalPose start_pose, double goalDisp, double v_final=smartmouse::kc::END_SPEED);
+  void start(GlobalPose start_pose, double goalDisp, double v_final=smartmouse::kc::END_SPEED_MPS);
 
   void planTraj(Waypoints waypoints);
 

@@ -10,9 +10,9 @@ public:
 
   double runPid(double dt_s, double angle_rad);
 
-  void setAcceleration(double acceleration);
+  void setAcceleration(double acceleration_cupss);
 
-  void setSetpoint(double setpoint);
+  void setSetpoint(double setpoint_cups);
 
   void reset_enc_rad(double rad);
 

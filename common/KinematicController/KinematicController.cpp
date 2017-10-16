@@ -321,12 +321,12 @@ std::pair<double, double> KinematicController::compute_wheel_velocities(Mouse *m
   if (drive_straight_state.dispError < ramp_d + 0.015) {
     drive_straight_state.forward_v -= acc;
   }
-  else if (drive_straight_state.forward_v < smartmouse::kc::MAX_SPEED) {
+  else if (drive_straight_state.forward_v < smartmouse::kc::MAX_SPEED_CUPS) {
     drive_straight_state.forward_v += acc;
   }
 
-  if (drive_straight_state.forward_v > smartmouse::kc::MAX_SPEED) {
-    drive_straight_state.forward_v = smartmouse::kc::MAX_SPEED;
+  if (drive_straight_state.forward_v > smartmouse::kc::MAX_SPEED_CUPS) {
+    drive_straight_state.forward_v = smartmouse::kc::MAX_SPEED_CUPS;
   }
   // TODO: this is problematic, at 180's we always stop and this is wrong
   else if (drive_straight_state.forward_v < drive_straight_state.v_final) {

@@ -46,7 +46,7 @@ double RegulatedMotor::runPid(double dt_s, double angle_rad) {
   integral += error * dt_s;
   integral = std::max(std::min(integral, int_cap), -int_cap);
 
-  if (fabs(regulated_setpoint_rps) <= smartmouse::kc::MIN_SPEED) {
+  if (fabs(regulated_setpoint_rps) <= smartmouse::kc::MIN_SPEED_MPS) {
     abstract_force = 0;
   } else {
     // this is horrible and hacky
@@ -81,14 +81,14 @@ void RegulatedMotor::setAcceleration(double acceleration_cellpss) {
   this->acceleration_cellpss = smartmouse::kc::cellsToRad(acceleration_cellpss);
 }
 
-void RegulatedMotor::setSetpoint(double setpoint_mps) {
+void RegulatedMotor::setSetpoint(double setpoint_cups) {
   double s = 0;
-  if (setpoint_mps > 0) {
-    s = fmax(fmin(setpoint_mps, smartmouse::kc::MAX_SPEED), smartmouse::kc::MIN_SPEED);
-  } else if (setpoint_mps < 0) {
-    s = fmin(fmax(setpoint_mps, -smartmouse::kc::MAX_SPEED), -smartmouse::kc::MIN_SPEED);
+  if (setpoint_cups > 0) {
+    s = fmax(fmin(setpoint_cups, smartmouse::kc::MAX_SPEED_CUPS), smartmouse::kc::MIN_SPEED_CUPS);
+  } else if (setpoint_cups < 0) {
+    s = fmin(fmax(setpoint_cups, -smartmouse::kc::MAX_SPEED_CUPS), -smartmouse::kc::MIN_SPEED_CUPS);
   }
-  this->setpoint_rps = smartmouse::kc::meterToRad(s);
+  this->setpoint_rps = smartmouse::kc::cellsToRad(s);
 }
 
 void RegulatedMotor::setParams(double kP, double kI, double kD, double ff_offset, double int_cap) {

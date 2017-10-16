@@ -52,8 +52,7 @@ double IRConverter::adcToMeters(int adc) {
 
 double RealMouse::tick_to_rad(int ticks) {
   // if in quadrant I or II, it's positive
-  double rad = ticks * RAD_PER_TICK;
-  return rad;
+  return ticks * RAD_PER_TICK;
 }
 
 RealMouse *RealMouse::inst() {
@@ -155,7 +154,7 @@ void RealMouse::setup() {
   left_encoder.init(ENCODER_LEFT_A, ENCODER_LEFT_B);
   right_encoder.init(ENCODER_RIGHT_A, ENCODER_RIGHT_B);
 
-  kinematic_controller.setAccelerationMpss(2);
+  kinematic_controller.setAccelerationMpss(10);
 
   resetToStartPose();
 

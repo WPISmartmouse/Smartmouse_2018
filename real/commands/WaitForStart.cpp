@@ -22,7 +22,7 @@ void WaitForStart::execute() {
 
   // Set the max speed of the robot based on the right wheel
   double percent_speed = fmod(mouse->left_encoder.read() - init_ticks_left, 1024) / 1024;
-  speed =  percent_speed * smartmouse::kc::MAX_HARDWARE_SPEED;
+  speed =  percent_speed * smartmouse::kc::MAX_HARDWARE_SPEED_MPS;
 
   int idx = percent_speed * 100 / 7;
   for (int i = 0; i < 7; i++) {
@@ -51,7 +51,8 @@ bool WaitForStart::isFinished() {
 }
 
 void WaitForStart::end() {
-  smartmouse::kc::MAX_SPEED = max(speed, 0.1); // FIXME: this should be a lower number
+  smartmouse::kc::MAX_SPEED_MPS = max(speed, 0.1);
+  smartmouse::kc::MAX_SPEED_CUPS = smartmouse::maze::toCellUnits(smartmouse::kc::MAX_SPEED_MPS);
   for (int i = 0; i < 7; i++) {
     digitalWrite(RealMouse::LED_7 - i, 0);
   }
