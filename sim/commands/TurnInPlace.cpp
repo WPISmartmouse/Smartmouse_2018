@@ -15,7 +15,7 @@ void TurnInPlace::execute() {
 
   // when we get close to aligned, there might be a wall we can use to better estimate our angle
   // this allows us to use that
-  if (fabs(dYaw) < config.ROT_TOLERANCE * 4 && mouse->kinematic_controller.enable_sensor_pose_estimate) {
+  if (fabs(dYaw) < smartmouse::kc::ROT_TOLERANCE * 4 && mouse->kinematic_controller.enable_sensor_pose_estimate) {
     mouse->kinematic_controller.enable_sensor_pose_estimate = false;
     // FIXME: this is kind of a hack. It's needed because DriveStraight checks dir in order to compute
     // FIXME: the correct yaw. it adds dir_to_yaw(getDir()), so we must assume we're close enough
@@ -28,7 +28,7 @@ bool TurnInPlace::isFinished() {
   dYaw = smartmouse::math::yawDiff(currentYaw, goalYaw);
   double vl, vr;
   std::tie(vl, vr) = mouse->getWheelVelocities();
-  return (fabs(dYaw) < config.ROT_TOLERANCE) && fabs(vl) < 0.05 && fabs(vr) < 0.05;
+  return (fabs(dYaw) < smartmouse::kc::ROT_TOLERANCE) && fabs(vl) < 0.05 && fabs(vr) < 0.05;
 }
 
 void TurnInPlace::end() {

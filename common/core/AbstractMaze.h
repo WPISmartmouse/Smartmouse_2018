@@ -29,28 +29,41 @@ std::string route_to_string(route_t &route);
 void insert_motion_primitive_front(route_t *route, motion_primitive_t prim);
 void insert_motion_primitive_back(route_t *route, motion_primitive_t prim);
 
+namespace smartmouse {
+namespace maze {
+
+constexpr static unsigned int SIZE = 16;
+static const unsigned long BUFF_SIZE = (SIZE * 2 + 3) * SIZE;
+constexpr static unsigned int CENTER = SIZE / 2;
+constexpr static double UNIT_DIST_M = 0.18;
+constexpr static double WALL_THICKNESS_M = 0.012;
+constexpr static double HALF_WALL_THICKNESS_M = WALL_THICKNESS_M / 2.0;
+constexpr static double HALF_UNIT_DIST = UNIT_DIST_M / 2.0;
+constexpr static double SIZE_M = SIZE * UNIT_DIST_M;
+
+constexpr double toMeters(double cu) {
+  return cu * UNIT_DIST_M;
+}
+
+constexpr double toCellUnits(double meters) {
+  return meters / UNIT_DIST_M;
+}
+
+constexpr static double WALL_THICKNESS_CU = toCellUnits(WALL_THICKNESS_M);
+constexpr static double HALF_WALL_THICKNESS_CU = toCellUnits(HALF_WALL_THICKNESS_M);
+
+}
+}
+
 class AbstractMaze {
   friend class Mouse;
 
  public:
 
-  constexpr static unsigned int MAZE_SIZE = 16;
-  constexpr static unsigned int PATH_SIZE = 256;
-  static const unsigned long BUFF_SIZE = (MAZE_SIZE * 2 + 3) * MAZE_SIZE;
-  constexpr static unsigned int CENTER = MAZE_SIZE / 2;
-  constexpr static double UNIT_DIST = 0.18;
-  constexpr static double WALL_THICKNESS = 0.012;
-  constexpr static double HALF_WALL_THICKNESS = WALL_THICKNESS / 2.0;
-  constexpr static double INNER_UNIT_DIST = UNIT_DIST - WALL_THICKNESS;
-  constexpr static double HALF_UNIT_DIST = UNIT_DIST / 2.0;
-  constexpr static double MAZE_SIZE_M = MAZE_SIZE * UNIT_DIST;
-  constexpr static double HALF_INNER_UNIT_DIST = INNER_UNIT_DIST / 2.0;
-  bool solved; //boolean for if we know the fastest route
-  route_t fastest_route; //a char array like NSEWNENNSNE, which means North, South, East...
+  bool solved;
+  route_t fastest_route;
   route_t fastest_theoretical_route;
   route_t path_to_next_goal;
-
-  static std::pair<double, double> rowColToXYCenter(unsigned int row, unsigned int col);
 
   /** \brief allocates and initializes a node
    * allocates a maze of the given size and sets all links in graph to be null. Naturally, it's column major.
@@ -155,5 +168,5 @@ class AbstractMaze {
 
   bool operator==(const AbstractMaze &other) const;
 
-  Node *nodes[AbstractMaze::MAZE_SIZE][AbstractMaze::MAZE_SIZE]; // array of node pointers
+  Node *nodes[smartmouse::maze::SIZE][smartmouse::maze::SIZE]; // array of node pointers
 };

@@ -62,10 +62,10 @@ StateWidget::StateWidget() : AbstractTab(), ui_(new Ui::StateWidget) {
 }
 
 void StateWidget::StateCallback(const smartmouse::msgs::RobotSimState &msg) {
-  double left_wheel_velocity_mps = Mouse::radToMeters(100 * msg.left_wheel().omega());
-  double right_wheel_velocity_mps = Mouse::radToMeters(100 * msg.right_wheel().omega());
-  double left_wheel_acceleration_mpss = Mouse::radToMeters(100 * msg.left_wheel().alpha());
-  double right_wheel_acceleration_mpss = Mouse::radToMeters(100 * msg.right_wheel().alpha());
+  double left_wheel_velocity_mps = smartmouse::kc::radToMeters(100 * msg.left_wheel().omega());
+  double right_wheel_velocity_mps = smartmouse::kc::radToMeters(100 * msg.right_wheel().omega());
+  double left_wheel_acceleration_mpss = smartmouse::kc::radToMeters(100 * msg.left_wheel().alpha());
+  double right_wheel_acceleration_mpss = smartmouse::kc::radToMeters(100 * msg.right_wheel().alpha());
 
   this->true_x = msg.p().x();
   this->true_y = msg.p().y();

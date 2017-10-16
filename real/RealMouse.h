@@ -61,12 +61,6 @@ public:
 
   virtual LocalPose getLocalPose() override;
 
-  RangeData getRangeData();
-
-  virtual double getRowOffsetToEdge() override;
-
-  virtual double getColOffsetToEdge() override;
-
   std::pair<double, double> getWheelVelocities();
 
   void resetToStartPose();

@@ -10,9 +10,9 @@ public:
 
   double runPid(double dt_s, double angle_rad);
 
-  void setAccelerationMpss(double acceleration_mpss);
+  void setAcceleration(double acceleration);
 
-  void setSetpointMps(double setpoint_mps);
+  void setSetpoint(double setpoint);
 
   void reset_enc_rad(double rad);
 
@@ -26,7 +26,7 @@ public:
 
   bool initialized = false;
   double abstract_force;
-  double acceleration_mpss;
+  double acceleration_cellpss;
   double derivative;
   double error;
   double estimated_velocity_rps;

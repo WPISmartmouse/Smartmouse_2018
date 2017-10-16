@@ -7,15 +7,15 @@ void Flood::setup() {
   mouse->reset();
   mouse->maze->reset();
   all_wall_maze = mouse->maze;
-  all_wall_maze->connect_neighbor(AbstractMaze::CENTER, AbstractMaze::CENTER, Direction::W);
-  all_wall_maze->connect_neighbor(AbstractMaze::CENTER, AbstractMaze::CENTER, Direction::N);
-  all_wall_maze->connect_neighbor(AbstractMaze::CENTER - 1, AbstractMaze::CENTER - 1, Direction::E);
-  all_wall_maze->connect_neighbor(AbstractMaze::CENTER - 1, AbstractMaze::CENTER - 1, Direction::S);
+  all_wall_maze->connect_neighbor(smartmouse::maze::CENTER, smartmouse::maze::CENTER, Direction::W);
+  all_wall_maze->connect_neighbor(smartmouse::maze::CENTER, smartmouse::maze::CENTER, Direction::N);
+  all_wall_maze->connect_neighbor(smartmouse::maze::CENTER - 1, smartmouse::maze::CENTER - 1, Direction::E);
+  all_wall_maze->connect_neighbor(smartmouse::maze::CENTER - 1, smartmouse::maze::CENTER - 1, Direction::S);
   no_wall_maze.connect_all_neighbors_in_maze();
-  all_wall_maze->connect_neighbor(AbstractMaze::CENTER, AbstractMaze::CENTER, Direction::W);
-  all_wall_maze->connect_neighbor(AbstractMaze::CENTER, AbstractMaze::CENTER, Direction::N);
-  all_wall_maze->connect_neighbor(AbstractMaze::CENTER - 1, AbstractMaze::CENTER - 1, Direction::E);
-  all_wall_maze->connect_neighbor(AbstractMaze::CENTER - 1, AbstractMaze::CENTER - 1, Direction::S);
+  all_wall_maze->connect_neighbor(smartmouse::maze::CENTER, smartmouse::maze::CENTER, Direction::W);
+  all_wall_maze->connect_neighbor(smartmouse::maze::CENTER, smartmouse::maze::CENTER, Direction::N);
+  all_wall_maze->connect_neighbor(smartmouse::maze::CENTER - 1, smartmouse::maze::CENTER - 1, Direction::E);
+  all_wall_maze->connect_neighbor(smartmouse::maze::CENTER - 1, smartmouse::maze::CENTER - 1, Direction::S);
   goal = Solver::Goal::CENTER;
 }
 
@@ -40,11 +40,11 @@ motion_primitive_t Flood::planNextStep() {
   switch (goal) {
     case Solver::Goal::CENTER: {
       solvable = no_wall_maze.flood_fill_from_point(&no_wall_path, mouse->getRow(), mouse->getCol(),
-                                                    AbstractMaze::CENTER, AbstractMaze::CENTER);
+                                                    smartmouse::maze::CENTER, smartmouse::maze::CENTER);
       //this way commands can see this used to visualize in gazebo
       mouse->maze->path_to_next_goal = no_wall_path;
-      all_wall_maze->flood_fill_from_point(&all_wall_path, mouse->getRow(), mouse->getCol(), AbstractMaze::CENTER,
-                                                    AbstractMaze::CENTER);
+      all_wall_maze->flood_fill_from_point(&all_wall_path, mouse->getRow(), mouse->getCol(), smartmouse::maze::CENTER,
+                                                    smartmouse::maze::CENTER);
       break;
     }
     case Solver::Goal::START: {
@@ -84,7 +84,7 @@ route_t Flood::solve() {
 bool Flood::isFinished() {
   unsigned int r = mouse->getRow();
   unsigned int c = mouse->getCol();
-  const unsigned int C = AbstractMaze::MAZE_SIZE / 2;
+  const unsigned int C = smartmouse::maze::SIZE / 2;
   if (goal == Solver::Goal::CENTER) {
     return !solvable || ((r >= C - 1 && r <= C) && (c >= C - 1 && c <= C));
   } else if (goal == Solver::Goal::START) {

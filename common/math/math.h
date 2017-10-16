@@ -62,5 +62,10 @@ inline double wrapAngleRad(double angle_rad)
   return MyMod(angle_rad + M_PI, 2*M_PI) - M_PI;
 }
 
+inline void wrapAngleRadInPlace(double *angle_rad)
+{
+  *angle_rad = MyMod(*angle_rad + M_PI, 2*M_PI) - M_PI;
+}
+
 }
 }

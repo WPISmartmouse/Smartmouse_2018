@@ -14,8 +14,8 @@ bool SpeedRun::isFinished() {
   bool groupFinished = CommandGroup::isFinished();
 
   if (groupFinished) {
-    bool returned = mouse->getRow() == AbstractMaze::MAZE_SIZE / 2
-                    && mouse->getCol() == AbstractMaze::MAZE_SIZE / 2;
+    bool returned = mouse->getRow() == smartmouse::maze::SIZE / 2
+                    && mouse->getCol() == smartmouse::maze::SIZE / 2;
 
     if (!returned) {
       motion_primitive_t prim = path->at(index++);

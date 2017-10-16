@@ -1,6 +1,5 @@
 #include <common/core/AbstractMaze.h>
 #include <common/core/Direction.h>
-#include <console/ConsoleMaze.h>
 #include <console/ConsoleMouse.h>
 #include <common/core/Mouse.h>
 #include <fstream>
@@ -20,7 +19,7 @@ TEST(NodeTest, OutOfBoundsGetNode) {
   int status = maze.get_node(&n, -1, -1);
   EXPECT_EQ(status, Node::OUT_OF_BOUNDS);
 
-  status = maze.get_node(&n, AbstractMaze::MAZE_SIZE, AbstractMaze::MAZE_SIZE);
+  status = maze.get_node(&n, smartmouse::maze::SIZE, smartmouse::maze::SIZE);
   EXPECT_EQ(status, Node::OUT_OF_BOUNDS);
 }
 
@@ -74,8 +73,8 @@ TEST(ConnectMazeTest, ConnectAllNeighbors) {
   AbstractMaze maze;
   maze.connect_all_neighbors_in_maze();
 
-  for (unsigned int i=0;i<AbstractMaze::MAZE_SIZE;i++){
-    for (unsigned int j=0;j<AbstractMaze::MAZE_SIZE;j++){
+  for (unsigned int i=0;i<smartmouse::maze::SIZE;i++){
+    for (unsigned int j=0;j<smartmouse::maze::SIZE;j++){
       Node *n;
       int status = maze.get_node(&n, i, j);
 
@@ -90,13 +89,13 @@ TEST(ConnectMazeTest, ConnectAllNeighbors) {
           EXPECT_NE(n->neighbor(Direction::E), (Node *)NULL);
           EXPECT_NE(n->neighbor(Direction::S), (Node *)NULL);
         }
-        else if (j == AbstractMaze::MAZE_SIZE - 1) {
+        else if (j == smartmouse::maze::SIZE - 1) {
           EXPECT_EQ(n->neighbor(Direction::E), (Node *)NULL);
           EXPECT_NE(n->neighbor(Direction::W), (Node *)NULL);
           EXPECT_NE(n->neighbor(Direction::S), (Node *)NULL);
         }
       }
-      else if (i == AbstractMaze::MAZE_SIZE - 1) {
+      else if (i == smartmouse::maze::SIZE - 1) {
         EXPECT_EQ(n->neighbor(Direction::S), (Node *)NULL);
 
         if (j == 0) {
@@ -104,7 +103,7 @@ TEST(ConnectMazeTest, ConnectAllNeighbors) {
           EXPECT_NE(n->neighbor(Direction::E), (Node *)NULL);
           EXPECT_NE(n->neighbor(Direction::N), (Node *)NULL);
         }
-        else if (j == AbstractMaze::MAZE_SIZE - 1) {
+        else if (j == smartmouse::maze::SIZE - 1) {
           EXPECT_EQ(n->neighbor(Direction::E), (Node *)NULL);
           EXPECT_NE(n->neighbor(Direction::W), (Node *)NULL);
           EXPECT_NE(n->neighbor(Direction::N), (Node *)NULL);
@@ -148,16 +147,16 @@ TEST(FloodFillTest, EmptyMaze){
   ASSERT_EQ(status, 0);
 
   status = maze.get_node(&center,
-      AbstractMaze::MAZE_SIZE/2,
-      AbstractMaze::MAZE_SIZE/2);
+      smartmouse::maze::SIZE/2,
+      smartmouse::maze::SIZE/2);
   ASSERT_EQ(status, 0);
 
   bool success = false;
   origin->assign_weights_to_neighbors(center, 0, &success);
 
 
-  for (unsigned int i=0;i<AbstractMaze::MAZE_SIZE;i++){
-    for (unsigned int j=0;j<AbstractMaze::MAZE_SIZE;j++){
+  for (unsigned int i=0;i<smartmouse::maze::SIZE;i++){
+    for (unsigned int j=0;j<smartmouse::maze::SIZE;j++){
       Node *n;
       status = maze.get_node(&n, i, j);
 
@@ -184,16 +183,16 @@ TEST(FloodFillTest, StripedMaze){
   ASSERT_EQ(status, 0);
 
   status = maze.get_node(&center,
-      AbstractMaze::MAZE_SIZE/2,
-      AbstractMaze::MAZE_SIZE/2);
+      smartmouse::maze::SIZE/2,
+      smartmouse::maze::SIZE/2);
   ASSERT_EQ(status, 0);
 
   bool success = false;
   origin->assign_weights_to_neighbors(center, 0, &success);
 
 
-  for (unsigned int i=0;i<AbstractMaze::MAZE_SIZE;i++){
-    for (unsigned int j=0;j<AbstractMaze::MAZE_SIZE;j++){
+  for (unsigned int i=0;i<smartmouse::maze::SIZE;i++){
+    for (unsigned int j=0;j<smartmouse::maze::SIZE;j++){
       Node *n;
       status = maze.get_node(&n, i, j);
 

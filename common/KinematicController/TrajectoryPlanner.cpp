@@ -8,8 +8,8 @@ TrajectoryPlanner::TrajectoryPlanner(Waypoints waypoints) : waypoints(waypoints)
         trig_constraint(pt.state.pose.yaw, pt.time),
         x_dot_constraint(pt.time),
         y_dot_constraint(pt.time);
-    b << pt.state.pose.x,
-        pt.state.pose.y,
+    b << pt.state.pose.col,
+        pt.state.pose.row,
         0,
         pt.state.velocity * sin(2 * pt.state.pose.yaw);
   }

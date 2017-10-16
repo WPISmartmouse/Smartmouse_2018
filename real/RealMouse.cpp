@@ -26,7 +26,7 @@ IRConverter::IRConverter() : ir_lookup{
 } {}
 
 void IRConverter::calibrate(int avg_adc_value_on_center) {
-  double actual_dist = (0.08 - config.FRONT_SIDE_ANALOG_Y) / sin(config.FRONT_ANALOG_ANGLE);
+  double actual_dist = (0.08 - smartmouse::kc::FRONT_SIDE_ANALOG_Y) / sin(smartmouse::kc::FRONT_ANALOG_ANGLE);
   int centered_idx = 4;
   double expected_distance = (avg_adc_value_on_center - ir_lookup[centered_idx]) * 0.01 /
                              (ir_lookup[centered_idx] - ir_lookup[centered_idx - 1]) + (centered_idx + 1) * .01;
@@ -65,10 +65,6 @@ RealMouse *RealMouse::inst() {
 
 RealMouse::RealMouse() : kinematic_controller(this), range_data({0.18, 0.18, 0.18, 0.18, 0.18}) {}
 
-RangeData RealMouse::getRangeData() {
-  return range_data;
-}
-
 SensorReading RealMouse::checkWalls() {
   SensorReading sr(row, col);
 
@@ -78,14 +74,6 @@ SensorReading RealMouse::checkWalls() {
   sr.walls[static_cast<int>(opposite_direction(dir))] = false;
 
   return sr;
-}
-
-double RealMouse::getColOffsetToEdge() {
-  return kinematic_controller.col_offset_to_edge;
-}
-
-double RealMouse::getRowOffsetToEdge() {
-  return kinematic_controller.row_offset_to_edge;
 }
 
 GlobalPose RealMouse::getGlobalPose() {
@@ -183,8 +171,8 @@ void RealMouse::resetToStartPose() {
   right_angle_rad = tick_to_rad(right_encoder.read());
   kinematic_controller.left_motor.reset_enc_rad(left_angle_rad);
   kinematic_controller.right_motor.reset_enc_rad(right_angle_rad);
-  kinematic_controller.reset_x_to(0.09);
-  kinematic_controller.reset_y_to(0.09);
+  kinematic_controller.reset_col_to(0.09);
+  kinematic_controller.reset_row_to(0.09);
   kinematic_controller.reset_yaw_to(0.0);
 }
 

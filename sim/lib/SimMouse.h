@@ -23,13 +23,9 @@ public:
 
   virtual SensorReading checkWalls() override;
 
-  double getColOffsetToEdge();
-
   GlobalPose getGlobalPose();
 
   LocalPose getLocalPose();
-
-  double getRowOffsetToEdge();
 
   std::pair<double, double> getWheelVelocities();
 
@@ -37,8 +33,6 @@ public:
                     route_t path, std::string);
 
   bool isStopped();
-
-  void publishIndicators();
 
   void robotSimStateCallback(const smartmouse::msgs::RobotSimState &msg);
 
@@ -60,10 +54,6 @@ private:
 
   SimMouse();
 
-  static constexpr double INDICATOR_RAD = 0.05;
-  static constexpr double INDICATOR_LEN = 0.001;
-  static constexpr double INDICATOR_Z = 0.008;
-
   static SimMouse *instance;
 
   double abstract_left_force;
@@ -77,9 +67,5 @@ private:
   std::mutex dataMutex;
 
   GlobalPose true_pose;
-
-  ignition::msgs::Marker *indicators[AbstractMaze::MAZE_SIZE][AbstractMaze::MAZE_SIZE];
-
-  void update_markers();
 };
 

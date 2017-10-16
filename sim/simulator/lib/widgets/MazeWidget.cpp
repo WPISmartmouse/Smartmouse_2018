@@ -35,7 +35,7 @@ void MazeWidget::paintEvent(QPaintEvent *event) {
     QRect g = this->geometry();
 
     int w = std::min(g.width(), g.height()) - kPaddingPx;
-    double m2p = w / AbstractMaze::MAZE_SIZE_M;
+    double m2p = w / smartmouse::maze::SIZE_M;
 
     int ox = 0 + (g.width() - w) / 2;
     int oy = w + (g.height() - w) / 2;
@@ -45,16 +45,16 @@ void MazeWidget::paintEvent(QPaintEvent *event) {
   }
 
   // draw the background
-  QRectF base = QRectF(0, 0, AbstractMaze::MAZE_SIZE_M, AbstractMaze::MAZE_SIZE_M);
+  QRectF base = QRectF(0, 0, smartmouse::maze::SIZE_M, smartmouse::maze::SIZE_M);
   painter.fillRect(tf.mapRect(base), QApplication::palette().background());
 
   // Draw the thin-line grid over the whole maze
-  for (unsigned int i = 0; i <= AbstractMaze::MAZE_SIZE; i++) {
-    QLineF h_line(0, i * AbstractMaze::UNIT_DIST, AbstractMaze::MAZE_SIZE_M, i * AbstractMaze::UNIT_DIST);
+  for (unsigned int i = 0; i <= smartmouse::maze::SIZE; i++) {
+    QLineF h_line(0, i * smartmouse::maze::UNIT_DIST_M, smartmouse::maze::SIZE_M, i * smartmouse::maze::UNIT_DIST_M);
     painter.setPen(QApplication::palette().light().color());
     painter.drawLine(tf.map(h_line));
 
-    QLineF v_line((i * AbstractMaze::UNIT_DIST), 0, (i * AbstractMaze::UNIT_DIST), AbstractMaze::MAZE_SIZE_M);
+    QLineF v_line((i * smartmouse::maze::UNIT_DIST_M), 0, (i * smartmouse::maze::UNIT_DIST_M), smartmouse::maze::SIZE_M);
     painter.drawLine(tf.map(v_line));
   }
 

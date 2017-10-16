@@ -16,8 +16,8 @@
 
 AbstractMaze::AbstractMaze() : solved(false) {
   unsigned int i, j;
-  for (i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
-    for (j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
+  for (i = 0; i < smartmouse::maze::SIZE; i++) {
+    for (j = 0; j < smartmouse::maze::SIZE; j++) {
       nodes[i][j] = new Node(i, j);
     }
   }
@@ -28,7 +28,7 @@ AbstractMaze::AbstractMaze(std::ifstream &fs) : AbstractMaze() {
   std::string line;
 
   //look West and North to connect any nodes
-  for (unsigned int i = 0; i < MAZE_SIZE; i++) { //read in each line
+  for (unsigned int i = 0; i < smartmouse::maze::SIZE; i++) { //read in each line
     std::getline(fs, line);
 
     if (!fs.good()) {
@@ -37,7 +37,7 @@ AbstractMaze::AbstractMaze(std::ifstream &fs) : AbstractMaze() {
     }
 
     unsigned int charPos = 0;
-    for (unsigned int j = 0; j < MAZE_SIZE; j++) {
+    for (unsigned int j = 0; j < smartmouse::maze::SIZE; j++) {
       if (line.at(charPos) != '|') {
         connect_neighbor(i, j, Direction::W);
       }
@@ -53,7 +53,7 @@ AbstractMaze::AbstractMaze(std::ifstream &fs) : AbstractMaze() {
 #endif
 
 int AbstractMaze::get_node(Node **out, unsigned int row, unsigned int col) {
-  if (col < 0 || col >= MAZE_SIZE || row < 0 || row >= MAZE_SIZE) {
+  if (col < 0 || col >= smartmouse::maze::SIZE || row < 0 || row >= smartmouse::maze::SIZE) {
     return Node::OUT_OF_BOUNDS;
   }
 
@@ -85,8 +85,8 @@ int AbstractMaze::get_node_in_direction(Node **out, unsigned int row, unsigned i
 
 void AbstractMaze::reset() {
   unsigned int i, j;
-  for (i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
-    for (j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
+  for (i = 0; i < smartmouse::maze::SIZE; i++) {
+    for (j = 0; j < smartmouse::maze::SIZE; j++) {
       nodes[i][j]->weight = -1;
       nodes[i][j]->known = false;
     }
@@ -117,7 +117,7 @@ bool AbstractMaze::flood_fill_from_origin(route_t *path, unsigned int r1, unsign
 }
 
 bool AbstractMaze::flood_fill_from_origin_to_center(route_t *path) {
-  return flood_fill(path, 0, 0, AbstractMaze::MAZE_SIZE / 2, AbstractMaze::MAZE_SIZE / 2);
+  return flood_fill(path, 0, 0, smartmouse::maze::SIZE / 2, smartmouse::maze::SIZE / 2);
 }
 
 bool AbstractMaze::flood_fill(route_t *path, unsigned int r0, unsigned int c0, unsigned int r1, unsigned int c1) {
@@ -210,8 +210,8 @@ void AbstractMaze::connect_all_neighbors(unsigned int row, unsigned int col) {
 
 void AbstractMaze::connect_all_neighbors_in_maze() {
   unsigned int i, j;
-  for (i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
-    for (j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
+  for (i = 0; i < smartmouse::maze::SIZE; i++) {
+    for (j = 0; j < smartmouse::maze::SIZE; j++) {
       connect_all_neighbors(i, j);
     }
   }
@@ -228,8 +228,8 @@ void AbstractMaze::mark_origin_known() {
 void AbstractMaze::print_maze_str(char *buff) {
   char *b = buff;
   unsigned int i, j;
-  for (i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
-    for (j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
+  for (i = 0; i < smartmouse::maze::SIZE; i++) {
+    for (j = 0; j < smartmouse::maze::SIZE; j++) {
       Node *n = nodes[i][j];
       if (n->neighbor(Direction::W) == nullptr) {
         strcpy(b++, "|");
@@ -255,15 +255,15 @@ void AbstractMaze::print_maze_str(char *buff) {
 }
 
 void AbstractMaze::print_maze() {
-  char buff[BUFF_SIZE];
+  char buff[smartmouse::maze::BUFF_SIZE];
   print_maze_str(buff);
   print(buff);
 }
 
 void AbstractMaze::print_neighbor_maze() {
   unsigned int i, j;
-  for (i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
-    for (j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
+  for (i = 0; i < smartmouse::maze::SIZE; i++) {
+    for (j = 0; j < smartmouse::maze::SIZE; j++) {
       for (Direction d = Direction::First; d < Direction::Last; d++) {
         bool wall = (nodes[i][j]->neighbor(d) == nullptr);
         print("%i", wall);
@@ -276,8 +276,8 @@ void AbstractMaze::print_neighbor_maze() {
 
 void AbstractMaze::print_weight_maze() {
   unsigned int i, j;
-  for (i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
-    for (j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
+  for (i = 0; i < smartmouse::maze::SIZE; i++) {
+    for (j = 0; j < smartmouse::maze::SIZE; j++) {
       int w = nodes[i][j]->weight;
       print("%03u ", w);
     }
@@ -287,8 +287,8 @@ void AbstractMaze::print_weight_maze() {
 
 void AbstractMaze::print_dist_maze() {
   unsigned int i, j;
-  for (i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
-    for (j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
+  for (i = 0; i < smartmouse::maze::SIZE; i++) {
+    for (j = 0; j < smartmouse::maze::SIZE; j++) {
       Node *n = nodes[i][j];
       int d = n->distance;
       if (d < 10) {
@@ -305,8 +305,8 @@ void AbstractMaze::print_dist_maze() {
 
 void AbstractMaze::print_pointer_maze() {
   unsigned int i, j;
-  for (i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
-    for (j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
+  for (i = 0; i < smartmouse::maze::SIZE; i++) {
+    for (j = 0; j < smartmouse::maze::SIZE; j++) {
       print("%p ", nodes[i][j]);
     }
     print("\r\n");
@@ -317,23 +317,23 @@ AbstractMaze AbstractMaze::gen_random_legal_maze() {
   AbstractMaze maze;
 
   // start at center and move out, marking visited nodes as we go
-  maze.mark_position_visited(MAZE_SIZE / 2, MAZE_SIZE / 2);
-  maze.mark_position_visited(MAZE_SIZE / 2 - 1, MAZE_SIZE / 2);
-  maze.mark_position_visited(MAZE_SIZE / 2, MAZE_SIZE / 2 - 1);
-  maze.mark_position_visited(MAZE_SIZE / 2 - 1, MAZE_SIZE / 2 - 1);
+  maze.mark_position_visited(smartmouse::maze::SIZE / 2, smartmouse::maze::SIZE / 2);
+  maze.mark_position_visited(smartmouse::maze::SIZE / 2 - 1, smartmouse::maze::SIZE / 2);
+  maze.mark_position_visited(smartmouse::maze::SIZE / 2, smartmouse::maze::SIZE / 2 - 1);
+  maze.mark_position_visited(smartmouse::maze::SIZE / 2 - 1, smartmouse::maze::SIZE / 2 - 1);
 
   // pick std::random start node of the four possible ones;
-  unsigned int starting_row = MAZE_SIZE / 2 - std::rand() % 2;
-  unsigned int starting_col = MAZE_SIZE / 2 - std::rand() % 2;
+  unsigned int starting_row = smartmouse::maze::SIZE / 2 - std::rand() % 2;
+  unsigned int starting_col = smartmouse::maze::SIZE / 2 - std::rand() % 2;
   Node *start_node = nullptr;
   maze.get_node(&start_node, starting_row, starting_col);
   _make_connections(&maze, start_node);
 
   // knock down some more randomly
   unsigned int i = 0;
-  while (i < AbstractMaze::MAZE_SIZE * AbstractMaze::MAZE_SIZE / 5) {
-    unsigned int row = std::rand() % (AbstractMaze::MAZE_SIZE - 2) + 1;
-    unsigned int col = std::rand() % (AbstractMaze::MAZE_SIZE - 2) + 1;
+  while (i < smartmouse::maze::SIZE * smartmouse::maze::SIZE / 5) {
+    unsigned int row = std::rand() % (smartmouse::maze::SIZE - 2) + 1;
+    unsigned int col = std::rand() % (smartmouse::maze::SIZE - 2) + 1;
     int d = std::rand() % 4;
     Direction dir = int_to_dir(d);
 
@@ -404,10 +404,10 @@ AbstractMaze AbstractMaze::gen_random_legal_maze() {
   }
 
   // knock down center square
-  maze.connect_neighbor(MAZE_SIZE / 2, MAZE_SIZE / 2, Direction::N);
-  maze.connect_neighbor(MAZE_SIZE / 2, MAZE_SIZE / 2, Direction::W);
-  maze.connect_neighbor(MAZE_SIZE / 2 - 1, MAZE_SIZE / 2 - 1, Direction::S);
-  maze.connect_neighbor(MAZE_SIZE / 2 - 1, MAZE_SIZE / 2 - 1, Direction::E);
+  maze.connect_neighbor(smartmouse::maze::SIZE / 2, smartmouse::maze::SIZE / 2, Direction::N);
+  maze.connect_neighbor(smartmouse::maze::SIZE / 2, smartmouse::maze::SIZE / 2, Direction::W);
+  maze.connect_neighbor(smartmouse::maze::SIZE / 2 - 1, smartmouse::maze::SIZE / 2 - 1, Direction::S);
+  maze.connect_neighbor(smartmouse::maze::SIZE / 2 - 1, smartmouse::maze::SIZE / 2 - 1, Direction::E);
 
   return maze;
 }
@@ -491,8 +491,8 @@ route_t AbstractMaze::truncate(unsigned int row, unsigned int col, Direction dir
 
 bool AbstractMaze::operator==(const AbstractMaze &other) const {
   unsigned int i, j;
-  for (i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
-    for (j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
+  for (i = 0; i < smartmouse::maze::SIZE; i++) {
+    for (j = 0; j < smartmouse::maze::SIZE; j++) {
       for (Direction d = Direction::First; d != Direction::Last; d++) {
         bool n1 = static_cast<bool>(nodes[i][j]->neighbor(d));
         bool n2 = static_cast<bool>(other.nodes[i][j]->neighbor(d));
@@ -503,9 +503,4 @@ bool AbstractMaze::operator==(const AbstractMaze &other) const {
     }
   }
   return true;
-}
-
-std::pair<double, double> AbstractMaze::rowColToXYCenter(unsigned int row, unsigned int col) {
-  return {col * AbstractMaze::UNIT_DIST + AbstractMaze::HALF_UNIT_DIST,
-          row * AbstractMaze::UNIT_DIST + AbstractMaze::HALF_UNIT_DIST};
 }

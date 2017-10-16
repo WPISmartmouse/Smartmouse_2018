@@ -31,23 +31,15 @@ SensorReading ConsoleMouse::checkWalls() {
 
 GlobalPose ConsoleMouse::getGlobalPose() {
   GlobalPose p;
-  p.x = row * AbstractMaze::UNIT_DIST + AbstractMaze::HALF_UNIT_DIST;
-  p.y = col * AbstractMaze::UNIT_DIST + AbstractMaze::HALF_UNIT_DIST;
+  p.row = 0.5 + row;
+  p.col = 0.5 + col;
   p.yaw = dir_to_yaw(dir);
   return p;
 }
 LocalPose ConsoleMouse::getLocalPose() {
   LocalPose p;
-  p.to_left = AbstractMaze::HALF_UNIT_DIST;
-  p.to_back = AbstractMaze::HALF_UNIT_DIST;
+  p.to_left = 0.5;
+  p.to_back = 0.5;
   p.yaw_from_straight = dir_to_yaw(dir);
   return p;
-}
-
-double ConsoleMouse::getRowOffsetToEdge() {
-  return AbstractMaze::HALF_UNIT_DIST;
-}
-
-double ConsoleMouse::getColOffsetToEdge() {
-  return AbstractMaze::HALF_UNIT_DIST;
 }

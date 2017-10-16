@@ -22,7 +22,7 @@ void WaitForStart::execute() {
 
   // Set the max speed of the robot based on the right wheel
   double percent_speed = fmod(mouse->left_encoder.read() - init_ticks_left, 1024) / 1024;
-  speed =  percent_speed * config.MAX_HARDWARE_SPEED;
+  speed =  percent_speed * smartmouse::kc::MAX_HARDWARE_SPEED;
 
   int idx = percent_speed * 100 / 7;
   for (int i = 0; i < 7; i++) {
@@ -34,8 +34,8 @@ void WaitForStart::execute() {
   }
 
   // Set arc turn on or off based on left wheel
-  config.ARC_TURN = fmod(fabs(mouse->right_encoder.read() - init_ticks_right), 200) > 100;
-  if (config.ARC_TURN) {
+  smartmouse::kc::ARC_TURN = fmod(fabs(mouse->right_encoder.read() - init_ticks_right), 200) > 100;
+  if (smartmouse::kc::ARC_TURN) {
     digitalWrite(RealMouse::LED_8, 1);
   } else {
     digitalWrite(RealMouse::LED_8, 0);
@@ -51,7 +51,7 @@ bool WaitForStart::isFinished() {
 }
 
 void WaitForStart::end() {
-  config.MAX_SPEED = max(speed, 0.1); // FIXME: this should be a lower number
+  smartmouse::kc::MAX_SPEED = max(speed, 0.1); // FIXME: this should be a lower number
   for (int i = 0; i < 7; i++) {
     digitalWrite(RealMouse::LED_7 - i, 0);
   }

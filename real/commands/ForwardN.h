@@ -23,7 +23,5 @@ private:
   unsigned int n;
   GlobalPose start;
   RealMouse *mouse;
-
-  RangeData range_data;
 };
 

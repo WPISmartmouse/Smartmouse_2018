@@ -1,3 +1,4 @@
+//TODO: finish unit conversion
 
 #include <common/math/math.h>
 #include "ArcTurn.h"
@@ -15,8 +16,8 @@ void ArcTurn::initialize() {
 
   startCol = mouse->getCol();
   startRow = mouse->getRow();
-  vtc_x = mouse->getCol()*AbstractMaze::UNIT_DIST + AbstractMaze::HALF_UNIT_DIST;
-  vtc_y = mouse->getRow()*AbstractMaze::UNIT_DIST + AbstractMaze::HALF_UNIT_DIST;
+  vtc_x = mouse->getCol()*smartmouse::maze::UNIT_DIST_M + smartmouse::maze::HALF_UNIT_DIST;
+  vtc_y = mouse->getRow()*smartmouse::maze::UNIT_DIST_M + smartmouse::maze::HALF_UNIT_DIST;
 
   end_x = vtc_x;
   end_y = vtc_y;
@@ -24,41 +25,41 @@ void ArcTurn::initialize() {
   // move to corner
   switch (mouse->getDir()) {
     case Direction::N: {
-      vtc_y += AbstractMaze::HALF_UNIT_DIST;
+      vtc_y += smartmouse::maze::HALF_UNIT_DIST;
       if (dir == Direction::E){
-        vtc_x += AbstractMaze::HALF_UNIT_DIST;
+        vtc_x += smartmouse::maze::HALF_UNIT_DIST;
       } else {
-        vtc_x -= AbstractMaze::HALF_UNIT_DIST;
+        vtc_x -= smartmouse::maze::HALF_UNIT_DIST;
       }
       end_x = vtc_x;
       break;
     }
     case Direction::E: {
-      vtc_x -= AbstractMaze::HALF_UNIT_DIST;
+      vtc_x -= smartmouse::maze::HALF_UNIT_DIST;
       if (dir == Direction::S) {
-        vtc_y += AbstractMaze::HALF_UNIT_DIST;
+        vtc_y += smartmouse::maze::HALF_UNIT_DIST;
       } else {
-        vtc_y -= AbstractMaze::HALF_UNIT_DIST;
+        vtc_y -= smartmouse::maze::HALF_UNIT_DIST;
       }
       end_y = vtc_y;
       break;
     }
     case Direction::S: {
-      vtc_y -= AbstractMaze::HALF_UNIT_DIST;
+      vtc_y -= smartmouse::maze::HALF_UNIT_DIST;
       if (dir == Direction::W){
-        vtc_x -= AbstractMaze::HALF_UNIT_DIST;
+        vtc_x -= smartmouse::maze::HALF_UNIT_DIST;
       } else {
-        vtc_x += AbstractMaze::HALF_UNIT_DIST;
+        vtc_x += smartmouse::maze::HALF_UNIT_DIST;
       }
       end_x = vtc_x;
       break;
     }
     case Direction::W: {
-      vtc_x += AbstractMaze::HALF_UNIT_DIST;
+      vtc_x += smartmouse::maze::HALF_UNIT_DIST;
       if (dir == Direction::N){
-        vtc_y -= AbstractMaze::HALF_UNIT_DIST;
+        vtc_y -= smartmouse::maze::HALF_UNIT_DIST;
       } else {
-        vtc_y += AbstractMaze::HALF_UNIT_DIST;
+        vtc_y += smartmouse::maze::HALF_UNIT_DIST;
       }
       end_y = vtc_y;
       break;
@@ -77,8 +78,8 @@ void ArcTurn::initialize() {
 void ArcTurn::execute() {
 
   GlobalPose curPose = mouse->getGlobalPose();
-  double cur_x = fabs(curPose.x - vtc_x);
-  double cur_y = fabs(curPose.y - vtc_y);
+  double cur_x = fabs(curPose.col - vtc_x);
+  double cur_y = fabs(curPose.row - vtc_y);
 
   double dAngle;
   if ((dir == Direction::N)||(dir == Direction::S)) {
@@ -88,7 +89,7 @@ void ArcTurn::execute() {
   }
 
   double ang_error = fabs(smartmouse::math::yawDiff(curPose.yaw, dir_to_yaw(mouse->getDir())))-dAngle;
-  double arc_error = (AbstractMaze::HALF_UNIT_DIST/pose_dist(mouse->getGlobalPose(), vtc_x, vtc_y))-1;
+  double arc_error = (smartmouse::maze::HALF_UNIT_DIST/pose_dist(mouse->getGlobalPose(), vtc_x, vtc_y))-1;
 
   double corr = (ang_error*1.0)+(arc_error*0.5);
   print("%f\t%f\n\r", dAngle, smartmouse::math::yawDiff(curPose.yaw, dir_to_yaw(mouse->getDir())));
@@ -114,7 +115,7 @@ void ArcTurn::execute() {
 bool ArcTurn::isFinished() {
   double currentYaw = mouse->getGlobalPose().yaw;
   dYaw = smartmouse::math::yawDiff(currentYaw, goalYaw);
-  return ((fabs(dYaw) < config.ROT_TOLERANCE) && ((mouse->getCol() != startCol) || (mouse->getRow() != startRow)));
+  return ((fabs(dYaw) < smartmouse::kc::ROT_TOLERANCE) && ((mouse->getCol() != startCol) || (mouse->getRow() != startRow)));
 }
 
 void ArcTurn::end() {
@@ -124,5 +125,5 @@ void ArcTurn::end() {
 }
 
 double ArcTurn::pose_dist(GlobalPose pose, double x, double y) {
-  return sqrtf(powf(pose.x-x,2) + powf(pose.y-y,2));
+  return sqrtf(powf(pose.col-x,2) + powf(pose.row-y,2));
 }

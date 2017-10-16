@@ -8,7 +8,7 @@ ReturnToStart::ReturnToStart(Mouse *mouse) : CommandGroup("return"), mouse(mouse
 
 void ReturnToStart::initialize() {
   //plan path from center to origin
-  mouse->maze->flood_fill_from_point(&pathToStart, AbstractMaze::MAZE_SIZE / 2, AbstractMaze::MAZE_SIZE / 2, 0, 0);
+  mouse->maze->flood_fill_from_point(&pathToStart, smartmouse::maze::SIZE / 2, smartmouse::maze::SIZE / 2, 0, 0);
   index = 0;
 }
 

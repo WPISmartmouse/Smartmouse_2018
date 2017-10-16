@@ -2,14 +2,6 @@
 #include "common/core/util.h"
 #include "Mouse.h"
 
-double Mouse::meterToRad(double x) {
-  return x / WHEEL_RAD;
-}
-
-double Mouse::radToMeters(double x) {
-  return x * WHEEL_RAD;
-}
-
 Mouse::Mouse() : maze(new AbstractMaze()), row(0), col(0), dir(Direction::E) {}
 
 Mouse::Mouse(unsigned int starting_row, unsigned int starting_col) : maze(new AbstractMaze()), row(starting_row), col(starting_col),
@@ -39,13 +31,13 @@ Direction Mouse::getDir() {
 }
 
 bool Mouse::atCenter() {
-  return row == AbstractMaze::CENTER && col == AbstractMaze::CENTER;
+  return row == smartmouse::maze::CENTER && col == smartmouse::maze::CENTER;
 }
 
 bool Mouse::inBounds() {
   return row >= 0 && col >= 0
-         && row < AbstractMaze::MAZE_SIZE
-         && col < AbstractMaze::MAZE_SIZE;
+         && row < smartmouse::maze::SIZE
+         && col < smartmouse::maze::SIZE;
 }
 
 void Mouse::internalTurnToFace(Direction dir) {
@@ -84,7 +76,7 @@ void Mouse::mark_mouse_position_visited() {
 }
 
 void Mouse::print_maze_mouse() {
-  char buff[AbstractMaze::BUFF_SIZE];
+  char buff[smartmouse::maze::BUFF_SIZE];
   maze_mouse_string(buff);
   print(buff);
 }
@@ -92,8 +84,8 @@ void Mouse::print_maze_mouse() {
 void Mouse::maze_mouse_string(char *buff) {
   char *b = buff;
   unsigned int i, j;
-  for (i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
-    for (j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
+  for (i = 0; i < smartmouse::maze::SIZE; i++) {
+    for (j = 0; j < smartmouse::maze::SIZE; j++) {
       Node *n = maze->nodes[i][j];
       if (n->neighbor(Direction::W) == NULL) {
         strcpy(b++, "|");

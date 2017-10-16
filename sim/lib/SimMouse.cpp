@@ -25,16 +25,12 @@ SensorReading SimMouse::checkWalls() {
   dataCond.wait(lk);
   SensorReading sr(row, col);
 
-  sr.walls[static_cast<int>(dir)] = range_data.front < config.FRONT_WALL_THRESHOLD;
-  sr.walls[static_cast<int>(left_of_dir(dir))] = range_data.front_left < config.SIDE_WALL_THRESHOLD;
-  sr.walls[static_cast<int>(right_of_dir(dir))] = range_data.front_right < config.SIDE_WALL_THRESHOLD;
+  sr.walls[static_cast<int>(dir)] = range_data.front < smartmouse::kc::FRONT_WALL_THRESHOLD;
+  sr.walls[static_cast<int>(left_of_dir(dir))] = range_data.front_left < smartmouse::kc::SIDE_WALL_THRESHOLD;
+  sr.walls[static_cast<int>(right_of_dir(dir))] = range_data.front_right < smartmouse::kc::SIDE_WALL_THRESHOLD;
   sr.walls[static_cast<int>(opposite_direction(dir))] = false;
 
   return sr;
-}
-
-double SimMouse::getColOffsetToEdge() {
-  return kinematic_controller.col_offset_to_edge;
 }
 
 GlobalPose SimMouse::getGlobalPose() {
@@ -44,50 +40,19 @@ LocalPose SimMouse::getLocalPose() {
   return kinematic_controller.getLocalPose();
 }
 
-double SimMouse::getRowOffsetToEdge() {
-  return kinematic_controller.row_offset_to_edge;
-}
-
 std::pair<double, double> SimMouse::getWheelVelocities() {
   return kinematic_controller.getWheelVelocities();
 };
 
-void SimMouse::indicatePath(unsigned int row, unsigned int col, route_t path, std::string color) {
-  for (motion_primitive_t prim : path) {
-    for (size_t i = 0; i < prim.n; i++) {
-      switch (prim.d) {
-        case Direction::N:row--;
-          break;
-        case Direction::E:col++;
-          break;
-        case Direction::S:row++;
-          break;
-        case Direction::W:col--;
-          break;
-        default:break;
-      }
-      indicators[row][col]->mutable_material()->mutable_script()->set_name(color);
-    }
-  }
-}
-
 bool SimMouse::isStopped() {
   return kinematic_controller.isStopped() && fabs(abstract_left_force) <= 5 &&
-      fabs(abstract_right_force) <= config.MIN_ABSTRACT_FORCE;
-}
-
-void SimMouse::publishIndicators() {
-  for (unsigned int i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
-    for (unsigned int j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
-      node.Request("/marker", *indicators[i][j]);
-    }
-  }
+      fabs(abstract_right_force) <= smartmouse::kc::MIN_ABSTRACT_FORCE;
 }
 
 void SimMouse::robotSimStateCallback(const smartmouse::msgs::RobotSimState &msg) {
   std::unique_lock<std::mutex> lk(dataMutex);
-  true_pose.x = msg.p().x();
-  true_pose.y = msg.p().y();
+  true_pose.col = msg.p().x();
+  true_pose.row = msg.p().y();
   true_pose.yaw = msg.p().theta();
 
   this->left_wheel_angle_rad = msg.left_wheel().theta();
@@ -123,17 +88,18 @@ void SimMouse::run(double dt_s) {
   smartmouse::msgs::MazeLocation maze_loc_msg;
   maze_loc_msg.set_row(row);
   maze_loc_msg.set_col(col);
-  maze_loc_msg.set_row_offset(kinematic_controller.row_offset_to_edge);
-  maze_loc_msg.set_col_offset(kinematic_controller.col_offset_to_edge);
+  // TODO: finish unit conversion
+  maze_loc_msg.set_row_offset(0);
+  maze_loc_msg.set_col_offset(0);
 
-  maze_loc_msg.set_estimated_x_meters(getGlobalPose().x);
-  maze_loc_msg.set_estimated_y_meters(getGlobalPose().y);
+  maze_loc_msg.set_estimated_x_meters(getGlobalPose().col * smartmouse::maze::UNIT_DIST_M);
+  maze_loc_msg.set_estimated_y_meters(getGlobalPose().row * smartmouse::maze::UNIT_DIST_M);
   maze_loc_msg.set_estimated_yaw_rad(getGlobalPose().yaw);
   std::string dir_str(1, dir_to_char(dir));
   maze_loc_msg.set_dir(dir_str);
 
   std::string buff;
-  buff.resize(AbstractMaze::BUFF_SIZE);
+  buff.resize(smartmouse::maze::BUFF_SIZE);
   maze_mouse_string(&buff[0]);
   maze_loc_msg.set_mouse_maze_string(buff);
 
@@ -147,68 +113,6 @@ void SimMouse::run(double dt_s) {
   cmd.mutable_left()->set_abstract_force(abstract_left_force);
   cmd.mutable_right()->set_abstract_force(abstract_right_force);
   cmd_pub.Publish(cmd);
-
-  update_markers();
-}
-
-void SimMouse::update_markers() {
-  static unsigned int last_row = 0, last_col = 0;
-
-  if (last_col != col || last_row != row) {
-    for (unsigned int i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
-      for (unsigned int j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
-        indicators[i][j]->mutable_material()->mutable_script()->set_name(grey_color);
-      }
-    }
-    indicatePath(row, col, maze->path_to_next_goal, red_color);
-    indicatePath(0, 0, maze->fastest_theoretical_route, green_color);
-    if (maze->solved) {
-      indicatePath(0, 0, maze->fastest_route, blue_color);
-    }
-
-    publishIndicators();
-
-    last_row = row;
-    last_col = col;
-  }
-
-  {
-    ignition::msgs::Marker estimated_pose_marker;
-    estimated_pose_marker.set_ns("estimated_pose");
-    estimated_pose_marker.set_id(1); // constant ID makes each new marker replace the previous one
-    estimated_pose_marker.set_action(ignition::msgs::Marker::ADD_MODIFY);
-    estimated_pose_marker.set_type(ignition::msgs::Marker::BOX);
-    estimated_pose_marker.set_layer(3);
-    estimated_pose_marker.mutable_material()->mutable_script()->set_name(red_color);
-    ignition::msgs::Vector3d *size = estimated_pose_marker.mutable_scale();
-    size->set_x(0.02);
-    size->set_y(0.002);
-    size->set_z(0.002);
-    double x = getGlobalPose().x;
-    double y = -getGlobalPose().y;
-    double yaw = getGlobalPose().yaw;
-    Set(estimated_pose_marker.mutable_pose(), ignition::math::Pose3d(x, y, 0.02, 0, 0, yaw));
-    node.Request("/marker", estimated_pose_marker);
-  }
-
-  {
-    ignition::msgs::Marker error_marker;
-    error_marker.set_ns("pose_error");
-    error_marker.set_id(2); // constant ID makes each new marker replace the previous one
-    error_marker.set_action(ignition::msgs::Marker::ADD_MODIFY);
-    error_marker.set_type(ignition::msgs::Marker::LINE_STRIP);
-    error_marker.set_layer(3);
-    ignition::msgs::Vector3d *true_center = error_marker.add_point();
-    ignition::msgs::Vector3d *estimated_center = error_marker.add_point();
-    true_center->set_x(true_pose.x);
-    true_center->set_y(-true_pose.y);
-    true_center->set_z(.02);
-    estimated_center->set_x(getGlobalPose().x);
-    estimated_center->set_y(-getGlobalPose().y);
-    estimated_center->set_z(.02);
-    error_marker.mutable_material()->mutable_script()->set_name("Gazebo/Black");
-    node.Request("/marker", error_marker);
-  }
 }
 
 void SimMouse::setSpeed(double left_wheel_velocity_setpoint_mps, double right_wheel_velocity_setpoint_mps) {
@@ -216,40 +120,16 @@ void SimMouse::setSpeed(double left_wheel_velocity_setpoint_mps, double right_wh
 }
 
 void SimMouse::simInit() {
-  setSpeed(0.60, 0.60);
-  kinematic_controller.setParams(10, 0, 0, 0, 0);
-
+  kinematic_controller.setParams(0, 0, 0, 0, 0);
   kinematic_controller.setAccelerationMpss(2.0);
 
   // we start in the middle of the first square
   resetToStartPose();
-
-  for (unsigned int i = 0; i < AbstractMaze::MAZE_SIZE; i++) {
-    for (unsigned int j = 0; j < AbstractMaze::MAZE_SIZE; j++) {
-      indicators[i][j] = new ignition::msgs::Marker();
-      ignition::msgs::Marker *marker = indicators[i][j];
-      marker->set_layer(2);
-      marker->set_id(i * AbstractMaze::MAZE_SIZE + j); // constant ID makes each new marker replace the previous one
-      marker->set_action(ignition::msgs::Marker::ADD_MODIFY);
-      marker->set_type(ignition::msgs::Marker::CYLINDER);
-      ignition::msgs::Material *matMsg = marker->mutable_material();
-      matMsg->mutable_script()->set_name("Gazebo/Grey");
-      ignition::msgs::Vector3d *size = marker->mutable_scale();
-      size->set_x(INDICATOR_RAD);
-      size->set_y(INDICATOR_RAD);
-      size->set_z(INDICATOR_LEN);
-      double y = -(i * AbstractMaze::UNIT_DIST + AbstractMaze::HALF_UNIT_DIST);
-      double x = j * AbstractMaze::UNIT_DIST + AbstractMaze::HALF_UNIT_DIST;
-      Set(marker->mutable_pose(), ignition::math::Pose3d(x, y, INDICATOR_Z, 0, 0, 0));
-    }
-  }
-
-//  publishIndicators();
 }
 
 void SimMouse::resetToStartPose() {
   reset(); // resets row, col, and dir
-  kinematic_controller.reset_x_to(0.053);
-  kinematic_controller.reset_y_to(0.09);
+  kinematic_controller.reset_col_to(0.5);
+  kinematic_controller.reset_row_to(0.5);
   kinematic_controller.reset_yaw_to(0.0);
 }

@@ -25,10 +25,6 @@ class Mouse {
 
 public:
 
-  static double radToMeters(double x);
-
-  static double meterToRad(double x);
-
   Mouse();
 
   Mouse(AbstractMaze *maze);
@@ -81,12 +77,6 @@ public:
   bool isWallInDirection(Direction d);
 
   AbstractMaze *maze;
-
-  static constexpr double WHEEL_RAD = 0.0145;
-
-  virtual double getColOffsetToEdge() = 0;
-
-  virtual double getRowOffsetToEdge() = 0;
 
   virtual GlobalPose getGlobalPose() = 0;
   virtual LocalPose getLocalPose() = 0;

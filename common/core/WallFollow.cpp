@@ -34,7 +34,7 @@ route_t WallFollow::solve() {
 bool WallFollow::isFinished() {
   unsigned int r = mouse->getRow();
   unsigned int c = mouse->getCol();
-  const unsigned int C = AbstractMaze::MAZE_SIZE / 2;
+  const unsigned int C = smartmouse::maze::SIZE / 2;
   if (goal == Solver::Goal::CENTER) {
     return !solvable || ((r >= C - 1 && r <= C) && (c >= C - 1 && c <= C));
   } else if (goal == Solver::Goal::START) {

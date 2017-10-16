@@ -1,3 +1,5 @@
+// TODO: finish unit conversion
+
 #pragma once
 
 #include <common/commanduino/CommanDuino.h>
@@ -9,7 +11,7 @@
 #include <common/core/AbstractMaze.h>
 
 class ArcTurn : public Command {
-public:
+ public:
   ArcTurn(Direction dir);
 
   void initialize();
@@ -20,7 +22,7 @@ public:
 
   void end();
 
-private:
+ private:
   RealMouse *mouse;
   Direction dir;
 
@@ -40,9 +42,11 @@ private:
   double vtc_y;
 
   constexpr static double speed_scale = 0.75;
-  double SLOW_ARC_SPEED = speed_scale * (config.MAX_SPEED / (AbstractMaze::HALF_UNIT_DIST + (config.TRACK_WIDTH / 2))) *
-                          (AbstractMaze::HALF_UNIT_DIST - (config.TRACK_WIDTH / 2));
-  double FAST_ARC_SPEED = speed_scale * (config.MAX_SPEED);
+  double SLOW_ARC_SPEED =
+      speed_scale * (smartmouse::kc::MAX_SPEED / (smartmouse::maze::HALF_UNIT_DIST + (smartmouse::kc::TRACK_WIDTH / 2)))
+          *
+              (smartmouse::maze::HALF_UNIT_DIST - (smartmouse::kc::TRACK_WIDTH / 2));
+  double FAST_ARC_SPEED = speed_scale * (smartmouse::kc::MAX_SPEED);
 
   constexpr static double kp_turn = 3.00;
   constexpr static double ang_weight = 1.00;

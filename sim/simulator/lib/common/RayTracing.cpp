@@ -6,7 +6,7 @@ std::experimental::optional<double> RayTracing::distance_to_wall(const ignition:
                                   ignition::math::Vector2d u) {
   // project along u the size of the maze
   ignition::math::Vector2d u_proj(u);
-  u_proj *= AbstractMaze::MAZE_SIZE_M;
+  u_proj *= smartmouse::maze::SIZE_M;
 
   ignition::math::Vector2d intersection_point;
   ignition::math::Line2d sensor_ray(pt, pt + u_proj);

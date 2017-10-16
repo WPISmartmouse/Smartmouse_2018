@@ -8,6 +8,7 @@
 #include <common/math/math.h>
 #include <lib/common/RayTracing.h>
 #include <msgs/msgs.h>
+#include <common/KinematicController/KinematicController.h>
 
 Server::Server()
     : sim_time_(Time::Zero),
@@ -136,8 +137,8 @@ void Server::UpdateRobotState(double dt) {
   double wr = robot_state_.right_wheel().omega();
   double ir = robot_state_.right_wheel().current();
 
-  double vl = Mouse::radToMeters(wl);
-  double vr = Mouse::radToMeters(wr);
+  double vl = smartmouse::kc::radToMeters(wl);
+  double vr = smartmouse::kc::radToMeters(wr);
 
   double new_al = il * motor_K / motor_J - motor_b * wl / motor_J; // equation 36
   double new_ar = ir * motor_K / motor_J - motor_b * wr / motor_J; // equation 39
@@ -152,40 +153,26 @@ void Server::UpdateRobotState(double dt) {
   double new_il = il + dt * (voltage_l - motor_K * wl - motor_R * il) / motor_L;
   double new_ir = ir + dt * (voltage_r - motor_K * wr - motor_R * ir) / motor_L;
 
-  // forward kinematics for differential drive robot
-  double R = 0;
-  double w_about_icc = 0;
-  double dtheta_about_icc = 0;
-  double new_x = 0, new_y = 0;
+  double dx, dy, dtheta;
+  std::tie(dx, dy, dtheta) = KinematicController::forwardKinematics(vl, vr, theta, dt);
 
-  // if we're going perfectly straight R is infinity, so check first.
-  // update the x & y coordinates
-  if (std::abs(vl - vr) > 1e-5) {
-    R = config.TRACK_WIDTH * (vr + vl) / (2 * (vr - vl)); // eq 12
-    w_about_icc = (vr - vl) / config.TRACK_WIDTH; //eq 11
-    dtheta_about_icc = w_about_icc * dt; //eq 11
-    new_x = x + R * (sin(dtheta_about_icc + theta) - sin(theta)); //eq 28
-    new_y = y - R * (cos(dtheta_about_icc + theta) - cos(theta)); //eq 29
-  } else {
-    // going perfectly straight
-    dtheta_about_icc = 0;
-    double v = (vl + vr) / 2;
-    new_x = x + v * cos(theta) * dt;
-    new_y = y + v * sin(theta) * dt;
-  }
+  // update X and Y position
+  double new_x = x + dx;
+  double new_y = y + dy;
 
+  // update X and Y speed and acceleration
   double new_vx = (new_x - x) / dt;
   double new_vy = (new_y - y) / dt;
   double new_ax = (new_vx - vx) / dt;
   double new_ay = (new_vy - vy) / dt;
 
   // update theta, omega, and alpha
-  double new_theta = theta + dtheta_about_icc; //eq 27
+  double new_theta = theta + dtheta; //eq 27
   double new_w = smartmouse::math::yawDiff(new_theta, theta) / dt;
   double new_a = (new_w - w) / dt;
 
   // handle wrap-around of theta
-  new_theta = smartmouse::math::wrapAngleRad(new_theta);
+  smartmouse::math::wrapAngleRadInPlace(&new_theta);
 
   // Ray trace to find distance to walls
   // iterate over every line segment in the maze (all edges of all walls)

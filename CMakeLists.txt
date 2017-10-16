@@ -16,7 +16,7 @@ endif ()
 
 project(smartmouse)
 
-file(GLOB_RECURSE CORE_COM_SRC "common/commands/*.cpp" "common/commanduino/*.cpp" "common/core/*.cpp")
+file(GLOB_RECURSE CORE_COM_SRC common/commanduino/*.cpp common/core/*.cpp)
 file(GLOB COM_SRC common/*.cpp common/math/*.cpp common/commanduino/*.cpp common/KinematicController/*.cpp)
 file(GLOB COM_COMMAND_SRC common/commands/*.cpp)
 get_filename_component(UTIL_HEADER common/core/util.h ABSOLUTE)

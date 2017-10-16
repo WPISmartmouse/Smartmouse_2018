@@ -1,3 +1,5 @@
+//TODO: finish unit conversion
+
 #pragma once
 #include <common/commanduino/CommanDuino.h>
 #include <common/core/Direction.h>
@@ -7,8 +9,8 @@
 #include <common/KinematicController/RobotConfig.h>
 #include <common/core/AbstractMaze.h>
 
-class ArcTurn : public Command{
-public:
+class ArcTurn : public Command {
+ public:
   ArcTurn(Direction dir);
 
   void initialize();
@@ -18,7 +20,7 @@ public:
   bool isFinished();
 
   void end();
-private:
+ private:
   double dYaw;
   double dDisp;
   double goalYaw;
@@ -32,10 +34,12 @@ private:
   double end_x;
   double end_y;
 
-  SimMouse* mouse;
+  SimMouse *mouse;
   Direction dir;
-  double SLOW_ARC_SPEED = 0.75*(config.MAX_SPEED/(AbstractMaze::HALF_UNIT_DIST+(config.TRACK_WIDTH/2)))*(AbstractMaze::HALF_UNIT_DIST-(config.TRACK_WIDTH/2));
-  double FAST_ARC_SPEED = 0.75*config.MAX_SPEED;
+  double SLOW_ARC_SPEED =
+      0.75 * (smartmouse::kc::MAX_SPEED / (smartmouse::maze::HALF_UNIT_DIST + (smartmouse::kc::TRACK_WIDTH / 2)))
+          * (smartmouse::maze::HALF_UNIT_DIST - (smartmouse::kc::TRACK_WIDTH / 2));
+  double FAST_ARC_SPEED = 0.75 * smartmouse::kc::MAX_SPEED;
 
   double pose_dist(GlobalPose pose, double x, double y);
 };

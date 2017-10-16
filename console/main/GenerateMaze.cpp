@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
 
   if (save) {
     std::string buff;
-    buff.resize(AbstractMaze::BUFF_SIZE);
+    buff.resize(smartmouse::maze::BUFF_SIZE);
     maze.print_maze_str(&buff[0]);
     fs << buff << std::endl;
     fs.close();

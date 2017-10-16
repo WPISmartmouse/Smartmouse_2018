@@ -16,11 +16,11 @@ class GlobalPose {
 public:
   GlobalPose();
 
-  GlobalPose(double x, double y);
+  GlobalPose(double col, double row);
 
-  GlobalPose(double x, double y, double yaw);
+  GlobalPose(double col, double row, double yaw);
 
-  double x, y;
+  double col, row;
   double yaw;
 };
 

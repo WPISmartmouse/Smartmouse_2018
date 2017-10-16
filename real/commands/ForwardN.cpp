@@ -1,5 +1,4 @@
 #include <real/RealMouse.h>
-#include "Forward.h"
 #include "ForwardN.h"
 
 ForwardN::ForwardN(unsigned int n) : Command("Forward"), mouse(RealMouse::inst()), n(n) {}
@@ -14,8 +13,6 @@ void ForwardN::initialize() {
 }
 
 void ForwardN::execute() {
-  range_data = mouse->getRangeData();
-
   double l, r;
   std::tie(l, r) = mouse->kinematic_controller.compute_wheel_velocities(this->mouse);
   mouse->setSpeed(l, r);

@@ -40,7 +40,7 @@ TEST(MsgsTest, MazeConversion) {
   smartmouse::msgs::Maze maze_msg = smartmouse::msgs::Convert(&maze);
 
   EXPECT_EQ(maze_msg.walls_size(),
-            (int) (2 * (AbstractMaze::MAZE_SIZE * AbstractMaze::MAZE_SIZE + AbstractMaze::MAZE_SIZE)));
+            (int) (2 * (smartmouse::maze::SIZE * smartmouse::maze::SIZE + smartmouse::maze::SIZE)));
 
   AbstractMaze maze2 = smartmouse::msgs::Convert(maze_msg);
 
@@ -49,42 +49,42 @@ TEST(MsgsTest, MazeConversion) {
 
 TEST(MsgsTest, WallToCoordinates) {
   smartmouse::msgs::Wall wall;
-  double x1, y1, x2, y2;
+  double c1, r1, c2, r2;
   wall.set_direction(smartmouse::msgs::Direction_Dir_S);
   wall.mutable_node()->set_row(0);
   wall.mutable_node()->set_col(0);
-  std::tie(x1, y1, x2, y2) = smartmouse::msgs::WallToCoordinates(wall);
-  EXPECT_EQ(x1, -0.006);
-  EXPECT_EQ(y1, 0.006);
-  EXPECT_EQ(x2, 0.186);
-  EXPECT_EQ(y2, -0.006);
+  std::tie(c1, r1, c2, r2) = smartmouse::msgs::WallToCoordinates(wall);
+  EXPECT_EQ(c1, -smartmouse::maze::HALF_WALL_THICKNESS_CU);
+  EXPECT_EQ(r1, 1 - smartmouse::maze::HALF_WALL_THICKNESS_CU);
+  EXPECT_EQ(c2, 1 + smartmouse::maze::HALF_WALL_THICKNESS_CU);
+  EXPECT_EQ(r2, 1 + smartmouse::maze::HALF_WALL_THICKNESS_CU);
 
   wall.set_direction(smartmouse::msgs::Direction_Dir_W);
   wall.mutable_node()->set_row(0);
   wall.mutable_node()->set_col(0);
-  std::tie(x1, y1, x2, y2) = smartmouse::msgs::WallToCoordinates(wall);
-  EXPECT_EQ(x1, -0.006);
-  EXPECT_EQ(y1, 0.186);
-  EXPECT_EQ(x2, 0.006);
-  EXPECT_EQ(y2, -0.006);
+  std::tie(c1, r1, c2, r2) = smartmouse::msgs::WallToCoordinates(wall);
+  EXPECT_EQ(c1, - smartmouse::maze::HALF_WALL_THICKNESS_CU);
+  EXPECT_EQ(r1, - smartmouse::maze::HALF_WALL_THICKNESS_CU);
+  EXPECT_EQ(c2, smartmouse::maze::HALF_WALL_THICKNESS_CU);
+  EXPECT_EQ(r2, 1 + smartmouse::maze::HALF_WALL_THICKNESS_CU);
 
   wall.set_direction(smartmouse::msgs::Direction_Dir_E);
   wall.mutable_node()->set_row(0);
   wall.mutable_node()->set_col(0);
-  std::tie(x1, y1, x2, y2) = smartmouse::msgs::WallToCoordinates(wall);
-  EXPECT_EQ(x1, 0.174);
-  EXPECT_EQ(y1, 0.186);
-  EXPECT_EQ(x2, 0.186);
-  EXPECT_EQ(y2, -0.006);
+  std::tie(c1, r1, c2, r2) = smartmouse::msgs::WallToCoordinates(wall);
+  EXPECT_EQ(c1, 1 - smartmouse::maze::HALF_WALL_THICKNESS_CU);
+  EXPECT_EQ(r1, -smartmouse::maze::HALF_WALL_THICKNESS_CU);
+  EXPECT_EQ(c2, 1 + smartmouse::maze::HALF_WALL_THICKNESS_CU);
+  EXPECT_EQ(r2, 1 + smartmouse::maze::HALF_WALL_THICKNESS_CU);
 
   wall.set_direction(smartmouse::msgs::Direction_Dir_N);
   wall.mutable_node()->set_row(0);
   wall.mutable_node()->set_col(0);
-  std::tie(x1, y1, x2, y2) = smartmouse::msgs::WallToCoordinates(wall);
-  EXPECT_EQ(x1, -0.006);
-  EXPECT_EQ(y1, 0.186);
-  EXPECT_EQ(x2, 0.186);
-  EXPECT_EQ(y2, 0.174);
+  std::tie(c1, r1, c2, r2) = smartmouse::msgs::WallToCoordinates(wall);
+  EXPECT_EQ(c1, -smartmouse::maze::HALF_WALL_THICKNESS_CU);
+  EXPECT_EQ(r1, -smartmouse::maze::HALF_WALL_THICKNESS_CU);
+  EXPECT_EQ(c2, 1 + smartmouse::maze::HALF_WALL_THICKNESS_CU);
+  EXPECT_EQ(r2, smartmouse::maze::HALF_WALL_THICKNESS_CU);
 }
 
 TEST(ServerTest, QuitTest) {

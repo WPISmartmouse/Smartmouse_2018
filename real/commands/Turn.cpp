@@ -13,7 +13,7 @@ void Turn::initialize() {
     addSequential(new TurnInPlace(dir));
     addSequential(new Forward());
   } else if (mouse->getDir() != dir) {
-    if (config.ARC_TURN) {
+    if (smartmouse::kc::ARC_TURN) {
       addSequential(new ArcTurn(dir)) ;
     }
     else {

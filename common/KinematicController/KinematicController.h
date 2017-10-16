@@ -15,8 +15,8 @@ struct drive_straight_state_t {
   double dispError;
   GlobalPose start_pose;
   double start_time_s;
-  double left_speed_mps;
-  double right_speed_mps;
+  double left_speed_cellps;
+  double right_speed_cellps;
   double forward_v;
   double v_final;
 };
@@ -33,13 +33,13 @@ public:
 
   static double fwdDispToCenter(Mouse *mouse);
 
-  static double fwdDispToDiag(Mouse *mouse);
-
   static double fwdDisp(Direction dir, GlobalPose current_pose, GlobalPose start_pose);
 
   static double yawDiff(double y1, double y2);
 
-  void start(GlobalPose start_pose, double goalDisp, double v_final=config.END_SPEED);
+  static std::tuple<double, double, double> forwardKinematics(double vl, double vr, double yaw, double dt);
+
+  void start(GlobalPose start_pose, double goalDisp, double v_final=smartmouse::kc::END_SPEED);
 
   void planTraj(Waypoints waypoints);
 
@@ -57,9 +57,9 @@ public:
 
   bool isStopped();
 
-  void reset_x_to(double new_x);
+  void reset_col_to(double new_col);
 
-  void reset_y_to(double new_y);
+  void reset_row_to(double new_row);
 
   void reset_yaw_to(double new_yaw);
 
@@ -81,8 +81,6 @@ public:
 
   bool enable_sensor_pose_estimate;
   bool enabled;
-  double row_offset_to_edge;
-  double col_offset_to_edge;
   unsigned int row;
   unsigned int col;
 
@@ -96,7 +94,6 @@ private:
   double d_until_left_drop;
   double d_until_right_drop;
   static const double DROP_SAFETY;
-  static const double POST_DROP_DIST;
-  double acceleration_mpss;
+  double acceleration_cellpss;
   double dt_s;
 };

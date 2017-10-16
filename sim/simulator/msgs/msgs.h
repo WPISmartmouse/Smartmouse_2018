@@ -7,7 +7,7 @@
 
 namespace smartmouse {
 namespace msgs {
-smartmouse::msgs::Maze Convert(AbstractMaze *maze, std::string name = "", int size = AbstractMaze::MAZE_SIZE);
+smartmouse::msgs::Maze Convert(AbstractMaze *maze, std::string name = "", int size = smartmouse::maze::SIZE);
 
 AbstractMaze Convert(smartmouse::msgs::Maze maze_msg);
 
