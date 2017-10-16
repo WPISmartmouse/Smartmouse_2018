@@ -1,11 +1,10 @@
 #include <sstream>
 #include <cmath>
-#include <sim/lib/SimMouse.h>
-#include "StateWidget.h"
 #include <QtWidgets/QHBoxLayout>
-#include <msgs/robot_command.pb.h>
-#include <lib/common/TopicNames.h>
 #include <common/math/math.h>
+#include <sim/lib/SimMouse.h>
+#include <sim/simulator/lib/common/TopicNames.h>
+#include <sim/simulator/lib/widgets/StateWidget.h>
 
 #include "ui_statewidget.h"
 
@@ -67,8 +66,8 @@ void StateWidget::StateCallback(const smartmouse::msgs::RobotSimState &msg) {
   double left_wheel_acceleration_mpss = smartmouse::kc::radToMeters(100 * msg.left_wheel().alpha());
   double right_wheel_acceleration_mpss = smartmouse::kc::radToMeters(100 * msg.right_wheel().alpha());
 
-  this->true_x = msg.p().x();
-  this->true_y = msg.p().y();
+  this->true_x = smartmouse::maze::toMeters(msg.p().row());
+  this->true_y = smartmouse::maze::toMeters(msg.p().col());
   this->true_yaw = msg.p().theta();
 
   this->SetLeftVelocity(QString::asprintf("%0.3f cm/s", left_wheel_velocity_mps));
@@ -77,9 +76,9 @@ void StateWidget::StateCallback(const smartmouse::msgs::RobotSimState &msg) {
   this->SetRightAcceleration(QString::asprintf("%0.3f cm/s^2", right_wheel_acceleration_mpss));
   this->SetLeftCurrent(QString::asprintf("%0.3f mA", msg.left_wheel().current() * 1000));
   this->SetRightCurrent(QString::asprintf("%0.3f mA", msg.right_wheel().current() * 1000));
-  this->SetTrueX(QString::asprintf("%0.1f cm", msg.p().x() * 100));
-  this->SetTrueY(QString::asprintf("%0.1f cm", msg.p().y() * 100));
-  this->SetTrueYaw(QString::asprintf("%0.1f deg", msg.p().theta() * 180 / M_PI));
+  this->SetTrueX(QString::asprintf("%0.1f cm", true_x * 100));
+  this->SetTrueY(QString::asprintf("%0.1f cm", true_y * 100));
+  this->SetTrueYaw(QString::asprintf("%0.1f deg", true_yaw * 180 / M_PI));
 }
 
 void StateWidget::MazeLocationCallback(const smartmouse::msgs::MazeLocation &msg) {

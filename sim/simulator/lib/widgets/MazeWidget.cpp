@@ -91,7 +91,7 @@ void MazeWidget::PaintMouse(QPainter &painter, QTransform tf) {
   right_wheel_path.lineTo(rwx + rr, rwy + rt / 2);
   right_wheel_path.lineTo(rwx + rr, rwy - rt / 2);
 
-  tf.translate(robot_state_.p().x(), robot_state_.p().y());
+  tf.translate(robot_state_.p().col(), robot_state_.p().row());
   tf.rotateRadians(-robot_state_.p().theta(), Qt::ZAxis);
   tf.scale(1/smartmouse::maze::UNIT_DIST_M, 1/smartmouse::maze::UNIT_DIST_M);
 

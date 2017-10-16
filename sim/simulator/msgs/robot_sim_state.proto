@@ -2,16 +2,16 @@ syntax = "proto2";
 
 package smartmouse.msgs;
 
-import "xytheta.proto";
+import "row_col_theta.proto";
 import "ignition/msgs/time.proto";
 
 message RobotSimState {
     optional ignition.msgs.Time stamp = 1;
     optional WheelPhysicsState left_wheel = 2;
     optional WheelPhysicsState right_wheel = 3;
-    optional XYTheta p = 4; // meters
-    optional XYTheta v = 5; // meters/second
-    optional XYTheta a = 6; // meters/second^2
+    optional RowColTheta p = 4; // meters
+    optional RowColTheta v = 5; // meters/second
+    optional RowColTheta a = 6; // meters/second^2
     optional double front_left = 7;
     optional double front_right = 8;
     optional double gerald_left = 9;

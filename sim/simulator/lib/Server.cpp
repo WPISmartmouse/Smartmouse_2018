@@ -84,14 +84,16 @@ bool Server::Run() {
 
   Time end_step_time = Time::GetWallTime();
   if (end_step_time > desired_end_time) {
-//    std::cout << "step took too long. Skipping sleep." << std::endl;
+    std::cout << "step took too long. Skipping sleep." << std::endl;
   }
   else {
-    Time sleep_time = (desired_end_time - end_step_time);
+    // FIXME: fudge factor makes sleep time more accurate, because we are often not woken up in time
+    Time sleep_time = (desired_end_time - end_step_time) - 5e-5;
     Time::Sleep(sleep_time);
   }
 
-  double rtf = update_rate.Double() / (end_step_time - start_step_time).Double();
+  Time actual_end_step_time = Time::GetWallTime();
+  double rtf = update_rate.Double() / (actual_end_step_time - start_step_time).Double();
 
   // This will send a message the GUI so it can update
   PublishInternalState();
@@ -124,11 +126,11 @@ void Server::UpdateRobotState(double dt) {
   const double motor_L = mouse_.motor().l();
 
   // use the cmd abstract forces, apply our dynamics model, update robot state
-  double x = robot_state_.p().x();
-  double y = robot_state_.p().y();
+  double col = robot_state_.p().col();
+  double row = robot_state_.p().row();
   double theta = robot_state_.p().theta();
-  double vx = robot_state_.v().x();
-  double vy = robot_state_.v().y();
+  double v_col = robot_state_.v().col();
+  double v_row = robot_state_.v().row();
   double w = robot_state_.v().theta();
   double tl = robot_state_.left_wheel().theta();
   double wl = robot_state_.left_wheel().omega();
@@ -153,18 +155,18 @@ void Server::UpdateRobotState(double dt) {
   double new_il = il + dt * (voltage_l - motor_K * wl - motor_R * il) / motor_L;
   double new_ir = ir + dt * (voltage_r - motor_K * wr - motor_R * ir) / motor_L;
 
-  double dx, dy, dtheta;
-  std::tie(dx, dy, dtheta) = KinematicController::forwardKinematics(vl, vr, theta, dt);
+  double dcol, drow, dtheta;
+  std::tie(dcol, drow, dtheta) = KinematicController::forwardKinematics(vl, vr, theta, dt);
 
-  // update X and Y position
-  double new_x = x + dx;
-  double new_y = y + dy;
+  // update row and col position
+  double new_col = col + dcol;
+  double new_row = row + drow;
 
-  // update X and Y speed and acceleration
-  double new_vx = (new_x - x) / dt;
-  double new_vy = (new_y - y) / dt;
-  double new_ax = (new_vx - vx) / dt;
-  double new_ay = (new_vy - vy) / dt;
+  // update col and row speed and acceleration
+  double new_v_col = (new_col - col) / dt;
+  double new_v_row = (new_row - row) / dt;
+  double new_a_col = (new_v_col - v_col) / dt;
+  double new_a_row = (new_v_row - v_row) / dt;
 
   // update theta, omega, and alpha
   double new_theta = theta + dtheta; //eq 27
@@ -178,18 +180,18 @@ void Server::UpdateRobotState(double dt) {
   // iterate over every line segment in the maze (all edges of all walls)
   // find the intersection of that wall with each sensor
   // if the intersection exists, and the distance is the shortest range for that sensor, replace the current range
-  robot_state_.set_front(ComputeSensorRange(mouse_.sensors().front()));
-  robot_state_.set_front_left(ComputeSensorRange(mouse_.sensors().front_left()));
-  robot_state_.set_front_right(ComputeSensorRange(mouse_.sensors().front_right()));
+//  robot_state_.set_front(ComputeSensorRange(mouse_.sensors().front()));
+//  robot_state_.set_front_left(ComputeSensorRange(mouse_.sensors().front_left()));
+//  robot_state_.set_front_right(ComputeSensorRange(mouse_.sensors().front_right()));
 
-  robot_state_.mutable_p()->set_x(new_x);
-  robot_state_.mutable_p()->set_y(new_y);
+  robot_state_.mutable_p()->set_col(new_col);
+  robot_state_.mutable_p()->set_row(new_row);
   robot_state_.mutable_p()->set_theta(new_theta);
-  robot_state_.mutable_v()->set_x(new_vx);
-  robot_state_.mutable_v()->set_y(new_vy);
+  robot_state_.mutable_v()->set_col(new_v_col);
+  robot_state_.mutable_v()->set_row(new_v_row);
   robot_state_.mutable_v()->set_theta(new_w);
-  robot_state_.mutable_a()->set_x(new_ax);
-  robot_state_.mutable_a()->set_y(new_ay);
+  robot_state_.mutable_a()->set_col(new_a_col);
+  robot_state_.mutable_a()->set_row(new_a_row);
   robot_state_.mutable_a()->set_theta(new_a);
   robot_state_.mutable_left_wheel()->set_theta(new_tl);
   robot_state_.mutable_left_wheel()->set_omega(new_wl);
@@ -211,14 +213,14 @@ void Server::ResetTime() {
 }
 
 void Server::ResetRobot() {
-  robot_state_.mutable_p()->set_x(0.5);
-  robot_state_.mutable_p()->set_y(0.5);
+  robot_state_.mutable_p()->set_col(0.5);
+  robot_state_.mutable_p()->set_row(0.5);
   robot_state_.mutable_p()->set_theta(0);
-  robot_state_.mutable_v()->set_x(0);
-  robot_state_.mutable_v()->set_y(0);
+  robot_state_.mutable_v()->set_col(0);
+  robot_state_.mutable_v()->set_row(0);
   robot_state_.mutable_v()->set_theta(0);
-  robot_state_.mutable_a()->set_x(0);
-  robot_state_.mutable_a()->set_y(0);
+  robot_state_.mutable_a()->set_col(0);
+  robot_state_.mutable_a()->set_row(0);
   robot_state_.mutable_a()->set_theta(0);
   robot_state_.mutable_left_wheel()->set_theta(0);
   robot_state_.mutable_left_wheel()->set_omega(0);

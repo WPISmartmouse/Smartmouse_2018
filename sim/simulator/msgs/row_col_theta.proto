@@ -1,0 +1,15 @@
+syntax = "proto2";
+
+package smartmouse.msgs;
+
+message RowColTheta {
+    optional double row = 1;
+    optional double col = 2;
+    optional double theta = 3; // radians
+}
+
+message RowCol {
+    optional uint32 row = 1;
+    optional uint32 col = 2;
+}
+

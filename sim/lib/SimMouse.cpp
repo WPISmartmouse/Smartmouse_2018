@@ -51,8 +51,8 @@ bool SimMouse::isStopped() {
 
 void SimMouse::robotSimStateCallback(const smartmouse::msgs::RobotSimState &msg) {
   std::unique_lock<std::mutex> lk(dataMutex);
-  true_pose.col = msg.p().x();
-  true_pose.row = msg.p().y();
+  true_pose.col = msg.p().col();
+  true_pose.row = msg.p().row();
   true_pose.yaw = msg.p().theta();
 
   this->left_wheel_angle_rad = msg.left_wheel().theta();
