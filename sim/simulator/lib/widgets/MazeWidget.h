@@ -41,5 +41,6 @@ class MazeWidget : public AbstractTab {
   smartmouse::msgs::Maze maze_;
   smartmouse::msgs::RobotSimState robot_state_;
   smartmouse::msgs::RobotDescription mouse_;
+  bool mouse_set_;
 };
 

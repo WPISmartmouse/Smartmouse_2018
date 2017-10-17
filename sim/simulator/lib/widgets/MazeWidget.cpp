@@ -11,7 +11,7 @@ const int MazeWidget::kPaddingPx = 24;
 const QBrush MazeWidget::kRobotBrush = QBrush(QColor("#F57C00"));
 QBrush MazeWidget::kWallBrush = QBrush(Qt::red);
 
-MazeWidget::MazeWidget() : AbstractTab() {
+MazeWidget::MazeWidget() : AbstractTab(), mouse_set_(false) {
   setSizePolicy(QSizePolicy::Policy::MinimumExpanding, QSizePolicy::Policy::MinimumExpanding);
   node_.Subscribe(TopicNames::kMaze, &MazeWidget::OnMaze, this);
   node_.Subscribe(TopicNames::kRobotDescription, &MazeWidget::OnRobotDescription, this);
@@ -58,7 +58,9 @@ void MazeWidget::paintEvent(QPaintEvent *event) {
   PaintWalls(painter, tf);
 
   // Draw the mouse
-  PaintMouse(painter, tf);
+  if (mouse_set_) {
+    PaintMouse(painter, tf);
+  }
 }
 
 void MazeWidget::PaintMouse(QPainter &painter, QTransform tf) {
@@ -92,7 +94,7 @@ void MazeWidget::PaintMouse(QPainter &painter, QTransform tf) {
 
   tf.translate(robot_state_.p().col(), robot_state_.p().row());
   tf.rotateRadians(-robot_state_.p().theta(), Qt::ZAxis);
-  tf.scale(1/smartmouse::maze::UNIT_DIST_M, 1/smartmouse::maze::UNIT_DIST_M);
+  tf.scale(1 / smartmouse::maze::UNIT_DIST_M, 1 / smartmouse::maze::UNIT_DIST_M);
 
   painter.setPen(QPen(Qt::black));
   painter.fillPath(tf.map(footprint), kRobotBrush);
@@ -146,6 +148,7 @@ void MazeWidget::OnMaze(const smartmouse::msgs::Maze &msg) {
 
 void MazeWidget::OnRobotDescription(const smartmouse::msgs::RobotDescription &msg) {
   mouse_ = msg;
+  mouse_set_ = true;
   emit MyUpdate();
 }
 
