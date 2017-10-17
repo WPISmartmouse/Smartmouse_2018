@@ -186,13 +186,13 @@ void Server::UpdateRobotState(double dt) {
   // find the intersection of that wall with each sensor
   // if the intersection exists, and the distance is the shortest range for that sensor, replace the current range
 //  robot_state_.set_front(0.18);
-  robot_state_.set_front(ComputeSensorRange(mouse_.sensors().front()));
+//  robot_state_.set_front(ComputeSensorRange(mouse_.sensors().front()));
   robot_state_.set_front_left(ComputeSensorRange(mouse_.sensors().front_left()));
-  robot_state_.set_front_right(ComputeSensorRange(mouse_.sensors().front_right()));
-  robot_state_.set_gerald_left(ComputeSensorRange(mouse_.sensors().gerald_left()));
-  robot_state_.set_gerald_right(ComputeSensorRange(mouse_.sensors().gerald_right()));
-  robot_state_.set_back_left(ComputeSensorRange(mouse_.sensors().back_left()));
-  robot_state_.set_back_right(ComputeSensorRange(mouse_.sensors().back_right()));
+//  robot_state_.set_front_right(ComputeSensorRange(mouse_.sensors().front_right()));
+//  robot_state_.set_gerald_left(ComputeSensorRange(mouse_.sensors().gerald_left()));
+//  robot_state_.set_gerald_right(ComputeSensorRange(mouse_.sensors().gerald_right()));
+//  robot_state_.set_back_left(ComputeSensorRange(mouse_.sensors().back_left()));
+//  robot_state_.set_back_right(ComputeSensorRange(mouse_.sensors().back_right()));
 //  print("SENSORS:\nfront:%f\nfront_left:%f\nfront_right:%f\ngerald_left:%f\ngerald_right:%f\nback_left:%f\nback_right:%f\n",
 //        robot_state_.front(),
 //        robot_state_.front_left(),
@@ -355,16 +355,24 @@ unsigned int Server::getNsOfSimPerStep() const {
 }
 
 double Server::ComputeSensorRange(smartmouse::msgs::SensorDescription sensor) {
-  double range = std::numeric_limits<double>::max();
+  double range = smartmouse::kc::ANALOG_MAX_DIST_CU;
+  double sensor_col = smartmouse::maze::toCellUnits(sensor.p().x());
+  double sensor_row = smartmouse::maze::toCellUnits(sensor.p().y());
+  double robot_theta = robot_state_.p().theta();
+  ignition::math::Vector3d s_origin_3d(sensor_col, sensor_row, 1);
+  ignition::math::Matrix3d tf(cos(robot_theta), sin(robot_theta), robot_state_.p().col(),
+                              -sin(robot_theta), cos(robot_theta), robot_state_.p().row(),
+                              0, 0, 1);
+  s_origin_3d = tf * s_origin_3d;
+  ignition::math::Vector2d s_origin(s_origin_3d.X(), s_origin_3d.Y());
+  ignition::math::Vector2d s_direction(cos(sensor.p().theta() + robot_theta), sin(sensor.p().theta() + robot_theta));
+
   for (auto line : maze_lines_) {
-    ignition::math::Vector2d s_origin(sensor.p().x(), sensor.p().y());
-    ignition::math::Vector2d s_direction(cos(sensor.p().theta()), sin(sensor.p().theta()));
-    ignition::math::Vector2d pt;
     std::experimental::optional<double> r = RayTracing::distance_to_wall(line, s_origin, s_direction);
     if (r && *r < range) {
       range = *r;
     }
   }
 
-  return range;
+  return smartmouse::maze::toMeters(range);
 }

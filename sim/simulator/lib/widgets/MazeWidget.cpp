@@ -114,10 +114,10 @@ void MazeWidget::PaintMouse(QPainter &painter, QTransform tf) {
     auto sensor_pose = pair.first;
     double sensor_range = pair.second;
     QTransform line_tf(tf);
-    line_tf.translate(sensor_pose.x(), sensor_pose.y());
-    line_tf.rotateRadians(sensor_pose.theta(), Qt::ZAxis);
+    line_tf.translate(sensor_pose.x(), -sensor_pose.y());
+    line_tf.rotateRadians(-sensor_pose.theta(), Qt::ZAxis);
     QLineF line(0, 0, sensor_range, 0);
-    painter.setPen(QPen(Qt::green));
+    painter.setPen(QPen(Qt::black));
     painter.drawLine(line_tf.map(line));
   }
 }
