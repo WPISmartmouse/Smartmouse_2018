@@ -95,7 +95,7 @@
         <item>
          <widget class="QLabel" name="row_label">
           <property name="text">
-           <string>Row</string>
+           <string>Integer Row</string>
           </property>
          </widget>
         </item>
@@ -105,7 +105,7 @@
         <item>
          <widget class="QLabel" name="column_label">
           <property name="text">
-           <string>Column</string>
+           <string>Integer Column</string>
           </property>
          </widget>
         </item>
@@ -133,24 +133,24 @@
           </property>
           <layout class="QFormLayout" name="formLayout_2">
            <item row="0" column="0">
-            <widget class="QLabel" name="true_x_label">
+            <widget class="QLabel" name="true_col_label">
              <property name="text">
-              <string>X</string>
+              <string>Column</string>
              </property>
             </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QLineEdit" name="true_x_edit"/>
+            <widget class="QLineEdit" name="true_col_edit"/>
            </item>
            <item row="1" column="0">
-            <widget class="QLabel" name="true_y_label">
+            <widget class="QLabel" name="true_row_label">
              <property name="text">
-              <string>Y</string>
+              <string>Row</string>
              </property>
             </widget>
            </item>
            <item row="1" column="1">
-            <widget class="QLineEdit" name="true_y_edit"/>
+            <widget class="QLineEdit" name="true_row_edit"/>
            </item>
            <item row="2" column="0">
             <widget class="QLabel" name="true_yaw_label">

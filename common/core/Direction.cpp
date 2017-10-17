@@ -110,6 +110,36 @@ Direction operator++(Direction &dir, int) {
   return dir;
 }
 
+char yaw_to_char(double yaw) {
+  if (-M_PI_4 < yaw && yaw < M_PI_4) {
+    return 'E';
+  }
+  else if (M_PI_4 < yaw && yaw < 3 * M_PI_4) {
+    return 'N';
+  }
+  else if (-3 * M_PI_4 < yaw && yaw < -M_PI_4) {
+    return 'S';
+  }
+  else {
+    return 'W';
+  }
+}
+
+Direction yaw_to_dir(double yaw) {
+  if (-M_PI_4 < yaw && yaw < M_PI_4) {
+    return Direction::E;
+  }
+  else if (M_PI_4 < yaw && yaw < 3 * M_PI_4) {
+    return Direction::N;
+  }
+  else if (-3 * M_PI_4 < yaw && yaw < -M_PI_4) {
+      return Direction::S;
+  }
+  else {
+    return Direction::W;
+  }
+}
+
 double dir_to_yaw(Direction d) {
   switch (d) {
     case Direction::N:

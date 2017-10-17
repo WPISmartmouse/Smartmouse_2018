@@ -27,7 +27,6 @@ int main(int argc, char *argv[]) {
   }
 
   mouse->cmd_pub = mouse->node.Advertise<smartmouse::msgs::RobotCommand>(TopicNames::kRobotCommand);
-  mouse->maze_location_pub = mouse->node.Advertise<smartmouse::msgs::MazeLocation>(TopicNames::kMazeLocation);
 
   // wait for time messages to come
   while (!timer.isTimeReady());

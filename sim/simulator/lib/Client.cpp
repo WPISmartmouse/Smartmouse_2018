@@ -12,7 +12,7 @@
 #include "ui_mainwindow.h"
 
 Client::Client(QMainWindow *parent) :
-    QMainWindow(parent), left_f_(0), right_f_(0), ui_(new Ui::MainWindow) {
+    QMainWindow(parent), ui_(new Ui::MainWindow) {
   ui_->setupUi(this);
 
   server_control_pub_ = node_.Advertise<smartmouse::msgs::ServerControl>(TopicNames::kServerControl);
@@ -236,15 +236,8 @@ void Client::ConfigureGui() {
           &Client::TimePerStepMsChanged);
   QObject::connect(this, &Client::SetRealTime, ui_->real_time_value_label, &QLabel::setText);
   QObject::connect(this, &Client::SetTime, ui_->time_value_label, &QLabel::setText);
-  connect(ui_->left_f_spinbox,
-          static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
-          this,
-          &Client::LeftForceChanged);
-  connect(ui_->right_f_spinbox,
-          static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
-          this,
-          &Client::RightForceChanged);
   connect(ui_->send_command_button, &QPushButton::clicked, this, &Client::SendRobotCmd);
+  connect(ui_->teleport_button, &QPushButton::clicked, this, &Client::SendTeleportCmd);
 
   QFile styleFile(":/style.qss");
   styleFile.open(QFile::ReadOnly);
@@ -285,19 +278,19 @@ void Client::RestoreSettings() {
   LoadDefaultMouse();
 }
 
-void Client::LeftForceChanged(int f) {
-  left_f_ = (uint32_t)f;
-}
-
-void Client::RightForceChanged(int f) {
-  right_f_ = (uint32_t)f;
-}
-
 void Client::SendRobotCmd() {
   smartmouse::msgs::RobotCommand cmd;
   auto left = cmd.mutable_left();
   auto right = cmd.mutable_right();
-  left->set_abstract_force(left_f_);
-  right->set_abstract_force(right_f_);
+  left->set_abstract_force(ui_->left_f_spinbox->value());
+  right->set_abstract_force(ui_->right_f_spinbox->value());
   robot_command_pub_.Publish(cmd);
+}
+
+void Client::SendTeleportCmd() {
+  smartmouse::msgs::ServerControl cmd;
+  cmd.set_reset_robot(true);
+  cmd.set_reset_col(ui_->teleport_column_spinbox->value());
+  cmd.set_reset_row(ui_->teleport_row_spinbox->value());
+  server_control_pub_.Publish(cmd);
 }

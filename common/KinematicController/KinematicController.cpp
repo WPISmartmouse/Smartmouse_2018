@@ -177,12 +177,12 @@ std::tuple<double, double, double> KinematicController::forwardKinematics(double
   } else if (fabs(vr - vl) < 1e-5) {
     // going perfectly straight is a special condition
     dcol = dt * (vl + vr) / 2 * cos(yaw);
-    drow = dt * (vl + vr) / 2 * sin(yaw);
+    drow = -dt * (vl + vr) / 2 * sin(yaw);
     dtheta = 0;
   } else {
     double dtheta_about_icc = w * dt; //eq 11
     dcol = R * (sin(dtheta_about_icc + yaw) - sin(yaw)); //eq 28
-    drow = -R * (cos(dtheta_about_icc + yaw) - cos(yaw)); //eq 29
+    drow = R * (cos(dtheta_about_icc + yaw) - cos(yaw)); //eq 29
     dtheta = w * dt;
   }
 

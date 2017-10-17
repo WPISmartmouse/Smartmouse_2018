@@ -43,8 +43,8 @@ class StateWidget : public AbstractTab {
   void SetRow(QString str);
   void SetCol(QString str);
   void SetDir(QString str);
-  void SetTrueX(QString str);
-  void SetTrueY(QString str);
+  void SetTrueCol(QString str);
+  void SetTrueRow(QString str);
   void SetTrueYaw(QString str);
   void SetEstimatedX(QString str);
   void SetEstimatedY(QString str);
@@ -59,9 +59,8 @@ class StateWidget : public AbstractTab {
   void OnStats(const smartmouse::msgs::WorldStatistics &msg);
   void RobotCommandCallback(const smartmouse::msgs::RobotCommand &msg);
   void StateCallback(const smartmouse::msgs::RobotSimState &msg);
-  void MazeLocationCallback(const smartmouse::msgs::MazeLocation &msg);
 
-  double true_x, true_y, true_yaw;
+  double true_col, true_row, true_yaw;
 
   ignition::transport::Node node;
 

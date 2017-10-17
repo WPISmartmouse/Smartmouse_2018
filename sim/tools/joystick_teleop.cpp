@@ -26,7 +26,7 @@ int main(int argc, char **argv) {
   double rforce_setpoint = 0;
   double lforce = 0;
   double rforce = 0;
-  const double u = 255;
+  const double u = 100;
 
   Joystick joystick("/dev/input/js0");
 
@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
 
   while (keepGoing) {
 
-    usleep(1000);
+    usleep(20000);
 
     JoystickEvent event;
     if (!joystick.sample(&event)) {
@@ -61,8 +61,8 @@ int main(int argc, char **argv) {
       lforce = lforce_setpoint;
 
       smartmouse::msgs::RobotCommand cmd;
-      cmd.mutable_left()->set_abstract_force(lforce);
-      cmd.mutable_right()->set_abstract_force(rforce);
+      cmd.mutable_left()->set_abstract_force((int)lforce);
+      cmd.mutable_right()->set_abstract_force((int)rforce);
 
       controlPub.Publish(cmd);
     }

@@ -146,14 +146,14 @@
           </widget>
          </item>
          <item row="3" column="0">
-          <widget class="QLabel" name="label">
+          <widget class="QLabel" name="left_force_lable">
            <property name="text">
             <string>Left Force</string>
            </property>
           </widget>
          </item>
          <item row="4" column="0">
-          <widget class="QLabel" name="label_2">
+          <widget class="QLabel" name="right_force_label">
            <property name="text">
             <string>Right Force</string>
            </property>
@@ -189,6 +189,59 @@
            </property>
            <property name="singleStep">
             <number>5</number>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0">
+          <widget class="QLabel" name="teleport_column_label">
+           <property name="text">
+            <string>Column</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="0">
+          <widget class="QLabel" name="teleport_row_label">
+           <property name="text">
+            <string>Row</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="1">
+          <widget class="QDoubleSpinBox" name="teleport_column_spinbox">
+           <property name="decimals">
+            <number>5</number>
+           </property>
+           <property name="minimum">
+            <double>-10.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>10.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.012000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="1">
+          <widget class="QDoubleSpinBox" name="teleport_row_spinbox">
+           <property name="decimals">
+            <number>5</number>
+           </property>
+           <property name="minimum">
+            <double>-10.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>10.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.012000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="0">
+          <widget class="QPushButton" name="teleport_button">
+           <property name="text">
+            <string>Teleport</string>
            </property>
           </widget>
          </item>

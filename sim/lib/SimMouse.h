@@ -12,13 +12,6 @@
 class SimMouse : public Mouse {
 public:
 
-  static const double ANALOG_MAX_DIST; // meters
-  static const double MAX_FORCE;
-  static const std::string grey_color;
-  static const std::string red_color;
-  static const std::string green_color;
-  static const std::string blue_color;
-
   static SimMouse *inst();
 
   virtual SensorReading checkWalls() override;
@@ -28,9 +21,6 @@ public:
   LocalPose getLocalPose();
 
   std::pair<double, double> getWheelVelocities();
-
-  void indicatePath(unsigned int starting_row, unsigned int starting_col,
-                    route_t path, std::string);
 
   bool isStopped();
 
@@ -43,7 +33,6 @@ public:
   void simInit();
 
   ignition::transport::Node::Publisher cmd_pub;
-  ignition::transport::Node::Publisher maze_location_pub;
   ignition::transport::Node node;
 
   KinematicController kinematic_controller;

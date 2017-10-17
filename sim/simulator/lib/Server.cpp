@@ -19,7 +19,7 @@ Server::Server()
       ns_of_sim_per_step_(1000000u),
       pause_at_steps_(0),
       real_time_factor_(1) {
-  ResetRobot();
+  ResetRobot(0.5, 0.5);
 }
 
 void Server::Start() {
@@ -156,7 +156,9 @@ void Server::UpdateRobotState(double dt) {
   double new_ir = ir + dt * (voltage_r - motor_K * wr - motor_R * ir) / motor_L;
 
   double dcol, drow, dtheta;
-  std::tie(dcol, drow, dtheta) = KinematicController::forwardKinematics(vl, vr, theta, dt);
+  double vl_cups = smartmouse::maze::toCellUnits(vl);
+  double vr_cups = smartmouse::maze::toCellUnits(vr);
+  std::tie(dcol, drow, dtheta) = KinematicController::forwardKinematics(vl_cups, vr_cups, theta, dt);
 
   // update row and col position
   double new_col = col + dcol;
@@ -180,9 +182,9 @@ void Server::UpdateRobotState(double dt) {
   // iterate over every line segment in the maze (all edges of all walls)
   // find the intersection of that wall with each sensor
   // if the intersection exists, and the distance is the shortest range for that sensor, replace the current range
+  robot_state_.set_front(0.18);
 //  robot_state_.set_front(ComputeSensorRange(mouse_.sensors().front()));
 //  robot_state_.set_front_left(ComputeSensorRange(mouse_.sensors().front_left()));
-//  robot_state_.set_front_right(ComputeSensorRange(mouse_.sensors().front_right()));
 
   robot_state_.mutable_p()->set_col(new_col);
   robot_state_.mutable_p()->set_row(new_row);
@@ -212,9 +214,9 @@ void Server::ResetTime() {
   PublishWorldStats(0);
 }
 
-void Server::ResetRobot() {
-  robot_state_.mutable_p()->set_col(0.5);
-  robot_state_.mutable_p()->set_row(0.5);
+void Server::ResetRobot(double reset_col, double reset_row) {
+  robot_state_.mutable_p()->set_col(reset_col);
+  robot_state_.mutable_p()->set_row(reset_row);
   robot_state_.mutable_p()->set_theta(0);
   robot_state_.mutable_v()->set_col(0);
   robot_state_.mutable_v()->set_row(0);
@@ -265,7 +267,15 @@ void Server::OnServerControl(const smartmouse::msgs::ServerControl &msg) {
       ResetTime();
     }
     if (msg.has_reset_robot()) {
-      ResetRobot();
+      double reset_col = 0.5;
+      double reset_row = 0.5;
+      if (msg.has_reset_col()) {
+        reset_col = msg.reset_col();
+      }
+      if (msg.has_reset_row()) {
+        reset_row = msg.reset_row();
+      }
+      ResetRobot(reset_col, reset_row);
     }
   }
   // End critical section

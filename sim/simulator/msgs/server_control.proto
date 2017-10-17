@@ -9,5 +9,7 @@ message ServerControl {
     optional bool quit = 7;
     optional bool reset_time = 8;
     optional bool reset_robot = 9;
+    optional double reset_row = 10;
+    optional double reset_col = 11;
 }
 

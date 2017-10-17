@@ -1,12 +1,7 @@
 #include <sim/simulator/msgs/robot_command.pb.h>
-#include <sim/simulator/msgs/maze_location.pb.h>
 #include "SimMouse.h"
 
 SimMouse *SimMouse::instance = nullptr;
-const std::string SimMouse::grey_color = "Gazebo/Grey";
-const std::string SimMouse::red_color = "Gazebo/Red";
-const std::string SimMouse::green_color = "Gazebo/Green";
-const std::string SimMouse::blue_color = "Gazebo/Blue";
 
 SimMouse::SimMouse() : kinematic_controller(this), range_data({}) {
   dir = Direction::N;
@@ -83,31 +78,6 @@ void SimMouse::run(double dt_s) {
   // update row/col information
   row = kinematic_controller.row;
   col = kinematic_controller.col;
-
-  // publish status information
-  smartmouse::msgs::MazeLocation maze_loc_msg;
-  maze_loc_msg.set_row(row);
-  maze_loc_msg.set_col(col);
-  // TODO: finish unit conversion
-  maze_loc_msg.set_row_offset(0);
-  maze_loc_msg.set_col_offset(0);
-
-  maze_loc_msg.set_estimated_x_meters(getGlobalPose().col * smartmouse::maze::UNIT_DIST_M);
-  maze_loc_msg.set_estimated_y_meters(getGlobalPose().row * smartmouse::maze::UNIT_DIST_M);
-  maze_loc_msg.set_estimated_yaw_rad(getGlobalPose().yaw);
-  std::string dir_str(1, dir_to_char(dir));
-  maze_loc_msg.set_dir(dir_str);
-
-  std::string buff;
-  buff.resize(smartmouse::maze::BUFF_SIZE);
-  maze_mouse_string(&buff[0]);
-  maze_loc_msg.set_mouse_maze_string(buff);
-
-  if (!maze_loc_msg.IsInitialized()) {
-    std::cerr << "Missing fields: [" << maze_loc_msg.InitializationErrorString() << "]" << std::endl;
-  }
-
-  maze_location_pub.Publish(maze_loc_msg);
 
   smartmouse::msgs::RobotCommand cmd;
   cmd.mutable_left()->set_abstract_force(abstract_left_force);

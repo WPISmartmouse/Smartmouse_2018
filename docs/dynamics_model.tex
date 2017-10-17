@@ -122,11 +122,11 @@ The coordinates of the $ICC$ are:
 
 $$(c_{ICC}, r_{ICC}) = (c-R\sin{\theta}, r-R\cos{\theta})$$
 
-You can see this if you think that the vector to $ICC$ is 90 degrees offset from $\theta$ and do the trig. Let's assume in the situation diagramed above, $\theta=\ang{105}$, $R=4$, and $c=4.8, r=0$, so $ICC = (4.8-4\sin{(105)}, 0-4\cos{(105)}) \approx (1, 1)$. For another example, pretend the robot is right below the origin facing east at $(0,1,0)$ and $R=1$. $ICC$ should be $(0,0)$ so let's check. $ICC = (0-1\sin{(0)}, 1-1\cos{(0)}) = (0, 0).$ Great, the math seems to check out. Now we just rotate the robot coordinates around the point $ICC$ by $\Delta\theta$, which we can do easily with a rotation matrix. Of course, we're not rotating around the origin, we're roating around $ICC$, so we first subtract out the coordinates of $ICC$ to get $(c_o, r_o) = (c-c_{ICC}, r-r_{ICC})$. Recall that to rotate around the origin by $\Delta\theta$, we multiply our point $(c_o, r_o)$ as follows:
+You can see this if you think that the vector to $ICC$ is 90 degrees offset from $\theta$ and do the trig. Let's assume in the situation diagramed above, $\theta=\ang{105}$, $R=4$, and $c=4.8, r=0$, so $ICC = (4.8-4\sin{(105)}, 0-4\cos{(105)}) \approx (1, 1)$. For another example, pretend the robot is right below the origin facing east at $(0,1,0)$ and $R=1$. $ICC$ should be $(0,0)$ so let's check. $ICC = (0-1\sin{(0)}, 1-1\cos{(0)}) = (0, 0).$ Great, the math seems to check out. Now we just rotate the robot coordinates around the point $ICC$ by $\Delta\theta$, which we can do easily with a rotation matrix. Of course, we're not rotating around the origin, we're roating around $ICC$, so we first subtract out the coordinates of $ICC$ to get $(c_o, r_o) = (c-c_{ICC}, r-r_{ICC})$. Recall that to rotate around the origin by $\Delta\theta$, we multiply our point $(c_o, r_o)$ as follows. I know this rotation matrix looks wrong but it isn't. It's just because we're using the row/column coordinte system not x/y.
 \begin{equation}
   \begin{bmatrix}
-    \cos{\Delta\theta} & -\sin{\Delta\theta} \\
-    \sin{\Delta\theta} & \cos{\Delta\theta} \\
+    \cos{\Delta\theta} & \sin{\Delta\theta} \\
+    -\sin{\Delta\theta} & \cos{\Delta\theta} \\
   \end{bmatrix}
   \begin{bmatrix}
     c_o \\
@@ -142,8 +142,8 @@ We then just add back the coordinates of $ICC$. Great! Now we know how to update
 
 \begin{align}
  \theta &\leftarrow \theta + \Delta\theta \\
-  c &\leftarrow \cos{(\Delta\theta)}(c-c_{ICC})-\sin{(\Delta\theta)}(r-r_{ICC}) + c_{ICC} \\
-  r &\leftarrow \sin{(\Delta\theta)}(c-c_{ICC})+\cos{(\Delta\theta)}(r-r_{ICC}) + r_{ICC} \\
+  c &\leftarrow \cos{(\Delta\theta)}(c-c_{ICC})+\sin{(\Delta\theta)}(r-r_{ICC}) + c_{ICC} \\
+  r &\leftarrow -\sin{(\Delta\theta)}(c-c_{ICC})+\cos{(\Delta\theta)}(r-r_{ICC}) + r_{ICC} \\
 \shortintertext{where}
   c_{ICC} &= c-R\sin{\theta} \\
   r_{ICC} &= r-R\cos{\theta} \\
@@ -154,32 +154,33 @@ We then just add back the coordinates of $ICC$. Great! Now we know how to update
 We can expand and simplify the update equations for $c$.
 
 \begin{align}
-  c &\leftarrow \cos{(\frac{v_r-v_l}{W}\Delta t)}(c-c+R\sin{\theta})-\sin{(\frac{v_r-v_l}{W}\Delta t)}(r-r+R\cos{\theta}) + c-R\sin{\theta} \\
-  c &\leftarrow \cos{(\frac{v_r-v_l}{W}\Delta t)}(R\sin{\theta})-\sin{(\frac{v_r-v_l}{W}\Delta t)}(R\cos{\theta}) + c-R\sin{\theta} \\
-  c &\leftarrow R\cos{(\frac{v_r-v_l}{W}\Delta t)}\sin{\theta}-R\sin{(\frac{v_r-v_l}{W}\Delta t)}\cos{\theta} + c-R\sin{\theta} \\
-  c &\leftarrow c+R\cos{(\frac{v_r-v_l}{W}\Delta t)}\sin{\theta}-R\sin{(\frac{v_r-v_l}{W}\Delta t)}\cos{\theta}-R\sin{\theta} \\
-  c &\leftarrow c+R\Big(\cos{(\frac{v_r-v_l}{W}\Delta t)}\sin{\theta}-\sin{(\frac{v_r-v_l}{W}\Delta t)}\cos{\theta}\Big)-R\sin{\theta} \\
-  \shortintertext{let $\frac{v_r-v_l}{W}=a$, and $\theta=b$, we can use $\cos{a}\sin{b}-\sin{a}\cos{b}=-\sin{(a-b)}$}
-  c &\leftarrow c-R\Bigg(\sin{\Big(\frac{v_r-v_l}{W}\Delta t-\theta}\Big)\Bigg)-R\sin{\theta} \\
-  c &\leftarrow c+-R\Bigg(\sin{\Big(\frac{v_r-v_l}{W}\Delta t-\theta}\Big)+\sin{\theta}\Bigg)
+  c &\leftarrow \cos{(\frac{v_r-v_l}{W}\Delta t)}(c-c+R\sin{\theta})+\sin{(\frac{v_r-v_l}{W}\Delta t)}(r-r+R\cos{\theta}) + c-R\sin{\theta} \\
+  c &\leftarrow \cos{(\frac{v_r-v_l}{W}\Delta t)}(R\sin{\theta})+\sin{(\frac{v_r-v_l}{W}\Delta t)}(R\cos{\theta}) + c-R\sin{\theta} \\
+  c &\leftarrow R\cos{(\frac{v_r-v_l}{W}\Delta t)}\sin{\theta}+R\sin{(\frac{v_r-v_l}{W}\Delta t)}\cos{\theta} + c-R\sin{\theta} \\
+  c &\leftarrow c+R\cos{(\frac{v_r-v_l}{W}\Delta t)}\sin{\theta}+R\sin{(\frac{v_r-v_l}{W}\Delta t)}\cos{\theta}-R\sin{\theta} \\
+  c &\leftarrow c+R\Big(\cos{(\frac{v_r-v_l}{W}\Delta t)}\sin{\theta}+\sin{(\frac{v_r-v_l}{W}\Delta t)}\cos{\theta}\Big)-R\sin{\theta} \\
+  \shortintertext{let $\frac{v_r-v_l}{W}=a$, and $\theta=b$, we can use $\cos{a}\sin{b}+\sin{a}\cos{b}=\sin{(a+b)}$}
+  c &\leftarrow c+R\Bigg(\sin{\Big(\frac{v_r-v_l}{W}\Delta t+\theta}\Big)\Bigg)-R\sin{\theta} \\
+  c &\leftarrow c+R\Bigg(\sin{\Big(\frac{v_r-v_l}{W}\Delta t+\theta}\Big)-\sin{\theta}\Bigg)
 \end{align}
 
 We can apply the same process for $r$.
 
 \begin{align}
-  r &\leftarrow \sin{(\frac{v_r-v_l}{W}\Delta t)}(c-c+R\sin{\theta})+\cos{(\frac{v_r-v_l}{W}\Delta t)}(r-r+R\cos{\theta}) + r-R\cos{\theta} \\
-  r &\leftarrow \sin{(\frac{v_r-v_l}{W}\Delta t)}(R\sin{\theta})+\cos{(\frac{v_r-v_l}{W}\Delta t)}(R\cos{\theta}) + r-R\cos{\theta} \\
-  r &\leftarrow R\sin{(\frac{v_r-v_l}{W}\Delta t)}(\sin{\theta})+R\cos{(\frac{v_r-v_l}{W}\Delta t)}(\cos{\theta}) + r-R\cos{\theta} \\
-  r &\leftarrow r + R\sin{(\frac{v_r-v_l}{W}\Delta t)}(\sin{\theta})+R\cos{(\frac{v_r-v_l}{W}\Delta t)}(\cos{\theta}) - R\cos{\theta} \\
-  r &\leftarrow r + R\Bigg(\sin{(\frac{v_r-v_l}{W}\Delta t)}(\sin{\theta})+\cos{(\frac{v_r-v_l}{W}\Delta t)}(\cos{\theta}) - \cos{\theta}\Bigg) \\
-  r &\leftarrow r + R\Bigg(\cos{(\frac{v_r-v_l}{W}\Delta t - \theta)} - \cos{\theta}\Bigg)
+  r &\leftarrow -\sin{(\frac{v_r-v_l}{W}\Delta t)}(c-c+R\sin{\theta})+\cos{(\frac{v_r-v_l}{W}\Delta t)}(r-r+R\cos{\theta}) + r-R\cos{\theta} \\
+  r &\leftarrow -\sin{(\frac{v_r-v_l}{W}\Delta t)}(R\sin{\theta})+\cos{(\frac{v_r-v_l}{W}\Delta t)}(R\cos{\theta}) + r-R\cos{\theta} \\
+  r &\leftarrow -R\sin{(\frac{v_r-v_l}{W}\Delta t)}(\sin{\theta})+R\cos{(\frac{v_r-v_l}{W}\Delta t)}(\cos{\theta}) + r-R\cos{\theta} \\
+  r &\leftarrow r -R\sin{(\frac{v_r-v_l}{W}\Delta t)}(\sin{\theta})+R\cos{(\frac{v_r-v_l}{W}\Delta t)}(\cos{\theta}) - R\cos{\theta} \\
+  r &\leftarrow r + R\Bigg(-\sin{(\frac{v_r-v_l}{W}\Delta t)}(\sin{\theta})+\cos{(\frac{v_r-v_l}{W}\Delta t)}(\cos{\theta}) - \cos{\theta}\Bigg) \\
+  \shortintertext{let $\frac{v_r-v_l}{W}=a$, and $\theta=b$, we can use $-\sin{a}\sin{b}+\cos{a}\cos{b}=\cos{(a+b)}$}
+  r &\leftarrow r + R\Bigg(\cos{(\frac{v_r-v_l}{W}\Delta t + \theta)} - \cos{\theta}\Bigg)
 \end{align}
 
 \textbf{Final Solution to the forward Kinematics:}
 \begin{align}
  \theta &\leftarrow \theta + \frac{v_r-v_l}{W}\Delta t \\
-  c &\leftarrow c + -R\Bigg(\sin{\Big(\frac{v_r-v_l}{W}\Delta t-\theta\Big)}+\sin{\theta}\Bigg) \\
-  r &\leftarrow r + R\Bigg(\cos{\Big(\frac{v_r-v_l}{W}\Delta t-\theta\Big)}-\cos{\theta}\Bigg)
+  c &\leftarrow c + R\Bigg(\sin{\Big(\frac{v_r-v_l}{W}\Delta t+\theta\Big)}-\sin{\theta}\Bigg) \\
+  r &\leftarrow r + R\Bigg(\cos{\Big(\frac{v_r-v_l}{W}\Delta t+\theta\Big)}-\cos{\theta}\Bigg)
 \end{align}
 
 However, there is also the case where the robot is going perfectly straight. This has to be handled seperately, because otherwise the equations above involve $R$, but $R=\infty$ if we're going straight. Luckily, the equations for moving straight are trivial:
