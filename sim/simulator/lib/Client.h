@@ -57,6 +57,7 @@ class Client : public QMainWindow {
  private:
   void ConfigureGui();
   void LoadDefaultMaze();
+  void LoadRandomMaze();
   void LoadDefaultMouse();
   void RestoreSettings();
   void SaveSettings();

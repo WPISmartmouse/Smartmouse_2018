@@ -168,6 +168,12 @@ void Client::LoadNewMaze() {
   }
 }
 
+void Client::LoadRandomMaze() {
+  AbstractMaze maze = AbstractMaze::gen_random_legal_maze();
+  smartmouse::msgs::Maze maze_msg = smartmouse::msgs::Convert(&maze);
+  maze_pub_.Publish(maze_msg);
+}
+
 void Client::LoadDefaultMouse() {
   if (!default_mouse_file_name_.isEmpty()) {
     QFileInfo file_info(default_mouse_file_name_);
@@ -211,6 +217,7 @@ void Client::ConfigureGui() {
 
   connect(ui_->load_maze_button, &QPushButton::clicked, this, &Client::LoadNewMaze);
   connect(ui_->load_mouse_button, &QPushButton::clicked, this, &Client::LoadNewMouse);
+  connect(ui_ ->random_maze_button, &QPushButton::clicked, this, &Client::LoadRandomMaze);
   connect(ui_->refresh_mouse_button, &QPushButton::clicked, this, &Client::LoadDefaultMouse);
   connect(ui_->actionExit, &QAction::triggered, this, &Client::Exit);
   connect(ui_->actionRestart, &QAction::triggered, this, &Client::Restart);
