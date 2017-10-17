@@ -12,6 +12,7 @@
 #include <sim/simulator/msgs/robot_sim_state.pb.h>
 #include <sim/simulator/msgs/robot_command.pb.h>
 #include <msgs/robot_description.pb.h>
+#include <ignition/math.hh>
 
 class Server {
 
@@ -59,4 +60,5 @@ class Server {
   smartmouse::msgs::RobotDescription mouse_;
   smartmouse::msgs::RobotSimState robot_state_;
   bool mouse_set_;
+  std::vector<ignition::math::Line2d> maze_lines_;
 };

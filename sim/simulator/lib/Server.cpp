@@ -185,9 +185,22 @@ void Server::UpdateRobotState(double dt) {
   // iterate over every line segment in the maze (all edges of all walls)
   // find the intersection of that wall with each sensor
   // if the intersection exists, and the distance is the shortest range for that sensor, replace the current range
-  robot_state_.set_front(0.18);
-//  robot_state_.set_front(ComputeSensorRange(mouse_.sensors().front()));
-//  robot_state_.set_front_left(ComputeSensorRange(mouse_.sensors().front_left()));
+//  robot_state_.set_front(0.18);
+  robot_state_.set_front(ComputeSensorRange(mouse_.sensors().front()));
+  robot_state_.set_front_left(ComputeSensorRange(mouse_.sensors().front_left()));
+  robot_state_.set_front_right(ComputeSensorRange(mouse_.sensors().front_right()));
+  robot_state_.set_gerald_left(ComputeSensorRange(mouse_.sensors().gerald_left()));
+  robot_state_.set_gerald_right(ComputeSensorRange(mouse_.sensors().gerald_right()));
+  robot_state_.set_back_left(ComputeSensorRange(mouse_.sensors().back_left()));
+  robot_state_.set_back_right(ComputeSensorRange(mouse_.sensors().back_right()));
+//  print("SENSORS:\nfront:%f\nfront_left:%f\nfront_right:%f\ngerald_left:%f\ngerald_right:%f\nback_left:%f\nback_right:%f\n",
+//        robot_state_.front(),
+//        robot_state_.front_left(),
+//        robot_state_.front_right(),
+//        robot_state_.gerald_left(),
+//        robot_state_.gerald_right(),
+//        robot_state_.back_left(),
+//        robot_state_.back_right());
 
   robot_state_.mutable_p()->set_col(new_col);
   robot_state_.mutable_p()->set_row(new_row);
@@ -305,6 +318,7 @@ void Server::OnMaze(const smartmouse::msgs::Maze &msg) {
   {
     std::lock_guard<std::mutex> guard(physics_mutex_);
     maze_ = msg;
+    maze_lines_ = smartmouse::msgs::MazeToLines(maze_);
   }
   // End critical section
 }
@@ -342,8 +356,7 @@ unsigned int Server::getNsOfSimPerStep() const {
 
 double Server::ComputeSensorRange(smartmouse::msgs::SensorDescription sensor) {
   double range = std::numeric_limits<double>::max();
-  std::vector<ignition::math::Line2d> maze_lines = smartmouse::msgs::MazeToLines(maze_);
-  for (auto line : maze_lines) {
+  for (auto line : maze_lines_) {
     ignition::math::Vector2d s_origin(sensor.p().x(), sensor.p().y());
     ignition::math::Vector2d s_direction(cos(sensor.p().theta()), sin(sensor.p().theta()));
     ignition::math::Vector2d pt;
