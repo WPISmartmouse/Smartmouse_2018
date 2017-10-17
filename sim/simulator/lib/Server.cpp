@@ -18,7 +18,8 @@ Server::Server()
       connected_(false),
       ns_of_sim_per_step_(1000000u),
       pause_at_steps_(0),
-      real_time_factor_(1) {
+      real_time_factor_(1),
+      mouse_set_(false) {
   ResetRobot(0.5, 0.5);
 }
 
@@ -109,7 +110,9 @@ void Server::Step() {
   auto dt = Time(0, ns_of_sim_per_step_);
   sim_time_ += dt;
 
-  UpdateRobotState(dt.Double());
+  if (mouse_set_) {
+    UpdateRobotState(dt.Double());
+  }
 
   // increment step counter
   ++steps_;
@@ -320,6 +323,7 @@ void Server::OnRobotDescription(const smartmouse::msgs::RobotDescription &msg) {
   {
     std::lock_guard<std::mutex> guard(physics_mutex_);
     mouse_ = msg;
+    mouse_set_ = true;
   }
   // End critical section
 }

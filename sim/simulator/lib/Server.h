@@ -58,4 +58,5 @@ class Server {
   smartmouse::msgs::RobotCommand cmd_;
   smartmouse::msgs::RobotDescription mouse_;
   smartmouse::msgs::RobotSimState robot_state_;
+  bool mouse_set_;
 };
