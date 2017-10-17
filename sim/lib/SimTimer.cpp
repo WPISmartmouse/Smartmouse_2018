@@ -14,7 +14,7 @@ unsigned long SimTimer::programTimeMs() {
   return sim_time_ms;
 }
 
-void SimTimer::simTimeCallback(const smartmouse::msgs::WorldStatistics &msg) {
+void SimTimer::worldStatsCallback(const smartmouse::msgs::WorldStatistics &msg) {
   sim_time_ms = smartmouse::msgs::ConvertMSec(msg.sim_time());
 
   if (!ready) {

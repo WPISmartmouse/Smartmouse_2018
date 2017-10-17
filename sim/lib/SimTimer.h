@@ -12,7 +12,7 @@ public:
 
   virtual unsigned long programTimeMs() override;
 
-  void simTimeCallback(const smartmouse::msgs::WorldStatistics &msg);
+  void worldStatsCallback(const smartmouse::msgs::WorldStatistics &msg);
 
 private:
   bool ready;

@@ -386,7 +386,7 @@ double KinematicController::dispToNextEdge(Mouse *mouse) {
 
 double KinematicController::dispToNthEdge(Mouse *mouse, unsigned int n) {
   // give the displacement to the nth edge like above...
-  return dispToNextEdge(mouse) + (n-1) * smartmouse::maze::UNIT_DIST_M;
+  return dispToNextEdge(mouse) + (n-1);
 }
 
 GlobalPose KinematicController::poseOfToNthEdge(Mouse *mouse, unsigned int n) {

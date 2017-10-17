@@ -63,7 +63,6 @@ void MazeWidget::paintEvent(QPaintEvent *event) {
 
 void MazeWidget::PaintMouse(QPainter &painter, QTransform tf) {
   QPainterPath footprint;
-  footprint.moveTo(mouse_.footprint(0).x(), mouse_.footprint(0).y());
   for (auto pt : mouse_.footprint()) {
     footprint.lineTo(pt.x(), pt.y());
   }

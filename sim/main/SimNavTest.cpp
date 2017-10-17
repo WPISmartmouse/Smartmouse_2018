@@ -8,6 +8,7 @@
 #include <sim/lib/SimTimer.h>
 #include <simulator/msgs/robot_command.pb.h>
 #include <simulator/msgs/maze_location.pb.h>
+#include <simulator/lib/common/TopicNames.h>
 
 int main(int argc, char *argv[]) {
   SimTimer timer;
@@ -15,20 +16,19 @@ int main(int argc, char *argv[]) {
   SimMouse *mouse = SimMouse::inst();
 
   // Create our node for communication
-  bool success = mouse->node.Subscribe("time_ms", &SimTimer::simTimeCallback, &timer);
+  bool success = mouse->node.Subscribe(TopicNames::kWorldStatistics, &SimTimer::worldStatsCallback, &timer);
   if (!success) {
     print("Failed to subscribe to time_ms\n");
     return EXIT_FAILURE;
   }
 
-  success = mouse->node.Subscribe("state", &SimMouse::robotSimStateCallback, mouse);
+  success = mouse->node.Subscribe(TopicNames::kRobotSimState, &SimMouse::robotSimStateCallback, mouse);
   if (!success) {
     print("Failed to subscribe to state\n");
     return EXIT_FAILURE;
   }
 
-  mouse->cmd_pub = mouse->node.Advertise<smartmouse::msgs::RobotCommand>("robot_command");
-  mouse->maze_location_pub = mouse->node.Advertise<smartmouse::msgs::MazeLocation>("maze_location");
+  mouse->cmd_pub = mouse->node.Advertise<smartmouse::msgs::RobotCommand>(TopicNames::kRobotCommand);
 
   // wait for time messages to come
   while (!timer.isTimeReady());

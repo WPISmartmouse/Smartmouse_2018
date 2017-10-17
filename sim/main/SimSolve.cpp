@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
   SimMouse *mouse = SimMouse::inst();
 
   // Create our node for communication
-  bool success = mouse->node.Subscribe(TopicNames::kWorldStatistics, &SimTimer::simTimeCallback, &timer);
+  bool success = mouse->node.Subscribe(TopicNames::kWorldStatistics, &SimTimer::worldStatsCallback, &timer);
   if (!success) {
     print("Failed to subscribe to %s\n", TopicNames::kWorldStatistics);
     return EXIT_FAILURE;

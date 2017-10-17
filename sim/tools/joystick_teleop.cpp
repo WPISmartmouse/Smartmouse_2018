@@ -11,7 +11,7 @@ int main(int argc, char **argv) {
 
   // Create our node for communication
   ignition::transport::Node node;
-  bool success = node.Subscribe("time_ms", &SimTimer::simTimeCallback, &timer);
+  bool success = node.Subscribe("time_ms", &SimTimer::worldStatsCallback, &timer);
   if (!success) {
     printf("Failed to subscribe to time_ms\n");
     return EXIT_FAILURE;

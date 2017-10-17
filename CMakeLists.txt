@@ -55,6 +55,13 @@ else ()
     include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
     ################################
+    # common tests
+    ################################
+    add_executable(common_tests common/test/CommonTest.cpp ${COM_SRC} ${CORE_COM_SRC})
+    target_link_libraries(common_tests gtest gtest_main)
+    set_target_properties(common_tests PROPERTIES COMPILE_FLAGS "-include ${UTIL_HEADER}")
+
+    ################################
     # console
     ################################
     add_subdirectory(console)
