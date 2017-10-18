@@ -166,23 +166,23 @@ KinematicController::run(double dt_s, double left_angle_rad, double right_angle_
 
 std::tuple<double, double, double> KinematicController::forwardKinematics(double vl, double vr, double yaw, double dt) {
   double dcol, drow, dtheta;
-  double w = (vr - vl) / smartmouse::kc::TRACK_WIDTH;
-  double R = smartmouse::kc::TRACK_WIDTH * (vl + vr) / (2 * (vr - vl));
+  double w = (vl - vr) / smartmouse::kc::TRACK_WIDTH;
+  double R = smartmouse::kc::TRACK_WIDTH * (vr + vl) / (2 * (vl - vr));
 
   if (fabs(vl) < 1e-5 && fabs(vr) < 1e-5) {
     // this means we're stopped, so ignore it
     dcol = 0;
     drow = 0;
     dtheta = 0;
-  } else if (fabs(vr - vl) < 1e-5) {
+  } else if (fabs(vl - vr) < 1e-5) {
     // going perfectly straight is a special condition
-    dcol = dt * (vl + vr) / 2 * cos(yaw);
-    drow = -dt * (vl + vr) / 2 * sin(yaw);
+    dcol = dt * (vr + vl) / 2 * cos(yaw);
+    drow = -dt * (vr + vl) / 2 * sin(yaw);
     dtheta = 0;
   } else {
     double dtheta_about_icc = w * dt; //eq 11
-    dcol = -R * (sin(dtheta_about_icc + yaw) - sin(yaw)); //eq 28
-    drow = R * (cos(dtheta_about_icc + yaw) - cos(yaw)); //eq 29
+    dcol = R * (sin(dtheta_about_icc + yaw) - sin(yaw)); //eq 28
+    drow = -R * (cos(dtheta_about_icc + yaw) - cos(yaw)); //eq 29
     dtheta = w * dt;
   }
 
