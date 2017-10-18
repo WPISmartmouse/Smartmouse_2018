@@ -181,7 +181,7 @@ std::tuple<double, double, double> KinematicController::forwardKinematics(double
     dtheta = 0;
   } else {
     double dtheta_about_icc = w * dt; //eq 11
-    dcol = R * (sin(dtheta_about_icc + yaw) - sin(yaw)); //eq 28
+    dcol = -R * (sin(dtheta_about_icc + yaw) - sin(yaw)); //eq 28
     drow = R * (cos(dtheta_about_icc + yaw) - cos(yaw)); //eq 29
     dtheta = w * dt;
   }

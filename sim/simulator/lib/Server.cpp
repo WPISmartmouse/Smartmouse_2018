@@ -20,7 +20,7 @@ Server::Server()
       pause_at_steps_(0),
       real_time_factor_(1),
       mouse_set_(false) {
-  ResetRobot(0.5, 0.5);
+  ResetRobot(0.5, 0.5, 0);
 }
 
 void Server::Start() {
@@ -185,9 +185,9 @@ void Server::UpdateRobotState(double dt) {
   // iterate over every line segment in the maze (all edges of all walls)
   // find the intersection of that wall with each sensor
   // if the intersection exists, and the distance is the shortest range for that sensor, replace the current range
-//  robot_state_.set_front(0.18);
+  robot_state_.set_front_left(0.18);
 //  robot_state_.set_front(ComputeSensorRange(mouse_.sensors().front()));
-  robot_state_.set_front_left(ComputeSensorRange(mouse_.sensors().front_left()));
+//  robot_state_.set_front_left(ComputeSensorRange(mouse_.sensors().front_left()));
 //  robot_state_.set_front_right(ComputeSensorRange(mouse_.sensors().front_right()));
 //  robot_state_.set_gerald_left(ComputeSensorRange(mouse_.sensors().gerald_left()));
 //  robot_state_.set_gerald_right(ComputeSensorRange(mouse_.sensors().gerald_right()));
@@ -230,10 +230,10 @@ void Server::ResetTime() {
   PublishWorldStats(0);
 }
 
-void Server::ResetRobot(double reset_col, double reset_row) {
+void Server::ResetRobot(double reset_col, double reset_row, double reset_yaw) {
   robot_state_.mutable_p()->set_col(reset_col);
   robot_state_.mutable_p()->set_row(reset_row);
-  robot_state_.mutable_p()->set_theta(0);
+  robot_state_.mutable_p()->set_theta(reset_yaw);
   robot_state_.mutable_v()->set_col(0);
   robot_state_.mutable_v()->set_row(0);
   robot_state_.mutable_v()->set_theta(0);
@@ -285,13 +285,17 @@ void Server::OnServerControl(const smartmouse::msgs::ServerControl &msg) {
     if (msg.has_reset_robot()) {
       double reset_col = 0.5;
       double reset_row = 0.5;
+      double reset_yaw = 0;
       if (msg.has_reset_col()) {
         reset_col = msg.reset_col();
       }
       if (msg.has_reset_row()) {
         reset_row = msg.reset_row();
       }
-      ResetRobot(reset_col, reset_row);
+      if (msg.has_reset_yaw()) {
+        reset_yaw = msg.reset_yaw();
+      }
+      ResetRobot(reset_col, reset_row, reset_yaw);
     }
   }
   // End critical section
@@ -365,7 +369,8 @@ double Server::ComputeSensorRange(smartmouse::msgs::SensorDescription sensor) {
                               0, 0, 1);
   s_origin_3d = tf * s_origin_3d;
   ignition::math::Vector2d s_origin(s_origin_3d.X(), s_origin_3d.Y());
-  ignition::math::Vector2d s_direction(cos(sensor.p().theta() + robot_theta), sin(sensor.p().theta() + robot_theta));
+  ignition::math::Vector2d s_direction(cos(robot_theta + sensor.p().theta()), -sin(robot_theta + sensor.p().theta()));
+  std::cout << -sin(robot_theta + sensor.p().theta()) << std::endl;
 
   for (auto line : maze_lines_) {
     std::experimental::optional<double> r = RayTracing::distance_to_wall(line, s_origin, s_direction);

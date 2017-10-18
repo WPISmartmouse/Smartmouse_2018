@@ -36,7 +36,7 @@ class Server {
   void OnRobotDescription(const smartmouse::msgs::RobotDescription &msg);
 
   void UpdateRobotState(double dt);
-  void ResetRobot(double reset_col, double reset_row);
+  void ResetRobot(double reset_col, double reset_row, double reset_yaw);
   void ResetTime();
   void PublishInternalState();
   void PublishWorldStats(double rtf);

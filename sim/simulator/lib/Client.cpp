@@ -299,5 +299,6 @@ void Client::SendTeleportCmd() {
   cmd.set_reset_robot(true);
   cmd.set_reset_col(ui_->teleport_column_spinbox->value());
   cmd.set_reset_row(ui_->teleport_row_spinbox->value());
+  cmd.set_reset_yaw(ui_->teleport_yaw_spinbox->value());
   server_control_pub_.Publish(cmd);
 }
