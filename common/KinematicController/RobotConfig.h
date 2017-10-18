@@ -25,6 +25,7 @@ constexpr double WALL_CHANGED_THRESHOLD = 0.02;
 constexpr double ROT_TOLERANCE = 0.05;
 constexpr double TRACK_WIDTH = 0.0633;
 constexpr double ANALOG_MAX_DIST_M = 0.18;
+constexpr double ANALOG_MIN_DIST_M = 0.01;
 constexpr double WHEEL_RAD = 0.0145;
 constexpr double MIN_ABSTRACT_FORCE = 3.5;
 constexpr double END_SPEED_MPS = 0.3; // this can be lowered to 0.15 to demonstrate ForwardN
@@ -36,6 +37,7 @@ extern double MAX_SPEED_CUPS;
 constexpr double MAX_HARDWARE_SPEED_CUPS = smartmouse::maze::toCellUnits(MAX_HARDWARE_SPEED_MPS);
 constexpr double MIN_SPEED_CUPS = smartmouse::maze::toCellUnits(MIN_SPEED_MPS);
 constexpr double ANALOG_MAX_DIST_CU = smartmouse::maze::toCellUnits(ANALOG_MAX_DIST_M);
+constexpr double ANALOG_MIN_DIST_CU = smartmouse::maze::toCellUnits(ANALOG_MIN_DIST_M);
 
 constexpr double cellsToRad(double x) {
   return x * smartmouse::maze::UNIT_DIST_M / WHEEL_RAD;

@@ -187,19 +187,11 @@ void Server::UpdateRobotState(double dt) {
   // if the intersection exists, and the distance is the shortest range for that sensor, replace the current range
   robot_state_.set_front(ComputeSensorRange(mouse_.sensors().front()));
   robot_state_.set_front_left(ComputeSensorRange(mouse_.sensors().front_left()));
-//  robot_state_.set_front_right(ComputeSensorRange(mouse_.sensors().front_right()));
-//  robot_state_.set_gerald_left(ComputeSensorRange(mouse_.sensors().gerald_left()));
-//  robot_state_.set_gerald_right(ComputeSensorRange(mouse_.sensors().gerald_right()));
-//  robot_state_.set_back_left(ComputeSensorRange(mouse_.sensors().back_left()));
-//  robot_state_.set_back_right(ComputeSensorRange(mouse_.sensors().back_right()));
-//  print("SENSORS:\nfront:%f\nfront_left:%f\nfront_right:%f\ngerald_left:%f\ngerald_right:%f\nback_left:%f\nback_right:%f\n",
-//        robot_state_.front(),
-//        robot_state_.front_left(),
-//        robot_state_.front_right(),
-//        robot_state_.gerald_left(),
-//        robot_state_.gerald_right(),
-//        robot_state_.back_left(),
-//        robot_state_.back_right());
+  robot_state_.set_front_right(ComputeSensorRange(mouse_.sensors().front_right()));
+  robot_state_.set_gerald_left(ComputeSensorRange(mouse_.sensors().gerald_left()));
+  robot_state_.set_gerald_right(ComputeSensorRange(mouse_.sensors().gerald_right()));
+  robot_state_.set_back_left(ComputeSensorRange(mouse_.sensors().back_left()));
+  robot_state_.set_back_right(ComputeSensorRange(mouse_.sensors().back_right()));
 
   robot_state_.mutable_p()->set_col(new_col);
   robot_state_.mutable_p()->set_row(new_row);
@@ -375,6 +367,10 @@ double Server::ComputeSensorRange(smartmouse::msgs::SensorDescription sensor) {
     if (r && *r < range) {
       range = *r;
     }
+  }
+
+  if (range < smartmouse::kc::ANALOG_MIN_DIST_CU) {
+    range = smartmouse::kc::ANALOG_MIN_DIST_CU;
   }
 
   return smartmouse::maze::toMeters(range);
