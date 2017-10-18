@@ -185,9 +185,8 @@ void Server::UpdateRobotState(double dt) {
   // iterate over every line segment in the maze (all edges of all walls)
   // find the intersection of that wall with each sensor
   // if the intersection exists, and the distance is the shortest range for that sensor, replace the current range
-  robot_state_.set_front_left(0.18);
-//  robot_state_.set_front(ComputeSensorRange(mouse_.sensors().front()));
-//  robot_state_.set_front_left(ComputeSensorRange(mouse_.sensors().front_left()));
+  robot_state_.set_front(ComputeSensorRange(mouse_.sensors().front()));
+  robot_state_.set_front_left(ComputeSensorRange(mouse_.sensors().front_left()));
 //  robot_state_.set_front_right(ComputeSensorRange(mouse_.sensors().front_right()));
 //  robot_state_.set_gerald_left(ComputeSensorRange(mouse_.sensors().gerald_left()));
 //  robot_state_.set_gerald_right(ComputeSensorRange(mouse_.sensors().gerald_right()));
