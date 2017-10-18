@@ -363,13 +363,12 @@ double Server::ComputeSensorRange(smartmouse::msgs::SensorDescription sensor) {
   double sensor_row = smartmouse::maze::toCellUnits(sensor.p().y());
   double robot_theta = robot_state_.p().theta();
   ignition::math::Vector3d s_origin_3d(sensor_col, sensor_row, 1);
-  ignition::math::Matrix3d tf(cos(robot_theta), sin(robot_theta), robot_state_.p().col(),
-                              -sin(robot_theta), cos(robot_theta), robot_state_.p().row(),
+  ignition::math::Matrix3d tf(cos(robot_theta), -sin(robot_theta), robot_state_.p().col(),
+                              sin(robot_theta), cos(robot_theta), robot_state_.p().row(),
                               0, 0, 1);
   s_origin_3d = tf * s_origin_3d;
   ignition::math::Vector2d s_origin(s_origin_3d.X(), s_origin_3d.Y());
-  ignition::math::Vector2d s_direction(cos(robot_theta + sensor.p().theta()), -sin(robot_theta + sensor.p().theta()));
-  std::cout << -sin(robot_theta + sensor.p().theta()) << std::endl;
+  ignition::math::Vector2d s_direction(cos(robot_theta + sensor.p().theta()), sin(robot_theta + sensor.p().theta()));
 
   for (auto line : maze_lines_) {
     std::experimental::optional<double> r = RayTracing::distance_to_wall(line, s_origin, s_direction);
