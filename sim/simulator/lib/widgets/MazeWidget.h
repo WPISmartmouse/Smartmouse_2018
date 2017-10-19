@@ -1,13 +1,16 @@
 #pragma once
 
-#include <sim/simulator/lib/widgets/AbstractTab.h>
 #include <QtWidgets>
 #include <QtGui/QPaintEvent>
-#include <sim/simulator/msgs/robot_sim_state.pb.h>
-#include <sim/simulator/msgs/maze.pb.h>
 #include <ignition/transport/Node.hh>
-#include <msgs/robot_description.pb.h>
-#include <msgs/robot_sim_state.pb.h>
+#include <ignition/math.hh>
+
+#include <common/core/AbstractMaze.h>
+#include <sim/simulator/lib/widgets/AbstractTab.h>
+#include <sim/simulator/msgs/maze.pb.h>
+#include <sim/simulator/msgs/msgs.h>
+#include <sim/simulator/msgs/robot_description.pb.h>
+#include <sim/simulator/msgs/robot_sim_state.pb.h>
 
 class MazeWidget : public AbstractTab {
  Q_OBJECT
@@ -38,7 +41,7 @@ class MazeWidget : public AbstractTab {
   static QBrush kWallBrush;
 
   ignition::transport::Node node_;
-  smartmouse::msgs::Maze maze_;
+  smartmouse::msgs::maze_walls_t maze_walls_;
   smartmouse::msgs::RobotSimState robot_state_;
   smartmouse::msgs::RobotDescription mouse_;
   bool mouse_set_;

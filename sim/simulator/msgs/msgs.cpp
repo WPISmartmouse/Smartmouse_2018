@@ -15,16 +15,14 @@ smartmouse::msgs::Maze Convert(AbstractMaze *maze, std::string name, int size) {
       Node *n = maze->nodes[r][c];
       if (n->neighbor(::Direction::E) == nullptr) {
         Wall *wall = maze_msg.add_walls();
-        smartmouse::msgs::RowCol *node = wall->mutable_node();
-        node->set_row(r);
-        node->set_col(c);
+        wall->set_row(r);
+        wall->set_col(c);
         wall->set_direction(Direction_Dir_E);
       }
       if (n->neighbor(::Direction::S) == nullptr) {
         Wall *wall = maze_msg.add_walls();
-        smartmouse::msgs::RowCol *node = wall->mutable_node();
-        node->set_row(r);
-        node->set_col(c);
+        wall->set_row(r);
+        wall->set_col(c);
         wall->set_direction(Direction_Dir_S);
       }
     }
@@ -33,15 +31,13 @@ smartmouse::msgs::Maze Convert(AbstractMaze *maze, std::string name, int size) {
   unsigned int i;
   for (i = 0; i < smartmouse::maze::SIZE; i++) {
     Wall *left_col_wall = maze_msg.add_walls();
-    smartmouse::msgs::RowCol *left_col_node = left_col_wall->mutable_node();
-    left_col_node->set_row(i);
-    left_col_node->set_col(0);
+    left_col_wall->set_row(i);
+    left_col_wall->set_col(0);
     left_col_wall->set_direction(Direction_Dir_W);
 
     Wall *bottom_row_wall = maze_msg.add_walls();
-    smartmouse::msgs::RowCol *bottom_row_node = bottom_row_wall->mutable_node();
-    bottom_row_node->set_row(0);
-    bottom_row_node->set_col(i);
+    bottom_row_wall->set_row(0);
+    bottom_row_wall->set_col(i);
     bottom_row_wall->set_direction(Direction_Dir_N);
   }
 
@@ -53,10 +49,9 @@ AbstractMaze Convert(smartmouse::msgs::Maze maze_msg) {
 
   maze.connect_all_neighbors_in_maze();
   for (Wall wall : maze_msg.walls()) {
-    smartmouse::msgs::RowCol node = wall.node();
     smartmouse::msgs::Direction::Dir dir_msg = wall.direction();
     ::Direction dir = Convert(dir_msg);
-    maze.disconnect_neighbor(node.row(), node.col(), dir);
+    maze.disconnect_neighbor(wall.row(), wall.col(), dir);
   }
 
   return maze;
@@ -157,24 +152,30 @@ unsigned long ConvertMSec(ignition::msgs::Time time) {
   return time.sec() * 1000ul + time.nsec() / 1000000;
 }
 
-std::vector<ignition::math::Line2d> MazeToLines(smartmouse::msgs::Maze maze) {
-  std::vector<ignition::math::Line2d> lines;
+void Convert(smartmouse::msgs::Maze maze, maze_walls_t &maze_lines) {
+  for (unsigned int r = 0; r < smartmouse::maze::SIZE; r++) {
+    for (unsigned int c = 0; c < smartmouse::maze::SIZE; c++) {
+      std::vector<smartmouse::msgs::WallPoints> &walls = maze_lines[r][c];
+      walls.clear();
+    }
+  }
 
   for (auto wall : maze.walls()) {
     double c1, r1, c2, r2;
     std::tie(c1, r1, c2, r2) = WallToCoordinates(wall);
-    lines.push_back(ignition::math::Line2d(c1, r1, c2, r1));
-    lines.push_back(ignition::math::Line2d(c2, r1, c2, r2));
-    lines.push_back(ignition::math::Line2d(c2, r2, c1, r2));
-    lines.push_back(ignition::math::Line2d(c1, r2, c1, r1));
+    std::vector<smartmouse::msgs::WallPoints> &walls = maze_lines[wall.row()][wall.col()];
+    smartmouse::msgs::WallPoints wall_pts;
+    wall_pts.set_c1(c1);
+    wall_pts.set_r1(r1);
+    wall_pts.set_c2(c2);
+    wall_pts.set_r2(r2);
+    walls.push_back(wall_pts);
   }
-
-  return lines;
 }
 
 std::tuple<double, double, double, double> WallToCoordinates(smartmouse::msgs::Wall wall) {
-  double r = wall.node().row();
-  double c = wall.node().col();
+  double r = wall.row();
+  double c = wall.col();
 
   double c1 = 0, r1 = 0, c2 = 0, r2 = 0;
   switch (wall.direction()) {

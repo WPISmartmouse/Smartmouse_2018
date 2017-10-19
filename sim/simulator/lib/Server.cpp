@@ -1,14 +1,13 @@
 #include <limits>
 
-#include <sim/simulator/lib/Server.h>
-#include <lib/common/TopicNames.h>
-#include <msgs/world_statistics.pb.h>
-#include <common/core/Mouse.h>
 #include <common/KinematicController/RobotConfig.h>
 #include <common/math/math.h>
-#include <lib/common/RayTracing.h>
-#include <msgs/msgs.h>
 #include <common/KinematicController/KinematicController.h>
+#include <sim/simulator/lib/common/RayTracing.h>
+#include <sim/simulator/lib/Server.h>
+#include <sim/simulator/lib/common/TopicNames.h>
+#include <sim/simulator/msgs/msgs.h>
+#include <sim/simulator/msgs/world_statistics.pb.h>
 
 Server::Server()
     : sim_time_(Time::Zero),
@@ -19,7 +18,8 @@ Server::Server()
       ns_of_sim_per_step_(1000000u),
       pause_at_steps_(0),
       real_time_factor_(1),
-      mouse_set_(false) {
+      mouse_set_(false),
+      max_cells_to_check_(0) {
   ResetRobot(0.5, 0.5, 0);
 }
 
@@ -86,8 +86,7 @@ bool Server::Run() {
   Time end_step_time = Time::GetWallTime();
   if (end_step_time > desired_end_time) {
     std::cout << "step took too long. Skipping sleep." << std::endl;
-  }
-  else {
+  } else {
     // FIXME: fudge factor makes sleep time more accurate, because we are often not woken up in time
     Time sleep_time = (desired_end_time - end_step_time) - 5e-5;
     Time::Sleep(sleep_time);
@@ -185,13 +184,13 @@ void Server::UpdateRobotState(double dt) {
   // iterate over every line segment in the maze (all edges of all walls)
   // find the intersection of that wall with each sensor
   // if the intersection exists, and the distance is the shortest range for that sensor, replace the current range
-  robot_state_.set_front(ComputeSensorRange(mouse_.sensors().front()));
-  robot_state_.set_front_left(ComputeSensorRange(mouse_.sensors().front_left()));
-  robot_state_.set_front_right(ComputeSensorRange(mouse_.sensors().front_right()));
-  robot_state_.set_gerald_left(ComputeSensorRange(mouse_.sensors().gerald_left()));
-  robot_state_.set_gerald_right(ComputeSensorRange(mouse_.sensors().gerald_right()));
-  robot_state_.set_back_left(ComputeSensorRange(mouse_.sensors().back_left()));
-  robot_state_.set_back_right(ComputeSensorRange(mouse_.sensors().back_right()));
+  robot_state_.set_front(ComputeSensorDistToWall(mouse_.sensors().front()));
+  robot_state_.set_front_left(ComputeSensorDistToWall(mouse_.sensors().front_left()));
+  robot_state_.set_front_right(ComputeSensorDistToWall(mouse_.sensors().front_right()));
+  robot_state_.set_gerald_left(ComputeSensorDistToWall(mouse_.sensors().gerald_left()));
+  robot_state_.set_gerald_right(ComputeSensorDistToWall(mouse_.sensors().gerald_right()));
+  robot_state_.set_back_left(ComputeSensorDistToWall(mouse_.sensors().back_left()));
+  robot_state_.set_back_right(ComputeSensorDistToWall(mouse_.sensors().back_right()));
 
   robot_state_.mutable_p()->set_col(new_col);
   robot_state_.mutable_p()->set_row(new_row);
@@ -312,8 +311,7 @@ void Server::OnMaze(const smartmouse::msgs::Maze &msg) {
   // Enter critical section
   {
     std::lock_guard<std::mutex> guard(physics_mutex_);
-    maze_ = msg;
-    maze_lines_ = smartmouse::msgs::MazeToLines(maze_);
+    smartmouse::msgs::Convert(msg, maze_walls_);
   }
   // End critical section
 }
@@ -332,6 +330,7 @@ void Server::OnRobotDescription(const smartmouse::msgs::RobotDescription &msg) {
   {
     std::lock_guard<std::mutex> guard(physics_mutex_);
     mouse_ = msg;
+    ComputeMaxSensorRange();
     mouse_set_ = true;
   }
   // End critical section
@@ -349,8 +348,8 @@ unsigned int Server::getNsOfSimPerStep() const {
   return ns_of_sim_per_step_;
 }
 
-double Server::ComputeSensorRange(smartmouse::msgs::SensorDescription sensor) {
-  double range = smartmouse::kc::ANALOG_MAX_DIST_CU;
+double Server::ComputeSensorDistToWall(smartmouse::msgs::SensorDescription sensor) {
+  double min_range = smartmouse::kc::ANALOG_MAX_DIST_CU;
   double sensor_col = smartmouse::maze::toCellUnits(sensor.p().x());
   double sensor_row = smartmouse::maze::toCellUnits(sensor.p().y());
   double robot_theta = robot_state_.p().theta();
@@ -362,16 +361,57 @@ double Server::ComputeSensorRange(smartmouse::msgs::SensorDescription sensor) {
   ignition::math::Vector2d s_origin(s_origin_3d.X(), s_origin_3d.Y());
   ignition::math::Vector2d s_direction(cos(robot_theta + sensor.p().theta()), sin(robot_theta + sensor.p().theta()));
 
-  for (auto line : maze_lines_) {
-    std::experimental::optional<double> r = RayTracing::distance_to_wall(line, s_origin, s_direction);
-    if (r && *r < range) {
-      range = *r;
+  // iterate over the lines of walls that are nearby
+  int row = (int) robot_state_.p().row();
+  int col = (int) robot_state_.p().col();
+  unsigned int min_r = (unsigned int) std::max(0, row - (int) max_cells_to_check_);
+  unsigned int max_r = std::min(smartmouse::maze::SIZE, row + max_cells_to_check_);
+  unsigned int min_c = (unsigned int) std::max(0, col - (int) max_cells_to_check_);
+  unsigned int max_c = std::min(smartmouse::maze::SIZE, col + max_cells_to_check_);
+  for (unsigned int r = min_r; r < max_r; r++) {
+    for (unsigned int c = min_c; c < max_c; c++) {
+      // get the walls at r/c
+      for (auto wall : maze_walls_[r][c]) {
+        std::vector<ignition::math::Line2d> wall_lines_;
+        wall_lines_.push_back(ignition::math::Line2d(wall.c1(), wall.r1(), wall.c1(), wall.r2()));
+        wall_lines_.push_back(ignition::math::Line2d(wall.c1(), wall.r2(), wall.c2(), wall.r2()));
+        wall_lines_.push_back(ignition::math::Line2d(wall.c2(), wall.r2(), wall.c2(), wall.r1()));
+        wall_lines_.push_back(ignition::math::Line2d(wall.c2(), wall.r1(), wall.c1(), wall.r1()));
+        for (auto line : wall_lines_) {
+          std::experimental::optional<double> range = RayTracing::distance_to_wall(line, s_origin, s_direction);
+          if (range && *range < min_range) {
+            min_range = *range;
+          }
+        }
+      }
     }
   }
 
-  if (range < smartmouse::kc::ANALOG_MIN_DIST_CU) {
-    range = smartmouse::kc::ANALOG_MIN_DIST_CU;
+  if (min_range < smartmouse::kc::ANALOG_MIN_DIST_CU) {
+    min_range = smartmouse::kc::ANALOG_MIN_DIST_CU;
   }
 
-  return smartmouse::maze::toMeters(range);
+  return smartmouse::maze::toMeters(min_range);
+}
+
+void Server::ComputeMaxSensorRange() {
+  double max_range = 0;
+
+  max_range = std::max(max_range, ComputeSensorRange(mouse_.sensors().front()));
+  max_range = std::max(max_range, ComputeSensorRange(mouse_.sensors().front_left()));
+  max_range = std::max(max_range, ComputeSensorRange(mouse_.sensors().front_right()));
+  max_range = std::max(max_range, ComputeSensorRange(mouse_.sensors().gerald_left()));
+  max_range = std::max(max_range, ComputeSensorRange(mouse_.sensors().gerald_right()));
+  max_range = std::max(max_range, ComputeSensorRange(mouse_.sensors().back_left()));
+  max_range = std::max(max_range, ComputeSensorRange(mouse_.sensors().back_right()));
+
+  max_cells_to_check_ = (unsigned int) std::ceil(smartmouse::maze::toCellUnits(max_range));
+}
+
+const double Server::ComputeSensorRange(const smartmouse::msgs::SensorDescription sensor) {
+  double sensor_x = sensor.p().x();
+  double sensor_y = sensor.p().x();
+  double range_x = sensor_x + cos(sensor.p().theta()) * smartmouse::kc::ANALOG_MAX_DIST_M;
+  double range_y = sensor_y + sin(sensor.p().theta()) * smartmouse::kc::ANALOG_MAX_DIST_M;
+  return std::hypot(range_x, range_y);
 }

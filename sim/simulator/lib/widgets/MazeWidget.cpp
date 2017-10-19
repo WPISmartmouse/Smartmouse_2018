@@ -2,10 +2,8 @@
 
 #include <QtGui/QPainter>
 
-#include <common/core/AbstractMaze.h>
 #include <sim/simulator/lib/widgets/MazeWidget.h>
 #include <lib/common/TopicNames.h>
-#include <sim/simulator/msgs/msgs.h>
 
 const int MazeWidget::kPaddingPx = 24;
 const QBrush MazeWidget::kRobotBrush = QBrush(QColor("#F57C00"));
@@ -123,17 +121,22 @@ void MazeWidget::PaintMouse(QPainter &painter, QTransform tf) {
 }
 
 void MazeWidget::PaintWalls(QPainter &painter, QTransform tf) {
-  for (smartmouse::msgs::Wall wall : maze_.walls()) {
-    double c1, r1, c2, r2;
-    std::tie(c1, r1, c2, r2) = smartmouse::msgs::WallToCoordinates(wall);
-
-    QPainterPath wall_path;
-    wall_path.moveTo(c1, r1);
-    wall_path.lineTo(c2, r1);
-    wall_path.lineTo(c2, r2);
-    wall_path.lineTo(c1, r2);
-    wall_path.lineTo(c1, r1);
-    painter.fillPath(tf.map(wall_path), kWallBrush);
+  for (unsigned int row = 0; row < smartmouse::maze::SIZE; row++) {
+    for (unsigned int col= 0; col < smartmouse::maze::SIZE; col++) {
+      for (auto wall : maze_walls_[row][col]) {
+        double c1 = wall.c1();
+        double r1 = wall.r1();
+        double c2 = wall.c2();
+        double r2 = wall.r2();
+        QPainterPath wall_path;
+        wall_path.moveTo(c1, r1);
+        wall_path.lineTo(c2, r1);
+        wall_path.lineTo(c2, r2);
+        wall_path.lineTo(c1, r2);
+        wall_path.lineTo(c1, r1);
+        painter.fillPath(tf.map(wall_path), kWallBrush);
+      }
+    }
   }
 }
 
@@ -142,7 +145,7 @@ const QString MazeWidget::getTabName() {
 }
 
 void MazeWidget::OnMaze(const smartmouse::msgs::Maze &msg) {
-  maze_ = msg;
+  smartmouse::msgs::Convert(msg, maze_walls_);
   emit MyUpdate();
 }
 

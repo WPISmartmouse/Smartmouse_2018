@@ -13,6 +13,7 @@
 #include <sim/simulator/msgs/robot_command.pb.h>
 #include <msgs/robot_description.pb.h>
 #include <ignition/math.hh>
+#include <msgs/msgs.h>
 
 class Server {
 
@@ -40,8 +41,10 @@ class Server {
   void ResetTime();
   void PublishInternalState();
   void PublishWorldStats(double rtf);
+  void ComputeMaxSensorRange();
+  const double ComputeSensorRange(const smartmouse::msgs::SensorDescription sensor);
 
-  double ComputeSensorRange(smartmouse::msgs::SensorDescription sensor);
+  double ComputeSensorDistToWall(smartmouse::msgs::SensorDescription sensor);
 
   ignition::transport::Node *node_ptr_;
   ignition::transport::Node::Publisher world_stats_pub_;
@@ -55,10 +58,10 @@ class Server {
   unsigned int ns_of_sim_per_step_ = 1000000u;
   unsigned long pause_at_steps_ = 0ul;
   double real_time_factor_ = 1.0;
-  smartmouse::msgs::Maze maze_;
+  smartmouse::msgs::maze_walls_t maze_walls_;
   smartmouse::msgs::RobotCommand cmd_;
   smartmouse::msgs::RobotDescription mouse_;
   smartmouse::msgs::RobotSimState robot_state_;
   bool mouse_set_;
-  std::vector<ignition::math::Line2d> maze_lines_;
+  unsigned int max_cells_to_check_;
 };

@@ -3,7 +3,6 @@ syntax = "proto2";
 package smartmouse.msgs;
 
 import "direction.proto";
-import "row_col_theta.proto";
 
 message Maze {
     optional string name = 1;
@@ -12,6 +11,14 @@ message Maze {
 }
 
 message Wall {
-    optional RowCol node = 1;
-    optional Direction.Dir direction = 2;
+    optional uint32 row = 1;
+    optional uint32 col = 2;
+    optional Direction.Dir direction = 3;
+}
+
+message WallPoints {
+    optional double c1= 1;
+    optional double r1= 2;
+    optional double c2= 3;
+    optional double r2= 4;
 }
