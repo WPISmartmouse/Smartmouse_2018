@@ -1,12 +1,4 @@
 .idea
-build
-.build
 .real_build
 .sim_build
-html
-latex
-.pioenvs
-.build_ano
-.clang_complete
-.gcc-flags.json
 *.swp
