@@ -4,7 +4,7 @@
 #include <sim/simulator/lib/common/TopicNames.h>
 #include <msgs/msgs.h>
 
-PIDWidget::PIDWidget() {
+PIDWidget::PIDWidget() : num_points_(20) {
   left_setpoint_ = new QLineSeries();
   left_actual_= new QLineSeries();
   right_setpoint_ = new QLineSeries();
@@ -63,7 +63,7 @@ void PIDWidget::PIDCallback(const smartmouse::msgs::PIDDebug &msg) {
   x_axis_->setRange(0, pid_data_.size());
   y_axis_->setRange(y_min, y_max);
 
-  if (pid_data_.size() > 10) {
+  if (pid_data_.size() > num_points_) {
     pid_data_.pop_front();
   }
 }

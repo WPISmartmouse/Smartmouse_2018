@@ -29,5 +29,6 @@ class PIDWidget : public QChartView, public AbstractTab {
   QLineSeries *right_actual_;
 
   std::list<std::vector<double>> pid_data_;
+  unsigned int num_points_;
 };
 
