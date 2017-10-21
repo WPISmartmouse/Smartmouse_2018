@@ -12,7 +12,7 @@
 #include <sim/simulator/msgs/robot_description.pb.h>
 #include <sim/simulator/msgs/robot_sim_state.pb.h>
 
-class MazeWidget : public AbstractTab {
+class MazeWidget : public QWidget, public AbstractTab {
  Q_OBJECT
 
  public:

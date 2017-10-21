@@ -12,15 +12,15 @@
 #include <sim/simulator/msgs/maze_location.pb.h>
 #include <sim/simulator/msgs/robot_sim_state.pb.h>
 #include <sim/simulator/lib/widgets/AbstractTab.h>
-#include <sim/simulator/lib/widgets/SensorStateWidget.h>
 #include <msgs/world_statistics.pb.h>
 #include <msgs/robot_command.pb.h>
+#include "PIDWidget.h"
 
 namespace Ui {
 class StateWidget;
 }
 
-class StateWidget : public AbstractTab {
+class StateWidget : public QWidget, public AbstractTab {
  Q_OBJECT
 
  public:
@@ -56,15 +56,13 @@ class StateWidget : public AbstractTab {
 
  private:
 
-  void OnStats(const smartmouse::msgs::WorldStatistics &msg);
   void RobotCommandCallback(const smartmouse::msgs::RobotCommand &msg);
   void StateCallback(const smartmouse::msgs::RobotSimState &msg);
 
   double true_col, true_row, true_yaw;
 
-  ignition::transport::Node node;
-
-  SensorState *sensor_state;
+  ignition::transport::Node node_;
 
   Ui::StateWidget *ui_;
+  PIDWidget *pid_widget_;
 };

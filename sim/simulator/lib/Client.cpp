@@ -35,7 +35,7 @@ Client::Client(QMainWindow *parent) :
 
   // publish initial config of the server
   smartmouse::msgs::ServerControl initial_server_control;
-  initial_server_control.set_pause(true);
+  initial_server_control.set_pause(false);
   initial_server_control.set_reset_robot(true);
   initial_server_control.set_reset_time(true);
   server_control_pub_.Publish(initial_server_control);
@@ -212,8 +212,8 @@ void Client::ConfigureGui() {
   ui_->gui_tabs->addTab(maze_widget_, maze_widget_->getTabName());
   state_widget_ = new StateWidget();
   ui_->info_tabs->addTab(state_widget_, state_widget_->getTabName());
-  ui_->main_tab->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Expanding);
-  ui_->main_tab->setMaximumWidth(300);
+  ui_->physics_tab->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Expanding);
+  ui_->physics_tab->setMaximumWidth(300);
 
   connect(ui_->load_maze_button, &QPushButton::clicked, this, &Client::LoadNewMaze);
   connect(ui_->load_mouse_button, &QPushButton::clicked, this, &Client::LoadNewMouse);

@@ -2,7 +2,7 @@
 
 #include <QtWidgets/QWidget>
 
-class AbstractTab : public QWidget {
+class AbstractTab {
 
   virtual const QString getTabName() = 0;
 

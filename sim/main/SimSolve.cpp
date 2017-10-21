@@ -7,6 +7,7 @@
 #include <simulator/msgs/robot_command.pb.h>
 #include <simulator/lib/common/TopicNames.h>
 #include <sim/lib/SimMouse.h>
+#include <simulator/msgs/pid_debug.pb.h>
 
 int main(int argc, char *argv[]) {
   SimTimer timer;
@@ -27,6 +28,7 @@ int main(int argc, char *argv[]) {
   }
 
   mouse->cmd_pub = mouse->node.Advertise<smartmouse::msgs::RobotCommand>(TopicNames::kRobotCommand);
+  mouse->pid_pub = mouse->node.Advertise<smartmouse::msgs::PIDDebug>(TopicNames::kPID);
 
   // wait for time messages to come
   while (!timer.isTimeReady());
@@ -47,7 +49,7 @@ int main(int argc, char *argv[]) {
     }
 
     mouse->run(dt_s);
-//    done = scheduler.run();
+    done = scheduler.run();
     last_t = now;
   }
 }

@@ -54,3 +54,6 @@ target_link_libraries(keyboard_teleop sim_common sim ncurses msgs)
 
 add_executable(joy_teleop ./tools/joystick_teleop.cpp joystick/joystick.cc)
 target_link_libraries(joy_teleop sim_common sim ncurses msgs)
+
+add_executable(pub_data ./tools/pub_data.cpp)
+target_link_libraries(pub_data msgs ${IGNITION-TRANSPORT_LIBRARIES})

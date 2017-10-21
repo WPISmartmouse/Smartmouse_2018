@@ -11,11 +11,11 @@
 StateWidget::StateWidget() : AbstractTab(), ui_(new Ui::StateWidget) {
   ui_->setupUi(this);
 
-  this->node.Subscribe(TopicNames::kRobotSimState, &StateWidget::StateCallback, this);
-  this->node.Subscribe(TopicNames::kRobotCommand, &StateWidget::RobotCommandCallback, this);
-  this->node.Subscribe(TopicNames::kWorldStatistics, &StateWidget::OnStats, this);
+  pid_widget_ = new PIDWidget();
+  ui_->charts_tabs->addTab(pid_widget_, pid_widget_->getTabName());
 
-  sensor_state = new SensorState();
+  this->node_.Subscribe(TopicNames::kRobotSimState, &StateWidget::StateCallback, this);
+  this->node_.Subscribe(TopicNames::kRobotCommand, &StateWidget::RobotCommandCallback, this);
 
   connect(this, SIGNAL(SetLeftVelocity(QString)), ui_->left_velocity_edit,
           SLOT(setText(QString)), Qt::QueuedConnection);
@@ -71,10 +71,6 @@ void StateWidget::StateCallback(const smartmouse::msgs::RobotSimState &msg) {
   this->SetCol(col_str);
   this->SetRow(row_str);
   this->SetDir(QChar(yaw_to_char(msg.p().theta())));
-}
-
-void StateWidget::OnStats(const smartmouse::msgs::WorldStatistics &msg) {
-  sensor_state->update();
 }
 
 void StateWidget::RobotCommandCallback(const smartmouse::msgs::RobotCommand &msg) {

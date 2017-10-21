@@ -85,7 +85,8 @@ bool Server::Run() {
 
   Time end_step_time = Time::GetWallTime();
   if (end_step_time > desired_end_time) {
-    std::cout << "step took too long. Skipping sleep." << std::endl;
+    // FIXME: do proper logging control
+    // std::cout << "step took too long. Skipping sleep." << std::endl;
   } else {
     // FIXME: fudge factor makes sleep time more accurate, because we are often not woken up in time
     Time sleep_time = (desired_end_time - end_step_time) - 5e-5;

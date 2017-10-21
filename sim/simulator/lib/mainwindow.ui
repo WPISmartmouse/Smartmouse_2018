@@ -34,11 +34,17 @@
         </sizepolicy>
        </property>
        <property name="currentIndex">
-        <number>2</number>
+        <number>0</number>
        </property>
-       <widget class="QWidget" name="main_tab">
+       <property name="movable">
+        <bool>true</bool>
+       </property>
+       <widget class="QWidget" name="physics_tab">
+        <property name="isMovable" stdset="0">
+         <bool>true</bool>
+        </property>
         <attribute name="title">
-         <string>Main</string>
+         <string>Physics</string>
         </attribute>
         <layout class="QFormLayout" name="formLayout_2">
          <item row="0" column="0">

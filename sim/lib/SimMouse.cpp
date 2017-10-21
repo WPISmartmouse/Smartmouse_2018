@@ -1,4 +1,6 @@
 #include <sim/simulator/msgs/robot_command.pb.h>
+#include <simulator/msgs/pid_debug.pb.h>
+#include <lib/Time.h>
 #include "SimMouse.h"
 
 SimMouse *SimMouse::instance = nullptr;
@@ -83,6 +85,15 @@ void SimMouse::run(double dt_s) {
   cmd.mutable_left()->set_abstract_force(abstract_left_force);
   cmd.mutable_right()->set_abstract_force(abstract_right_force);
   cmd_pub.Publish(cmd);
+
+  smartmouse::msgs::PIDDebug pid;
+  auto stamp = pid.mutable_stamp();
+  *stamp = Time::GetWallTime().toIgnMsg();
+  pid.set_left_mps_setpoint(smartmouse::kc::radToMeters(kinematic_controller.left_motor.setpoint_rps));
+  pid.set_left_mps_actual(smartmouse::kc::radToMeters(kinematic_controller.left_motor.velocity_rps));
+  pid.set_right_mps_setpoint(smartmouse::kc::radToMeters(kinematic_controller.right_motor.setpoint_rps));
+  pid.set_right_mps_actual(smartmouse::kc::radToMeters(kinematic_controller.right_motor.velocity_rps));
+  pid_pub.Publish(pid);
 }
 
 void SimMouse::setSpeed(double left_wheel_velocity_setpoint_mps, double right_wheel_velocity_setpoint_mps) {

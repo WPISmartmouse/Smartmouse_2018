@@ -33,6 +33,7 @@ public:
   void simInit();
 
   ignition::transport::Node::Publisher cmd_pub;
+  ignition::transport::Node::Publisher pid_pub;
   ignition::transport::Node node;
 
   KinematicController kinematic_controller;

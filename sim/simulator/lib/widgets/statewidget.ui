@@ -210,13 +210,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QTabWidget" name="charts_tabs">
-     <widget class="QWidget" name="tab">
-      <attribute name="title">
-       <string>Tab 1</string>
-      </attribute>
-     </widget>
-    </widget>
+    <widget class="QTabWidget" name="charts_tabs"/>
    </item>
   </layout>
  </widget>
