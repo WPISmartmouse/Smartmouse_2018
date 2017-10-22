@@ -65,6 +65,12 @@ void Client::Pause() {
   server_control_pub_.Publish(pause_msg);
 }
 
+void Client::SetStatic() {
+  smartmouse::msgs::ServerControl static_msg;
+  static_msg.set_static_(ui_->static_checkbox->isChecked());
+  server_control_pub_.Publish(static_msg);
+}
+
 void Client::Step() {
   smartmouse::msgs::ServerControl step_msg;
   step_msg.set_step(step_count_);
@@ -229,6 +235,7 @@ void Client::ConfigureGui() {
   connect(ui_->pause_button, &QPushButton::clicked, this, &Client::Pause);
   connect(ui_->step_button, &QPushButton::clicked, this, &Client::Step);
   // Casting is to handle overloaded slot valueChanged. Don't overload slots!
+  connect(ui_->static_checkbox, &QCheckBox::stateChanged, this, &Client::SetStatic);
   connect(ui_->real_time_factor_spinner,
           static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
           this,

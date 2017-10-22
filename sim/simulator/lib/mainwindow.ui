@@ -34,7 +34,7 @@
         </sizepolicy>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>2</number>
        </property>
        <property name="movable">
         <bool>true</bool>
@@ -271,6 +271,16 @@
            </property>
            <property name="singleStep">
             <double>0.100000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="10" column="0">
+          <widget class="QCheckBox" name="static_checkbox">
+           <property name="toolTip">
+            <string>Wheels will move but the robot will not.</string>
+           </property>
+           <property name="text">
+            <string>Static</string>
            </property>
           </widget>
          </item>

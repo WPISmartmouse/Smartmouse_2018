@@ -53,6 +53,7 @@ class Server {
   unsigned long steps_ = 0UL;
   std::mutex physics_mutex_;
   bool pause_ = true;
+  bool static_;
   bool quit_ = false;
   bool connected_ = false;
   unsigned int ns_of_sim_per_step_ = 1000000u;

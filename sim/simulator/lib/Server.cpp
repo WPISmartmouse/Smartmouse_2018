@@ -13,6 +13,7 @@ Server::Server()
     : sim_time_(Time::Zero),
       steps_(0ul),
       pause_(true),
+      static_(false),
       quit_(false),
       connected_(false),
       ns_of_sim_per_step_(1000000u),
@@ -193,15 +194,17 @@ void Server::UpdateRobotState(double dt) {
   robot_state_.set_back_left(ComputeSensorDistToWall(mouse_.sensors().back_left()));
   robot_state_.set_back_right(ComputeSensorDistToWall(mouse_.sensors().back_right()));
 
-  robot_state_.mutable_p()->set_col(new_col);
-  robot_state_.mutable_p()->set_row(new_row);
-  robot_state_.mutable_p()->set_theta(new_theta);
-  robot_state_.mutable_v()->set_col(new_v_col);
-  robot_state_.mutable_v()->set_row(new_v_row);
-  robot_state_.mutable_v()->set_theta(new_w);
-  robot_state_.mutable_a()->set_col(new_a_col);
-  robot_state_.mutable_a()->set_row(new_a_row);
-  robot_state_.mutable_a()->set_theta(new_a);
+  if (!static_) {
+    robot_state_.mutable_p()->set_col(new_col);
+    robot_state_.mutable_p()->set_row(new_row);
+    robot_state_.mutable_p()->set_theta(new_theta);
+    robot_state_.mutable_v()->set_col(new_v_col);
+    robot_state_.mutable_v()->set_row(new_v_row);
+    robot_state_.mutable_v()->set_theta(new_w);
+    robot_state_.mutable_a()->set_col(new_a_col);
+    robot_state_.mutable_a()->set_row(new_a_row);
+    robot_state_.mutable_a()->set_theta(new_a);
+  }
   robot_state_.mutable_left_wheel()->set_theta(new_tl);
   robot_state_.mutable_left_wheel()->set_omega(new_wl);
   robot_state_.mutable_left_wheel()->set_alpha(new_al);
@@ -262,6 +265,9 @@ void Server::OnServerControl(const smartmouse::msgs::ServerControl &msg) {
     std::lock_guard<std::mutex> guard(physics_mutex_);
     if (msg.has_pause()) {
       pause_ = msg.pause();
+    }
+    if (msg.has_static_()) {
+      static_ = msg.static_();
     }
     if (msg.has_quit()) {
       quit_ = msg.quit();

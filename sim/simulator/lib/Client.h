@@ -34,6 +34,7 @@ class Client : public QMainWindow {
   void Restart();
   void Play();
   void Pause();
+  void SetStatic();
   void ResetMouse();
   void ResetTime();
   void Step();

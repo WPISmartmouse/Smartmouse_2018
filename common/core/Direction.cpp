@@ -115,10 +115,10 @@ char yaw_to_char(double yaw) {
     return 'E';
   }
   else if (M_PI_4 < yaw && yaw < 3 * M_PI_4) {
-    return 'N';
+    return 'S';
   }
   else if (-3 * M_PI_4 < yaw && yaw < -M_PI_4) {
-    return 'S';
+    return 'N';
   }
   else {
     return 'W';
