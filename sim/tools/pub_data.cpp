@@ -2,13 +2,15 @@
 #include <ignition/transport.hh>
 #include <simulator/lib/common/TopicNames.h>
 #include <simulator/msgs/pid_debug.pb.h>
+#include <lib/Time.h>
 
 int main() {
   ignition::transport::Node node;
 
   auto pub = node.Advertise<smartmouse::msgs::PIDDebug>(TopicNames::kPID);
 
-  for (size_t i = 0; i < 100; i++) {
+
+  for (size_t i = 0; i < 10; i++) {
     smartmouse::msgs::PIDDebug pid;
     double r1 = (float)rand() / RAND_MAX;
     double r2 = (float)rand() / RAND_MAX;
@@ -18,7 +20,8 @@ int main() {
     pid.set_left_mps_actual(r2);
     pid.set_right_mps_setpoint(r3);
     pid.set_right_mps_actual(r4);
-    std::cin.get();
+
+    usleep(1000000);
     pub.Publish(pid);
   }
 }

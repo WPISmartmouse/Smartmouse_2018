@@ -106,6 +106,15 @@ void SimMouse::simInit() {
 
   // we start in the middle of the first square
   resetToStartPose();
+
+  // print warnings about any invalid publishers
+  if (!cmd_pub.Valid()) {
+    std::cerr << "cmd_pub is not valid! Did you forget to Advertise?" << std::endl;
+  }
+
+  if (!pid_pub.Valid()) {
+    std::cerr << "pid_pub is not valid! Did you forget to Advertise?" << std::endl;
+  }
 }
 
 void SimMouse::resetToStartPose() {

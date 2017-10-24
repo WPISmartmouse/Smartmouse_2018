@@ -42,15 +42,16 @@ Client::Client(QMainWindow *parent) :
 }
 
 void Client::Exit() {
+  SaveSettings();
   smartmouse::msgs::ServerControl quit_msg;
   quit_msg.set_quit(true);
   server_control_pub_.Publish(quit_msg);
-  QApplication::quit();
+  QApplication::exit(0);
 }
 
 void Client::Restart() {
   SaveSettings();
-  qApp->exit(kRestartCode);
+  QApplication::exit(kRestartCode);
 }
 
 void Client::Play() {
@@ -267,6 +268,7 @@ void Client::closeEvent(QCloseEvent *event) {
 void Client::SaveSettings() {
   settings_->setValue("gui/tab_splitter", ui_->tab_splitter->saveState());
   settings_->setValue("gui/info_tabs", ui_->info_tabs->currentIndex());
+  settings_->setValue("gui/static_", ui_->static_checkbox->isChecked());
 }
 
 void Client::RestoreSettings() {
@@ -290,6 +292,8 @@ void Client::RestoreSettings() {
   mouse_files_dir_ = settings_->value("gui/mouse_files_directory").toString();
   default_mouse_file_name_ = settings_->value("gui/default_mouse_file_name").toString();
   LoadDefaultMouse();
+
+  ui_->static_checkbox->setChecked(settings_->value("gui/static_").toBool());
 }
 
 void Client::SendRobotCmd() {

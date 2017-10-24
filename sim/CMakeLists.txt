@@ -39,7 +39,7 @@ target_link_libraries(sim sim_common sim_common_commands ${IGNITION-TRANSPORT_LI
 #################################
 # actual sim mouse programs
 #################################
-set(SIMS SimSolve SimNavTest)
+set(SIMS SimSolve SimNavTest PIDTuning)
 
 foreach (MAIN ${SIMS})
     add_executable(${MAIN} "main/${MAIN}.cpp")

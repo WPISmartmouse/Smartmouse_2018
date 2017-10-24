@@ -74,8 +74,8 @@ void StateWidget::StateCallback(const smartmouse::msgs::RobotSimState &msg) {
 }
 
 void StateWidget::RobotCommandCallback(const smartmouse::msgs::RobotCommand &msg) {
-  this->SetLeftForce(QString::asprintf("%3i /255", msg.left().abstract_force()));
-  this->SetRightForce(QString::asprintf("%3i /255", msg.right().abstract_force()));
+  this->SetLeftForce(QString::asprintf("%3i / 255", msg.left().abstract_force()));
+  this->SetRightForce(QString::asprintf("%3i / 255", msg.right().abstract_force()));
 }
 
 const QString StateWidget::getTabName() {

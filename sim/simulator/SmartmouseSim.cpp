@@ -56,7 +56,8 @@ int main(int argc, char *argv[]) {
     server_pub.Publish(quit_msg);
     server.Join();
   } while (return_code == Client::kRestartCode);
-  window->Exit();
+
+  QApplication::quit();
 
   return return_code;
 }

@@ -6,12 +6,15 @@
 
 PIDWidget::PIDWidget() : num_points_(20) {
   left_setpoint_ = new QLineSeries();
+  left_setpoint_->setName("left setpoint");
   left_actual_= new QLineSeries();
+  left_actual_->setName("left actual");
   right_setpoint_ = new QLineSeries();
+  right_setpoint_ ->setName("right setpoint");
   right_actual_ = new QLineSeries();
+  right_actual_->setName("right actual");
 
   chart_ = new QChart();
-  chart_->legend()->hide();
   chart_->addSeries(left_setpoint_);
   chart_->addSeries(left_actual_);
   chart_->addSeries(right_setpoint_);
@@ -35,6 +38,7 @@ const QString PIDWidget::getTabName() {
 
 void PIDWidget::PIDCallback(const smartmouse::msgs::PIDDebug &msg) {
   double t = smartmouse::msgs::ConvertSec(msg.stamp());
+  std::cout << t << std::endl;
   pid_data_.push_back({msg.left_mps_setpoint(), msg.left_mps_actual(), msg.right_mps_setpoint(), msg.right_mps_actual()});
 
   left_setpoint_->clear();

@@ -1,14 +1,14 @@
 #include <iostream>
-#include <common/commands/NavTestCommand.h>
 #include <ignition/transport.hh>
 
 #include <sim/lib/SimMouse.h>
 #include <sim/lib/SimTimer.h>
 #include <sim/simulator/lib/common/TopicNames.h>
-#include <simulator/msgs/robot_command.pb.h>
+#include <sim/simulator/msgs/robot_command.pb.h>
+#include <common/argparse/argparse.hpp>
 #include <simulator/msgs/pid_debug.pb.h>
 
-int main(int argc, char *argv[]) {
+int main(int argc, const char **argv) {
   SimTimer timer;
   Command::setTimerImplementation(&timer);
   SimMouse *mouse = SimMouse::inst();
@@ -33,25 +33,29 @@ int main(int argc, char *argv[]) {
   while (!timer.isTimeReady());
 
   mouse->simInit();
-  Scheduler scheduler(new NavTestCommand());
 
-  bool done = false;
-  unsigned long last_t = timer.programTimeMs();
-  while (!done) {
+  const unsigned long ms_per_setpoint = 2000;
+  for (double i = 0; i < smartmouse::kc::MAX_HARDWARE_SPEED_MPS; i += 0.1) {
+    mouse->setSpeed(i, smartmouse::kc::MAX_HARDWARE_SPEED_MPS - i);
+    std::cout << "Setpoint: " << i << std::endl;
 
-    unsigned long now = timer.programTimeMs();
-    double dt_s = (now - last_t) / 1000.0;
+    unsigned long start_ms = timer.programTimeMs();
+    unsigned long last_t_ms = timer.programTimeMs();
+    unsigned long now_ms = start_ms;
 
-    // minimum period of main loop
-    if (dt_s < 0.010) {
-      continue;
-    }
+    do {
+      now_ms = timer.programTimeMs();
+      double dt_s = (now_ms - last_t_ms) / 1000.0;
 
-    mouse->run(dt_s);
+      if (dt_s < 0.01) {
+        continue;
+      }
 
-    done = scheduler.run();
+      mouse->run(dt_s);
 
-    last_t = now;
+      last_t_ms = now_ms;
+    } while (now_ms - start_ms < ms_per_setpoint);
+
   }
 }
 
