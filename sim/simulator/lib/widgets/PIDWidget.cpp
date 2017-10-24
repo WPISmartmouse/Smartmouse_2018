@@ -1,33 +1,31 @@
-#include <limits>
-
 #include <sim/simulator/lib/widgets/PIDWidget.h>
 #include <sim/simulator/lib/common/TopicNames.h>
 #include <msgs/msgs.h>
 
-PIDWidget::PIDWidget() : num_points_(20) {
-  left_setpoint_ = new QLineSeries();
-  left_setpoint_->setName("left setpoint");
-  left_actual_= new QLineSeries();
-  left_actual_->setName("left actual");
-  right_setpoint_ = new QLineSeries();
-  right_setpoint_ ->setName("right setpoint");
-  right_actual_ = new QLineSeries();
-  right_actual_->setName("right actual");
+PIDWidget::PIDWidget() : capacity_(1000) {
+  left_setpoint_ = new QwtPlotCurve("left setpoint");
+  left_actual_ = new QwtPlotCurve("left actual");
+  right_setpoint_ = new QwtPlotCurve("right setpoint");
+  right_actual_ = new QwtPlotCurve("right actual");
 
-  chart_ = new QChart();
-  chart_->addSeries(left_setpoint_);
-  chart_->addSeries(left_actual_);
-  chart_->addSeries(right_setpoint_);
-  chart_->addSeries(right_actual_);
+  left_setpoint_data_ = new PIDSeriesData(capacity_);
+  left_actual_data_ = new PIDSeriesData(capacity_);
+  right_setpoint_data_ = new PIDSeriesData(capacity_);
+  right_actual_data_ = new PIDSeriesData(capacity_);
 
-  x_axis_ = new QValueAxis;
-  y_axis_ = new QValueAxis;
+  left_setpoint_->setData(left_setpoint_data_);
+  left_actual_->setData(left_actual_data_);
+  right_setpoint_->setData(right_setpoint_data_);
+  right_actual_->setData(right_actual_data_);
 
-  chart_->setAxisX(x_axis_);
-  chart_->setAxisY(y_axis_);
-  chart_->setAnimationOptions(QChart::NoAnimation);
-
-  setChart(chart_);
+  left_setpoint_->attach(this);
+  left_actual_->attach(this);
+  right_setpoint_->attach(this);
+  right_actual_->attach(this);
+  left_setpoint_->setPen(QPen(Qt::blue));
+  left_actual_->setPen(QPen(Qt::red));
+  right_setpoint_->setPen(QPen(Qt::green));
+  right_actual_->setPen(QPen(Qt::yellow));
 
   this->node_.Subscribe(TopicNames::kPID, &PIDWidget::PIDCallback, this);
 }
@@ -38,36 +36,42 @@ const QString PIDWidget::getTabName() {
 
 void PIDWidget::PIDCallback(const smartmouse::msgs::PIDDebug &msg) {
   double t = smartmouse::msgs::ConvertSec(msg.stamp());
-  std::cout << t << std::endl;
-  pid_data_.push_back({msg.left_mps_setpoint(), msg.left_mps_actual(), msg.right_mps_setpoint(), msg.right_mps_actual()});
+  left_setpoint_data_->append(t, msg.left_mps_setpoint());
+  left_actual_data_->append(t, msg.left_mps_actual());
+  right_setpoint_data_->append(t, msg.right_mps_setpoint());
+  right_actual_data_->append(t, msg.right_mps_actual());
 
-  left_setpoint_->clear();
-  left_actual_->clear();
-  right_setpoint_->clear();
-  right_actual_->clear();
-  int i = 0;
-  double y_min = std::numeric_limits<double>::max();
-  double y_max = 0;
-  for (auto data : pid_data_) {
-    double l_set = data.at(0);
-    double l_actual = data.at(1);
-    double r_set = data.at(2);
-    double r_actual = data.at(3);
+  replot();
+}
 
-    y_min = std::min({y_min, l_set, l_actual, r_set, r_actual});
-    y_max = std::max({y_max, l_set, l_actual, r_set, r_actual});
+PIDSeriesData::PIDSeriesData(unsigned int capacity) : capacity_(capacity), num_points_to_remove_(1) {}
 
-    left_setpoint_->append((float)i/pid_data_.size(), l_set);
-    left_actual_->append((float)i/pid_data_.size(), l_actual);
-    right_setpoint_->append((float)i/pid_data_.size(), r_set);
-    right_actual_->append((float)i/pid_data_.size(), r_actual);
-    ++i;
+QRectF PIDSeriesData::boundingRect() const {
+  return d_boundingRect;
+}
+
+void PIDSeriesData::append(double x, double y) {
+  QPointF point(x, y);
+  d_samples.append(point);
+
+  if (this->d_samples.size() > capacity_) {
+    this->d_samples.remove(0, num_points_to_remove_);
   }
 
-  x_axis_->setRange(0, pid_data_.size());
-  y_axis_->setRange(y_min, y_max);
-
-  if (pid_data_.size() > num_points_) {
-    pid_data_.pop_front();
+  if (this->d_samples.size() == 1) {
+    // init bounding rect
+    this->d_boundingRect.setTopLeft(point);
+    this->d_boundingRect.setBottomRight(point);
+    return;
   }
+
+  // expand bounding rect
+  if (point.x() < this->d_boundingRect.left())
+    this->d_boundingRect.setLeft(point.x());
+  else if (point.x() > this->d_boundingRect.right())
+    this->d_boundingRect.setRight(point.x());
+  if (point.y() < this->d_boundingRect.top())
+    this->d_boundingRect.setTop(point.y());
+  else if (point.y() > this->d_boundingRect.bottom())
+    this->d_boundingRect.setBottom(point.y());
 }

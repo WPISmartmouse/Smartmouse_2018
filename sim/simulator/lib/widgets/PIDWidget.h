@@ -1,14 +1,25 @@
 #pragma once
 
-#include <QtCharts>
-#include <QWidget>
+#include <qwt_plot.h>
+#include <qwt_plot_curve.h>
 #include <ignition/transport/Node.hh>
 #include <list>
 
 #include <sim/simulator/lib/widgets/AbstractTab.h>
 #include <sim/simulator/msgs/pid_debug.pb.h>
 
-class PIDWidget : public QChartView, public AbstractTab {
+class PIDSeriesData : public QwtArraySeriesData<QPointF> {
+ public:
+  PIDSeriesData(unsigned int capacity);
+
+  virtual QRectF boundingRect() const override;
+
+  void append(double x, double y);
+  unsigned int capacity_;
+  int num_points_to_remove_;
+};
+
+class PIDWidget : public QwtPlot, public AbstractTab {
   Q_OBJECT
 
  public:
@@ -20,15 +31,14 @@ class PIDWidget : public QChartView, public AbstractTab {
 
  private:
   ignition::transport::Node node_;
-  QChart *chart_;
-  QValueAxis *x_axis_;
-  QValueAxis *y_axis_;
-  QLineSeries *left_setpoint_;
-  QLineSeries *left_actual_;
-  QLineSeries *right_setpoint_;
-  QLineSeries *right_actual_;
-
+  QwtPlotCurve *left_setpoint_;
+  QwtPlotCurve *left_actual_;
+  QwtPlotCurve *right_setpoint_;
+  QwtPlotCurve *right_actual_;
+  PIDSeriesData *left_setpoint_data_;
+  PIDSeriesData *left_actual_data_;
+  PIDSeriesData *right_setpoint_data_;
+  PIDSeriesData *right_actual_data_;
   std::list<std::vector<double>> pid_data_;
-  unsigned int num_points_;
+  const unsigned  int capacity_;
 };
-

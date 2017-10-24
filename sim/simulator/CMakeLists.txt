@@ -6,6 +6,17 @@ set(CMAKE_AUTORCC ON)
 # Find the QtWidgets library
 find_package(Qt5 COMPONENTS Core Widgets Charts REQUIRED)
 
+# Find QWT
+find_path(QWT_INCLUDE_DIR NAMES qwt.h PATHS
+        /usr/include
+        /usr/local/include
+
+        PATH_SUFFIXES qwt qwt5)
+
+find_library(QWT_LIBRARY NAMES qwt-qt5 qwt PATHS
+        /usr/lib
+        /usr/local/lib)
+
 add_subdirectory(msgs)
 set_source_files_properties(${PROTO_SRC} ${PROTO_HEADER}
         PROPERTIES GENERATED TRUE)
@@ -18,13 +29,22 @@ add_library(server lib/Server.cpp)
 target_link_libraries(server msgs sim simulator_lib ${IGNITION-TRANSPORT_LIBRARIES})
 
 add_library(client lib/Client.cpp)
-target_link_libraries(client msgs Qt5::Widgets Qt5::Charts simulator_lib sim server ${IGNITION-TRANSPORT_LIBRARIES})
+target_include_directories(client PRIVATE ${QWT_INCLUDE_DIR})
+target_link_libraries(client
+    msgs
+    Qt5::Widgets
+    Qt5::Charts
+    simulator_lib
+    sim
+    server
+    ${IGNITION-TRANSPORT_LIBRARIES}
+    ${QWT_LIBRARY})
 
 file(GLOB WIDGET_SRCS lib/widgets/*.cpp)
 
 add_executable(SmartmouseSim SmartmouseSim.cpp ${WIDGET_SRCS} simulator.qrc)
-
-target_link_libraries(SmartmouseSim server client)
+target_include_directories(SmartmouseSim PRIVATE ${QWT_INCLUDE_DIR})
+target_link_libraries(SmartmouseSim server client ${QWT_LIBRARY})
 
 install(TARGETS SmartmouseSim DESTINATION bin)
 
