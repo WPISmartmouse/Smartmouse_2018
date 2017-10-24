@@ -4,9 +4,9 @@
 #include "RegulatedMotor.h"
 
 RegulatedMotor::RegulatedMotor()
-    : kP(10),
+    : kP(6.5),
       kI(0.00),
-      kD(0.0),
+      kD(0.2),
       ff_offset(15),
       int_cap(0),
       initialized(false),
