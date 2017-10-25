@@ -1,6 +1,7 @@
 #include <sim/simulator/msgs/robot_command.pb.h>
 #include <simulator/msgs/pid_debug.pb.h>
 #include <lib/Time.h>
+#include <common/commanduino/Command.h>
 #include "SimMouse.h"
 
 SimMouse *SimMouse::instance = nullptr;
@@ -87,8 +88,11 @@ void SimMouse::run(double dt_s) {
   cmd_pub.Publish(cmd);
 
   smartmouse::msgs::PIDDebug pid;
+
   auto stamp = pid.mutable_stamp();
-  *stamp = Time::GetWallTime().toIgnMsg();
+  unsigned long t_ms = Command::getTimerImplementation()->programTimeMs();
+  stamp->set_sec(t_ms / 1000);
+  stamp->set_nsec((t_ms % 1000) * 1000);
   pid.set_left_mps_setpoint(smartmouse::kc::radToMeters(kinematic_controller.left_motor.setpoint_rps));
   pid.set_left_mps_actual(smartmouse::kc::radToMeters(kinematic_controller.left_motor.velocity_rps));
   pid.set_right_mps_setpoint(smartmouse::kc::radToMeters(kinematic_controller.right_motor.setpoint_rps));

@@ -7,6 +7,7 @@
 
 #include <sim/simulator/lib/widgets/AbstractTab.h>
 #include <sim/simulator/msgs/pid_debug.pb.h>
+#include <qwt_scale_draw.h>
 
 class PIDSeriesData : public QwtArraySeriesData<QPointF> {
  public:
@@ -28,6 +29,12 @@ class PIDWidget : public QwtPlot, public AbstractTab {
   const QString getTabName() override;
 
   void PIDCallback(const smartmouse::msgs::PIDDebug &msg);
+
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "NotImplementedFunctions"
+ signals:
+  void Replot();
+#pragma clang diagnostic pop
 
  private:
   ignition::transport::Node node_;

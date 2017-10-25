@@ -1,6 +1,7 @@
 #include <sim/simulator/lib/widgets/PIDWidget.h>
 #include <sim/simulator/lib/common/TopicNames.h>
 #include <msgs/msgs.h>
+#include <qwt_abstract_scale_draw.h>
 
 PIDWidget::PIDWidget() : capacity_(1000) {
   left_setpoint_ = new QwtPlotCurve("left setpoint");
@@ -27,7 +28,13 @@ PIDWidget::PIDWidget() : capacity_(1000) {
   right_setpoint_->setPen(QPen(Qt::green));
   right_actual_->setPen(QPen(Qt::yellow));
 
+  this->axisScaleDraw(QwtPlot::xBottom)->enableComponent(QwtAbstractScaleDraw::Labels, false);
+  this->setAxisTitle(QwtPlot::xBottom, "Time (seconds)");
+  this->setAxisTitle(QwtPlot::yLeft, "Speed ms<sup>-1</sup>");
+
   this->node_.Subscribe(TopicNames::kPID, &PIDWidget::PIDCallback, this);
+
+  connect(this, &PIDWidget::Replot, this, &PIDWidget::replot);
 }
 
 const QString PIDWidget::getTabName() {
@@ -36,18 +43,21 @@ const QString PIDWidget::getTabName() {
 
 void PIDWidget::PIDCallback(const smartmouse::msgs::PIDDebug &msg) {
   double t = smartmouse::msgs::ConvertSec(msg.stamp());
-  left_setpoint_data_->append(t, msg.left_mps_setpoint());
-  left_actual_data_->append(t, msg.left_mps_actual());
-  right_setpoint_data_->append(t, msg.right_mps_setpoint());
-  right_actual_data_->append(t, msg.right_mps_actual());
+  double x = ((float) rand()) / RAND_MAX;
+  double y = ((float) rand()) / RAND_MAX;
+  left_setpoint_data_->append(x, y);
+//  left_actual_data_->append(t, msg.left_mps_actual());
+//  right_setpoint_data_->append(t, msg.right_mps_setpoint());
+//  right_actual_data_->append(t, msg.right_mps_actual());
 
-  replot();
+  emit Replot();
 }
 
 PIDSeriesData::PIDSeriesData(unsigned int capacity) : capacity_(capacity), num_points_to_remove_(1) {}
 
 QRectF PIDSeriesData::boundingRect() const {
-  return d_boundingRect;
+//  return d_boundingRect;
+  return QRectF(0, 0, 1, 1);
 }
 
 void PIDSeriesData::append(double x, double y) {
@@ -55,7 +65,10 @@ void PIDSeriesData::append(double x, double y) {
   d_samples.append(point);
 
   if (this->d_samples.size() > capacity_) {
-    this->d_samples.remove(0, num_points_to_remove_);
+    QPointF removed_pt = this->d_samples.takeAt(0);
+
+    // shrink bounding rect
+    d_boundingRect.setLeft(removed_pt.x());
   }
 
   if (this->d_samples.size() == 1) {
