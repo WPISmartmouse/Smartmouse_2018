@@ -145,11 +145,11 @@ RobotDescription Convert(std::ifstream &fs) {
 }
 
 double ConvertSec(ignition::msgs::Time time) {
-  return time.sec() + time.nsec() / 1000000000ul;
+  return time.sec() + (double)(time.nsec()) / 1e9;
 }
 
 unsigned long ConvertMSec(ignition::msgs::Time time) {
-  return time.sec() * 1000ul + time.nsec() / 1000000;
+  return time.sec() * 1000ul + time.nsec() / 1000000ul;
 }
 
 void Convert(smartmouse::msgs::Maze maze, maze_walls_t &maze_lines) {

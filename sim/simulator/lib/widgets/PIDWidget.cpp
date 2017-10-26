@@ -1,9 +1,8 @@
 #include <sim/simulator/lib/widgets/PIDWidget.h>
 #include <sim/simulator/lib/common/TopicNames.h>
 #include <msgs/msgs.h>
-#include <qwt_abstract_scale_draw.h>
 
-PIDWidget::PIDWidget() : capacity_(1000) {
+PIDWidget::PIDWidget() : capacity_(100) {
   left_setpoint_ = new QwtPlotCurve("left setpoint");
   left_actual_ = new QwtPlotCurve("left actual");
   right_setpoint_ = new QwtPlotCurve("right setpoint");
@@ -42,13 +41,16 @@ const QString PIDWidget::getTabName() {
 }
 
 void PIDWidget::PIDCallback(const smartmouse::msgs::PIDDebug &msg) {
+  static int i = 0;
   double t = smartmouse::msgs::ConvertSec(msg.stamp());
   double x = ((float) rand()) / RAND_MAX;
-  double y = ((float) rand()) / RAND_MAX;
-  left_setpoint_data_->append(x, y);
-//  left_actual_data_->append(t, msg.left_mps_actual());
-//  right_setpoint_data_->append(t, msg.right_mps_setpoint());
-//  right_actual_data_->append(t, msg.right_mps_actual());
+  double y = 0.25 * ((float) rand()) / RAND_MAX;
+  printf("%f, %f\n", t, msg.left_mps_actual());
+  right_setpoint_data_->append(t, msg.left_mps_setpoint());
+  left_setpoint_data_->append(t, msg.left_mps_setpoint());
+  left_actual_data_->append(t, msg.left_mps_actual());
+  right_setpoint_data_->append(t, msg.right_mps_setpoint());
+  right_actual_data_->append(t, msg.right_mps_actual());
 
   emit Replot();
 }
@@ -56,8 +58,9 @@ void PIDWidget::PIDCallback(const smartmouse::msgs::PIDDebug &msg) {
 PIDSeriesData::PIDSeriesData(unsigned int capacity) : capacity_(capacity), num_points_to_remove_(1) {}
 
 QRectF PIDSeriesData::boundingRect() const {
-//  return d_boundingRect;
-  return QRectF(0, 0, 1, 1);
+//  std::cout << d_boundingRect.left() << " " << d_boundingRect.top() << " " << d_boundingRect.right() << " "
+//            << d_boundingRect.bottom() << std::endl;
+  return d_boundingRect;
 }
 
 void PIDSeriesData::append(double x, double y) {
@@ -68,7 +71,7 @@ void PIDSeriesData::append(double x, double y) {
     QPointF removed_pt = this->d_samples.takeAt(0);
 
     // shrink bounding rect
-    d_boundingRect.setLeft(removed_pt.x());
+     d_boundingRect.setLeft(removed_pt.x());
   }
 
   if (this->d_samples.size() == 1) {
