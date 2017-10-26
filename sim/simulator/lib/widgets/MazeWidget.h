@@ -24,7 +24,7 @@ class MazeWidget : public QWidget, public AbstractTab {
 
   void paintEvent(QPaintEvent *event);
 
-  const QString getTabName() override;
+  const QString GetTabName() override;
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "NotImplementedFunctions"

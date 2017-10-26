@@ -12,7 +12,7 @@ StateWidget::StateWidget() : AbstractTab(), ui_(new Ui::StateWidget) {
   ui_->setupUi(this);
 
   pid_widget_ = new PIDWidget();
-  ui_->charts_tabs->addTab(pid_widget_, pid_widget_->getTabName());
+  ui_->charts_tabs->addTab(pid_widget_, pid_widget_->GetTabName());
 
   this->node_.Subscribe(TopicNames::kRobotSimState, &StateWidget::StateCallback, this);
   this->node_.Subscribe(TopicNames::kRobotCommand, &StateWidget::RobotCommandCallback, this);
@@ -78,6 +78,6 @@ void StateWidget::RobotCommandCallback(const smartmouse::msgs::RobotCommand &msg
   this->SetRightForce(QString::asprintf("%3i / 255", msg.right().abstract_force()));
 }
 
-const QString StateWidget::getTabName() {
+const QString StateWidget::GetTabName() {
   return QString("State Widget");
 }

@@ -67,5 +67,5 @@ inline void wrapAngleRadInPlace(double *angle_rad)
   *angle_rad = MyMod(*angle_rad + M_PI, 2*M_PI) - M_PI;
 }
 
-}
-}
+} // math
+} // smartmouse

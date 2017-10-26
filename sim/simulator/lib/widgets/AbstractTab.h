@@ -4,6 +4,6 @@
 
 class AbstractTab {
 
-  virtual const QString getTabName() = 0;
+  virtual const QString GetTabName() = 0;
 
 };

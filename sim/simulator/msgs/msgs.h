@@ -25,6 +25,8 @@ double ConvertSec(ignition::msgs::Time time);
 
 unsigned long ConvertMSec(ignition::msgs::Time time);
 
+ignition::msgs::Time Convert(int time_millis);
+
 std::tuple<double, double, double, double> WallToCoordinates(smartmouse::msgs::Wall wall);
 
 }

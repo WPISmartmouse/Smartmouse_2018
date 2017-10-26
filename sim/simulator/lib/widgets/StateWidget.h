@@ -26,7 +26,7 @@ class StateWidget : public QWidget, public AbstractTab {
  public:
   StateWidget();
 
-  const QString getTabName() override;
+  const QString GetTabName() override;
 
  signals:
 

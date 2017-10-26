@@ -8,6 +8,7 @@
 #include <sim/simulator/lib/widgets/AbstractTab.h>
 #include <sim/simulator/msgs/pid_debug.pb.h>
 #include <qwt_scale_draw.h>
+#include <QtWidgets/QPushButton>
 
 class PIDSeriesData : public QwtArraySeriesData<QPointF> {
  public:
@@ -15,20 +16,23 @@ class PIDSeriesData : public QwtArraySeriesData<QPointF> {
 
   virtual QRectF boundingRect() const override;
 
-  void append(double x, double y);
+  void Append(double x, double y);
+  void Clear();
   unsigned int capacity_;
   int num_points_to_remove_;
 };
 
-class PIDWidget : public QwtPlot, public AbstractTab {
+class PIDWidget : public QWidget, public AbstractTab {
   Q_OBJECT
 
  public:
   PIDWidget();
 
-  const QString getTabName() override;
+  const QString GetTabName() override;
 
   void PIDCallback(const smartmouse::msgs::PIDDebug &msg);
+
+  void Clear();
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "NotImplementedFunctions"
@@ -38,6 +42,8 @@ class PIDWidget : public QwtPlot, public AbstractTab {
 
  private:
   ignition::transport::Node node_;
+  QPushButton *clear_button_;
+  QwtPlot *plot_;
   QwtPlotCurve *left_setpoint_;
   QwtPlotCurve *left_actual_;
   QwtPlotCurve *right_setpoint_;

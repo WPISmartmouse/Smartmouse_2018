@@ -140,7 +140,7 @@ void MazeWidget::PaintWalls(QPainter &painter, QTransform tf) {
   }
 }
 
-const QString MazeWidget::getTabName() {
+const QString MazeWidget::GetTabName() {
   return QString("Maze View");
 }
 

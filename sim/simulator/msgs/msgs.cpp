@@ -212,5 +212,13 @@ std::tuple<double, double, double, double> WallToCoordinates(smartmouse::msgs::W
   return std::tuple<double, double, double, double>{c1, r1, c2, r2};
 }
 
+ignition::msgs::Time Convert(int time_millis) {
+  ignition::msgs::Time t;
+  t.set_sec(time_millis / 1000);
+  t.set_nsec((time_millis % 1000000) * 1000000);
+
+  return t;
+}
+
 }
 }

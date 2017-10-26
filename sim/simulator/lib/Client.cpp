@@ -216,7 +216,7 @@ void Client::LoadDefaultMaze() {
 
 void Client::ConfigureGui() {
   maze_widget_ = new MazeWidget();
-  ui_->gui_tabs->addTab(maze_widget_, maze_widget_->getTabName());
+  ui_->gui_tabs->addTab(maze_widget_, maze_widget_->GetTabName());
   state_widget_ = new StateWidget();
   ui_->main_widget->layout()->addWidget(state_widget_);
   ui_->physics_tab->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Expanding);

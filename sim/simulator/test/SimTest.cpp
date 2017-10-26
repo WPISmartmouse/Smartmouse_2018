@@ -11,6 +11,12 @@
 #include <msgs/world_statistics.pb.h>
 #include <lib/common/RayTracing.h>
 
+TEST(MsgsTest, ConvertMillis) {
+  ignition::msgs::Time t = smartmouse::msgs::Convert(10);
+  EXPECT_EQ(t.sec(), 0);
+  EXPECT_EQ(t.nsec(), 10000000);
+}
+
 TEST(MsgsTest, ConvertTime) {
   ignition::msgs::Time t;
   t.set_sec(0);

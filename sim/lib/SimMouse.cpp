@@ -2,6 +2,8 @@
 #include <simulator/msgs/pid_debug.pb.h>
 #include <lib/Time.h>
 #include <common/commanduino/Command.h>
+#include <common/math/math.h>
+#include <simulator/msgs/msgs.h>
 #include "SimMouse.h"
 
 SimMouse *SimMouse::instance = nullptr;
@@ -34,6 +36,7 @@ SensorReading SimMouse::checkWalls() {
 GlobalPose SimMouse::getGlobalPose() {
   return kinematic_controller.getGlobalPose();
 }
+
 LocalPose SimMouse::getLocalPose() {
   return kinematic_controller.getLocalPose();
 }
@@ -83,16 +86,15 @@ void SimMouse::run(double dt_s) {
   col = kinematic_controller.col;
 
   smartmouse::msgs::RobotCommand cmd;
-  cmd.mutable_left()->set_abstract_force(abstract_left_force);
-  cmd.mutable_right()->set_abstract_force(abstract_right_force);
+  cmd.mutable_left()->set_abstract_force((int) abstract_left_force);
+  cmd.mutable_right()->set_abstract_force((int) abstract_right_force);
   cmd_pub.Publish(cmd);
 
   smartmouse::msgs::PIDDebug pid;
 
   auto stamp = pid.mutable_stamp();
   unsigned long t_ms = Command::getTimerImplementation()->programTimeMs();
-  stamp->set_sec(t_ms / 1000);
-  stamp->set_nsec((t_ms % 1000) * 1000);
+  *stamp = smartmouse::msgs::Convert((int) t_ms);
   pid.set_left_mps_setpoint(smartmouse::kc::radToMeters(kinematic_controller.left_motor.setpoint_rps));
   pid.set_left_mps_actual(smartmouse::kc::radToMeters(kinematic_controller.left_motor.velocity_rps));
   pid.set_right_mps_setpoint(smartmouse::kc::radToMeters(kinematic_controller.right_motor.setpoint_rps));
