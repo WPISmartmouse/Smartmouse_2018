@@ -83,9 +83,9 @@ void ArcTurn::execute() {
   double slow_speed = SLOW_ARC_SPEED * ((corr * kp_turn) + 1);
 
   if (right_of_dir(curDir) == dir) {
-    mouse->setSpeed(fast_speed, slow_speed);
+    mouse->setSpeedCps(fast_speed, slow_speed);
   } else {
-    mouse->setSpeed(slow_speed, fast_speed);
+    mouse->setSpeedCps(slow_speed, fast_speed);
   }
 }
 

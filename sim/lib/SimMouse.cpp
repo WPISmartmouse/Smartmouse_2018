@@ -102,13 +102,13 @@ void SimMouse::run(double dt_s) {
   pid_pub.Publish(pid);
 }
 
-void SimMouse::setSpeed(double left_wheel_velocity_setpoint_mps, double right_wheel_velocity_setpoint_mps) {
-  kinematic_controller.setSpeedMps(left_wheel_velocity_setpoint_mps, right_wheel_velocity_setpoint_mps);
+void SimMouse::setSpeedCps(double left_wheel_velocity_setpoint_cps, double right_wheel_velocity_setpoint_cps) {
+  kinematic_controller.setSpeedCps(left_wheel_velocity_setpoint_cps, right_wheel_velocity_setpoint_cps);
 }
 
 void SimMouse::simInit() {
   kinematic_controller.setParams(0, 0, 0, 0, 0);
-  kinematic_controller.setAccelerationMpss(10);
+  kinematic_controller.setAccelerationCpss(10);
 
   // we start in the middle of the first square
   resetToStartPose();

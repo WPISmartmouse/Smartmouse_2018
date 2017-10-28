@@ -4,7 +4,7 @@ Finish::Finish(AbstractMaze *maze) : Command("finish"), maze(maze), mouse(RealMo
 }
 
 void Finish::initialize() {
-  mouse->setSpeed(0, 0);
+  mouse->setSpeedCps(0, 0);
   setTimeout(2000);
   t = getTime();
   pin_id = RealMouse::LED_1;

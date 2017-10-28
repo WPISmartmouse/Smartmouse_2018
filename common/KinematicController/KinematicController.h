@@ -65,9 +65,9 @@ public:
 
   std::pair<double, double> run(double dt_s, double left_angle_rad, double right_angle_rad, RangeData range_data);
 
-  void setAccelerationMpss(double acceleration_mpss);
+  void setAccelerationCpss(double acceleration_mpss);
 
-  void setSpeedMps(double left_setpoint_mps, double right_setpoint_mps);
+  void setSpeedCps(double left_setpoint_mps, double right_setpoint_mps);
 
   static const double kPWall;
   static const double kDWall;

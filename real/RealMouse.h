@@ -67,7 +67,7 @@ public:
 
   void run(double dt_s);
 
-  void setSpeed(double l_mps, double r_mps);
+  void setSpeedCps(double l_mps, double r_mps);
 
   /** runs setup things like pin initializes */
   void setup();

@@ -8,7 +8,7 @@ RegulatedMotor::RegulatedMotor()
       kI(0.00),
       kD(0.0),
       ff_offset(0),
-      ff_scale(0),
+      ff_scale(4.83),
       int_cap(0),
       initialized(false),
       abstract_force(0),
@@ -53,9 +53,9 @@ double RegulatedMotor::runPid(double dt_s, double angle_rad) {
     // this is horrible and hacky
     // instead, we can use our model model to solve for the theoretical feed forward constant
     if (regulated_setpoint_rps < 0) {
-      feed_forward = smartmouse::kc::radToMeters(regulated_setpoint_rps) * ff_scale - ff_offset;
+      feed_forward = -regulated_setpoint_rps * ff_scale - ff_offset;
     } else {
-      feed_forward = smartmouse::kc::radToMeters(regulated_setpoint_rps) * ff_scale + ff_offset;
+      feed_forward = regulated_setpoint_rps * ff_scale + ff_offset;
     }
     abstract_force = (feed_forward) + (error * kP) + (integral * kI) + (smooth_derivative * kD);
   }
@@ -78,11 +78,11 @@ double RegulatedMotor::runPid(double dt_s, double angle_rad) {
   return abstract_force;
 }
 
-void RegulatedMotor::setAcceleration(double acceleration_cellpss) {
+void RegulatedMotor::setAccelerationCpss(double acceleration_cellpss) {
   this->acceleration_cellpss = smartmouse::kc::cellsToRad(acceleration_cellpss);
 }
 
-void RegulatedMotor::setSetpoint(double setpoint_cups) {
+void RegulatedMotor::setSetpointCps(double setpoint_cups) {
   double s = 0;
   if (setpoint_cups > 0) {
     s = fmax(fmin(setpoint_cups, smartmouse::kc::MAX_SPEED_CUPS), smartmouse::kc::MIN_SPEED_CUPS);

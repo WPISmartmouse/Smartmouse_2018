@@ -272,16 +272,16 @@ std::tuple<double, double, bool> KinematicController::estimate_pose(RangeData ra
   return newest_estimate;
 };
 
-void KinematicController::setAccelerationMpss(double acceleration_mpss) {
-  this->acceleration_cellpss = acceleration_mpss;
-  left_motor.setAcceleration(acceleration_mpss);
-  right_motor.setAcceleration(acceleration_mpss);
+void KinematicController::setAccelerationCpss(double acceleration_cpss) {
+  this->acceleration_cellpss = acceleration_cpss;
+  left_motor.setAccelerationCpss(acceleration_cpss);
+  right_motor.setAccelerationCpss(acceleration_cpss);
 }
 
-void KinematicController::setSpeedMps(double left_setpoint_mps,
-                                      double right_setpoint_mps) {
-  left_motor.setSetpoint(left_setpoint_mps);
-  right_motor.setSetpoint(right_setpoint_mps);
+void KinematicController::setSpeedCps(double left_setpoint_cps,
+                                      double right_setpoint_cps) {
+  left_motor.setSetpointCps(left_setpoint_cps);
+  right_motor.setSetpointCps(right_setpoint_cps);
 }
 
 void KinematicController::start(GlobalPose start_pose, double goalDisp, double v_final) {

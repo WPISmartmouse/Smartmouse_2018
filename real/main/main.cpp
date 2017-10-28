@@ -68,7 +68,7 @@ void loop() {
   if (!done) {
     done = scheduler->run();
   } else {
-    mouse->setSpeed(0, 0);
+    mouse->setSpeedCps(0, 0);
     digitalWrite(RealMouse::SYS_LED, 1);
   }
   last_t = now;

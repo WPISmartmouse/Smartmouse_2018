@@ -14,7 +14,7 @@ void TurnInPlace::initialize() {
 void TurnInPlace::execute() {
   double s;
   s = dYaw * kP;
-  mouse->setSpeed(-s, s);
+  mouse->setSpeedCps(-s, s);
 }
 
 bool TurnInPlace::isFinished() {

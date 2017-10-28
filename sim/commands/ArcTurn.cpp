@@ -98,9 +98,9 @@ void ArcTurn::execute() {
   double slow_speed = SLOW_ARC_SPEED*((corr*5)+1);
 
   if (right_of_dir(mouse->getDir()) == dir ){
-    mouse->setSpeed(fast_speed, slow_speed);
+    mouse->setSpeedCps(fast_speed, slow_speed);
   } else {
-    mouse->setSpeed(slow_speed, fast_speed);
+    mouse->setSpeedCps(slow_speed, fast_speed);
   }
   // this allows us to use that
   if (fabs(dYaw) < 0.1 && mouse->kinematic_controller.enable_sensor_pose_estimate) {

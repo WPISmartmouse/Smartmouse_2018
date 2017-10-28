@@ -5,13 +5,19 @@
 #include <sim/lib/SimTimer.h>
 #include <sim/simulator/lib/common/TopicNames.h>
 #include <sim/simulator/msgs/robot_command.pb.h>
-#include <common/argparse/argparse.hpp>
 #include <simulator/msgs/pid_debug.pb.h>
+
+SimMouse *mouse;
+
+void callback(const ignition::msgs::Vector2d &msg){
+  mouse->setSpeedCps(msg.x(), msg.y());
+  std::cout << msg.x() << ", " << msg.y() << std::endl;
+};
 
 int main(int argc, const char **argv) {
   SimTimer timer;
   Command::setTimerImplementation(&timer);
-  SimMouse *mouse = SimMouse::inst();
+  mouse = SimMouse::inst();
 
   // Create our node for communication
   bool success = mouse->node.Subscribe(TopicNames::kWorldStatistics, &SimTimer::worldStatsCallback, &timer);
@@ -26,6 +32,13 @@ int main(int argc, const char **argv) {
     return EXIT_FAILURE;
   }
 
+  ignition::transport::Node pid_sub_node;
+  success = pid_sub_node.Subscribe("speeds_cps", &callback);
+  if (!success) {
+    print("Failed to subscribe to pid test\n");
+    return EXIT_FAILURE;
+  }
+
   mouse->cmd_pub = mouse->node.Advertise<smartmouse::msgs::RobotCommand>(TopicNames::kRobotCommand);
   mouse->pid_pub = mouse->node.Advertise<smartmouse::msgs::PIDDebug>(TopicNames::kPID);
 
@@ -34,51 +47,18 @@ int main(int argc, const char **argv) {
 
   mouse->simInit();
 
-  const unsigned long ms_per_setpoint = 2000;
-  for (double i = 0; i < smartmouse::kc::MAX_HARDWARE_SPEED_MPS; i += 0.1) {
-    std::cout << "Setpoint: " << i << std::endl;
-    mouse->setSpeed(i, 0.25);
+  unsigned long last_t_ms;
+  bool done = false;
+  while (!done) {
+    unsigned long now_ms = timer.programTimeMs();
+    double dt_s = (now_ms - last_t_ms) / 1000.0;
 
-    unsigned long start_ms = timer.programTimeMs();
-    unsigned long last_t_ms = timer.programTimeMs();
-    unsigned long now_ms = start_ms;
+    if (dt_s < 0.01) {
+      continue;
+    }
 
-    do {
-      now_ms = timer.programTimeMs();
-      double dt_s = (now_ms - last_t_ms) / 1000.0;
-
-      if (dt_s < 0.01) {
-        continue;
-      }
-
-      mouse->run(dt_s);
-
-      last_t_ms = now_ms;
-    } while (now_ms - start_ms < ms_per_setpoint);
-
-  }
-
-  for (double i = smartmouse::kc::MAX_HARDWARE_SPEED_MPS; i >= 0; i -= 0.1) {
-    std::cout << "Setpoint: " << i << std::endl;
-    mouse->setSpeed(i, 0.25);
-
-    unsigned long start_ms = timer.programTimeMs();
-    unsigned long last_t_ms = timer.programTimeMs();
-    unsigned long now_ms = start_ms;
-
-    do {
-      now_ms = timer.programTimeMs();
-      double dt_s = (now_ms - last_t_ms) / 1000.0;
-
-      if (dt_s < 0.01) {
-        continue;
-      }
-
-      mouse->run(dt_s);
-
-      last_t_ms = now_ms;
-    } while (now_ms - start_ms < ms_per_setpoint);
-
+    mouse->run(dt_s);
+    last_t_ms = now_ms;
   }
 }
 

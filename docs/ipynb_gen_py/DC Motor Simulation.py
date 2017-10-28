@@ -89,7 +89,7 @@ plt.xlabel("Time (seconds)")
 plt.show()
 
 
-# In[27]:
+# In[26]:
 
 speeds = []
 voltages = np.linspace(0, 5, 255)
@@ -98,11 +98,32 @@ for v in voltages:
         return v
     speed_mps = simulate(vfunc, J=0.00005, b=0.0004, K=0.01, R=2.5, L=0.1)[1][-1] * 0.0145
     speeds.append(speed_mps)
+    
+m = (speeds[1]-speeds[0])/(voltages[1]-voltages[0])
+b = speeds[0]
 
-plt.plot(speeds, voltages)
+print("slope: {:0.5f}, intercept: {:0.5f}".format(m, b))
+
+plt.plot(voltages, speeds)
 plt.xlabel("Voltage")
 plt.ylabel("Steady State Speed (m/s)")
 plt.show()
+
+
+# we can use the slope of this line as our feed forward slope
+# We just need to convert from $\frac{m*s^{-1}}{v}$ to $\frac{f}{rad*s^{-1}}$
+# 
+# $$ \frac{m*s^{-1}}{\text{volts}}*\frac{5\text{ volts}}{255\text{ abstract force}}*\frac{\text{radians}}{0.0145\text{ meters}} $$
+# 
+# The invert this value.
+
+# In[30]:
+
+m_ = 1 / (m * 5.0 / 255.0 / 0.0125)
+print("ff slope in the correct units is: ", m_)
+
+v = 0.5 / 0.0145
+print("To reach 0.5 m/s = {:0.5f} rad/s, our force should be {:0.5f} ".format(v, v * m_))
 
 
 # In[ ]:

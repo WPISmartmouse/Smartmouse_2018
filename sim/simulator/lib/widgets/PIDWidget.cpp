@@ -119,9 +119,7 @@ void PIDSeriesData::Append(double x, double y) {
 
   if (this->d_samples.size() > (int) capacity_) {
     QPointF removed_pt;
-    for (int i = 0; i < 10; i++) {
-      removed_pt = this->d_samples.takeAt(0);
-    }
+    removed_pt = this->d_samples.takeAt(0);
 
     // shrink bounding rect
     d_boundingRect.setLeft(removed_pt.x());

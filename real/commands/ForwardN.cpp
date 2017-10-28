@@ -15,7 +15,7 @@ void ForwardN::initialize() {
 void ForwardN::execute() {
   double l, r;
   std::tie(l, r) = mouse->kinematic_controller.compute_wheel_velocities(this->mouse);
-  mouse->setSpeed(l, r);
+  mouse->setSpeedCps(l, r);
 }
 
 bool ForwardN::isFinished() {

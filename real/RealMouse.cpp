@@ -154,7 +154,7 @@ void RealMouse::setup() {
   left_encoder.init(ENCODER_LEFT_A, ENCODER_LEFT_B);
   right_encoder.init(ENCODER_RIGHT_A, ENCODER_RIGHT_B);
 
-  kinematic_controller.setAccelerationMpss(10);
+  kinematic_controller.setAccelerationCpss(10);
 
   resetToStartPose();
 
@@ -175,6 +175,6 @@ void RealMouse::resetToStartPose() {
   kinematic_controller.reset_yaw_to(0.0);
 }
 
-void RealMouse::setSpeed(double l_mps, double r_mps) {
-  kinematic_controller.setSpeedMps(l_mps, r_mps);
+void RealMouse::setSpeedCps(double l_cps, double r_cps) {
+  kinematic_controller.setSpeedCps(l_cps, r_cps);
 }

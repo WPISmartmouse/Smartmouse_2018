@@ -28,7 +28,7 @@ public:
 
   void run(double dt_s);
 
-  void setSpeed(double left, double right);
+  void setSpeedCps(double left, double right);
 
   void simInit();
 
