@@ -27,10 +27,9 @@ public:
 
   bool initialized = false;
   double abstract_force;
-  double acceleration_cellpss;
+  double acceleration_rpss;
   double derivative;
   double error;
-  double estimated_velocity_rps;
   double feed_forward;
   double integral;
   double last_angle_rad;

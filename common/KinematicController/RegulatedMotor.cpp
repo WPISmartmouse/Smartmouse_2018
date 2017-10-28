@@ -12,7 +12,7 @@ RegulatedMotor::RegulatedMotor()
       int_cap(0),
       initialized(false),
       abstract_force(0),
-      acceleration_cellpss(0),
+      acceleration_rpss(0),
       integral(0),
       last_angle_rad(0),
       last_error(0),
@@ -39,8 +39,7 @@ double RegulatedMotor::runPid(double dt_s, double angle_rad) {
     return 0;
   }
 
-  estimated_velocity_rps = (angle_rad - last_angle_rad) / dt_s;
-  velocity_rps = estimated_velocity_rps;
+  velocity_rps = (angle_rad - last_angle_rad) / dt_s;
   error = regulated_setpoint_rps - velocity_rps;
   derivative = (last_velocity_rps - velocity_rps) / dt_s;
   smooth_derivative = 0.80 * smooth_derivative + 0.2 * derivative;
@@ -64,7 +63,7 @@ double RegulatedMotor::runPid(double dt_s, double angle_rad) {
 
   // TODO remove this, since we have acceleration in KC
   // limit the change in setpoint
-  double acc = acceleration_cellpss * dt_s;
+  double acc = acceleration_rpss * dt_s;
   if (regulated_setpoint_rps < setpoint_rps) {
     regulated_setpoint_rps = std::min(regulated_setpoint_rps + acc, setpoint_rps);
   } else if (regulated_setpoint_rps > setpoint_rps) {
@@ -79,7 +78,7 @@ double RegulatedMotor::runPid(double dt_s, double angle_rad) {
 }
 
 void RegulatedMotor::setAccelerationCpss(double acceleration_cellpss) {
-  this->acceleration_cellpss = smartmouse::kc::cellsToRad(acceleration_cellpss);
+  this->acceleration_rpss = smartmouse::kc::cellsToRad(acceleration_cellpss);
 }
 
 void RegulatedMotor::setSetpointCps(double setpoint_cups) {
