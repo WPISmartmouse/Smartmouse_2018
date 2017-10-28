@@ -17,6 +17,7 @@ PIDWidget::PIDWidget() : capacity_(1000) {
   plot_ = new QwtPlot();
 
   clear_button_ = new QPushButton("Clear");
+  clear_button_->setFixedSize(42, 24);
 
   left_setpoint_->setData(left_setpoint_data_);
   left_actual_->setData(left_actual_data_);
@@ -44,7 +45,7 @@ PIDWidget::PIDWidget() : capacity_(1000) {
   layout->addWidget(plot_);
 
   connect(clear_button_, &QPushButton::clicked, this, &PIDWidget::Clear);
-  connect(this, &PIDWidget::Replot, plot_, &QwtPlot::replot);
+  connect(this, &PIDWidget::Replot, plot_, &QwtPlot::replot, Qt::QueuedConnection);
 }
 
 const QString PIDWidget::GetTabName() {
@@ -67,6 +68,7 @@ void PIDWidget::Clear() {
   left_actual_data_->Clear();
   right_setpoint_data_->Clear();
   right_actual_data_->Clear();
+  emit Replot();
 }
 
 PIDSeriesData::PIDSeriesData(unsigned int capacity) : capacity_(capacity), num_points_to_remove_(1) {}

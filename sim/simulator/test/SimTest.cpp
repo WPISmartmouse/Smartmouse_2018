@@ -15,6 +15,18 @@ TEST(MsgsTest, ConvertMillis) {
   ignition::msgs::Time t = smartmouse::msgs::Convert(10);
   EXPECT_EQ(t.sec(), 0);
   EXPECT_EQ(t.nsec(), 10000000);
+
+  t = smartmouse::msgs::Convert(1000);
+  EXPECT_EQ(t.sec(), 1);
+  EXPECT_EQ(t.nsec(), 0);
+
+  t = smartmouse::msgs::Convert(1999);
+  EXPECT_EQ(t.sec(), 1);
+  EXPECT_EQ(t.nsec(), 999000000);
+
+  t = smartmouse::msgs::Convert(123);
+  EXPECT_EQ(t.sec(), 0);
+  EXPECT_EQ(t.nsec(), 123000000);
 }
 
 TEST(MsgsTest, ConvertTime) {
