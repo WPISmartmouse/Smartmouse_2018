@@ -3,7 +3,11 @@
 #include <msgs/msgs.h>
 #include <QtWidgets/QBoxLayout>
 
-PIDWidget::PIDWidget() : capacity_(1000) {
+#include "ui_pidwidget.h"
+
+PIDWidget::PIDWidget() : ui_(new Ui::PIDWidget()), capacity_(1000) {
+  ui_->setupUi(this);
+
   left_setpoint_ = new QwtPlotCurve("left setpoint");
   left_actual_ = new QwtPlotCurve("left actual");
   right_setpoint_ = new QwtPlotCurve("right setpoint");
@@ -16,22 +20,21 @@ PIDWidget::PIDWidget() : capacity_(1000) {
 
   plot_ = new QwtPlot();
 
-  clear_button_ = new QPushButton("Clear");
-  clear_button_->setFixedSize(42, 24);
-
   left_setpoint_->setData(left_setpoint_data_);
   left_actual_->setData(left_actual_data_);
   right_setpoint_->setData(right_setpoint_data_);
   right_actual_->setData(right_actual_data_);
 
+  // order here matters. It determines drawing order
   left_setpoint_->attach(plot_);
-  left_actual_->attach(plot_);
   right_setpoint_->attach(plot_);
+  left_actual_->attach(plot_);
   right_actual_->attach(plot_);
-  left_setpoint_->setPen(QPen(Qt::blue));
-  left_actual_->setPen(QPen(Qt::red));
-  right_setpoint_->setPen(QPen(Qt::green));
-  right_actual_->setPen(QPen(Qt::yellow));
+
+  left_setpoint_->setPen(QPen(QBrush(Qt::black), 1));
+  left_actual_->setPen(QPen(QBrush(Qt::blue), 1));
+  right_setpoint_->setPen(QPen(QBrush(Qt::red), 1));
+  right_actual_->setPen(QPen(QBrush(Qt::green), 1));
 
   plot_->axisScaleDraw(QwtPlot::xBottom)->enableComponent(QwtAbstractScaleDraw::Labels, false);
   plot_->setAxisTitle(QwtPlot::xBottom, "Time (seconds)");
@@ -39,12 +42,13 @@ PIDWidget::PIDWidget() : capacity_(1000) {
 
   this->node_.Subscribe(TopicNames::kPID, &PIDWidget::PIDCallback, this);
 
-  QBoxLayout *layout = new QBoxLayout(QBoxLayout::Direction::TopToBottom);
-  setLayout(layout);
-  layout->addWidget(clear_button_);
-  layout->addWidget(plot_);
+  ui_->master_layout->addWidget(plot_);
 
-  connect(clear_button_, &QPushButton::clicked, this, &PIDWidget::Clear);
+  connect(ui_->clear_button, &QPushButton::clicked, this, &PIDWidget::Clear);
+  connect(ui_->left_checkbox, &QCheckBox::stateChanged, this, &PIDWidget::LeftChecked);
+  connect(ui_->left_setpoint_checkbox, &QCheckBox::stateChanged, this, &PIDWidget::LeftSetpointChecked);
+  connect(ui_->right_checkbox, &QCheckBox::stateChanged, this, &PIDWidget::RightChecked);
+  connect(ui_->right_setpoint_checkbox, &QCheckBox::stateChanged, this, &PIDWidget::RightSetpointChecked);
   connect(this, &PIDWidget::Replot, plot_, &QwtPlot::replot, Qt::QueuedConnection);
 }
 
@@ -69,6 +73,38 @@ void PIDWidget::Clear() {
   right_setpoint_data_->Clear();
   right_actual_data_->Clear();
   emit Replot();
+}
+
+void PIDWidget::LeftChecked() {
+  if (ui_->left_checkbox->isChecked()) {
+    left_actual_->attach(plot_);
+  } else {
+    left_actual_->detach();
+  }
+}
+
+void PIDWidget::LeftSetpointChecked() {
+  if (ui_->left_setpoint_checkbox->isChecked()) {
+    left_setpoint_->attach(plot_);
+  } else {
+    left_setpoint_->detach();
+  }
+}
+
+void PIDWidget::RightChecked() {
+  if (ui_->right_checkbox->isChecked()) {
+    right_actual_->attach(plot_);
+  } else {
+    right_actual_->detach();
+  }
+}
+
+void PIDWidget::RightSetpointChecked() {
+  if (ui_->right_setpoint_checkbox->isChecked()) {
+    right_setpoint_->attach(plot_);
+  } else {
+    right_setpoint_->detach();
+  }
 }
 
 PIDSeriesData::PIDSeriesData(unsigned int capacity) : capacity_(capacity), num_points_to_remove_(1) {}

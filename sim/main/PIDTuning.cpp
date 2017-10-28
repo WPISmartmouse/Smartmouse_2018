@@ -37,7 +37,30 @@ int main(int argc, const char **argv) {
   const unsigned long ms_per_setpoint = 2000;
   for (double i = 0; i < smartmouse::kc::MAX_HARDWARE_SPEED_MPS; i += 0.1) {
     std::cout << "Setpoint: " << i << std::endl;
-    mouse->setSpeed(i, 0);
+    mouse->setSpeed(i, 0.25);
+
+    unsigned long start_ms = timer.programTimeMs();
+    unsigned long last_t_ms = timer.programTimeMs();
+    unsigned long now_ms = start_ms;
+
+    do {
+      now_ms = timer.programTimeMs();
+      double dt_s = (now_ms - last_t_ms) / 1000.0;
+
+      if (dt_s < 0.01) {
+        continue;
+      }
+
+      mouse->run(dt_s);
+
+      last_t_ms = now_ms;
+    } while (now_ms - start_ms < ms_per_setpoint);
+
+  }
+
+  for (double i = smartmouse::kc::MAX_HARDWARE_SPEED_MPS; i >= 0; i -= 0.1) {
+    std::cout << "Setpoint: " << i << std::endl;
+    mouse->setSpeed(i, 0.25);
 
     unsigned long start_ms = timer.programTimeMs();
     unsigned long last_t_ms = timer.programTimeMs();

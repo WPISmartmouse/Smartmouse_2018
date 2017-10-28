@@ -1,12 +1,12 @@
 #pragma once
 
+#include <ignition/transport/Node.hh>
 #include <QtGui/QPainter>
 #include <QLineEdit>
 #include <QTextEdit>
 #include <QScrollArea>
 #include <QtCharts/QChart>
 #include <QtCharts/QChartView>
-#include <ignition/transport/Node.hh>
 #include <QtWidgets/QLabel>
 
 #include <sim/simulator/msgs/maze_location.pb.h>
@@ -14,7 +14,7 @@
 #include <sim/simulator/lib/widgets/AbstractTab.h>
 #include <msgs/world_statistics.pb.h>
 #include <msgs/robot_command.pb.h>
-#include "PIDWidget.h"
+#include <sim/simulator/lib/widgets/PIDWidget.h>
 
 namespace Ui {
 class StateWidget;

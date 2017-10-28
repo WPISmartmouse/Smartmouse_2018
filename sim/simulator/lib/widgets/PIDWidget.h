@@ -10,6 +10,10 @@
 #include <qwt_scale_draw.h>
 #include <QtWidgets/QPushButton>
 
+namespace Ui {
+class PIDWidget;
+}
+
 class PIDSeriesData : public QwtArraySeriesData<QPointF> {
  public:
   PIDSeriesData(unsigned int capacity);
@@ -40,9 +44,15 @@ class PIDWidget : public QWidget, public AbstractTab {
   void Replot();
 #pragma clang diagnostic pop
 
+ private slots:
+  void LeftChecked();
+  void LeftSetpointChecked();
+  void RightChecked();
+  void RightSetpointChecked();
+
  private:
+  Ui::PIDWidget *ui_;
   ignition::transport::Node node_;
-  QPushButton *clear_button_;
   QwtPlot *plot_;
   QwtPlotCurve *left_setpoint_;
   QwtPlotCurve *left_actual_;
@@ -52,6 +62,5 @@ class PIDWidget : public QWidget, public AbstractTab {
   PIDSeriesData *left_actual_data_;
   PIDSeriesData *right_setpoint_data_;
   PIDSeriesData *right_actual_data_;
-  std::list<std::vector<double>> pid_data_;
   const unsigned  int capacity_;
 };

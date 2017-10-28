@@ -1,7 +1,6 @@
 #include <sstream>
 #include <cmath>
 #include <QtWidgets/QHBoxLayout>
-#include <common/math/math.h>
 #include <sim/lib/SimMouse.h>
 #include <sim/simulator/lib/common/TopicNames.h>
 #include <sim/simulator/lib/widgets/StateWidget.h>

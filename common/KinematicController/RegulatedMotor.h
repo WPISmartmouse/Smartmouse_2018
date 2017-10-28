@@ -22,6 +22,7 @@ public:
   double kI;
   double kD;
   double ff_offset;
+  double ff_scale;
   double int_cap;
 
   bool initialized = false;
