@@ -8,7 +8,7 @@ RegulatedMotor::RegulatedMotor()
       kI(0.00),
       kD(0.0),
       ff_offset(0),
-      ff_scale(4.83),
+      ff_scale(5.61),
       int_cap(0),
       initialized(false),
       abstract_force(0),

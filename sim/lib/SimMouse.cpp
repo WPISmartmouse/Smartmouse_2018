@@ -96,6 +96,7 @@ void SimMouse::run(double dt_s) {
   unsigned long t_ms = Command::getTimerImplementation()->programTimeMs();
   *stamp = smartmouse::msgs::Convert((int) t_ms);
   pid.set_left_mps_setpoint(smartmouse::kc::radToMeters(kinematic_controller.left_motor.setpoint_rps));
+  std::cout << smartmouse::kc::radToMeters(kinematic_controller.left_motor.velocity_rps) << std::endl;
   pid.set_left_mps_actual(smartmouse::kc::radToMeters(kinematic_controller.left_motor.velocity_rps));
   pid.set_right_mps_setpoint(smartmouse::kc::radToMeters(kinematic_controller.right_motor.setpoint_rps));
   pid.set_right_mps_actual(smartmouse::kc::radToMeters(kinematic_controller.right_motor.velocity_rps));

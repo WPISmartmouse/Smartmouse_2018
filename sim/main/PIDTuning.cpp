@@ -11,7 +11,6 @@ SimMouse *mouse;
 
 void callback(const ignition::msgs::Vector2d &msg){
   mouse->setSpeedCps(msg.x(), msg.y());
-  std::cout << msg.x() << ", " << msg.y() << std::endl;
 };
 
 int main(int argc, const char **argv) {

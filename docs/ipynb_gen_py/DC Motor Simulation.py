@@ -5,13 +5,13 @@
 
 # Look at the dynamics_model.pdf for the explanation behind this code.
 
-# In[2]:
+# In[1]:
 
 import numpy as np
 import matplotlib.pyplot as plt
 
 
-# In[3]:
+# In[2]:
 
 def simulate(V, J, b, K, R, L, theta_dot=0, i=0):
     # simulate T seconds
@@ -70,7 +70,7 @@ plt.xlabel("Time (seconds)")
 plt.show()
 
 
-# In[4]:
+# In[3]:
 
 ts, theta_dots, currents = simulate(const_V(5), J=0.00005, b=0.0004, K=0.01, R=2.5, L=0.1)
 
@@ -89,7 +89,7 @@ plt.xlabel("Time (seconds)")
 plt.show()
 
 
-# In[26]:
+# In[4]:
 
 speeds = []
 voltages = np.linspace(0, 5, 255)
@@ -98,32 +98,66 @@ for v in voltages:
         return v
     speed_mps = simulate(vfunc, J=0.00005, b=0.0004, K=0.01, R=2.5, L=0.1)[1][-1] * 0.0145
     speeds.append(speed_mps)
+
+plt.plot(speeds, voltages)
+plt.ylabel("Voltage")
+plt.xlabel("Steady State Speed (m/s)")
+plt.title("How to get voltage given speed")
+plt.show()
     
-m = (speeds[1]-speeds[0])/(voltages[1]-voltages[0])
+m = (voltages[1]-voltages[0])/(speeds[1]-speeds[0])
 b = speeds[0]
 
 print("slope: {:0.5f}, intercept: {:0.5f}".format(m, b))
 
-plt.plot(voltages, speeds)
-plt.xlabel("Voltage")
-plt.ylabel("Steady State Speed (m/s)")
-plt.show()
-
 
 # we can use the slope of this line as our feed forward slope
-# We just need to convert from $\frac{m*s^{-1}}{v}$ to $\frac{f}{rad*s^{-1}}$
+# We just need to convert from $\frac{v}{m*s^{-1}}$ to $\frac{f}{rad*s^{-1}}$
 # 
-# $$ \frac{m*s^{-1}}{\text{volts}}*\frac{5\text{ volts}}{255\text{ abstract force}}*\frac{\text{radians}}{0.0145\text{ meters}} $$
+# $$ \frac{\text{volts}}{m*s^{-1}}*\frac{255\text{ abstract force}}{5\text{ volts}}*\frac{0.0145\text{ meters}}{\text{radians}} $$
 # 
 # The invert this value.
 
-# In[30]:
+# In[16]:
 
-m_ = 1 / (m * 5.0 / 255.0 / 0.0125)
-print("ff slope in the correct units is: ", m_)
+m_ = m * 255.0 / 5 * 0.0145
+print("ff slope for going from mps -> volts is : ", m)
+print("ff slope for going from rps -> abstract force is : ", m_)
 
-v = 0.5 / 0.0145
-print("To reach 0.5 m/s = {:0.5f} rad/s, our force should be {:0.5f} ".format(v, v * m_))
+cps = 2.77777
+mps = cps * 0.18
+rps = mps / 0.0145
+v = mps * m_
+
+print("cps", cps)
+print("mps", mps)
+print("rps", rps)
+print("volts", v)
+
+
+# In[14]:
+
+
+cps = 2.77777
+mps = cps * 0.18
+rps = mps / 0.0145
+v = mps * m
+
+print("Desired Speed (cps)", cps)
+print("...           (mps)", mps)
+print("...           (rps)", rps)
+print("Volts required to acheive that speed (volts)", v)
+
+ts, theta_dots, currents = simulate(const_V(v), J=0.00005, b=0.0004, K=0.01, R=2.5, L=0.1)
+
+print("\n\nSimulation result of that voltage")
+plt.figure(figsize=(20,7))
+plt.subplot(121)
+plt.plot(ts, theta_dots * 0.0145)
+plt.title("Speed of realistic motor")
+plt.ylabel("Speed (meter/s)")
+plt.xlabel("Time (seconds)")
+plt.show()
 
 
 # In[ ]:
