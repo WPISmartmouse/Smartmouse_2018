@@ -1,5 +1,7 @@
 QSplitter::handle:horizontal {
     width: 16px;
+    margin-left: 6px;
+    image: url(:/images/vsplitter_handle.png)
 }
 
 QSplitter::handle:vertical {

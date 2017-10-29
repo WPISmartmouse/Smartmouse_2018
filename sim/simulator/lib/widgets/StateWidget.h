@@ -65,4 +65,5 @@ class StateWidget : public QWidget, public AbstractTab {
 
   Ui::StateWidget *ui_;
   PIDWidget *pid_widget_;
+  PIDWidget *wheel_velocity_widget_;
 };

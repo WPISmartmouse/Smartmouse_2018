@@ -35,6 +35,46 @@
         </widget>
        </item>
        <item>
+        <widget class="QCheckBox" name="left_checkbox">
+         <property name="text">
+          <string>Left</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="right_checkbox">
+         <property name="text">
+          <string>Right</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="left_setpoint_checkbox">
+         <property name="text">
+          <string>Left Setpoint</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="right_setpoint_checkbox">
+         <property name="text">
+          <string>Right Setpoint</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
         <spacer name="horizontalSpacer">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -50,48 +90,7 @@
       </layout>
      </item>
      <item>
-      <layout class="QGridLayout" name="checkbox_layout">
-       <item row="1" column="1">
-        <widget class="QCheckBox" name="right_setpoint_checkbox">
-         <property name="text">
-          <string>Right Setpoint</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QCheckBox" name="right_checkbox">
-         <property name="text">
-          <string>Right</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QCheckBox" name="left_setpoint_checkbox">
-         <property name="text">
-          <string>Left Setpoint</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QCheckBox" name="left_checkbox">
-         <property name="text">
-          <string>Left</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-      </layout>
+      <layout class="QGridLayout" name="checkbox_layout"/>
      </item>
      <item>
       <spacer name="verticalSpacer">

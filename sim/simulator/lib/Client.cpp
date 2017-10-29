@@ -217,7 +217,7 @@ void Client::ConfigureGui() {
   maze_widget_ = new MazeWidget();
   ui_->gui_tabs->addTab(maze_widget_, maze_widget_->GetTabName());
   state_widget_ = new StateWidget();
-  ui_->main_widget->layout()->addWidget(state_widget_);
+  ui_->main_splitter->addWidget(state_widget_);
   ui_->physics_tab->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Expanding);
   ui_->physics_tab->setMaximumWidth(300);
 
@@ -265,7 +265,7 @@ void Client::closeEvent(QCloseEvent *event) {
 }
 
 void Client::SaveSettings() {
-  settings_->setValue("gui/tab_splitter", ui_->tab_splitter->saveState());
+  settings_->setValue("gui/main_splitter", ui_->main_splitter->saveState());
   settings_->setValue("gui/info_tabs", ui_->info_tabs->currentIndex());
   settings_->setValue("gui/static_", ui_->static_checkbox->isChecked());
 }
@@ -276,9 +276,9 @@ void Client::RestoreSettings() {
   QCoreApplication::setApplicationName("SmartmouseSim");
   settings_ = new QSettings();
 
-  const QByteArray splitter_state = settings_->value("gui/tab_splitter").toByteArray();
+  const QByteArray splitter_state = settings_->value("gui/main_splitter").toByteArray();
   if (!splitter_state.isEmpty()) {
-    ui_->tab_splitter->restoreState(splitter_state);
+    ui_->main_splitter->restoreState(splitter_state);
   }
 
   const int info_tab_index = settings_->value("gui/info_tabs").toInt();

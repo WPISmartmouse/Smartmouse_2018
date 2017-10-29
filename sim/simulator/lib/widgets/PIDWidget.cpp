@@ -19,6 +19,7 @@ PIDWidget::PIDWidget() : ui_(new Ui::PIDWidget()), capacity_(1000) {
   right_actual_data_ = new PIDSeriesData(capacity_);
 
   plot_ = new QwtPlot();
+  plot_->setMinimumSize(400, 200);
 
   left_setpoint_->setData(left_setpoint_data_);
   left_actual_->setData(left_actual_data_);

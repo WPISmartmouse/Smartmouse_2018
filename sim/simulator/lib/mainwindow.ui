@@ -22,7 +22,7 @@
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <widget class="QSplitter" name="tab_splitter">
+     <widget class="QSplitter" name="main_splitter">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
@@ -158,20 +158,6 @@
            </property>
           </widget>
          </item>
-         <item row="4" column="0">
-          <widget class="QLabel" name="right_force_label">
-           <property name="text">
-            <string>Right Force</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="0">
-          <widget class="QPushButton" name="send_command_button">
-           <property name="text">
-            <string>Send Cmd</string>
-           </property>
-          </widget>
-         </item>
          <item row="3" column="1">
           <widget class="QSpinBox" name="left_f_spinbox">
            <property name="minimum">
@@ -182,6 +168,13 @@
            </property>
            <property name="singleStep">
             <number>5</number>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="right_force_label">
+           <property name="text">
+            <string>Right Force</string>
            </property>
           </widget>
          </item>
@@ -198,17 +191,17 @@
            </property>
           </widget>
          </item>
+         <item row="5" column="0">
+          <widget class="QPushButton" name="send_command_button">
+           <property name="text">
+            <string>Send Cmd</string>
+           </property>
+          </widget>
+         </item>
          <item row="6" column="0">
           <widget class="QLabel" name="teleport_column_label">
            <property name="text">
             <string>Column</string>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="0">
-          <widget class="QLabel" name="teleport_row_label">
-           <property name="text">
-            <string>Row</string>
            </property>
           </widget>
          </item>
@@ -228,6 +221,13 @@
            </property>
           </widget>
          </item>
+         <item row="7" column="0">
+          <widget class="QLabel" name="teleport_row_label">
+           <property name="text">
+            <string>Row</string>
+           </property>
+          </widget>
+         </item>
          <item row="7" column="1">
           <widget class="QDoubleSpinBox" name="teleport_row_spinbox">
            <property name="decimals">
@@ -241,13 +241,6 @@
            </property>
            <property name="singleStep">
             <double>0.012000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item row="9" column="0">
-          <widget class="QPushButton" name="teleport_button">
-           <property name="text">
-            <string>Teleport</string>
            </property>
           </widget>
          </item>
@@ -274,6 +267,13 @@
            </property>
           </widget>
          </item>
+         <item row="9" column="0">
+          <widget class="QPushButton" name="teleport_button">
+           <property name="text">
+            <string>Teleport</string>
+           </property>
+          </widget>
+         </item>
          <item row="10" column="0">
           <widget class="QCheckBox" name="static_checkbox">
            <property name="toolTip">
@@ -281,6 +281,16 @@
            </property>
            <property name="text">
             <string>Static</string>
+           </property>
+          </widget>
+         </item>
+         <item row="11" column="0">
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap>:/images/handle.png/images/vsplitter_handle.png</pixmap>
            </property>
           </widget>
          </item>
