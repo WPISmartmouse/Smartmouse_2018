@@ -51,5 +51,9 @@ constexpr double radToMeters(double x) {
   return x * WHEEL_RAD;
 }
 
+constexpr double radToCell(double x) {
+  return x * WHEEL_RAD / smartmouse::maze::UNIT_DIST_M;
+}
+
 }
 }

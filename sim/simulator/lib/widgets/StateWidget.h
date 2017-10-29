@@ -14,7 +14,8 @@
 #include <sim/simulator/lib/widgets/AbstractTab.h>
 #include <msgs/world_statistics.pb.h>
 #include <msgs/robot_command.pb.h>
-#include <sim/simulator/lib/widgets/PIDWidget.h>
+#include <sim/simulator/lib/widgets/PIDPlotWidget.h>
+#include "WheelVelocityPlotWidget.h"
 
 namespace Ui {
 class StateWidget;
@@ -64,6 +65,6 @@ class StateWidget : public QWidget, public AbstractTab {
   ignition::transport::Node node_;
 
   Ui::StateWidget *ui_;
-  PIDWidget *pid_widget_;
-  PIDWidget *wheel_velocity_widget_;
+  PIDPlotWidget *pid_widget_;
+  WheelVelocityPlotWidget *wheel_velocity_widget_;
 };

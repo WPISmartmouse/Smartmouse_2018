@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>PIDPlotWidget</class>
- <widget class="QWidget" name="PIDPlotWidget">
+ <class>WheelVelocityPlotWidget</class>
+ <widget class="QWidget" name="WheelVelocityPlotWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
+    <width>451</width>
     <height>300</height>
    </rect>
   </property>
@@ -48,26 +48,6 @@
         <widget class="QCheckBox" name="right_checkbox">
          <property name="text">
           <string>Right</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="left_setpoint_checkbox">
-         <property name="text">
-          <string>Left Setpoint</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="right_setpoint_checkbox">
-         <property name="text">
-          <string>Right Setpoint</string>
          </property>
          <property name="checked">
           <bool>true</bool>
