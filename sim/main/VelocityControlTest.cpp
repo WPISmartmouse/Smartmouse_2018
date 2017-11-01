@@ -21,20 +21,20 @@ int main(int argc, const char **argv) {
   // Create our node for communication
   bool success = mouse->node.Subscribe(TopicNames::kWorldStatistics, &SimTimer::worldStatsCallback, &timer);
   if (!success) {
-    print("Failed to subscribe to time_ms\n");
+    print("Failed to subscribe to %s\n", TopicNames::kWorldStatistics);
     return EXIT_FAILURE;
   }
 
   success = mouse->node.Subscribe(TopicNames::kRobotSimState, &SimMouse::robotSimStateCallback, mouse);
   if (!success) {
-    print("Failed to subscribe to state\n");
+    print("Failed to subscribe to %s\n", TopicNames::kRobotSimState);
     return EXIT_FAILURE;
   }
 
   ignition::transport::Node pid_sub_node;
-  success = pid_sub_node.Subscribe("speeds_cps", &callback);
+  success = pid_sub_node.Subscribe(TopicNames::kSpeed, &callback);
   if (!success) {
-    print("Failed to subscribe to speed_cps\n");
+    print("Failed to subscribe to %s\n", TopicNames::kSpeed);
     return EXIT_FAILURE;
   }
 

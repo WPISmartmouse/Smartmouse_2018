@@ -11,4 +11,5 @@ constexpr char kRobotSimState[] = "robot_sim_state";
 constexpr char kMaze[] = "maze";
 constexpr char kRobotDescription[] = "robot_description";
 constexpr char kPID[] = "pid";
+constexpr char kSpeed[] = "speed_cps";
 }
