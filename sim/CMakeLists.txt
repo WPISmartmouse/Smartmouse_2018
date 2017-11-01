@@ -39,7 +39,7 @@ target_link_libraries(sim sim_common sim_common_commands ${IGNITION-TRANSPORT_LI
 #################################
 # actual sim mouse programs
 #################################
-set(SIMS SimSolve SimNavTest PIDTuning)
+set(SIMS SimSolve SimNavTest VelocityControlTest)
 
 foreach (MAIN ${SIMS})
     add_executable(${MAIN} "main/${MAIN}.cpp")
@@ -55,5 +55,5 @@ target_link_libraries(keyboard_teleop sim_common sim ncurses msgs)
 add_executable(joy_teleop ./tools/joystick_teleop.cpp joystick/joystick.cc)
 target_link_libraries(joy_teleop sim_common sim ncurses msgs)
 
-add_executable(pub_data ./tools/pub_data.cpp)
-target_link_libraries(pub_data msgs ${IGNITION-TRANSPORT_LIBRARIES})
+add_executable(pub_speeds tools/pub_speeds.cpp)
+target_link_libraries(pub_speeds msgs ${IGNITION-TRANSPORT_LIBRARIES})

@@ -9,7 +9,6 @@
 #include <QtCharts/QChartView>
 #include <QtWidgets/QLabel>
 
-#include <sim/simulator/msgs/maze_location.pb.h>
 #include <sim/simulator/msgs/robot_sim_state.pb.h>
 #include <sim/simulator/lib/widgets/AbstractTab.h>
 #include <msgs/world_statistics.pb.h>

@@ -3,11 +3,10 @@
 #include <common/core/Flood.h>
 
 #include <sim/lib/SimTimer.h>
-#include <simulator/msgs/maze_location.pb.h>
-#include <simulator/msgs/robot_command.pb.h>
 #include <simulator/lib/common/TopicNames.h>
 #include <sim/lib/SimMouse.h>
-#include <simulator/msgs/pid_debug.pb.h>
+#include <sim/simulator/msgs/pid_debug.pb.h>
+#include <sim/simulator/msgs/robot_command.pb.h>
 
 int main(int argc, char *argv[]) {
   SimTimer timer;
