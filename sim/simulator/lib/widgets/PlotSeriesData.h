@@ -9,6 +9,7 @@
 #include <sim/simulator/msgs/pid_debug.pb.h>
 #include <qwt_scale_draw.h>
 #include <QtWidgets/QPushButton>
+#include <QtCore/QMutex>
 
 namespace Ui {
 class PlotSeriesData;
@@ -22,6 +23,7 @@ class PlotSeriesData : public QwtArraySeriesData<QPointF> {
   PlotSeriesData(std::string label, QColor color=Qt::black, const unsigned int capacity=1000);
 
   virtual QRectF boundingRect() const override;
+  virtual size_t size() const override;
 
   void Append(double x, double y);
   void Clear();
@@ -29,6 +31,7 @@ class PlotSeriesData : public QwtArraySeriesData<QPointF> {
   void Attach(QwtPlot *plot_);
 
  private:
+  QMutex *data_mutex_;
   unsigned int capacity_;
   int num_points_to_remove_;
   QwtPlotCurve *curve;

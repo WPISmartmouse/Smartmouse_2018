@@ -7,11 +7,11 @@
 
 #include "ui_wheelvelocitywidget.h"
 
-WheelVelocityPlotWidget::WheelVelocityPlotWidget() : ui_(new Ui::WheelVelocityPlotWidget()), capacity_(1000) {
+WheelVelocityPlotWidget::WheelVelocityPlotWidget() : ui_(new Ui::WheelVelocityPlotWidget()), capacity_(2000) {
   ui_->setupUi(this);
 
-  left_velocity_ = new PlotSeriesData("Left", Qt::red);
-  right_velocity_ = new PlotSeriesData("Right", Qt::blue);
+  left_velocity_ = new PlotSeriesData("Left", Qt::red, capacity_);
+  right_velocity_ = new PlotSeriesData("Right", Qt::blue, capacity_);
 
   plot_ = new QwtPlot();
   plot_->setMinimumSize(400, 200);

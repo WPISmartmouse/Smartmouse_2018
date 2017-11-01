@@ -34,7 +34,7 @@ int main(int argc, const char **argv) {
   ignition::transport::Node pid_sub_node;
   success = pid_sub_node.Subscribe("speeds_cps", &callback);
   if (!success) {
-    print("Failed to subscribe to pid test\n");
+    print("Failed to subscribe to speed_cps\n");
     return EXIT_FAILURE;
   }
 

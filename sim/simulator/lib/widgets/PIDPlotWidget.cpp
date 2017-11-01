@@ -8,10 +8,10 @@
 PIDPlotWidget::PIDPlotWidget() : ui_(new Ui::PIDPlotWidget()), capacity_(1000) {
   ui_->setupUi(this);
 
-  left_setpoint_ = new PlotSeriesData("Left Setpoint", Qt::black);
-  left_actual_ = new PlotSeriesData("Left Actual", Qt::red);
-  right_setpoint_ = new PlotSeriesData("Right Setpoint", Qt::green);
-  right_actual_ = new PlotSeriesData("Right Actual", Qt::blue);
+  left_setpoint_ = new PlotSeriesData("Left Setpoint", Qt::black, capacity_);
+  left_actual_ = new PlotSeriesData("Left Actual", Qt::red, capacity_);
+  right_setpoint_ = new PlotSeriesData("Right Setpoint", Qt::green, capacity_);
+  right_actual_ = new PlotSeriesData("Right Actual", Qt::blue, capacity_);
 
   plot_ = new QwtPlot();
   plot_->setMinimumSize(400, 200);
