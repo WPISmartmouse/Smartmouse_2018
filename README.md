@@ -39,7 +39,7 @@ You need cmake 3.9.2, protobuf, ignition-transport 3.\*, and Qt 5.9.\*
 **For Ubuntu 16.04**
 
     sudo apt-get install libprotobuf-dev libignition-transport libignition-transport-dev
-    
+
 Qt can be install from the Qt website.
 
 **For Fedora 26**
@@ -56,3 +56,11 @@ Qt can be install from the Qt website.
 #### Running Simulation
 
 TODO
+
+### Running Tests
+
+    cd .sim_build
+    ./common_tests
+    ./sim/simulator/sim_tests
+    cd console
+    ./console_tests

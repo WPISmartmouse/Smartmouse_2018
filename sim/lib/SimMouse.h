@@ -26,8 +26,6 @@ public:
 
   void robotSimStateCallback(const smartmouse::msgs::RobotSimState &msg);
 
-  void pidCallback(const smartmouse::msgs::PID &msg);
-
   void run(double dt_s);
 
   void setSpeedCps(double left, double right);
