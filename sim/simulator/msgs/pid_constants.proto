@@ -1,0 +1,11 @@
+syntax = "proto2";
+
+package smartmouse.msgs;
+
+message PIDConstants {
+    optional double kP = 1;
+    optional double kI = 2;
+    optional double kD = 3;
+    optional double kFFOffset = 4;
+    optional double kFFScale = 5;
+}

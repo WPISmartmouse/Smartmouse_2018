@@ -31,8 +31,14 @@ int main(int argc, const char **argv) {
     return EXIT_FAILURE;
   }
 
+  success = mouse->node.Subscribe(TopicNames::kPIDConstants, &SimMouse::pidConstantsCallback, mouse);
+  if (!success) {
+    print("Failed to subscribe to %s\n", TopicNames::kPIDConstants);
+    return EXIT_FAILURE;
+  }
+
   ignition::transport::Node pid_sub_node;
-  success = pid_sub_node.Subscribe(TopicNames::kPID, &callback);
+  success = pid_sub_node.Subscribe(TopicNames::kPIDDebug, &callback);
   if (!success) {
     print("Failed to subscribe to %s\n", TopicNames::kSpeed);
     return EXIT_FAILURE;
@@ -46,7 +52,7 @@ int main(int argc, const char **argv) {
   }
 
   mouse->cmd_pub = mouse->node.Advertise<smartmouse::msgs::RobotCommand>(TopicNames::kRobotCommand);
-  mouse->pid_pub = mouse->node.Advertise<smartmouse::msgs::PIDDebug>(TopicNames::kPID);
+  mouse->pid_debug_pub = mouse->node.Advertise<smartmouse::msgs::PIDDebug>(TopicNames::kPIDDebug);
 
   // wait for time messages to come
   while (!timer.isTimeReady());

@@ -47,6 +47,8 @@ class Client : public QMainWindow {
   void TimePerStepMsChanged(int step_time_ms);
   void SendRobotCmd();
   void SendTeleportCmd();
+  void PublishPIDConstants();
+  void PublishPIDSetpoints();
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "NotImplementedFunctions"
@@ -74,6 +76,8 @@ class Client : public QMainWindow {
   ignition::transport::Node::Publisher server_control_pub_;
   ignition::transport::Node::Publisher robot_command_pub_;
   ignition::transport::Node::Publisher robot_description_pub_;
+  ignition::transport::Node::Publisher pid_debug_pub_;
+  ignition::transport::Node::Publisher pid_constants_pub_;
   MazeWidget *maze_widget_;
   StateWidget *state_widget_;
   QSettings *settings_;

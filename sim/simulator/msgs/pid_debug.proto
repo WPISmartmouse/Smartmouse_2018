@@ -10,8 +10,4 @@ message PIDDebug {
     optional double left_cps_actual = 3;
     optional double right_cps_setpoint = 4;
     optional double right_cps_actual = 5;
-    optional double kP = 6;
-    optional double kI = 7;
-    optional double kD = 8;
 }
-

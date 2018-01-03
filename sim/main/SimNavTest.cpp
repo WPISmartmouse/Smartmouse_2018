@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
   }
 
   mouse->cmd_pub = mouse->node.Advertise<smartmouse::msgs::RobotCommand>(TopicNames::kRobotCommand);
-  mouse->pid_pub = mouse->node.Advertise<smartmouse::msgs::PIDDebug>(TopicNames::kPID);
+  mouse->pid_debug_pub = mouse->node.Advertise<smartmouse::msgs::PIDDebug>(TopicNames::kPIDDebug);
 
   // wait for time messages to come
   while (!timer.isTimeReady());

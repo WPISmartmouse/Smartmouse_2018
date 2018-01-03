@@ -25,7 +25,7 @@ PIDPlotWidget::PIDPlotWidget() : ui_(new Ui::PIDPlotWidget()), capacity_(1000) {
   plot_->setAxisTitle(QwtPlot::xBottom, "Time (seconds)");
   plot_->setAxisTitle(QwtPlot::yLeft, "Speed cell/second");
 
-  this->node_.Subscribe(TopicNames::kPID, &PIDPlotWidget::PIDCallback, this);
+  this->node_.Subscribe(TopicNames::kPIDDebug, &PIDPlotWidget::PIDCallback, this);
 
   ui_->master_layout->addWidget(plot_);
 

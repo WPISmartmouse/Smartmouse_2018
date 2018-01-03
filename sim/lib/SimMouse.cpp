@@ -70,15 +70,18 @@ void SimMouse::robotSimStateCallback(const smartmouse::msgs::RobotSimState &msg)
   dataCond.notify_all();
 }
 
+void SimMouse::pidConstantsCallback(const smartmouse::msgs::PIDConstants &msg) {
+  kinematic_controller.setParams(msg.kp(), msg.ki(), msg.kd(), msg.kffoffset(), msg.kffscale());
+}
+
 void SimMouse::run(double dt_s) {
   std::unique_lock<std::mutex> lk(dataMutex);
   dataCond.wait(lk);
 
   // handle updating of odometry and PID
-  std::tie(abstract_left_force, abstract_right_force) = kinematic_controller.run(dt_s,
-                                                                                 this->left_wheel_angle_rad,
-                                                                                 this->right_wheel_angle_rad,
-                                                                                 range_data);
+  auto forces = kinematic_controller.run(dt_s, this->left_wheel_angle_rad, this->right_wheel_angle_rad, range_data);
+  abstract_left_force = forces.first;
+  abstract_right_force = forces.second;
 
   // THIS IS SUPER IMPORTANT!
   // update row/col information
@@ -99,7 +102,7 @@ void SimMouse::run(double dt_s) {
   pid.set_left_cps_actual(smartmouse::kc::radToCell(kinematic_controller.left_motor.velocity_rps));
   pid.set_right_cps_setpoint(smartmouse::kc::radToCell(kinematic_controller.right_motor.setpoint_rps));
   pid.set_right_cps_actual(smartmouse::kc::radToCell(kinematic_controller.right_motor.velocity_rps));
-  pid_pub.Publish(pid);
+  pid_debug_pub.Publish(pid);
 }
 
 void SimMouse::setSpeedCps(double left_wheel_velocity_setpoint_cps, double right_wheel_velocity_setpoint_cps) {
@@ -118,8 +121,8 @@ void SimMouse::simInit() {
     std::cerr << "cmd_pub is not valid! Did you forget to Advertise?" << std::endl;
   }
 
-  if (!pid_pub.Valid()) {
-    std::cerr << "pid_pub is not valid! Did you forget to Advertise?" << std::endl;
+  if (!pid_debug_pub.Valid()) {
+    std::cerr << "pid_debug_pub is not valid! Did you forget to Advertise?" << std::endl;
   }
 }
 

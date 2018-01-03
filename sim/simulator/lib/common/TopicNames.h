@@ -10,6 +10,7 @@ constexpr char kGuiActions[] = "gui";
 constexpr char kRobotSimState[] = "robot_sim_state";
 constexpr char kMaze[] = "maze";
 constexpr char kRobotDescription[] = "robot_description";
-constexpr char kPID[] = "pid";
+constexpr char kPIDDebug[] = "pid_debug";
+constexpr char kPIDConstants[] = "pid_constants";
 constexpr char kSpeed[] = "speed_cps";
 }

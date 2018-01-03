@@ -4,9 +4,11 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QSpinBox>
 
+#include <lib/common/TopicNames.h>
 #include <sim/simulator/lib/Server.h>
 #include <sim/simulator/lib/Client.h>
-#include <lib/common/TopicNames.h>
+#include <sim/simulator/msgs/pid_constants.pb.h>
+#include <sim/simulator/msgs/pid_debug.pb.h>
 
 #include "ui_mainwindow.h"
 
@@ -19,6 +21,8 @@ Client::Client(QMainWindow *parent) :
   maze_pub_ = node_.Advertise<smartmouse::msgs::Maze>(TopicNames::kMaze);
   robot_description_pub_ = node_.Advertise<smartmouse::msgs::RobotDescription>(TopicNames::kRobotDescription);
   robot_command_pub_ = node_.Advertise<smartmouse::msgs::RobotCommand>(TopicNames::kRobotCommand);
+  pid_debug_pub_ = node_.Advertise<smartmouse::msgs::PIDDebug>(TopicNames::kRobotCommand);
+  pid_constants_pub_ = node_.Advertise<smartmouse::msgs::PIDConstants>(TopicNames::kPIDConstants);
   node_.Subscribe(TopicNames::kWorldStatistics, &Client::OnWorldStats, this);
   node_.Subscribe(TopicNames::kGuiActions, &Client::OnGuiActions, this);
   node_.Subscribe(TopicNames::kPhysics, &Client::OnPhysics, this);
@@ -213,13 +217,50 @@ void Client::LoadDefaultMaze() {
   }
 }
 
+void Client::SendRobotCmd() {
+  smartmouse::msgs::RobotCommand cmd;
+  auto left = cmd.mutable_left();
+  auto right = cmd.mutable_right();
+  left->set_abstract_force(ui_->left_f_spinbox->value());
+  right->set_abstract_force(ui_->right_f_spinbox->value());
+  robot_command_pub_.Publish(cmd);
+}
+
+void Client::SendTeleportCmd() {
+  smartmouse::msgs::ServerControl cmd;
+  cmd.set_reset_robot(true);
+  cmd.set_reset_col(ui_->teleport_column_spinbox->value());
+  cmd.set_reset_row(ui_->teleport_row_spinbox->value());
+  cmd.set_reset_yaw(ui_->teleport_yaw_spinbox->value());
+  server_control_pub_.Publish(cmd);
+}
+
+void Client::PublishPIDConstants() {
+  smartmouse::msgs::PIDConstants msg;
+  msg.set_kp(ui_->kp_spinbox->value());
+  msg.set_ki(ui_->ki_spinbox->value());
+  msg.set_kd(ui_->kd_spinbox->value());
+  msg.set_kffoffset(ui_->kff_offset_spinbox->value());
+  msg.set_kffscale(ui_->kff_scale_spinbox->value());
+  pid_constants_pub_.Publish(msg);
+}
+
+void Client::PublishPIDSetpoints() {
+  smartmouse::msgs::PIDDebug msg;
+  auto stamp = msg.mutable_stamp();
+  *stamp = Time::GetWallTime().toIgnMsg();
+  msg.set_left_cps_setpoint(ui_->left_setpoint_spinbox->value());
+  msg.set_right_cps_setpoint(ui_->right_setpoint_spinbox->value());
+  pid_debug_pub_.Publish(msg);
+}
+
 void Client::ConfigureGui() {
   maze_widget_ = new MazeWidget();
   ui_->gui_tabs->addTab(maze_widget_, maze_widget_->GetTabName());
   state_widget_ = new StateWidget();
   ui_->main_splitter->addWidget(state_widget_);
-  ui_->physics_tab->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Expanding);
-  ui_->physics_tab->setMaximumWidth(300);
+  ui_->info_tabs->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Expanding);
+  ui_->info_tabs->setMaximumWidth(300);
 
   connect(ui_->load_maze_button, &QPushButton::clicked, this, &Client::LoadNewMaze);
   connect(ui_->load_mouse_button, &QPushButton::clicked, this, &Client::LoadNewMouse);
@@ -252,6 +293,8 @@ void Client::ConfigureGui() {
   QObject::connect(this, &Client::SetTime, ui_->time_value_label, &QLabel::setText);
   connect(ui_->send_command_button, &QPushButton::clicked, this, &Client::SendRobotCmd);
   connect(ui_->teleport_button, &QPushButton::clicked, this, &Client::SendTeleportCmd);
+  connect(ui_->publish_constants_button, &QPushButton::clicked, this, &Client::PublishPIDConstants);
+  connect(ui_->publish_setpoints_button, &QPushButton::clicked, this, &Client::PublishPIDSetpoints);
 
   QFile styleFile(":/style.qss");
   styleFile.open(QFile::ReadOnly);
@@ -293,22 +336,4 @@ void Client::RestoreSettings() {
   LoadDefaultMouse();
 
   ui_->static_checkbox->setChecked(settings_->value("gui/static_").toBool());
-}
-
-void Client::SendRobotCmd() {
-  smartmouse::msgs::RobotCommand cmd;
-  auto left = cmd.mutable_left();
-  auto right = cmd.mutable_right();
-  left->set_abstract_force(ui_->left_f_spinbox->value());
-  right->set_abstract_force(ui_->right_f_spinbox->value());
-  robot_command_pub_.Publish(cmd);
-}
-
-void Client::SendTeleportCmd() {
-  smartmouse::msgs::ServerControl cmd;
-  cmd.set_reset_robot(true);
-  cmd.set_reset_col(ui_->teleport_column_spinbox->value());
-  cmd.set_reset_row(ui_->teleport_row_spinbox->value());
-  cmd.set_reset_yaw(ui_->teleport_yaw_spinbox->value());
-  server_control_pub_.Publish(cmd);
 }

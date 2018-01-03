@@ -8,6 +8,7 @@
 #include <ignition/transport/Node.hh>
 
 #include <sim/simulator/msgs/robot_sim_state.pb.h>
+#include <sim/simulator/msgs/pid_constants.pb.h>
 
 class SimMouse : public Mouse {
 public:
@@ -26,6 +27,8 @@ public:
 
   void robotSimStateCallback(const smartmouse::msgs::RobotSimState &msg);
 
+  void pidConstantsCallback(const smartmouse::msgs::PIDConstants &msg);
+
   void run(double dt_s);
 
   void setSpeedCps(double left, double right);
@@ -33,7 +36,7 @@ public:
   void simInit();
 
   ignition::transport::Node::Publisher cmd_pub;
-  ignition::transport::Node::Publisher pid_pub;
+  ignition::transport::Node::Publisher pid_debug_pub;
   ignition::transport::Node node;
 
   KinematicController kinematic_controller;
