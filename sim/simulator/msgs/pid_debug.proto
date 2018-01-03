@@ -6,9 +6,12 @@ import "ignition/msgs/time.proto";
 
 message PIDDebug {
     optional ignition.msgs.Time stamp = 1;
-    optional double left_mps_setpoint = 2;
-    optional double left_mps_actual = 3;
-    optional double right_mps_setpoint = 4;
-    optional double right_mps_actual = 5;
+    optional double left_cps_setpoint = 2;
+    optional double left_cps_actual = 3;
+    optional double right_cps_setpoint = 4;
+    optional double right_cps_actual = 5;
+    optional double kP = 6;
+    optional double kI = 7;
+    optional double kD = 8;
 }
 

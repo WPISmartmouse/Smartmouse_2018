@@ -32,7 +32,14 @@ int main(int argc, const char **argv) {
   }
 
   ignition::transport::Node pid_sub_node;
-  success = pid_sub_node.Subscribe(TopicNames::kSpeed, &callback);
+  success = pid_sub_node.Subscribe(TopicNames::kPID, &callback);
+  if (!success) {
+    print("Failed to subscribe to %s\n", TopicNames::kSpeed);
+    return EXIT_FAILURE;
+  }
+
+  ignition::transport::Node speed_sub_node;
+  success = speed_sub_node.Subscribe(TopicNames::kSpeed, &callback);
   if (!success) {
     print("Failed to subscribe to %s\n", TopicNames::kSpeed);
     return EXIT_FAILURE;

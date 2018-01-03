@@ -18,8 +18,8 @@ QRectF PlotSeriesData::boundingRect() const {
 void PlotSeriesData::Append(double x, double y) {
   QPointF point(x, y);
 
-  // rate limite the data
-  if (!d_samples.empty() && x - d_samples.back().x() < 0.01) {
+  // rate limit the data to once per 1 millisecond
+  if (!d_samples.empty() && x - d_samples.back().x() < 0.001) {
     return;
   }
 

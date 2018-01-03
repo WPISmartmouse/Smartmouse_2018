@@ -118,7 +118,7 @@ print("slope: {:0.5f}, intercept: {:0.5f}".format(m, b))
 # 
 # The invert this value.
 
-# In[16]:
+# In[5]:
 
 m_ = m * 255.0 / 5 * 0.0145
 print("ff slope for going from mps -> volts is : ", m)
@@ -135,7 +135,7 @@ print("rps", rps)
 print("volts", v)
 
 
-# In[14]:
+# In[8]:
 
 
 cps = 2.77777
@@ -148,7 +148,7 @@ print("...           (mps)", mps)
 print("...           (rps)", rps)
 print("Volts required to acheive that speed (volts)", v)
 
-ts, theta_dots, currents = simulate(const_V(v), J=0.00005, b=0.0004, K=0.01, R=2.5, L=0.1)
+ts, theta_dots, currents = simulate(const_V(v), J=0.0001, b=0.0004, K=0.01, R=2.5, L=0.1)
 
 print("\n\nSimulation result of that voltage")
 plt.figure(figsize=(20,7))

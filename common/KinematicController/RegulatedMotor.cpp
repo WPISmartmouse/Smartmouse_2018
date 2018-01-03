@@ -4,7 +4,7 @@
 #include "RegulatedMotor.h"
 
 RegulatedMotor::RegulatedMotor()
-    : kP(0.0),
+    : kP(1.0),
       kI(0.00),
       kD(0.0),
       ff_offset(0),

@@ -95,10 +95,10 @@ void SimMouse::run(double dt_s) {
   auto stamp = pid.mutable_stamp();
   unsigned long t_ms = Command::getTimerImplementation()->programTimeMs();
   *stamp = smartmouse::msgs::Convert((int) t_ms);
-  pid.set_left_mps_setpoint(smartmouse::kc::radToMeters(kinematic_controller.left_motor.setpoint_rps));
-  pid.set_left_mps_actual(smartmouse::kc::radToMeters(kinematic_controller.left_motor.velocity_rps));
-  pid.set_right_mps_setpoint(smartmouse::kc::radToMeters(kinematic_controller.right_motor.setpoint_rps));
-  pid.set_right_mps_actual(smartmouse::kc::radToMeters(kinematic_controller.right_motor.velocity_rps));
+  pid.set_left_cps_setpoint(smartmouse::kc::radToCell(kinematic_controller.left_motor.setpoint_rps));
+  pid.set_left_cps_actual(smartmouse::kc::radToCell(kinematic_controller.left_motor.velocity_rps));
+  pid.set_right_cps_setpoint(smartmouse::kc::radToCell(kinematic_controller.right_motor.setpoint_rps));
+  pid.set_right_cps_actual(smartmouse::kc::radToCell(kinematic_controller.right_motor.velocity_rps));
   pid_pub.Publish(pid);
 }
 

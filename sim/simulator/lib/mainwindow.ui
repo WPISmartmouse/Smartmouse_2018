@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>769</width>
+    <width>923</width>
     <height>600</height>
    </rect>
   </property>
@@ -34,7 +34,7 @@
         </sizepolicy>
        </property>
        <property name="currentIndex">
-        <number>2</number>
+        <number>3</number>
        </property>
        <property name="movable">
         <bool>true</bool>
@@ -83,6 +83,185 @@
          </item>
         </layout>
        </widget>
+       <widget class="QWidget" name="mouse_tab">
+        <attribute name="title">
+         <string>Mouse</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <item>
+          <widget class="QGroupBox" name="model_group">
+           <property name="title">
+            <string>Model</string>
+           </property>
+           <layout class="QFormLayout" name="formLayout_4">
+            <item row="0" column="0">
+             <widget class="QPushButton" name="load_mouse_button">
+              <property name="text">
+               <string>Load Mouse</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLabel" name="mouse_file_name_label">
+              <property name="text">
+               <string>No Mouse</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QPushButton" name="refresh_mouse_button">
+              <property name="text">
+               <string>Refresh</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="control_group">
+           <property name="title">
+            <string>Control</string>
+           </property>
+           <layout class="QFormLayout" name="formLayout_3">
+            <item row="0" column="0">
+             <widget class="QLabel" name="left_force_lable">
+              <property name="text">
+               <string>Left Force</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QSpinBox" name="left_f_spinbox">
+              <property name="minimum">
+               <number>-255</number>
+              </property>
+              <property name="maximum">
+               <number>255</number>
+              </property>
+              <property name="singleStep">
+               <number>5</number>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="right_force_label">
+              <property name="text">
+               <string>Right Force</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QSpinBox" name="right_f_spinbox">
+              <property name="minimum">
+               <number>-255</number>
+              </property>
+              <property name="maximum">
+               <number>255</number>
+              </property>
+              <property name="singleStep">
+               <number>5</number>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="QPushButton" name="send_command_button">
+              <property name="text">
+               <string>Send Cmd</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0">
+             <widget class="QLabel" name="teleport_column_label">
+              <property name="text">
+               <string>Column</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="1">
+             <widget class="QDoubleSpinBox" name="teleport_column_spinbox">
+              <property name="decimals">
+               <number>5</number>
+              </property>
+              <property name="minimum">
+               <double>-10.000000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>10.000000000000000</double>
+              </property>
+              <property name="singleStep">
+               <double>0.012000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="0">
+             <widget class="QLabel" name="teleport_row_label">
+              <property name="text">
+               <string>Row</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="1">
+             <widget class="QDoubleSpinBox" name="teleport_row_spinbox">
+              <property name="decimals">
+               <number>5</number>
+              </property>
+              <property name="minimum">
+               <double>-10.000000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>10.000000000000000</double>
+              </property>
+              <property name="singleStep">
+               <double>0.012000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="7" column="0">
+             <widget class="QLabel" name="teleport_yaw_label">
+              <property name="text">
+               <string>Yaw</string>
+              </property>
+             </widget>
+            </item>
+            <item row="7" column="1">
+             <widget class="QDoubleSpinBox" name="teleport_yaw_spinbox">
+              <property name="decimals">
+               <number>5</number>
+              </property>
+              <property name="minimum">
+               <double>-3.141590000000000</double>
+              </property>
+              <property name="maximum">
+               <double>3.141590000000000</double>
+              </property>
+              <property name="singleStep">
+               <double>0.100000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="8" column="0">
+             <widget class="QPushButton" name="teleport_button">
+              <property name="text">
+               <string>Teleport</string>
+              </property>
+             </widget>
+            </item>
+            <item row="9" column="0">
+             <widget class="QCheckBox" name="static_checkbox">
+              <property name="toolTip">
+               <string>Wheels will move but the robot will not.</string>
+              </property>
+              <property name="text">
+               <string>Static</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
        <widget class="QWidget" name="maze_tab">
         <attribute name="title">
          <string>Maze</string>
@@ -125,173 +304,111 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="mouse_tab">
+       <widget class="QWidget" name="pid_tab">
         <attribute name="title">
-         <string>Mouse</string>
+         <string>PID Control</string>
         </attribute>
-        <layout class="QFormLayout" name="formLayout_3">
-         <item row="0" column="0">
-          <widget class="QPushButton" name="load_mouse_button">
-           <property name="text">
-            <string>Load Mouse</string>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <widget class="QGroupBox" name="constants_group">
+           <property name="title">
+            <string>Constants</string>
            </property>
+           <layout class="QFormLayout" name="formLayout_5">
+            <item row="5" column="0">
+             <widget class="QPushButton" name="publish_constants_button">
+              <property name="text">
+               <string>Publish</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="kp_label">
+              <property name="text">
+               <string>kP</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QDoubleSpinBox" name="kp_spinbox"/>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="ki_label">
+              <property name="text">
+               <string>kI</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QDoubleSpinBox" name="ki_spinbox"/>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="kd_label">
+              <property name="text">
+               <string>kD</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QDoubleSpinBox" name="kd_spinbox"/>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="kff_offset_label">
+              <property name="text">
+               <string>kFF Offset</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <widget class="QDoubleSpinBox" name="kff_offset_spinbox"/>
+            </item>
+            <item row="4" column="0">
+             <widget class="QLabel" name="kff_scale_label">
+              <property name="text">
+               <string>kFF Scale</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="1">
+             <widget class="QDoubleSpinBox" name="kff_scale_spinbox"/>
+            </item>
+           </layout>
           </widget>
          </item>
-         <item row="0" column="1">
-          <widget class="QLabel" name="mouse_file_name_label">
-           <property name="text">
-            <string>No Mouse</string>
+         <item>
+          <widget class="QGroupBox" name="setpoints_group">
+           <property name="title">
+            <string>Setpoints</string>
            </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QPushButton" name="refresh_mouse_button">
-           <property name="text">
-            <string>Refresh</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0">
-          <widget class="QLabel" name="left_force_lable">
-           <property name="text">
-            <string>Left Force</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="1">
-          <widget class="QSpinBox" name="left_f_spinbox">
-           <property name="minimum">
-            <number>-255</number>
-           </property>
-           <property name="maximum">
-            <number>255</number>
-           </property>
-           <property name="singleStep">
-            <number>5</number>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="0">
-          <widget class="QLabel" name="right_force_label">
-           <property name="text">
-            <string>Right Force</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="1">
-          <widget class="QSpinBox" name="right_f_spinbox">
-           <property name="minimum">
-            <number>-255</number>
-           </property>
-           <property name="maximum">
-            <number>255</number>
-           </property>
-           <property name="singleStep">
-            <number>5</number>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="0">
-          <widget class="QPushButton" name="send_command_button">
-           <property name="text">
-            <string>Send Cmd</string>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="0">
-          <widget class="QLabel" name="teleport_column_label">
-           <property name="text">
-            <string>Column</string>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="1">
-          <widget class="QDoubleSpinBox" name="teleport_column_spinbox">
-           <property name="decimals">
-            <number>5</number>
-           </property>
-           <property name="minimum">
-            <double>-10.000000000000000</double>
-           </property>
-           <property name="maximum">
-            <double>10.000000000000000</double>
-           </property>
-           <property name="singleStep">
-            <double>0.012000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="0">
-          <widget class="QLabel" name="teleport_row_label">
-           <property name="text">
-            <string>Row</string>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="1">
-          <widget class="QDoubleSpinBox" name="teleport_row_spinbox">
-           <property name="decimals">
-            <number>5</number>
-           </property>
-           <property name="minimum">
-            <double>-10.000000000000000</double>
-           </property>
-           <property name="maximum">
-            <double>10.000000000000000</double>
-           </property>
-           <property name="singleStep">
-            <double>0.012000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item row="8" column="0">
-          <widget class="QLabel" name="teleport_yaw_label">
-           <property name="text">
-            <string>Yaw</string>
-           </property>
-          </widget>
-         </item>
-         <item row="8" column="1">
-          <widget class="QDoubleSpinBox" name="teleport_yaw_spinbox">
-           <property name="decimals">
-            <number>5</number>
-           </property>
-           <property name="minimum">
-            <double>-3.141590000000000</double>
-           </property>
-           <property name="maximum">
-            <double>3.141590000000000</double>
-           </property>
-           <property name="singleStep">
-            <double>0.100000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item row="9" column="0">
-          <widget class="QPushButton" name="teleport_button">
-           <property name="text">
-            <string>Teleport</string>
-           </property>
-          </widget>
-         </item>
-         <item row="10" column="0">
-          <widget class="QCheckBox" name="static_checkbox">
-           <property name="toolTip">
-            <string>Wheels will move but the robot will not.</string>
-           </property>
-           <property name="text">
-            <string>Static</string>
-           </property>
-          </widget>
-         </item>
-         <item row="11" column="0">
-          <widget class="QLabel" name="label">
-           <property name="text">
-            <string/>
-           </property>
-           <property name="pixmap">
-            <pixmap>:/images/handle.png/images/vsplitter_handle.png</pixmap>
-           </property>
+           <layout class="QFormLayout" name="formLayout_6">
+            <item row="2" column="0">
+             <widget class="QPushButton" name="publish_setpoints_button">
+              <property name="text">
+               <string>Publish</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="left_setpoint_label">
+              <property name="text">
+               <string>Left Speed (c/s)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QDoubleSpinBox" name="doubleSpinBox_6"/>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="right_setpoint_label">
+              <property name="text">
+               <string>Right Speed (c/s)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QDoubleSpinBox" name="doubleSpinBox_7"/>
+            </item>
+           </layout>
           </widget>
          </item>
         </layout>
@@ -389,7 +506,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>769</width>
+     <width>923</width>
      <height>19</height>
     </rect>
    </property>
