@@ -48,10 +48,10 @@ StateWidget::StateWidget() : AbstractTab(), ui_(new Ui::StateWidget) {
 }
 
 void StateWidget::StateCallback(const smartmouse::msgs::RobotSimState &msg) {
-  this->SetLeftVelocity(QString::asprintf("%0.3f c/s", msg.left_wheel().omega()));
-  this->SetRightVelocity(QString::asprintf("%0.3f c/s", msg.right_wheel().omega()));
-  this->SetLeftAcceleration(QString::asprintf("%0.3f c/s^2", msg.left_wheel().alpha()));
-  this->SetRightAcceleration(QString::asprintf("%0.3f c/s^2", msg.right_wheel().alpha()));
+  this->SetLeftVelocity(QString::asprintf("%0.3f c/s", smartmouse::kc::radToCell(msg.left_wheel().omega())));
+  this->SetRightVelocity(QString::asprintf("%0.3f c/s", smartmouse::kc::radToCell(msg.right_wheel().omega())));
+  this->SetLeftAcceleration(QString::asprintf("%0.3f c/s^2", smartmouse::kc::radToCell(msg.left_wheel().alpha())));
+  this->SetRightAcceleration(QString::asprintf("%0.3f c/s^2", smartmouse::kc::radToCell(msg.right_wheel().alpha())));
   this->SetLeftCurrent(QString::asprintf("%0.3f mA", msg.left_wheel().current() * 1000));
   this->SetRightCurrent(QString::asprintf("%0.3f mA", msg.right_wheel().current() * 1000));
   this->SetTrueCol(QString::asprintf("%0.3f (%0.1f cm)", msg.p().col(), smartmouse::maze::toMeters(msg.p().col()) * 100));

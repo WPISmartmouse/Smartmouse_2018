@@ -51,7 +51,10 @@ bool SimMouse::isStopped() {
 }
 
 void SimMouse::robotSimStateCallback(const smartmouse::msgs::RobotSimState &msg) {
+  // this lock ensures sim state updates are atomic
+  // if you read state you must wait for dataCond
   std::unique_lock<std::mutex> lk(dataMutex);
+  this->state_stamp = Time(msg.stamp());
   true_pose.col = msg.p().col();
   true_pose.row = msg.p().row();
   true_pose.yaw = msg.p().theta();
@@ -71,12 +74,16 @@ void SimMouse::robotSimStateCallback(const smartmouse::msgs::RobotSimState &msg)
 }
 
 void SimMouse::pidConstantsCallback(const smartmouse::msgs::PIDConstants &msg) {
-  kinematic_controller.setParams(msg.kp(), msg.ki(), msg.kd(), msg.kffoffset(), msg.kffscale());
+  kinematic_controller.setParams(msg.kp(), msg.ki(), msg.kd(), msg.kffscale(), msg.kffoffset());
 }
 
 void SimMouse::run(double dt_s) {
   std::unique_lock<std::mutex> lk(dataMutex);
   dataCond.wait(lk);
+
+  // compute dt_s from sensor stamps
+  dt_s = (state_stamp - last_state_stamp).Double();
+  last_state_stamp = state_stamp;
 
   // handle updating of odometry and PID
   auto forces = kinematic_controller.run(dt_s, this->left_wheel_angle_rad, this->right_wheel_angle_rad, range_data);

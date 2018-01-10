@@ -4,12 +4,12 @@
 #include "RegulatedMotor.h"
 
 RegulatedMotor::RegulatedMotor()
-    : kP(1.0),
+    : kP(0),
       kI(0.00),
       kD(0.0),
       ff_offset(0),
-      ff_scale(5.61),
-      int_cap(0),
+      ff_scale(0),
+      int_cap(10),
       initialized(false),
       abstract_force(0),
       acceleration_rpss(0),
@@ -52,7 +52,7 @@ double RegulatedMotor::runPid(double dt_s, double angle_rad) {
     // this is horrible and hacky
     // instead, we can use our model model to solve for the theoretical feed forward constant
     if (regulated_setpoint_rps < 0) {
-      feed_forward = -regulated_setpoint_rps * ff_scale - ff_offset;
+      feed_forward = regulated_setpoint_rps * ff_scale - ff_offset;
     } else {
       feed_forward = regulated_setpoint_rps * ff_scale + ff_offset;
     }
@@ -91,10 +91,10 @@ void RegulatedMotor::setSetpointCps(double setpoint_cups) {
   this->setpoint_rps = smartmouse::kc::cellsToRad(s);
 }
 
-void RegulatedMotor::setParams(double kP, double kI, double kD, double ff_offset, double int_cap) {
+void RegulatedMotor::setParams(double kP, double kI, double kD, double ff_scale, double ff_offset) {
   this->kP = kP;
   this->kI = kI;
   this->kD = kD;
+  this->ff_scale = ff_scale;
   this->ff_offset = ff_offset;
-  this->int_cap = int_cap;
 }

@@ -8,7 +8,6 @@
 #include <sim/simulator/lib/Server.h>
 #include <sim/simulator/lib/Client.h>
 #include <sim/simulator/msgs/pid_constants.pb.h>
-#include <sim/simulator/msgs/pid_debug.pb.h>
 
 #include "ui_mainwindow.h"
 
@@ -21,7 +20,7 @@ Client::Client(QMainWindow *parent) :
   maze_pub_ = node_.Advertise<smartmouse::msgs::Maze>(TopicNames::kMaze);
   robot_description_pub_ = node_.Advertise<smartmouse::msgs::RobotDescription>(TopicNames::kRobotDescription);
   robot_command_pub_ = node_.Advertise<smartmouse::msgs::RobotCommand>(TopicNames::kRobotCommand);
-  pid_debug_pub_ = node_.Advertise<smartmouse::msgs::PIDDebug>(TopicNames::kRobotCommand);
+  pid_setpoints_pub_ = node_.Advertise<ignition::msgs::Vector2d>(TopicNames::kPIDSetpoints);
   pid_constants_pub_ = node_.Advertise<smartmouse::msgs::PIDConstants>(TopicNames::kPIDConstants);
   node_.Subscribe(TopicNames::kWorldStatistics, &Client::OnWorldStats, this);
   node_.Subscribe(TopicNames::kGuiActions, &Client::OnGuiActions, this);
@@ -246,12 +245,10 @@ void Client::PublishPIDConstants() {
 }
 
 void Client::PublishPIDSetpoints() {
-  smartmouse::msgs::PIDDebug msg;
-  auto stamp = msg.mutable_stamp();
-  *stamp = Time::GetWallTime().toIgnMsg();
-  msg.set_left_cps_setpoint(ui_->left_setpoint_spinbox->value());
-  msg.set_right_cps_setpoint(ui_->right_setpoint_spinbox->value());
-  pid_debug_pub_.Publish(msg);
+  ignition::msgs::Vector2d msg;
+  msg.set_x(ui_->left_setpoint_spinbox->value());
+  msg.set_y(ui_->right_setpoint_spinbox->value());
+  pid_setpoints_pub_.Publish(msg);
 }
 
 void Client::ConfigureGui() {

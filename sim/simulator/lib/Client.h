@@ -76,7 +76,7 @@ class Client : public QMainWindow {
   ignition::transport::Node::Publisher server_control_pub_;
   ignition::transport::Node::Publisher robot_command_pub_;
   ignition::transport::Node::Publisher robot_description_pub_;
-  ignition::transport::Node::Publisher pid_debug_pub_;
+  ignition::transport::Node::Publisher pid_setpoints_pub_;
   ignition::transport::Node::Publisher pid_constants_pub_;
   MazeWidget *maze_widget_;
   StateWidget *state_widget_;

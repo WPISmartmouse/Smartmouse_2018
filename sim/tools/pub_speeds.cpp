@@ -12,7 +12,7 @@ int main() {
 
   ignition::transport::Node node;
 
-  auto pub = node.Advertise<ignition::msgs::Vector2d>(TopicNames::kSpeed);
+  auto pub = node.Advertise<ignition::msgs::Vector2d>(TopicNames::kPIDSetpoints);
 
   usleep(1000000); // 1 s
 

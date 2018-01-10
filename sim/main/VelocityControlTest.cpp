@@ -6,10 +6,17 @@
 #include <sim/simulator/lib/common/TopicNames.h>
 #include <sim/simulator/msgs/robot_command.pb.h>
 #include <simulator/msgs/pid_debug.pb.h>
+#include <simulator/msgs/server_control.pb.h>
 
 SimMouse *mouse;
 
-void callback(const ignition::msgs::Vector2d &msg){
+void serverCallback(const smartmouse::msgs::ServerControl &msg){
+  if (msg.has_static_()) {
+    mouse->kinematic_controller.kinematics_enabled = !msg.static_();
+  }
+};
+
+void speedCallback(const ignition::msgs::Vector2d &msg){
   mouse->setSpeedCps(msg.x(), msg.y());
 };
 
@@ -31,23 +38,23 @@ int main(int argc, const char **argv) {
     return EXIT_FAILURE;
   }
 
+  // subscribe to server control so we can listen for the "static" checkbox
+  success = mouse->node.Subscribe(TopicNames::kServerControl, &serverCallback);
+  if (!success) {
+    print("Failed to subscribe to %s\n", TopicNames::kServerControl);
+    return EXIT_FAILURE;
+  }
+
   success = mouse->node.Subscribe(TopicNames::kPIDConstants, &SimMouse::pidConstantsCallback, mouse);
   if (!success) {
     print("Failed to subscribe to %s\n", TopicNames::kPIDConstants);
     return EXIT_FAILURE;
   }
 
-  ignition::transport::Node pid_sub_node;
-  success = pid_sub_node.Subscribe(TopicNames::kPIDDebug, &callback);
-  if (!success) {
-    print("Failed to subscribe to %s\n", TopicNames::kSpeed);
-    return EXIT_FAILURE;
-  }
-
   ignition::transport::Node speed_sub_node;
-  success = speed_sub_node.Subscribe(TopicNames::kSpeed, &callback);
+  success = speed_sub_node.Subscribe(TopicNames::kPIDSetpoints, &speedCallback);
   if (!success) {
-    print("Failed to subscribe to %s\n", TopicNames::kSpeed);
+    print("Failed to subscribe to %s\n", TopicNames::kPIDSetpoints);
     return EXIT_FAILURE;
   }
 

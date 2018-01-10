@@ -74,13 +74,14 @@ public:
   static const double kPYaw;
 
   drive_straight_state_t drive_straight_state;
-  void setParams(double kP, double kI, double kD, double ff_offset, double int_cap);
+  void setParams(double kP, double kI, double kD, double ff_scale, double ff_offset);
 
   RegulatedMotor left_motor;
   RegulatedMotor right_motor;
 
   bool enable_sensor_pose_estimate;
   bool enabled;
+  bool kinematics_enabled;
   unsigned int row;
   unsigned int col;
 

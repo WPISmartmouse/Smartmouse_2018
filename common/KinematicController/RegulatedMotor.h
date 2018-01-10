@@ -16,7 +16,7 @@ public:
 
   void reset_enc_rad(double rad);
 
-  void setParams(double kP, double kI, double kD, double ff_offset, double int_cap);
+  void setParams(double kP, double kI, double kD, double ff_scale, double ff_offset);
 
   double kP;
   double kI;

@@ -7,6 +7,7 @@
 #include <common/KinematicController/KinematicController.h>
 #include <ignition/transport/Node.hh>
 
+#include <sim/lib/Time.h>
 #include <sim/simulator/msgs/robot_sim_state.pb.h>
 #include <sim/simulator/msgs/pid_constants.pb.h>
 
@@ -60,5 +61,7 @@ private:
   std::mutex dataMutex;
 
   GlobalPose true_pose;
+  Time state_stamp;
+  Time last_state_stamp;
 };
 
