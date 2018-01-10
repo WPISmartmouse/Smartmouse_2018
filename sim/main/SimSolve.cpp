@@ -3,43 +3,19 @@
 #include <common/core/Flood.h>
 
 #include <sim/lib/SimTimer.h>
-#include <simulator/lib/common/TopicNames.h>
 #include <sim/lib/SimMouse.h>
-#include <sim/simulator/msgs/pid_debug.pb.h>
-#include <sim/simulator/msgs/robot_command.pb.h>
 
 int main(int argc, char *argv[]) {
-  SimTimer timer;
-  Command::setTimerImplementation(&timer);
   SimMouse *mouse = SimMouse::inst();
-
-  // Create our node for communication
-  bool success = mouse->node.Subscribe(TopicNames::kWorldStatistics, &SimTimer::worldStatsCallback, &timer);
-  if (!success) {
-    print("Failed to subscribe to %s\n", TopicNames::kWorldStatistics);
-    return EXIT_FAILURE;
-  }
-
-  success = mouse->node.Subscribe(TopicNames::kRobotSimState, &SimMouse::robotSimStateCallback, mouse);
-  if (!success) {
-    print("Failed to subscribe to %s\n", TopicNames::kRobotSimState);
-    return EXIT_FAILURE;
-  }
-
-  mouse->cmd_pub = mouse->node.Advertise<smartmouse::msgs::RobotCommand>(TopicNames::kRobotCommand);
-  mouse->pid_debug_pub = mouse->node.Advertise<smartmouse::msgs::PIDDebug>(TopicNames::kPIDDebug);
-
-  // wait for time messages to come
-  while (!timer.isTimeReady());
 
   mouse->simInit();
 
   Scheduler scheduler(new SolveCommand(new Flood(mouse)));
 
   bool done = false;
-  unsigned long last_t = timer.programTimeMs();
+  unsigned long last_t = mouse->timer->programTimeMs();
   while (!done) {
-    unsigned long now = timer.programTimeMs();
+    unsigned long now = mouse->timer->programTimeMs();
     double dt_s = (now - last_t) / 1000.0;
 
     // minimum period of main loop
@@ -47,7 +23,7 @@ int main(int argc, char *argv[]) {
       continue;
     }
 
-    mouse->run(dt_s);
+    mouse->run();
     done = scheduler.run();
     last_t = now;
   }

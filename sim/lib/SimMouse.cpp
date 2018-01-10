@@ -1,10 +1,10 @@
-#include <sim/simulator/msgs/robot_command.pb.h>
-#include <simulator/msgs/pid_debug.pb.h>
-#include <lib/Time.h>
 #include <common/commanduino/Command.h>
 #include <common/math/math.h>
-#include <simulator/msgs/msgs.h>
-#include "SimMouse.h"
+#include <sim/lib/SimMouse.h>
+#include <sim/simulator/lib/common/TopicNames.h>
+#include <sim/simulator/msgs/msgs.h>
+#include <sim/simulator/msgs/pid_debug.pb.h>
+#include <sim/simulator/msgs/robot_command.pb.h>
 
 SimMouse *SimMouse::instance = nullptr;
 
@@ -77,12 +77,22 @@ void SimMouse::pidConstantsCallback(const smartmouse::msgs::PIDConstants &msg) {
   kinematic_controller.setParams(msg.kp(), msg.ki(), msg.kd(), msg.kffscale(), msg.kffoffset());
 }
 
-void SimMouse::run(double dt_s) {
+void SimMouse::serverCallback(const smartmouse::msgs::ServerControl &msg){
+  if (msg.has_static_()) {
+    kinematic_controller.kinematics_enabled = !msg.static_();
+  }
+};
+
+void SimMouse::speedCallback(const ignition::msgs::Vector2d &msg){
+  setSpeedCps(msg.x(), msg.y());
+};
+
+void SimMouse::run() {
   std::unique_lock<std::mutex> lk(dataMutex);
   dataCond.wait(lk);
 
   // compute dt_s from sensor stamps
-  dt_s = (state_stamp - last_state_stamp).Double();
+  double dt_s = (state_stamp - last_state_stamp).Double();
   last_state_stamp = state_stamp;
 
   // handle updating of odometry and PID
@@ -116,21 +126,53 @@ void SimMouse::setSpeedCps(double left_wheel_velocity_setpoint_cps, double right
   kinematic_controller.setSpeedCps(left_wheel_velocity_setpoint_cps, right_wheel_velocity_setpoint_cps);
 }
 
-void SimMouse::simInit() {
-  kinematic_controller.setParams(0, 0, 0, 0, 0);
-  kinematic_controller.setAccelerationCpss(10);
+bool SimMouse::simInit() {
+  kinematic_controller.setAccelerationCpss(20);
 
   // we start in the middle of the first square
   resetToStartPose();
 
-  // print warnings about any invalid publishers
-  if (!cmd_pub.Valid()) {
-    std::cerr << "cmd_pub is not valid! Did you forget to Advertise?" << std::endl;
+  timer = new SimTimer();
+  Command::setTimerImplementation(timer);
+
+  bool success = node.Subscribe(TopicNames::kWorldStatistics, &SimTimer::worldStatsCallback, timer);
+  if (!success) {
+    print("Failed to subscribe to %s\n", TopicNames::kWorldStatistics);
+    return EXIT_FAILURE;
   }
 
-  if (!pid_debug_pub.Valid()) {
-    std::cerr << "pid_debug_pub is not valid! Did you forget to Advertise?" << std::endl;
+  success = node.Subscribe(TopicNames::kRobotSimState, &SimMouse::robotSimStateCallback, this);
+  if (!success) {
+    print("Failed to subscribe to %s\n", TopicNames::kRobotSimState);
+    return EXIT_FAILURE;
   }
+
+  // subscribe to server control so we can listen for the "static" checkbox
+  success = node.Subscribe(TopicNames::kServerControl, &SimMouse::serverCallback, this);
+  if (!success) {
+    print("Failed to subscribe to %s\n", TopicNames::kServerControl);
+    return EXIT_FAILURE;
+  }
+
+  success = node.Subscribe(TopicNames::kPIDConstants, &SimMouse::pidConstantsCallback, this);
+  if (!success) {
+    print("Failed to subscribe to %s\n", TopicNames::kPIDConstants);
+    return EXIT_FAILURE;
+  }
+
+  success = node.Subscribe(TopicNames::kPIDSetpoints, &SimMouse::speedCallback, this);
+  if (!success) {
+    print("Failed to subscribe to %s\n", TopicNames::kPIDSetpoints);
+    return EXIT_FAILURE;
+  }
+
+  cmd_pub = node.Advertise<smartmouse::msgs::RobotCommand>(TopicNames::kRobotCommand);
+  pid_debug_pub = node.Advertise<smartmouse::msgs::PIDDebug>(TopicNames::kPIDDebug);
+
+  // wait for time messages to come
+  while (!timer->isTimeReady());
+
+  return EXIT_SUCCESS;
 }
 
 void SimMouse::resetToStartPose() {

@@ -10,6 +10,8 @@
 #include <sim/lib/Time.h>
 #include <sim/simulator/msgs/robot_sim_state.pb.h>
 #include <sim/simulator/msgs/pid_constants.pb.h>
+#include <sim/lib/SimTimer.h>
+#include <sim/simulator/msgs/server_control.pb.h>
 
 class SimMouse : public Mouse {
 public:
@@ -30,12 +32,17 @@ public:
 
   void pidConstantsCallback(const smartmouse::msgs::PIDConstants &msg);
 
-  void run(double dt_s);
+  void serverCallback(const smartmouse::msgs::ServerControl &msg);
+
+  void speedCallback(const ignition::msgs::Vector2d &msg);
+
+  void run();
 
   void setSpeedCps(double left, double right);
 
-  void simInit();
+  bool simInit();
 
+  SimTimer *timer;
   ignition::transport::Node::Publisher cmd_pub;
   ignition::transport::Node::Publisher pid_debug_pub;
   ignition::transport::Node node;

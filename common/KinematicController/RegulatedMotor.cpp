@@ -4,12 +4,12 @@
 #include "RegulatedMotor.h"
 
 RegulatedMotor::RegulatedMotor()
-    : kP(0),
+    : kP(150),
       kI(0.00),
-      kD(0.0),
+      kD(10.0),
       ff_offset(0),
-      ff_scale(0),
-      int_cap(10),
+      ff_scale(4),
+      int_cap(0),
       initialized(false),
       abstract_force(0),
       acceleration_rpss(0),

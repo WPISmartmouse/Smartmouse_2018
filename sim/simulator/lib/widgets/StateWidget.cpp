@@ -10,8 +10,6 @@ StateWidget::StateWidget() : AbstractTab(), ui_(new Ui::StateWidget) {
   ui_->setupUi(this);
 
   pid_widget_ = new PIDPlotWidget();
-  wheel_velocity_widget_ = new WheelVelocityPlotWidget();
-  ui_->charts_tabs->addTab(wheel_velocity_widget_, wheel_velocity_widget_->GetTabName());
   ui_->charts_tabs->addTab(pid_widget_, pid_widget_->GetTabName());
 
   this->node_.Subscribe(TopicNames::kRobotSimState, &StateWidget::StateCallback, this);

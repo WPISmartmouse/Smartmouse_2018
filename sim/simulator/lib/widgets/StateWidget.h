@@ -14,7 +14,6 @@
 #include <msgs/world_statistics.pb.h>
 #include <msgs/robot_command.pb.h>
 #include <sim/simulator/lib/widgets/PIDPlotWidget.h>
-#include "WheelVelocityPlotWidget.h"
 
 namespace Ui {
 class StateWidget;
@@ -65,5 +64,4 @@ class StateWidget : public QWidget, public AbstractTab {
 
   Ui::StateWidget *ui_;
   PIDPlotWidget *pid_widget_;
-  WheelVelocityPlotWidget *wheel_velocity_widget_;
 };

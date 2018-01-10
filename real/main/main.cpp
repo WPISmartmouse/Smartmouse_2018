@@ -2,9 +2,7 @@
 #include <common/commanduino/CommanDuino.h>
 #include <real/ArduinoTimer.h>
 #include <real/RealMouse.h>
-#include <common/core/AbstractMaze.h>
 #include <common/core/util.h>
-#include <common/commands/NavTestCommand.h>
 #include <common/core/Flood.h>
 #include <common/commands/SolveCommand.h>
 

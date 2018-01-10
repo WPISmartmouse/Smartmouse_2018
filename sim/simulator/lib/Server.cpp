@@ -6,7 +6,6 @@
 #include <sim/simulator/lib/common/RayTracing.h>
 #include <sim/simulator/lib/Server.h>
 #include <sim/simulator/lib/common/TopicNames.h>
-#include <sim/simulator/msgs/msgs.h>
 #include <sim/simulator/msgs/world_statistics.pb.h>
 
 Server::Server()

@@ -12,7 +12,6 @@ set_target_properties(console PROPERTIES COMPILE_FLAGS "-DCONSOLE -include ${UTI
 ################################
 set(CONSOLES ConsoleSolve
         Animate
-        ConsoleNavTest
         GenerateMaze
         ReadAndPrint)
 

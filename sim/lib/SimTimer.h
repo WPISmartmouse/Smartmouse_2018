@@ -2,7 +2,7 @@
 
 #include <common/commanduino/CommanDuino.h>
 #include <mutex>
-#include <simulator/msgs/world_statistics.pb.h>
+#include <sim/simulator/msgs/world_statistics.pb.h>
 
 class SimTimer : public TimerInterface {
 public:
