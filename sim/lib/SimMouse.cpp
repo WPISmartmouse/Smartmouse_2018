@@ -3,7 +3,7 @@
 #include <sim/lib/SimMouse.h>
 #include <sim/simulator/lib/common/TopicNames.h>
 #include <sim/simulator/msgs/msgs.h>
-#include <sim/simulator/msgs/pid_debug.pb.h>
+#include <sim/simulator/msgs/debug_state.pb.h>
 #include <sim/simulator/msgs/robot_command.pb.h>
 
 SimMouse *SimMouse::instance = nullptr;
@@ -55,9 +55,9 @@ void SimMouse::robotSimStateCallback(const smartmouse::msgs::RobotSimState &msg)
   // if you read state you must wait for dataCond
   std::unique_lock<std::mutex> lk(dataMutex);
   this->state_stamp = Time(msg.stamp());
-  true_pose.col = msg.p().col();
   true_pose.row = msg.p().row();
-  true_pose.yaw = msg.p().theta();
+  true_pose.col = msg.p().col();
+  true_pose.yaw = msg.p().yaw();
 
   this->left_wheel_angle_rad = msg.left_wheel().theta();
   this->right_wheel_angle_rad = msg.right_wheel().theta();
@@ -110,16 +110,21 @@ void SimMouse::run() {
   cmd.mutable_right()->set_abstract_force((int) abstract_right_force);
   cmd_pub.Publish(cmd);
 
-  smartmouse::msgs::PIDDebug pid;
+  smartmouse::msgs::DebugState state;
 
-  auto stamp = pid.mutable_stamp();
+  auto stamp = state.mutable_stamp();
   unsigned long t_ms = Command::getTimerImplementation()->programTimeMs();
   *stamp = smartmouse::msgs::Convert((int) t_ms);
-  pid.set_left_cps_setpoint(smartmouse::kc::radToCell(kinematic_controller.left_motor.setpoint_rps));
-  pid.set_left_cps_actual(smartmouse::kc::radToCell(kinematic_controller.left_motor.velocity_rps));
-  pid.set_right_cps_setpoint(smartmouse::kc::radToCell(kinematic_controller.right_motor.setpoint_rps));
-  pid.set_right_cps_actual(smartmouse::kc::radToCell(kinematic_controller.right_motor.velocity_rps));
-  pid_debug_pub.Publish(pid);
+  state.set_left_cps_setpoint(smartmouse::kc::radToCU(kinematic_controller.left_motor.setpoint_rps));
+  state.set_left_cps_actual(smartmouse::kc::radToCU(kinematic_controller.left_motor.velocity_rps));
+  state.set_right_cps_setpoint(smartmouse::kc::radToCU(kinematic_controller.right_motor.setpoint_rps));
+  state.set_right_cps_actual(smartmouse::kc::radToCU(kinematic_controller.right_motor.velocity_rps));
+  auto p_c = state.mutable_position_cu();
+  auto global_pose = kinematic_controller.getGlobalPose();
+  p_c->set_row(global_pose.row);
+  p_c->set_col(global_pose.col);
+  p_c->set_yaw(global_pose.yaw);
+  debug_state_pub.Publish(state);
 }
 
 void SimMouse::setSpeedCps(double left_wheel_velocity_setpoint_cps, double right_wheel_velocity_setpoint_cps) {
@@ -167,7 +172,7 @@ bool SimMouse::simInit() {
   }
 
   cmd_pub = node.Advertise<smartmouse::msgs::RobotCommand>(TopicNames::kRobotCommand);
-  pid_debug_pub = node.Advertise<smartmouse::msgs::PIDDebug>(TopicNames::kPIDDebug);
+  debug_state_pub = node.Advertise<smartmouse::msgs::DebugState>(TopicNames::kDebugState);
 
   // wait for time messages to come
   while (!timer->isTimeReady());

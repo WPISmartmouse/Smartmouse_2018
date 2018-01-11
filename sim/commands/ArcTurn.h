@@ -37,8 +37,8 @@ class ArcTurn : public Command {
   SimMouse *mouse;
   Direction dir;
   double SLOW_ARC_SPEED =
-      0.75 * (smartmouse::kc::MAX_SPEED_CUPS / (smartmouse::maze::HALF_UNIT_DIST + (smartmouse::kc::TRACK_WIDTH / 2)))
-          * (smartmouse::maze::HALF_UNIT_DIST - (smartmouse::kc::TRACK_WIDTH / 2));
+      0.75 * (smartmouse::kc::MAX_SPEED_CUPS / (smartmouse::maze::HALF_UNIT_DIST + (smartmouse::kc::TRACK_WIDTH_M / 2)))
+          * (smartmouse::maze::HALF_UNIT_DIST - (smartmouse::kc::TRACK_WIDTH_M / 2));
   double FAST_ARC_SPEED = 0.75 * smartmouse::kc::MAX_SPEED_CUPS;
 
   double pose_dist(GlobalPose pose, double x, double y);

@@ -46,18 +46,13 @@ double RegulatedMotor::runPid(double dt_s, double angle_rad) {
   integral += error * dt_s;
   integral = std::max(std::min(integral, int_cap), -int_cap);
 
-  if (fabs(regulated_setpoint_rps) <= smartmouse::kc::MIN_SPEED_MPS) {
-    abstract_force = 0;
+  // TODO: use our model model to solve for the theoretical feed forward constant
+  if (regulated_setpoint_rps < 0) {
+    feed_forward = regulated_setpoint_rps * ff_scale - ff_offset;
   } else {
-    // this is horrible and hacky
-    // instead, we can use our model model to solve for the theoretical feed forward constant
-    if (regulated_setpoint_rps < 0) {
-      feed_forward = regulated_setpoint_rps * ff_scale - ff_offset;
-    } else {
-      feed_forward = regulated_setpoint_rps * ff_scale + ff_offset;
-    }
-    abstract_force = (feed_forward) + (error * kP) + (integral * kI) + (smooth_derivative * kD);
+    feed_forward = regulated_setpoint_rps * ff_scale + ff_offset;
   }
+  abstract_force = (feed_forward) + (error * kP) + (integral * kI) + (smooth_derivative * kD);
 
   abstract_force = std::max(std::min(255.0, abstract_force), -255.0);
 

@@ -2,8 +2,8 @@ syntax = "proto2";
 
 package smartmouse.msgs;
 
-message RowColTheta {
+message RowColYaw {
     optional double row = 1;
     optional double col = 2;
-    optional double theta = 3; // radians
+    optional double yaw = 3; // radians
 }

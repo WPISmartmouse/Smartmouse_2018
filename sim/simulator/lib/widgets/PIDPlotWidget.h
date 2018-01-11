@@ -9,7 +9,7 @@
 #include <QtWidgets/QPushButton>
 
 #include <sim/simulator/lib/widgets/AbstractTab.h>
-#include <sim/simulator/msgs/pid_debug.pb.h>
+#include <sim/simulator/msgs/debug_state.pb.h>
 #include <sim/simulator/lib/widgets/PlotSeriesData.h>
 
 namespace Ui {
@@ -26,7 +26,7 @@ class PIDPlotWidget : public QWidget, public AbstractTab {
 
   const QString GetTabName() override;
 
-  void PIDCallback(const smartmouse::msgs::PIDDebug &msg);
+  void PIDCallback(const smartmouse::msgs::DebugState &msg);
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "NotImplementedFunctions"

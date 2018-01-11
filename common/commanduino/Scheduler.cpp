@@ -20,9 +20,6 @@ bool Scheduler::run() {
     }
   }
 
-  if (commands.size() == 0) {
-    return true;
-  }
+  return commands.size() == 0;
 
-  return false;
 }

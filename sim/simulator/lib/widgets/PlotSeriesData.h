@@ -6,7 +6,6 @@
 #include <list>
 
 #include <sim/simulator/lib/widgets/AbstractTab.h>
-#include <sim/simulator/msgs/pid_debug.pb.h>
 #include <qwt_scale_draw.h>
 #include <QtWidgets/QPushButton>
 #include <QtCore/QMutex>

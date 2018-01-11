@@ -1,11 +1,21 @@
 #include <commands/WaitForStart.h>
 #include <commands/Forward.h>
-#include <sim/lib/SimMouse.h>
+
+class Stop : public Command {
+ public:
+  void initialize() {
+    SimMouse::inst()->setSpeedCps(0, 0);
+  }
+  bool isFinished() {
+    return false;
+  }
+};
 
 class NavTestCommand : public CommandGroup {
  public:
   NavTestCommand() : CommandGroup("NavTestGroup") {
     addSequential(new Forward());
+    addSequential(new Stop());
   }
 };
 
@@ -26,7 +36,7 @@ int main(int argc, char *argv[]) {
     }
 
     mouse->run();
-    scheduler.run();
+    done = scheduler.run();
 
     last_t = now;
   }

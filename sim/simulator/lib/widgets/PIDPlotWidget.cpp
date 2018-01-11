@@ -25,7 +25,7 @@ PIDPlotWidget::PIDPlotWidget() : ui_(new Ui::PIDPlotWidget()), capacity_(1000) {
   plot_->setAxisTitle(QwtPlot::xBottom, "Time (seconds)");
   plot_->setAxisTitle(QwtPlot::yLeft, "Speed cell/second");
 
-  this->node_.Subscribe(TopicNames::kPIDDebug, &PIDPlotWidget::PIDCallback, this);
+  this->node_.Subscribe(TopicNames::kDebugState, &PIDPlotWidget::PIDCallback, this);
 
   ui_->master_layout->addWidget(plot_);
 
@@ -41,7 +41,7 @@ const QString PIDPlotWidget::GetTabName() {
   return QString("PID");
 }
 
-void PIDPlotWidget::PIDCallback(const smartmouse::msgs::PIDDebug &msg) {
+void PIDPlotWidget::PIDCallback(const smartmouse::msgs::DebugState &msg) {
   double t = smartmouse::msgs::ConvertSec(msg.stamp());
 
   left_setpoint_->Append(t, msg.left_cps_setpoint());

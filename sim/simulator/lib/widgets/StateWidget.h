@@ -9,11 +9,12 @@
 #include <QtCharts/QChartView>
 #include <QtWidgets/QLabel>
 
-#include <sim/simulator/msgs/robot_sim_state.pb.h>
 #include <sim/simulator/lib/widgets/AbstractTab.h>
-#include <msgs/world_statistics.pb.h>
-#include <msgs/robot_command.pb.h>
 #include <sim/simulator/lib/widgets/PIDPlotWidget.h>
+#include <sim/simulator/msgs/debug_state.pb.h>
+#include <sim/simulator/msgs/robot_command.pb.h>
+#include <sim/simulator/msgs/robot_sim_state.pb.h>
+#include <sim/simulator/msgs/world_statistics.pb.h>
 
 namespace Ui {
 class StateWidget;
@@ -45,17 +46,18 @@ class StateWidget : public QWidget, public AbstractTab {
   void SetTrueCol(QString str);
   void SetTrueRow(QString str);
   void SetTrueYaw(QString str);
-  void SetEstimatedX(QString str);
-  void SetEstimatedY(QString str);
+  void SetEstimatedCol(QString str);
+  void SetEstimatedRow(QString str);
   void SetEstimatedYaw(QString str);
-  void HighlightX(QString str);
-  void HighlightY(QString str);
+  void HighlightCol(QString str);
+  void HighlightRow(QString str);
   void HighlightYaw(QString str);
 #pragma clang diagnostic pop
 
  private:
 
   void RobotCommandCallback(const smartmouse::msgs::RobotCommand &msg);
+  void DebugStateCallback(const smartmouse::msgs::DebugState &msg);
   void StateCallback(const smartmouse::msgs::RobotSimState &msg);
 
   double true_col, true_row, true_yaw;

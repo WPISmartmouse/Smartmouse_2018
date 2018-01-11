@@ -2,12 +2,14 @@ syntax = "proto2";
 
 package smartmouse.msgs;
 
+import "row_col_yaw.proto";
 import "ignition/msgs/time.proto";
 
-message PIDDebug {
+message DebugState {
     optional ignition.msgs.Time stamp = 1;
     optional double left_cps_setpoint = 2;
     optional double left_cps_actual = 3;
     optional double right_cps_setpoint = 4;
     optional double right_cps_actual = 5;
+    optional RowColYaw position_cu = 6; // cells
 }

@@ -23,7 +23,7 @@ constexpr double SIDE_WALL_THRESHOLD = 0.08;
 constexpr double GERALD_WALL_THRESHOLD = 0.17;
 constexpr double WALL_CHANGED_THRESHOLD = 0.02;
 constexpr double ROT_TOLERANCE = 0.05;
-constexpr double TRACK_WIDTH = 0.0633;
+constexpr double TRACK_WIDTH_M = 0.0633;
 constexpr double ANALOG_MAX_DIST_M = 0.18;
 constexpr double ANALOG_MIN_DIST_M = 0.01;
 constexpr double WHEEL_RAD = 0.0145;
@@ -34,6 +34,7 @@ extern double MAX_SPEED_MPS;
 extern bool ARC_TURN;
 extern double MAX_SPEED_CUPS;
 
+constexpr double TRACK_WIDTH_CU = smartmouse::maze::toCellUnits(TRACK_WIDTH_M);
 constexpr double MAX_HARDWARE_SPEED_CUPS = smartmouse::maze::toCellUnits(MAX_HARDWARE_SPEED_MPS);
 constexpr double MIN_SPEED_CUPS = smartmouse::maze::toCellUnits(MIN_SPEED_MPS);
 constexpr double ANALOG_MAX_DIST_CU = smartmouse::maze::toCellUnits(ANALOG_MAX_DIST_M);
@@ -51,7 +52,7 @@ constexpr double radToMeters(double x) {
   return x * WHEEL_RAD;
 }
 
-constexpr double radToCell(double x) {
+constexpr double radToCU(double x) {
   return x * WHEEL_RAD / smartmouse::maze::UNIT_DIST_M;
 }
 

@@ -86,14 +86,14 @@ KinematicController::run(double dt_s, double left_angle_rad, double right_angle_
   if (enabled) {
     if (kinematics_enabled) {
       // equations based on docs/dynamics_model.pdf
-      double vl = smartmouse::kc::radToMeters(left_motor.velocity_rps);
-      double vr = smartmouse::kc::radToMeters(right_motor.velocity_rps);
+      double vl_cu = smartmouse::kc::radToCU(left_motor.velocity_rps);
+      double vr_cu = smartmouse::kc::radToCU(right_motor.velocity_rps);
 
-      double dcol, drow, dtheta;
-      std::tie(dcol, drow, dtheta) = forwardKinematics(vr, vl, current_pose_estimate.yaw, dt_s);
-      current_pose_estimate.col += dcol;
-      current_pose_estimate.row += drow;
-      current_pose_estimate.yaw += dtheta;
+      GlobalPose d_pose;
+      d_pose = forwardKinematics(vr_cu, vl_cu, current_pose_estimate.yaw, dt_s);
+      current_pose_estimate.col += d_pose.col;
+      current_pose_estimate.row += d_pose.row;
+      current_pose_estimate.yaw += d_pose.yaw;
       smartmouse::math::wrapAngleRadInPlace(&current_pose_estimate.yaw);
 
       row = (unsigned int) (current_pose_estimate.row);
@@ -154,29 +154,29 @@ KinematicController::run(double dt_s, double left_angle_rad, double right_angle_
   return abstract_forces;
 }
 
-std::tuple<double, double, double> KinematicController::forwardKinematics(double vl, double vr, double yaw, double dt) {
-  double dcol, drow, dtheta;
-  double w = (vl - vr) / smartmouse::kc::TRACK_WIDTH;
-  double R = smartmouse::kc::TRACK_WIDTH * (vr + vl) / (2 * (vl - vr));
+GlobalPose KinematicController::forwardKinematics(double vl_cups, double vr_cups, double yaw_rad, double dt) {
+  double dcol_cu, drow_cu, dtheta_rad;
+  double dyawdt = (vl_cups - vr_cups) / smartmouse::kc::TRACK_WIDTH_CU;
+  double R = smartmouse::kc::TRACK_WIDTH_CU * (vr_cups + vl_cups) / (2 * (vl_cups - vr_cups));
 
-  if (fabs(vl) < 1e-5 && fabs(vr) < 1e-5) {
+  if (fabs(vl_cups) < 1e-5 && fabs(vr_cups) < 1e-5) {
     // this means we're stopped, so ignore it
-    dcol = 0;
-    drow = 0;
-    dtheta = 0;
-  } else if (fabs(vl - vr) < 1e-5) {
+    dcol_cu = 0;
+    drow_cu = 0;
+    dtheta_rad = 0;
+  } else if (fabs(vl_cups - vr_cups) < 1e-5) {
     // going perfectly straight is a special condition
-    dcol = dt * (vr + vl) / 2 * cos(yaw);
-    drow = dt * (vr + vl) / 2 * sin(yaw);
-    dtheta = 0;
+    dcol_cu = dt * (vr_cups + vl_cups) / 2 * cos(yaw_rad);
+    drow_cu = dt * (vr_cups + vl_cups) / 2 * sin(yaw_rad);
+    dtheta_rad = 0;
   } else {
-    double dtheta_about_icc = w * dt; //eq 11
-    dcol = R * (sin(dtheta_about_icc + yaw) - sin(yaw)); //eq 28
-    drow = -R * (cos(dtheta_about_icc + yaw) - cos(yaw)); //eq 29
-    dtheta = w * dt;
+    double dtheta_about_icc = dyawdt * dt; //eq 11
+    dcol_cu = R * (sin(dtheta_about_icc + yaw_rad) - sin(yaw_rad)); //eq 28
+    drow_cu = -R * (cos(dtheta_about_icc + yaw_rad) - cos(yaw_rad)); //eq 29
+    dtheta_rad = dyawdt * dt;
   }
 
-  return std::tuple<double, double, double>{dcol, drow, dtheta};
+  return GlobalPose(dcol_cu, drow_cu, dtheta_rad);
 }
 
 std::tuple<double, double, bool> KinematicController::estimate_pose(RangeData range_data, Mouse *mouse) {

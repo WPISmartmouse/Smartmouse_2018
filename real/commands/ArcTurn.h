@@ -43,9 +43,9 @@ class ArcTurn : public Command {
 
   constexpr static double speed_scale = 0.75;
   double SLOW_ARC_SPEED =
-      speed_scale * (smartmouse::kc::MAX_SPEED_CUPS / (smartmouse::maze::HALF_UNIT_DIST + (smartmouse::kc::TRACK_WIDTH / 2)))
+      speed_scale * (smartmouse::kc::MAX_SPEED_CUPS / (smartmouse::maze::HALF_UNIT_DIST + (smartmouse::kc::TRACK_WIDTH_M / 2)))
           *
-              (smartmouse::maze::HALF_UNIT_DIST - (smartmouse::kc::TRACK_WIDTH / 2));
+              (smartmouse::maze::HALF_UNIT_DIST - (smartmouse::kc::TRACK_WIDTH_M / 2));
   double FAST_ARC_SPEED = speed_scale * (smartmouse::kc::MAX_SPEED_CUPS);
 
   constexpr static double kp_turn = 3.00;

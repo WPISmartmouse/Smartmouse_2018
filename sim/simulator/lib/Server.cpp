@@ -119,9 +119,8 @@ void Server::Step() {
 }
 
 void Server::UpdateRobotState(double dt) {
-  // TODO: implement friction
-//  const double u_k = mouse_.motor().u_kinetic();
-//  const double u_s = mouse_.motor().u_static();
+  const double u_k = mouse_.motor().u_kinetic();
+  const double u_s = mouse_.motor().u_static();
   const double motor_J = mouse_.motor().j();
   const double motor_b = mouse_.motor().b();
   const double motor_K = mouse_.motor().k();
@@ -131,10 +130,10 @@ void Server::UpdateRobotState(double dt) {
   // use the cmd abstract forces, apply our dynamics model, update robot state
   double col = robot_state_.p().col();
   double row = robot_state_.p().row();
-  double theta = robot_state_.p().theta();
+  double yaw = robot_state_.p().yaw();
   double v_col = robot_state_.v().col();
   double v_row = robot_state_.v().row();
-  double w = robot_state_.v().theta();
+  double dyawdt = robot_state_.v().yaw();
   double tl = robot_state_.left_wheel().theta();
   double wl = robot_state_.left_wheel().omega();
   double il = robot_state_.left_wheel().current();
@@ -147,6 +146,19 @@ void Server::UpdateRobotState(double dt) {
 
   double new_al = il * motor_K / motor_J - motor_b * wl / motor_J; // equation 36
   double new_ar = ir * motor_K / motor_J - motor_b * wr / motor_J; // equation 39
+//  if (wl < 1e-3 && new_al < u_s) {
+//    new_al = 0;
+//  }
+//  else if (new_al < u_k) {
+//    new_al = 0;
+//  }
+//  if (wr < 1e-3 && new_ar < u_s) {
+//    new_ar = 0;
+//  }
+//  else if (new_ar < u_k) {
+//    new_ar = 0;
+//  }
+
   double new_wl = wl + new_al * dt;
   double new_wr = wr + new_ar * dt;
   double new_tl = tl + new_wl * dt + 1 / 2 * new_al * dt * dt;
@@ -158,14 +170,13 @@ void Server::UpdateRobotState(double dt) {
   double new_il = il + dt * (voltage_l - motor_K * wl - motor_R * il) / motor_L;
   double new_ir = ir + dt * (voltage_r - motor_K * wr - motor_R * ir) / motor_L;
 
-  double dcol, drow, dtheta;
   double vl_cups = smartmouse::maze::toCellUnits(vl);
   double vr_cups = smartmouse::maze::toCellUnits(vr);
-  std::tie(dcol, drow, dtheta) = KinematicController::forwardKinematics(vl_cups, vr_cups, theta, dt);
+  GlobalPose d_pose = KinematicController::forwardKinematics(vl_cups, vr_cups, yaw, dt);
 
   // update row and col position
-  double new_col = col + dcol;
-  double new_row = row + drow;
+  double new_col = col + d_pose.col;
+  double new_row = row + d_pose.row;
 
   // update col and row speed and acceleration
   double new_v_col = (new_col - col) / dt;
@@ -173,13 +184,13 @@ void Server::UpdateRobotState(double dt) {
   double new_a_col = (new_v_col - v_col) / dt;
   double new_a_row = (new_v_row - v_row) / dt;
 
-  // update theta, omega, and alpha
-  double new_theta = theta + dtheta; //eq 27
-  double new_w = smartmouse::math::yawDiff(new_theta, theta) / dt;
-  double new_a = (new_w - w) / dt;
+  // update yaw, omega, and alpha
+  double new_yaw = yaw + d_pose.yaw; //eq 27
+  double new_dyawdt = smartmouse::math::yawDiff(new_yaw, yaw) / dt;
+  double new_a = (new_dyawdt - dyawdt) / dt;
 
   // handle wrap-around of theta
-  smartmouse::math::wrapAngleRadInPlace(&new_theta);
+  smartmouse::math::wrapAngleRadInPlace(&new_yaw);
 
   // Ray trace to find distance to walls
   // iterate over every line segment in the maze (all edges of all walls)
@@ -198,13 +209,13 @@ void Server::UpdateRobotState(double dt) {
   if (!static_) {
     robot_state_.mutable_p()->set_col(new_col);
     robot_state_.mutable_p()->set_row(new_row);
-    robot_state_.mutable_p()->set_theta(new_theta);
+    robot_state_.mutable_p()->set_yaw(new_yaw);
     robot_state_.mutable_v()->set_col(new_v_col);
     robot_state_.mutable_v()->set_row(new_v_row);
-    robot_state_.mutable_v()->set_theta(new_w);
+    robot_state_.mutable_v()->set_yaw(new_dyawdt);
     robot_state_.mutable_a()->set_col(new_a_col);
     robot_state_.mutable_a()->set_row(new_a_row);
-    robot_state_.mutable_a()->set_theta(new_a);
+    robot_state_.mutable_a()->set_yaw(new_a);
   }
   robot_state_.mutable_left_wheel()->set_theta(new_tl);
   robot_state_.mutable_left_wheel()->set_omega(new_wl);
@@ -228,13 +239,13 @@ void Server::ResetTime() {
 void Server::ResetRobot(double reset_col, double reset_row, double reset_yaw) {
   robot_state_.mutable_p()->set_col(reset_col);
   robot_state_.mutable_p()->set_row(reset_row);
-  robot_state_.mutable_p()->set_theta(reset_yaw);
+  robot_state_.mutable_p()->set_yaw(reset_yaw);
   robot_state_.mutable_v()->set_col(0);
   robot_state_.mutable_v()->set_row(0);
-  robot_state_.mutable_v()->set_theta(0);
+  robot_state_.mutable_v()->set_yaw(0);
   robot_state_.mutable_a()->set_col(0);
   robot_state_.mutable_a()->set_row(0);
-  robot_state_.mutable_a()->set_theta(0);
+  robot_state_.mutable_a()->set_yaw(0);
   robot_state_.mutable_left_wheel()->set_theta(0);
   robot_state_.mutable_left_wheel()->set_omega(0);
   robot_state_.mutable_left_wheel()->set_current(0);
@@ -360,7 +371,7 @@ double Server::ComputeSensorDistToWall(smartmouse::msgs::SensorDescription senso
   double min_range = smartmouse::kc::ANALOG_MAX_DIST_CU;
   double sensor_col = smartmouse::maze::toCellUnits(sensor.p().x());
   double sensor_row = smartmouse::maze::toCellUnits(sensor.p().y());
-  double robot_theta = robot_state_.p().theta();
+  double robot_theta = robot_state_.p().yaw();
   ignition::math::Vector3d s_origin_3d(sensor_col, sensor_row, 1);
   ignition::math::Matrix3d tf(cos(robot_theta), -sin(robot_theta), robot_state_.p().col(),
                               sin(robot_theta), cos(robot_theta), robot_state_.p().row(),
