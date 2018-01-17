@@ -8,6 +8,7 @@ import csv
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('infile', help='filename')
+    parser.add_argument('--outfile', help='filename')
     args = parser.parse_args()
 
     reader = csv.reader(open(args.infile, 'r'))
@@ -21,8 +22,14 @@ def main():
         x[key].append(t)
 
     print("Key, Average time (micros)")
+    if args.outfile:
+        outfile = open(args.outfile, 'w')
+        outfile.write("Key, Average time (micros)\n")
     for key, times in x.items():
-        print(key, np.mean(times))
+        mean = np.mean(times)
+        print(key, mean)
+        if args.outfile:
+            outfile.write("%s, %f\n"%(key, mean))
 
 
 if __name__ == '__main__':

@@ -1,4 +1,5 @@
 .idea
 .real_build
+.real_profile_build
 .sim_build
 *.swp

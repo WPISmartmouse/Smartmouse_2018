@@ -92,7 +92,9 @@ void RealMouse::run(double dt_s) {
   left_angle_rad = tick_to_rad(left_encoder.read());
   right_angle_rad = tick_to_rad(right_encoder.read());
 
+#ifdef PROFILE
   unsigned long t0 = micros();
+#endif
   range_data.gerald_left = ir_converter.adcToMeters(analogRead(GERALD_LEFT_ANALOG_PIN));
   range_data.gerald_right = ir_converter.adcToMeters(analogRead(GERALD_RIGHT_ANALOG_PIN));
   range_data.front_left = ir_converter.adcToMeters(analogRead(FRONT_LEFT_ANALOG_PIN));
@@ -100,21 +102,29 @@ void RealMouse::run(double dt_s) {
   range_data.front_right = ir_converter.adcToMeters(analogRead(FRONT_RIGHT_ANALOG_PIN));
   range_data.back_right = ir_converter.adcToMeters(analogRead(BACK_RIGHT_ANALOG_PIN));
   range_data.front = ir_converter.adcToMeters(analogRead(FRONT_ANALOG_PIN));
-  Serial.print("B, ");
+#ifdef PROFILE
+  Serial.print("Sensors, ");
   Serial.println(micros() - t0);
+#endif
 
+#ifdef PROFILE
   unsigned long t1 = micros();
+#endif
   std::tie(abstract_left_force, abstract_right_force) = kinematic_controller.run(dt_s, left_angle_rad,
                                                                                  right_angle_rad, range_data);
-  Serial.print("C, ");
+#ifdef PROFILE
+  Serial.print("KC, ");
   Serial.println(micros() - t1);
+#endif
 
   // THIS IS SUPER IMPORTANT!
   // update row/col information
   row = kinematic_controller.row;
   col = kinematic_controller.col;
 
+#ifdef PROFILE
   unsigned long t2 = micros();
+#endif
   if (abstract_left_force < 0) {
     analogWrite(MOTOR_LEFT_A, (int) -abstract_left_force);
     analogWrite(MOTOR_LEFT_B, 0);
@@ -130,8 +140,10 @@ void RealMouse::run(double dt_s) {
     analogWrite(MOTOR_RIGHT_B, (int) abstract_right_force);
     analogWrite(MOTOR_RIGHT_A, 0);
   }
-  Serial.print("D, ");
+#ifdef PROFILE
+  Serial.print("Motors, ");
   Serial.println(micros() - t2);
+#endif
 }
 
 void RealMouse::setup() {

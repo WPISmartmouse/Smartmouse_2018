@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.1)
 
+option(PROFILE "profile real robot code" OFF)
 option(BUILD_SIM "build simulations" OFF)
 include_directories(${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR} common/Eigen)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -47,6 +48,10 @@ if (NOT ${BUILD_SIM})
 
     add_teensy_executable(main real/main/main.cpp ${COM_SRC} ${CORE_COM_SRC} ${COM_COMMAND_SRC} ${REAL_SRC} ${REAL_LIBS_SRC})
     set_target_properties(main PROPERTIES COMPILE_FLAGS "-include ${UTIL_HEADER}")
+    if (PROFILE)
+      target_compile_definitions(main PRIVATE PROFILE)
+      message("proflilng...")
+    endif()
 
     add_teensy_executable(eigen_test real/main/eigen_test.cpp common/core/util.cpp)
     set_target_properties(eigen_test PROPERTIES COMPILE_FLAGS "-include ${UTIL_HEADER}")
