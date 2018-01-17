@@ -64,7 +64,10 @@ void loop() {
   mouse->run(dt_s);
 
   if (!done) {
+    unsigned long t0 = micros();
     done = scheduler->run();
+    Serial.print("A, ");
+    Serial.println(micros() - t0);
   } else {
     mouse->setSpeedCps(0, 0);
     digitalWrite(RealMouse::SYS_LED, 1);
