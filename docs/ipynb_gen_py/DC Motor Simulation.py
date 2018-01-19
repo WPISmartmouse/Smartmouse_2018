@@ -135,7 +135,7 @@ print("rps", rps)
 print("volts", v)
 
 
-# In[8]:
+# In[6]:
 
 
 cps = 2.77777
@@ -158,6 +158,25 @@ plt.title("Speed of realistic motor")
 plt.ylabel("Speed (meter/s)")
 plt.xlabel("Time (seconds)")
 plt.show()
+
+
+# In[7]:
+
+def method2(V, J, b, K, R, L, theta_dot=0, i=0):
+    A = L*J/K
+    B = L*b/K + R*J/K
+    C = R*b/K+K
+    print(A,B,C)
+
+
+# In[8]:
+
+method2(const_V(2), J=0.0001, b=0.0004, K=0.01, R=2.5, L=0.1)
+
+
+# In[9]:
+
+print("encoder", .11/.001)
 
 
 # In[ ]:
