@@ -16,6 +16,7 @@ bool on = true;
 bool paused = false;
 
 void setup() {
+  delay(1000);
   Command::setTimerImplementation(&timer);
   mouse = RealMouse::inst();
   mouse->setup();
@@ -69,7 +70,7 @@ void loop() {
 #endif
     done = scheduler->run();
 #ifdef PROFILE
-    Serial.print("Loop Time, ");
+    Serial.print("Schedule, ");
     Serial.println(micros() - t0);
 #endif
   } else {

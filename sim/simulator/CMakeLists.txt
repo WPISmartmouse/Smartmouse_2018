@@ -8,14 +8,10 @@ find_package(Qt5 COMPONENTS Core Widgets Charts REQUIRED)
 
 # Find QWT
 find_path(QWT_INCLUDE_DIR NAMES qwt.h PATHS
-        /usr/include
-        /usr/local/include
-
-        PATH_SUFFIXES qwt qwt5)
+        /usr/local/qwt-6.1.3/include)
 
 find_library(QWT_LIBRARY NAMES qwt-qt5 qwt PATHS
-        /usr/lib
-        /usr/local/lib)
+        /usr/local/qwt-6.1.3/lib)
 
 add_subdirectory(msgs)
 set_source_files_properties(${PROTO_SRC} ${PROTO_HEADER}
