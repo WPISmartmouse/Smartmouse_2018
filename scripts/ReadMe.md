@@ -29,7 +29,7 @@ This doesn't necessarily answer the question of how fast our PID controller shou
 
 **Total Time: *305.277 us**
 
-This means we could run is 3275.7Hz, or 3.275kHz?!?! But we're only running at 100Hz...
+This means we could run at 1,000,000/305.277 = 3275.7Hz, or 3.275kHz?!?! But we're only running at 100Hz.
 
 *This is just the some of these measured times, which does not include a small amount of other code. There could be another ~10us of total loop time.
 
