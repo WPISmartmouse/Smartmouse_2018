@@ -17,3 +17,19 @@ We estimate a 43 second solve will required the robot to drive at 90 cm/s (0.9m/
 *Our target control loop rate is 650Hz*.
 
 This doesn't necessarily answer the question of how fast our PID controller should be. We need to experiment to see if faster PID control loop rate gives better response time and steady state error.
+
+### Profiling results
+
+|Key      | Average time (micros)|
+|---------|----------------------|
+|Schedule |  31.571              |
+|Sensors  |  79.741              |
+|KC       | 186.953              |
+|Motors   |   7.012              |
+
+**Total Time: *305.277 us**
+
+This means we could run is 3275.7Hz, or 3.275kHz?!?! But we're only running at 100Hz...
+
+*This is just the some of these measured times, which does not include a small amount of other code. There could be another ~10us of total loop time.
+
