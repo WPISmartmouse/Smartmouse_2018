@@ -9,12 +9,12 @@
 
 # ## Going Straight
 
-# In[1]:
+# In[5]:
 
 get_ipython().run_line_magic('load_ext', 'tikzmagic')
 
 
-# In[2]:
+# In[6]:
 
 get_ipython().run_cell_magic('tikz', '-s 400,400', '\\draw[->] (0,0) -- (10,0);\n\\draw[->] (0,0) -- (0,5);\n\n\\draw[line width=1] (0,0.5) -- (2.5,3);\n\\draw[line width=1] (2.5,3) -- (5.5,3);\n\\draw[line width=1] (5.5,3) -- (8,0.5);\n\\draw[dashed] (0,0.5) -- (10,0.5);\n\\draw[dashed] (0,3) -- (10,3);\n\\draw[dashed] (2.5,0) -- (2.5,5);\n\\draw[dashed] (5.5,0) -- (5.5,5);\n\\draw[dashed] (8,0) -- (8,5);\n\n\\draw (-0.5, 0.5) node {$V_{f}$};\n\\draw (-0.5, 3) node {$V_{max}$};\n\\draw (2.5, -0.5) node {$t_b$};\n\\draw (5.5, -0.5) node {$t_f-t_b$};\n\\draw (8, -0.5) node {$t_f$};')
 
@@ -34,7 +34,7 @@ get_ipython().run_cell_magic('tikz', '-s 400,400', '\\draw[->] (0,0) -- (10,0);\
 
 # ## Code that proves it
 
-# In[2]:
+# In[7]:
 
 # dependencies and global setup
 import numpy as np
@@ -60,9 +60,9 @@ def log(*args):
         print(*args)
 
 
-# In[4]:
+# In[8]:
 
-def profile(V0, Vf, Vmax, d, A, buffer=3e-3):
+def profile(V0, Vf, Vmax, d, A, buffer=3e-4):
     v = V0
     x = 0
     a = A
@@ -70,7 +70,7 @@ def profile(V0, Vf, Vmax, d, A, buffer=3e-3):
     xs = [x]
     a_s = [a]
     
-    dt = 0.01
+    dt = 0.001
     while x < d:
         x = x + v*dt + a*dt*dt/2.0
         v = v + a*dt
@@ -96,6 +96,7 @@ def profile(V0, Vf, Vmax, d, A, buffer=3e-3):
 def graph(title, idx):
     plt.figure()
     plt.title(title)
+    # various max speeds
     Vs = [0.35, 0.5, 0.75, 1, 2]
     Vf = 0.02
     V0 = 0.2
@@ -156,7 +157,7 @@ plt.show()
 # 
 # It can be shown that the matrix on the left is invertable, so long as $t_f-t_0 > 0$. So we can invert and solve this equation and get all the $a$ coefficients. We can then use this polynomial to generate the $q(t)$ and $\dot{q}(t)$ -- our trajectory.
 
-# In[5]:
+# In[9]:
 
 def simple_traj_solve(q_0, q_f, q_dot_0, q_dot_t_f, t_f):
     # Example: you are a point in space (one dimension) go from rest at the origin to at rest at (0.18, 0, 0) in 1 second
@@ -179,7 +180,7 @@ simple_traj_coeff = simple_traj_solve(*simple_traj_info)
 
 # Here you can see that the resulting coeffictions are $a_0=0$, $a_1=0$, $a_2=0.54$, $a_0=-0.36$. Intuitively, this says that we're going to have positive acceleration, but our acceleration is going to slow down over time. Let's graph it!
 
-# In[6]:
+# In[10]:
 
 def simple_traj_plot(coeff, t_f):
     dt = 0.01
@@ -198,7 +199,7 @@ simple_traj_plot(simple_traj_coeff, simple_traj_info[-1])
 # 
 # Let's try another example, now with our full state space of $[x, y, \theta]$.
 
-# In[7]:
+# In[11]:
 
 def no_dynamics():
     # In this example, we go from (0.18, 0.09, 0) to (0.27,0.18, -1.5707). Our starting and ending velocities are zero
@@ -249,7 +250,7 @@ no_dynamics()
 # 
 # ***
 
-# In[8]:
+# In[12]:
 
 get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45:(0,0)}] (-.5,-1) rectangle (0.5,1);\n\\filldraw (0,0) circle (0.125);\n\n\\draw [->] (0,0) -- (0,1.5);\n\\draw [->] (0,0) -- (1.5,0);\n\\draw [->] (0,0) -- (1.5,1.5);\n\\draw (1.2, -0.2) node {$x$};\n\\draw (-0.2, 1.2) node {$y$};\n\\draw (1, 1.2) node {$v$};')
 
@@ -376,7 +377,7 @@ get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45
 # \end{bmatrix}
 # \end{equation}
 
-# In[9]:
+# In[13]:
 
 # Let's solve this in code like we did before
 def plot_vars(traj_plan):
@@ -451,7 +452,7 @@ def plot_traj_pts(xs, ys, T, waypoints):
     plt.show()
 
 
-# In[10]:
+# In[14]:
 
 from math import sin, cos, pi
 from collections import namedtuple
@@ -543,7 +544,7 @@ class TrajPlan:
 
 # ## Example Plots
 
-# In[11]:
+# In[15]:
 
 # forward 1 cell, start from rest, end at 40cm/s, do it in .5 seconds
 LOG_LVL = 5
@@ -553,7 +554,7 @@ plot_vars(fwd_1)
 plot_traj(fwd_1)
 
 
-# In[12]:
+# In[16]:
 
 # continue by turning right 90 degrees
 LOG_LVL = 1
@@ -563,7 +564,7 @@ plot_vars(turn_right)
 plot_traj(turn_right)
 
 
-# In[13]:
+# In[17]:
 
 # 3 waypoints!
 LOG_LVL = 1
@@ -577,7 +578,7 @@ plot_traj(turn_right)
 # 
 # Now let's find one that really sucks!
 
-# In[14]:
+# In[18]:
 
 # 4 waypoints!
 LOG_LVL = 1
@@ -600,7 +601,7 @@ plot_traj(turn_right)
 # 
 # where $v_d$ is desired velocity, $\theta_d$ is the desired angle, $d$ is signed distance to the planned trajectory (to the right of the plan is positive), $v_d$ and $w_d$ are the desired velocities of the robot, and $P_1$, $P_2$, and $P_3$ are constants. Essentially what we're saying with the first equation is that when you're far off the trajectory you need to turn harder to get back on to it, but you also need to be aligned with it. The second equation says if you're lagging behind your plan speed up, or slow down if you're overshooting.
 
-# In[15]:
+# In[19]:
 
 from math import atan2, sqrt
 
@@ -618,8 +619,8 @@ def simulate(q_0, waypoints, P_1, P_2, P_3, A=3):
     actual_v = q_0[3]
     actual_w = q_0[4]
     v_acc = A * dt
-    TRACK_WIDTH = 0.0633
-    w_acc = v_acc / (TRACK_WIDTH/2)
+    TRACK_WIDTH_M = 0.0633
+    w_acc = v_acc / (TRACK_WIDTH_M/2)
     T = np.arange(0, traj.get_t_f()+dt, dt)
     x_bar_list = []
     y_bar_list = []
@@ -682,7 +683,7 @@ def simulate(q_0, waypoints, P_1, P_2, P_3, A=3):
     plt.legend(bbox_to_anchor=(1,1), loc=2)
 
 
-# In[16]:
+# In[20]:
 
 test_P_1=300
 test_P_2=50
@@ -693,7 +694,7 @@ simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3)
 plt.show()
 
 
-# In[17]:
+# In[21]:
 
 robot_q_0 = (0.11, 0.18, pi/2, 0.2, 5)
 traj = [(0, WayPoint(0.09, 0.18, pi/2, 0.2)), (1, WayPoint(0.18, 0.27, 0, 0.35))]
@@ -701,7 +702,7 @@ simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3)
 plt.show()
 
 
-# In[18]:
+# In[22]:
 
 robot_q_0 = (0.0, 0.25, 0, 0.2, 0)
 traj = [(0, WayPoint(0.0, 0.27, 0, 0.2)), (1.25, WayPoint(0.54, 0.27, 0, 0.2))]
@@ -709,7 +710,7 @@ simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3)
 plt.show()
 
 
-# In[19]:
+# In[23]:
 
 robot_q_0 = (0.45, 0.05, pi+0.25, 0.3, 0)
 traj = [(0, WayPoint(0.45, 0.09, pi, 0.4)), (0.75, WayPoint(0.27, 0.27, pi/2, 0.4))]
@@ -717,7 +718,7 @@ simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3)
 plt.show()
 
 
-# In[20]:
+# In[24]:
 
 robot_q_0 = (0.0, 0.25, 0, 0.2, -5)
 traj = [(0, WayPoint(0.0, 0.27, 0, 0.2)), (2, WayPoint(0.48, 0.36, pi/2, 0.2))]
@@ -725,7 +726,7 @@ simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3)
 plt.show()
 
 
-# In[21]:
+# In[25]:
 
 robot_q_0 = (0.25, 0.28, -pi*4/7, 0.5, 0)
 traj = [(0, WayPoint(0.27, 0.27, -pi/2, 0.8)), (0.35, WayPoint(0.45, 0.09, 0, 0.8))]
@@ -733,7 +734,7 @@ simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3, A=6)
 plt.show()
 
 
-# In[22]:
+# In[26]:
 
 # no initial error
 robot_q_0 = (0.11, 0.18, pi/2, 0.8, 0)
@@ -908,7 +909,7 @@ plt.show()
 # ### 7. Apply our new controller of the form $\vec{u} = -K(\vec{x} - \bar{x}) + \bar{u}$
 # 
 
-# In[26]:
+# In[27]:
 
 from math import atan2
 import scipy.linalg
@@ -1047,7 +1048,7 @@ def follow_plan(q_0, waypoints, P_1, P_2, P_3):
     plt.legend(bbox_to_anchor=(1,1), loc=2)
 
 
-# In[27]:
+# In[28]:
 
 LOG_LVL=1
 robot_q_0 = (0.08, 0.18, pi/2, 0.3)
@@ -1056,7 +1057,7 @@ follow_plan(robot_q_0, traj, test_P_1, test_P_2, test_P_3)
 plt.show()
 
 
-# In[28]:
+# In[29]:
 
 LOG_LVL=1
 robot_q_0 = (0.07, 0.18, pi/2, 0.2)
@@ -1067,7 +1068,7 @@ plt.show()
 
 # # Tuning new PIDs
 
-# In[3]:
+# In[30]:
 
 import csv
 reader = csv.reader(open("./pid_data.csv", 'r'))
