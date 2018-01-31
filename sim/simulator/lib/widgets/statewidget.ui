@@ -28,21 +28,21 @@
            <item>
             <widget class="QLabel" name="velocity_label">
              <property name="text">
-              <string>Velocities</string>
+              <string>True Velocity</string>
              </property>
             </widget>
            </item>
            <item>
             <widget class="QLabel" name="acceleration_label">
              <property name="text">
-              <string>Accelerations</string>
+              <string>True Acceleration</string>
              </property>
             </widget>
            </item>
            <item>
             <widget class="QLabel" name="current_label">
              <property name="text">
-              <string>Currents</string>
+              <string>Current</string>
              </property>
             </widget>
            </item>

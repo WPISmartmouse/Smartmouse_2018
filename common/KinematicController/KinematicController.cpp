@@ -307,9 +307,7 @@ std::pair<double, double> KinematicController::compute_wheel_velocities(Mouse *m
   double ramp_d =
       (pow(drive_straight_state.forward_v, 2) - pow(drive_straight_state.v_final, 2)) / (2.0 * acceleration_cellpss);
   double acc = acceleration_cellpss * dt_s;
-  // TODO: this fudge factor is a mathematically justified hack.
-  // it compensates for the use of discrete time
-  if (drive_straight_state.dispError < ramp_d + 0.015) {
+  if (drive_straight_state.dispError < ramp_d) {
     drive_straight_state.forward_v -= acc;
   } else if (drive_straight_state.forward_v < smartmouse::kc::MAX_SPEED_CUPS) {
     drive_straight_state.forward_v += acc;

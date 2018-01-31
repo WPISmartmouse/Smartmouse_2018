@@ -92,7 +92,7 @@ void ArcTurn::execute() {
   double arc_error = (smartmouse::maze::HALF_UNIT_DIST/pose_dist(mouse->getGlobalPose(), vtc_x, vtc_y))-1;
 
   double corr = (ang_error*1.0)+(arc_error*0.5);
-  print("%f\t%f\n\r", dAngle, smartmouse::math::yawDiff(curPose.yaw, dir_to_yaw(mouse->getDir())));
+//  print("%f\t%f\n\r", dAngle, smartmouse::math::yawDiff(curPose.yaw, dir_to_yaw(mouse->getDir())));
 
   double fast_speed = FAST_ARC_SPEED*((corr*-5)+1);
   double slow_speed = SLOW_ARC_SPEED*((corr*5)+1);
