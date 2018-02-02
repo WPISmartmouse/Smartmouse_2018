@@ -45,3 +45,14 @@ Let's set our constraints. We want to estimate our wheel velocity every 1.5ms (w
 If we read the encoder every 1.5ms, and we are traveling 0.2m/s, given wheel radius of 0.0145m, then our rotational speed is 0.2m/1s * 1/(2pi*.0145)m = 2.195 rotations per second. If we want to measure this 650 times a second, that's 2.195rot/1s * 1s/650cycle=0.00337 rot/cycle. Here a cycle refers to a control loop update.  If we have a 10 bit resolution encoder, then we have 0.00337rotations/1cycle* 2^10counts/1rotations = 3counts/cycle. This is not enough, because being off by one tick would mean 33% error in velocity estimate. Essentially, we want 20counts/cycle so that we have 5% error. Of course this error is less problematic at higher speeds (more ticks). But to acheive 5% error at 20m/s we need 0.00337*2^n=20, so n=12.535, which rounds up to 13. We can then see what happens at 1m/s. At 1m/s we go 1/1*1/(2pi*0.0145)=10.9762rotations/s, then 10.9762rot/s*1s/650cycle=0.0168865rot/cycle, then 0.0168865rot/cycle*2^13count/1rotation=138.33count/cycle.
 
 So, we need a 13 bit encoder on the output shaft if we want to be able to measure speeds within .2 and 1m/s  at 650Hz with at most 5% error.
+
+Lets consider what would happen if we put it on the input shaft. We have a gear ratio of 50:1 (the input shaft spins 50 times faster than the output shaft). Solve the following for n: 0.00337rotations (output)/1cycle * 50 rotations(input)/1rotation(output) * n counts/1rotations = 20counts/cycle. If you solve this, n=119.
+
+This means we need an encoder with 119 CPR or more.
+
+Lets figure out how many interrupts will happen per second at 1m/s. 119counts/1revolution * 10.9762rotation/1second = 1.306kHz (interrupts per second). If each interrupts take XXXXX microseconds, then ...
+
+## Other requirements we haven't figured out
+
+ - how many rangefinders do we need
+ - what is the worst case accuracy we can tolerate. How accurate do our range finders need to be.
