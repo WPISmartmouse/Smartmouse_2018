@@ -64,3 +64,13 @@ TODO
     ./sim/simulator/sim_tests
     cd console
     ./console_tests
+
+### Windows instructions
+
+This is super experimental, and I don't want to support it, and it only works for the real robot not simulation.
+
+ 1. Install CMake
+ 1. Install arduino ide 1.8.4
+ 1. Install teensyduino
+ 1. Install CLion and clone our repoistory. Open our repository in CLion
+ 1. try to build. Good luck...
