@@ -22,7 +22,11 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 set(TRIPLE "arm-none-eabi")
-set(ARDUINO_ROOT "/opt/arduino-1.8.4" CACHE PATH "Path to the Arduino directory")
+if (CMAKE_HOST_WIN32)
+    set(ARDUINO_ROOT "C:/PROGRA~2/Arduino" CACHE PATH "Path to the Arduino directory")
+else()
+    set(ARDUINO_ROOT "/opt/arduino-1.8.4" CACHE PATH "Path to the Arduino directory")
+endif()
 set(TEENSY_CORES_ROOT "${ARDUINO_ROOT}/hardware/teensy/avr/cores" CACHE PATH "Teensy cores")
 set(ARDUINO_LIB_ROOT "${ARDUINO_ROOT}/hardware/teensy/avr/libraries" CACHE PATH "arduino libraries directory")
 set(TEENSY_ROOT "${TEENSY_CORES_ROOT}/teensy3")
@@ -56,7 +60,6 @@ set(CMAKE_NM "${TOOLCHAIN_ROOT}/bin/${TRIPLE}-nm${TOOL_OS_SUFFIX}" CACHE PATH "n
 set(CMAKE_OBJCOPY "${TOOLCHAIN_ROOT}/bin/${TRIPLE}-objcopy${TOOL_OS_SUFFIX}" CACHE PATH "objcopy" FORCE)
 set(CMAKE_OBJDUMP "${TOOLCHAIN_ROOT}/bin/${TRIPLE}-objdump${TOOL_OS_SUFFIX}" CACHE PATH "objdump" FORCE)
 set(CMAKE_STRIP "${TOOLCHAIN_ROOT}/bin/${TRIPLE}-strip${TOOL_OS_SUFFIX}" CACHE PATH "strip" FORCE)
-set(CMAKE_RANLIB "${TOOLCHAIN_ROOT}/bin/${TRIPLE}-gcc-ranlib${TOOL_OS_SUFFIX}" CACHE PATH "ranlib" FORCE)
 
 include_directories("${TEENSY_ROOT}")
 
