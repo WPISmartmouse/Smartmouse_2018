@@ -21,11 +21,11 @@ get_filename_component(UTIL_HEADER common/core/util.h ABSOLUTE)
 file(GLOB_RECURSE CORE_COM_SRC common/commanduino/*.cpp common/core/*.cpp)
 file(GLOB COM_COMMAND_SRC common/commands/*.cpp)
 file(GLOB COM_SRC
-    common/*.cpp
-    common/math/*.cpp
-    common/commanduino/*.cpp
-    common/KinematicController/*.cpp
-    common/argparse/*.cpp)
+        common/*.cpp
+        common/math/*.cpp
+        common/commanduino/*.cpp
+        common/KinematicController/*.cpp
+        common/argparse/*.cpp)
 
 if (NOT ${BUILD_SIM})
     include(Teensy)
@@ -49,9 +49,12 @@ if (NOT ${BUILD_SIM})
     add_teensy_executable(main real/main/main.cpp ${COM_SRC} ${CORE_COM_SRC} ${COM_COMMAND_SRC} ${REAL_SRC} ${REAL_LIBS_SRC})
     set_target_properties(main PROPERTIES COMPILE_FLAGS "-include ${UTIL_HEADER}")
     if (PROFILE)
-      target_compile_definitions(main PRIVATE PROFILE)
-      message("proflilng...")
-    endif()
+        target_compile_definitions(main PRIVATE PROFILE)
+        message("proflilng...")
+    endif ()
+
+    add_teensy_executable(profile_encoders real/main/profile_encoders.cpp ${COM_SRC} ${CORE_COM_SRC} ${REAL_SRC} ${REAL_LIBS_SRC})
+    set_target_properties(profile_encoders PROPERTIES COMPILE_FLAGS "-include ${UTIL_HEADER}")
 
     add_teensy_executable(eigen_test real/main/eigen_test.cpp common/core/util.cpp)
     set_target_properties(eigen_test PROPERTIES COMPILE_FLAGS "-include ${UTIL_HEADER}")
