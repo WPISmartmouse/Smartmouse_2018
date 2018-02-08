@@ -27,6 +27,8 @@ void setup() {
   mouse = RealMouse::inst();
   mouse->setup();
   mouse->kinematic_controller.enabled = false;
+
+  print("micros per ticks\r\n");
 }
 
 unsigned long m = 0;
@@ -61,5 +63,5 @@ void loop() {
   auto dticks_while_moving = d_l + d_r;
 
   float micros_per_tick = (float)(dt_while_moving - dt_while_stationary) / dticks_while_moving;
-  print("micros per ticks = %f\r\n", micros_per_tick);
+  print("%f\r\n", micros_per_tick);
 }
