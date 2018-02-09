@@ -56,7 +56,7 @@ Lets figure out how many interrupts will happen per second at 1m/s. 119counts/1r
 
 In order to decide whether we should do our encoder counting on the teensy or another chip, we need to count how much CPU encoder counting eats up. We do this by comparing the amount of time a blocking piece of code takes when motors are moving versus stationary. When the motor is stationary, the encoders will not generate any interrupts. When they are moving, the encoder will generate lots of interrupts and the same for loop will take up more time.
 
-Run the `profile_encoders` to generate these numbers:
+Run the `profile_encoders` program in `real/main` to generate these numbers:
 
 microseconds per count = 0.575us
 
