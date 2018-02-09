@@ -68,6 +68,8 @@ In other words, it will take 100 microseconds per control loop to count our enco
 
 [here's the dimensional analysis in a more readable form](https://latex.codecogs.com/gif.latex?\LARGE&space;\frac{0.9m}{1s}&space;*&space;\frac{1\text{&space;outer&space;shaft&space;rotation}}{2\pi*0.0145m}&space;*&space;\frac{1s}{650\text{&space;cycle}}&space;*&space;\frac{50\text{&space;inner&space;shaft&space;rotation}}{1\text{&space;outer&space;shaft&space;rotation}}&space;*&space;\frac{119\text{&space;counts}}{1\text{&space;inner&space;shaft&space;rotation}}&space;*&space;\frac{0.575us}{1\text{&space;count}}&space;=&space;\frac{0.107us}{\text{cycle}})
 
+In other words, yes we can count encoder interrupts on the teensy and it won't matter at all.
+
 ## Other requirements we haven't figured out
 
  - how many rangefinders do we need
