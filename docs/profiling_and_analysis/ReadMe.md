@@ -64,7 +64,7 @@ So, if we want use 119CPR encoders at 0.9m/s how long per control loop will it t
 
 0.9m/s * 1rot/(2*pi*0.0145)m * 1s/650cycle * 50 rot inner/1rot * 119count/1rot inner * 0.575us / 1count = 0.107us per cycle
 
-In other words, it will take 100 microseconds per control loop to count our encoders at 90cm/s with 119 CPR encoders on the input shaft.
+In other words, it will take 100 *nanoseconds* per control loop to count our encoders at 90cm/s with 119 CPR encoders on the input shaft.
 
 [here's the dimensional analysis in a more readable form](https://latex.codecogs.com/gif.latex?\LARGE&space;\frac{0.9m}{1s}&space;*&space;\frac{1\text{&space;outer&space;shaft&space;rotation}}{2\pi*0.0145m}&space;*&space;\frac{1s}{650\text{&space;cycle}}&space;*&space;\frac{50\text{&space;inner&space;shaft&space;rotation}}{1\text{&space;outer&space;shaft&space;rotation}}&space;*&space;\frac{119\text{&space;counts}}{1\text{&space;inner&space;shaft&space;rotation}}&space;*&space;\frac{0.575us}{1\text{&space;count}}&space;=&space;\frac{0.107us}{\text{cycle}})
 
