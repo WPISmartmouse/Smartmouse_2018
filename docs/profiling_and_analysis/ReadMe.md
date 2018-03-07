@@ -74,6 +74,24 @@ In other words, it will take 100 *nanoseconds* per control loop to count our enc
 
 In other words, yes we can count encoder interrupts on the teensy and it won't matter at all.
 
+## Choosing Sensors
+
+In order to be able to read our sensors at 650Hz, we can't rely on any packaged sensors. They'll all just too slow to change. So we will use simple diode and phototransistors which are much faster. The biggest factor I think will be angle-of-half-sensitivity/intensity.
+
+IR Emitting Diodes:
+| Part Number | Wavelength | Half Angle | Datasheet |
+|-------------|------------|------------|-----------|
+| VSLY5850 | 850nm | 3 | https://www.vishay.com/docs/83160/vsly5850.pdf |
+| VSLY5940 | 940nm | 3 | https://www.vishay.com/docs/84240/vsly5940.pdf |
+
+IR Phototransistors:
+| Part Number | Wavelength | Half Angle | Datasheet |
+|-------------|------------|------------|-----------|
+| BPW77NB | 850nm | 10 | https://www.vishay.com/docs/81527/bpw77n.pdf |
+| BPV11F | 940nm | 15 | https://www.vishay.com/docs/81505/bpv11f.pdf |
+
+The 940nm receivers have a day light filter on them, so I think we should use those even though they have a wider half angle.
+
 ## Other requirements we haven't figured out
 
  - how many rangefinders do we need
