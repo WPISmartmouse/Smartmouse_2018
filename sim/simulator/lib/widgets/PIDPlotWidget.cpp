@@ -12,6 +12,10 @@ PIDPlotWidget::PIDPlotWidget() : ui_(new Ui::PIDPlotWidget()), capacity_(1000) {
   left_actual_ = new PlotSeriesData("Left Actual", Qt::red, capacity_);
   right_setpoint_ = new PlotSeriesData("Right Setpoint", Qt::green, capacity_);
   right_actual_ = new PlotSeriesData("Right Actual", Qt::blue, capacity_);
+  ui_->left_setpoint_checkbox->setStyleSheet("QCheckBox { color: black }");
+  ui_->left_checkbox->setStyleSheet("QCheckBox { color: red }");
+  ui_->right_setpoint_checkbox->setStyleSheet("QCheckBox { color: green }");
+  ui_->right_checkbox->setStyleSheet("QCheckBox { color: blue }");
 
   plot_ = new QwtPlot();
   plot_->setMinimumSize(400, 200);

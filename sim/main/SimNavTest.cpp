@@ -1,21 +1,19 @@
 #include <commands/WaitForStart.h>
 #include <commands/Forward.h>
-
-class Stop : public Command {
- public:
-  void initialize() {
-    SimMouse::inst()->setSpeedCps(0, 0);
-  }
-  bool isFinished() {
-    return false;
-  }
-};
+#include <commands/ForwardN.h>
+#include <commands/Turn.h>
+#include <commands/Stop.h>
 
 class NavTestCommand : public CommandGroup {
  public:
   NavTestCommand() : CommandGroup("NavTestGroup") {
     addSequential(new Forward());
-    addSequential(new Stop());
+    addSequential(new Forward());
+    addSequential(new ForwardN(2));
+    addSequential(new ForwardN(3));
+    addSequential(new ForwardN(4));
+//    addSequential(new Turn(Direction::S));
+    addSequential(new Stop(10000));
   }
 };
 

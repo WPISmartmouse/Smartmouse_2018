@@ -39,7 +39,7 @@ public:
 
   static GlobalPose forwardKinematics(double vl, double vr, double yaw, double dt);
 
-  void start(GlobalPose start_pose, double goalDisp, double v_final=smartmouse::kc::END_SPEED_MPS);
+  void start(GlobalPose start_pose, double goalDisp, double v_final=smartmouse::kc::END_SPEED_CUPS);
 
   void planTraj(Waypoints waypoints);
 
@@ -90,11 +90,11 @@ private:
   bool ignoring_left;
   bool ignoring_right;
 
-  GlobalPose current_pose_estimate;
+  GlobalPose current_pose_estimate_cu;
   Mouse *mouse;
   double d_until_left_drop;
   double d_until_right_drop;
-  static const double DROP_SAFETY;
+  static const double kDropSafety;
   double acceleration_cellpss;
   double dt_s;
 };

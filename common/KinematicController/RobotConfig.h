@@ -28,7 +28,7 @@ constexpr double ANALOG_MAX_DIST_M = 0.18;
 constexpr double ANALOG_MIN_DIST_M = 0.01;
 constexpr double WHEEL_RAD = 0.0145;
 constexpr double MIN_ABSTRACT_FORCE = 3.5;
-constexpr double END_SPEED_MPS = 0.3; // this can be lowered to 0.15 to demonstrate ForwardN
+constexpr double END_SPEED_CUPS = 2; // this can be lowered to 0.15 to demonstrate ForwardN
 
 extern double MAX_SPEED_MPS;
 extern bool ARC_TURN;

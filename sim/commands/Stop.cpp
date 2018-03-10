@@ -13,7 +13,7 @@ void Stop::execute() {
 }
 
 bool Stop::isFinished() {
-  return mouse->isStopped() && isTimedOut();
+  return isTimedOut();
 }
 
 void Stop::end() {

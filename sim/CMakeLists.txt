@@ -57,3 +57,6 @@ target_link_libraries(joy_teleop sim_common sim ncurses msgs)
 
 add_executable(pub_speeds tools/pub_speeds.cpp)
 target_link_libraries(pub_speeds msgs ${IGNITION-TRANSPORT_LIBRARIES})
+
+add_executable(time_test tools/time_test.cpp)
+target_link_libraries(time_test sim msgs ${IGNITION-TRANSPORT_LIBRARIES})

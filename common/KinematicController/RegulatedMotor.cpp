@@ -4,12 +4,13 @@
 #include "RegulatedMotor.h"
 
 RegulatedMotor::RegulatedMotor()
-    : kP(150),
-      kI(0.00),
-      kD(10.0),
+    : kP(300),
+      kI(0),
+      kD(5),
+      kDD(0.0),
       ff_offset(0),
       ff_scale(4),
-      int_cap(0),
+      int_cap(50),
       initialized(false),
       abstract_force(0),
       acceleration_rpss(0),
@@ -20,11 +21,14 @@ RegulatedMotor::RegulatedMotor()
       regulated_setpoint_rps(0),
       setpoint_rps(0),
       smooth_derivative(0),
-      velocity_rps(0) {}
+      velocity_rps(0),
+      second_derivative(0),
+      last_derivative(0) {}
 
 bool RegulatedMotor::isStopped() {
   bool stopped =
-      fabs(smartmouse::kc::radToMeters(velocity_rps)) <= 0.001 && fabs(abstract_force) <= smartmouse::kc::MIN_ABSTRACT_FORCE;
+      fabs(smartmouse::kc::radToMeters(velocity_rps)) <= 0.001
+          && fabs(abstract_force) <= smartmouse::kc::MIN_ABSTRACT_FORCE;
   return stopped;
 }
 
@@ -42,7 +46,6 @@ double RegulatedMotor::runPid(double dt_s, double angle_rad) {
   velocity_rps = (angle_rad - last_angle_rad) / dt_s;
   error = regulated_setpoint_rps - velocity_rps;
   derivative = (last_velocity_rps - velocity_rps) / dt_s;
-  smooth_derivative = 0.80 * smooth_derivative + 0.2 * derivative;
   integral += error * dt_s;
   integral = std::max(std::min(integral, int_cap), -int_cap);
 
@@ -52,7 +55,7 @@ double RegulatedMotor::runPid(double dt_s, double angle_rad) {
   } else {
     feed_forward = regulated_setpoint_rps * ff_scale + ff_offset;
   }
-  abstract_force = (feed_forward) + (error * kP) + (integral * kI) + (smooth_derivative * kD);
+  abstract_force = (feed_forward) + (error * kP) + (integral * kI) + (derivative * kD);
 
   abstract_force = std::max(std::min(255.0, abstract_force), -255.0);
 
@@ -76,12 +79,13 @@ void RegulatedMotor::setAccelerationCpss(double acceleration_cellpss) {
   this->acceleration_rpss = smartmouse::kc::cellsToRad(acceleration_cellpss);
 }
 
+#include <iostream>
 void RegulatedMotor::setSetpointCps(double setpoint_cups) {
-  double s = 0;
-  if (setpoint_cups > 0) {
-    s = fmax(fmin(setpoint_cups, smartmouse::kc::MAX_SPEED_CUPS), smartmouse::kc::MIN_SPEED_CUPS);
-  } else if (setpoint_cups < 0) {
-    s = fmin(fmax(setpoint_cups, -smartmouse::kc::MAX_SPEED_CUPS), -smartmouse::kc::MIN_SPEED_CUPS);
+  double s = 0.0;
+  if (setpoint_cups > 0.0) {
+    s = std::max(std::min(setpoint_cups, smartmouse::kc::MAX_SPEED_CUPS), smartmouse::kc::MIN_SPEED_CUPS);
+  } else if (setpoint_cups < 0.0) {
+    s = std::min(std::max(setpoint_cups, -smartmouse::kc::MAX_SPEED_CUPS), -smartmouse::kc::MIN_SPEED_CUPS);
   }
   this->setpoint_rps = smartmouse::kc::cellsToRad(s);
 }

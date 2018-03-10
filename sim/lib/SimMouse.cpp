@@ -46,7 +46,7 @@ std::pair<double, double> SimMouse::getWheelVelocities() {
 };
 
 bool SimMouse::isStopped() {
-  return kinematic_controller.isStopped() && fabs(abstract_left_force) <= 5 &&
+  return kinematic_controller.isStopped() && fabs(abstract_left_force) <= 0 &&
       fabs(abstract_right_force) <= smartmouse::kc::MIN_ABSTRACT_FORCE;
 }
 
@@ -108,13 +108,9 @@ void SimMouse::run() {
   smartmouse::msgs::RobotCommand cmd;
   cmd.mutable_left()->set_abstract_force((int) abstract_left_force);
   cmd.mutable_right()->set_abstract_force((int) abstract_right_force);
-  cmd_pub.Publish(cmd);
 
   smartmouse::msgs::DebugState state;
 
-  auto stamp = state.mutable_stamp();
-  unsigned long t_ms = Command::getTimerImplementation()->programTimeMs();
-  *stamp = smartmouse::msgs::Convert((int) t_ms);
   state.set_left_cps_setpoint(smartmouse::kc::radToCU(kinematic_controller.left_motor.setpoint_rps));
   state.set_left_cps_actual(smartmouse::kc::radToCU(kinematic_controller.left_motor.velocity_rps));
   state.set_right_cps_setpoint(smartmouse::kc::radToCU(kinematic_controller.right_motor.setpoint_rps));
@@ -124,6 +120,14 @@ void SimMouse::run() {
   p_c->set_row(global_pose.row);
   p_c->set_col(global_pose.col);
   p_c->set_yaw(global_pose.yaw);
+
+  int t_ms = (int)Command::getTimerImplementation()->programTimeMs();
+  auto state_stamp = state.mutable_stamp();
+  auto cmd_stamp = cmd.mutable_stamp();
+  *state_stamp = smartmouse::msgs::Convert(t_ms);
+  *cmd_stamp = smartmouse::msgs::Convert(t_ms);
+
+  cmd_pub.Publish(cmd);
   debug_state_pub.Publish(state);
 }
 

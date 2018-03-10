@@ -13,7 +13,10 @@ void Turn::initialize() {
     addSequential(new TurnInPlace(dir));
     addSequential(new Forward());
   } else if (mouse->getDir() != dir) {
-    addSequential(new ArcTurn(dir));
+//    addSequential(new ArcTurn(dir));
+    addSequential(new ForwardToCenter()); // slowly stop
+    addSequential(new TurnInPlace(dir));
+    addSequential(new Forward());
   }
 }
 

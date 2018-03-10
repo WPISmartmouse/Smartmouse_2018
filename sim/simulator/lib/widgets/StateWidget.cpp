@@ -10,7 +10,9 @@ StateWidget::StateWidget() : AbstractTab(), ui_(new Ui::StateWidget) {
   ui_->setupUi(this);
 
   pid_widget_ = new PIDPlotWidget();
+  control_widget_ = new ControlPlotWidget();
   ui_->charts_tabs->addTab(pid_widget_, pid_widget_->GetTabName());
+  ui_->charts_tabs->addTab(control_widget_, control_widget_->GetTabName());
 
   this->node_.Subscribe(TopicNames::kRobotSimState, &StateWidget::StateCallback, this);
   this->node_.Subscribe(TopicNames::kDebugState, &StateWidget::DebugStateCallback, this);
