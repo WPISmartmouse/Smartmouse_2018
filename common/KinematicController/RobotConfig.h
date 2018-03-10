@@ -29,13 +29,13 @@ constexpr double ANALOG_MAX_DIST_M = 0.18;
 constexpr double ANALOG_MIN_DIST_M = 0.01;
 constexpr double WHEEL_RAD = 0.0145;
 constexpr double MIN_ABSTRACT_FORCE = 3.5;
-constexpr double SOFT_ACCELERATION_CPSS = 2;
 
 extern double MAX_SPEED_MPS;
 extern bool ARC_TURN;
 extern double MAX_SPEED_CUPS;
+extern const double END_SPEED_CUPS;
+extern const double SOFT_ACCELERATION_CPSS;
 
-constexpr double END_SPEED_CUPS = 1;
 constexpr double TRACK_WIDTH_CU = smartmouse::maze::toCellUnits(TRACK_WIDTH_M);
 constexpr double MAX_HARDWARE_SPEED_CUPS = smartmouse::maze::toCellUnits(MAX_HARDWARE_SPEED_MPS);
 constexpr double MIN_SPEED_CUPS = smartmouse::maze::toCellUnits(MIN_SPEED_MPS);

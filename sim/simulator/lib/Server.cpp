@@ -119,8 +119,10 @@ void Server::Step() {
 }
 
 void Server::UpdateRobotState(double dt) {
+  // TODO: Implement friction
   const double u_k = mouse_.motor().u_kinetic();
   const double u_s = mouse_.motor().u_static();
+
   const double motor_J = mouse_.motor().j();
   const double motor_b = mouse_.motor().b();
   const double motor_K = mouse_.motor().k();

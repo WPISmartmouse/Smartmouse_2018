@@ -23,5 +23,5 @@ bool ForwardToCenter::isFinished() {
 }
 
 void ForwardToCenter::end() {
-  mouse->pauseSim();
+//  mouse->pauseSim();
 }

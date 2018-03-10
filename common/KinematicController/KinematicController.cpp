@@ -10,6 +10,8 @@
 const double KinematicController::kDropSafety = 0.8;
 const double KinematicController::kPWall = 0.8;
 const double KinematicController::kPYaw = -1.2;
+const double smartmouse::kc::END_SPEED_CUPS = 1.0;
+const double smartmouse::kc::SOFT_ACCELERATION_CPSS = 2;
 
 KinematicController::KinematicController(Mouse *mouse)
     : enable_sensor_pose_estimate(false), enabled(true), kinematics_enabled(true), initialized(false),
@@ -99,7 +101,7 @@ KinematicController::run(double dt_s, double left_angle_rad, double right_angle_
       double vr_cu = smartmouse::kc::radToCU(right_motor.velocity_rps);
 
       GlobalPose d_pose_cu;
-      d_pose_cu = forwardKinematics(vr_cu, vl_cu, current_pose_estimate_cu.yaw, dt_s);
+      d_pose_cu = forwardKinematics(vl_cu, vr_cu, current_pose_estimate_cu.yaw, dt_s);
       current_pose_estimate_cu.col += d_pose_cu.col;
       current_pose_estimate_cu.row += d_pose_cu.row;
       current_pose_estimate_cu.yaw += d_pose_cu.yaw;
@@ -115,7 +117,6 @@ KinematicController::run(double dt_s, double left_angle_rad, double right_angle_
       std::tie(est_yaw, offset_m, no_walls) = estimate_pose(range_data, mouse);
       double offset_cu = smartmouse::maze::toCellUnits(offset_m);
 
-      // only override if no one has explicitly set enable_sensor_pose_estimate to true
       if (enable_sensor_pose_estimate && !no_walls) {
         current_pose_estimate_cu.yaw = est_yaw;
 
@@ -324,12 +325,8 @@ std::pair<double, double> KinematicController::compute_wheel_velocities(Mouse *m
   // generate the velocity profile for achieving this as fast as possible
   double acc = smartmouse::kc::SOFT_ACCELERATION_CPSS * dt_s;
   double current_speed = smartmouse::kc::radToCU((left_motor.velocity_rps + right_motor.velocity_rps) / 2);
-  double predicted_disp_needed_to_stop = (std::pow(current_speed + acc, 2) - std::pow(drive_straight_state.v_final, 2)) / (2.0 * smartmouse::kc::SOFT_ACCELERATION_CPSS);
-  double predicted_disp_left_to_go = drive_straight_state.disp_error - (current_speed + acc) * dt_s;
-  if (drive_straight_state.v_final == 0) {
-    std::cout << predicted_disp_needed_to_stop << ", " << predicted_disp_left_to_go << "\n";
-  }
-  if (predicted_disp_left_to_go <= predicted_disp_needed_to_stop) {
+  double disp_needed_to_deccelerate = (std::pow(current_speed * 1.1, 2) - std::pow(drive_straight_state.v_final, 2)) / (2.0 * smartmouse::kc::SOFT_ACCELERATION_CPSS);
+  if (drive_straight_state.disp_error <= disp_needed_to_deccelerate) {
     drive_straight_state.forward_v -= acc;
   } else if (drive_straight_state.forward_v + acc <= smartmouse::kc::MAX_SPEED_CUPS) {
     drive_straight_state.forward_v += acc;

@@ -22,6 +22,6 @@ bool ForwardN::isFinished() {
 
 void ForwardN::end() {
   mouse->kinematic_controller.enable_sensor_pose_estimate = false;
-  mouse->pauseSim();
+//  mouse->pauseSim();
 }
 

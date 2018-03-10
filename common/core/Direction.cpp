@@ -130,10 +130,10 @@ Direction yaw_to_dir(double yaw) {
     return Direction::E;
   }
   else if (M_PI_4 < yaw && yaw < 3 * M_PI_4) {
-    return Direction::N;
+    return Direction::S;
   }
   else if (-3 * M_PI_4 < yaw && yaw < -M_PI_4) {
-      return Direction::S;
+      return Direction::N;
   }
   else {
     return Direction::W;
@@ -143,11 +143,11 @@ Direction yaw_to_dir(double yaw) {
 double dir_to_yaw(Direction d) {
   switch (d) {
     case Direction::N:
-      return M_PI / 2;
+      return -M_PI / 2;
     case Direction::E:
       return 0;
     case Direction::S:
-      return -M_PI / 2;
+      return M_PI / 2;
     case Direction::W:
       return M_PI;
     default:
