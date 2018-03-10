@@ -136,7 +136,7 @@ void SimMouse::setSpeedCps(double left_wheel_velocity_setpoint_cps, double right
 }
 
 bool SimMouse::simInit() {
-  kinematic_controller.setAccelerationCpss(20);
+  kinematic_controller.setAccelerationCpss(30);
 
   // we start in the middle of the first square
   resetToStartPose();
@@ -176,6 +176,7 @@ bool SimMouse::simInit() {
   }
 
   cmd_pub = node.Advertise<smartmouse::msgs::RobotCommand>(TopicNames::kRobotCommand);
+  server_control_pub = node.Advertise<smartmouse::msgs::ServerControl>(TopicNames::kServerControl);
   debug_state_pub = node.Advertise<smartmouse::msgs::DebugState>(TopicNames::kDebugState);
 
   // wait for time messages to come
@@ -189,4 +190,10 @@ void SimMouse::resetToStartPose() {
   kinematic_controller.reset_col_to(0.5);
   kinematic_controller.reset_row_to(0.5);
   kinematic_controller.reset_yaw_to(0.0);
+}
+
+void SimMouse::pauseSim() {
+  smartmouse::msgs::ServerControl msg;
+  msg.set_pause(true);
+  server_control_pub.Publish(msg);
 }

@@ -42,9 +42,12 @@ public:
 
   bool simInit();
 
+  void pauseSim();
+
   SimTimer *timer;
   ignition::transport::Node::Publisher cmd_pub;
   ignition::transport::Node::Publisher debug_state_pub;
+  ignition::transport::Node::Publisher server_control_pub;
   ignition::transport::Node node;
 
   KinematicController kinematic_controller;

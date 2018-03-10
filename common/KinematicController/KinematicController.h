@@ -12,7 +12,7 @@
 struct drive_straight_state_t {
   double disp;
   double goalDisp;
-  double dispError;
+  double disp_error;
   GlobalPose start_pose;
   double start_time_s;
   double left_speed_cellps;

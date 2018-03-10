@@ -1,19 +1,18 @@
 #include <commands/WaitForStart.h>
 #include <commands/Forward.h>
 #include <commands/ForwardN.h>
+#include <commands/ForwardToCenter.h>
 #include <commands/Turn.h>
 #include <commands/Stop.h>
 
 class NavTestCommand : public CommandGroup {
  public:
   NavTestCommand() : CommandGroup("NavTestGroup") {
-    addSequential(new Forward());
-    addSequential(new Forward());
-    addSequential(new ForwardN(2));
-    addSequential(new ForwardN(3));
-    addSequential(new ForwardN(4));
-//    addSequential(new Turn(Direction::S));
+    addSequential(new ForwardN(1));
+    addSequential(new ForwardToCenter());
     addSequential(new Stop(10000));
+//    addSequential(new Turn(Direction::S));
+//    addSequential(new Stop(10000));
   }
 };
 

@@ -17,10 +17,11 @@ void ForwardN::execute() {
 }
 
 bool ForwardN::isFinished() {
-  return mouse->kinematic_controller.drive_straight_state.dispError <= 0;
+  return mouse->kinematic_controller.drive_straight_state.disp_error <= 0;
 }
 
 void ForwardN::end() {
   mouse->kinematic_controller.enable_sensor_pose_estimate = false;
+  mouse->pauseSim();
 }
 

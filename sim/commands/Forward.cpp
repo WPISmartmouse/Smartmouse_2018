@@ -17,7 +17,7 @@ void Forward::execute() {
 }
 
 bool Forward::isFinished() {
-  return mouse->kinematic_controller.drive_straight_state.dispError <= 0;
+  return mouse->kinematic_controller.drive_straight_state.disp_error <= 0;
 }
 
 void Forward::end() {
