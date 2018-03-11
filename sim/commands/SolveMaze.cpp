@@ -1,5 +1,5 @@
 #include "SolveMaze.h"
-#include "Forward.h"
+#include "ForwardN.h"
 #include "ForwardToCenter.h"
 #include "Turn.h"
 #include "TurnInPlace.h"
@@ -28,9 +28,7 @@ bool SolveMaze::isFinished() {
       }
 
       if (prim.d == solver->mouse->getDir()) {
-        for (size_t i = 0; i < prim.n; i++) {
-          addSequential(new Forward());
-        }
+        addSequential(new ForwardN(prim.n));
       } else {
         addSequential(new Turn(prim.d));
       }

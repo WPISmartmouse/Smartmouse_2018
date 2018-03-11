@@ -1,5 +1,7 @@
 #include <common/math/math.h>
-#include "TurnInPlace.h"
+#include <sim/commands/TurnInPlace.h>
+
+const double TurnInPlace::kP = 0.5;
 
 TurnInPlace::TurnInPlace(Direction dir) : Command("SimTurnInPlace"), mouse(SimMouse::inst()), dir(dir) {}
 

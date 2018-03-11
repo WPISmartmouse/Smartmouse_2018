@@ -21,7 +21,6 @@ bool SolveMaze::isFinished() {
 
     if (!mazeSolved) {
       motion_primitive_t prim = solver->planNextStep();
-//      print("%i:%c\r\n", prim.n, dir_to_char(prim.d));
 
       if (!solver->isSolvable()) {
         solved = false;
