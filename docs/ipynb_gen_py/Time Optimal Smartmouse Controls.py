@@ -1141,13 +1141,13 @@ plt.show()
 # 
 # $t_2$ is the time to when we begin to transition from max acceleration back to 0
 
-# In[10]:
+# In[12]:
 
 
 a_m = 2
 j_m = 10
 v_0 = 1
-v_m = 5
+v_m = 3.015 #5
 v_f = 0
 
 # find maximum speed
@@ -1207,7 +1207,7 @@ plt.grid()
 plt.show()
 
 
-# In[11]:
+# In[13]:
 
 
 import scipy.integrate as integrate
