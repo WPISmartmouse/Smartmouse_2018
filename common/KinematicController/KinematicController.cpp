@@ -9,8 +9,6 @@
 
 
 const double KinematicController::kDropSafety = 0.8;
-const double smartmouse::kc::END_SPEED_CUPS = 1.0;
-const double smartmouse::kc::SOFT_ACCELERATION_CPSS = 2;
 
 KinematicController::KinematicController(Mouse *mouse)
     : enable_sensor_pose_estimate(false), enabled(true), kinematics_enabled(true), initialized(false),

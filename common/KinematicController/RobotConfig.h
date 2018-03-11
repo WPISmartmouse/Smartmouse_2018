@@ -33,8 +33,6 @@ constexpr double MIN_ABSTRACT_FORCE = 3.5;
 extern double MAX_SPEED_MPS;
 extern bool ARC_TURN;
 extern double MAX_SPEED_CUPS;
-extern const double END_SPEED_CUPS;
-extern const double SOFT_ACCELERATION_CPSS;
 
 constexpr double TRACK_WIDTH_CU = smartmouse::maze::toCellUnits(TRACK_WIDTH_M);
 constexpr double MAX_HARDWARE_SPEED_CUPS = smartmouse::maze::toCellUnits(MAX_HARDWARE_SPEED_MPS);

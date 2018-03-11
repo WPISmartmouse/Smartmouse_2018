@@ -8,7 +8,7 @@ void ForwardN::initialize() {
   mouse->kinematic_controller.enable_sensor_pose_estimate = true;
   const double goal_disp = KinematicController::dispToNthEdge(*mouse, n);
   const double v0 = mouse->kinematic_controller.getCurrentForwardSpeedCUPS();
-  const double vf = smartmouse::kc::END_SPEED_CUPS;
+  const double vf = smartmouse::kc::kVf;
   drive_straight_state = new smartmouse::kc::DriveStraightState(start, goal_disp, v0, vf);
   // TODO: eventually use this instead
   // mouse->kinematic_controller.plan_traj(start, KinematicController::poseOfNthEdge(mouse, n));
@@ -16,7 +16,8 @@ void ForwardN::initialize() {
 
 void ForwardN::execute() {
   double l, r;
-  std::tie(l, r) = drive_straight_state->compute_wheel_velocities(*mouse);
+  double t_s = static_cast<double>(getTime()) / 1000.0;
+  std::tie(l, r) = drive_straight_state->compute_wheel_velocities(*mouse, t_s);
   mouse->setSpeedCps(l, r);
 }
 

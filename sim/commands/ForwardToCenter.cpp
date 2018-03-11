@@ -14,7 +14,8 @@ void ForwardToCenter::initialize() {
 
 void ForwardToCenter::execute() {
   double l, r;
-  std::tie(l, r) = drive_straight_state->compute_wheel_velocities(*mouse);
+  double t_s = static_cast<double>(getTime()) / 1000.0;
+  std::tie(l, r) = drive_straight_state->compute_wheel_velocities(*mouse, t_s);
   mouse->setSpeedCps(l, r);
 }
 
