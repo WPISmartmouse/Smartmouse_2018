@@ -24,7 +24,7 @@ public:
 
   LocalPose getLocalPose();
 
-  std::pair<double, double> getWheelVelocities();
+  std::pair<double, double> getWheelVelocitiesCPS();
 
   bool isStopped();
 

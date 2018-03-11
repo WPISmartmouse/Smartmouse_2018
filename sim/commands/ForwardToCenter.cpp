@@ -20,7 +20,7 @@ void ForwardToCenter::execute() {
 
 bool ForwardToCenter::isFinished() {
   double vl, vr;
-  std::tie(vl, vr) = mouse->getWheelVelocities();
+  std::tie(vl, vr) = mouse->getWheelVelocitiesCPS();
   return drive_straight_state->dispError() <= 0.01
       or (fabs(vl) < 0.01 and fabs(vr) < 0.01);
 }

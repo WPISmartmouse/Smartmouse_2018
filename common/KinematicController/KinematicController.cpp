@@ -11,7 +11,7 @@
 const double KinematicController::kDropSafety = 0.8;
 
 KinematicController::KinematicController(Mouse *mouse)
-    : enable_sensor_pose_estimate(false), enabled(true), kinematics_enabled(true), initialized(false),
+    : enable_sensor_pose_estimate(true), enabled(true), kinematics_enabled(true), initialized(false),
       ignoring_left(false), ignoring_right(false), mouse(mouse),
       d_until_left_drop(0), d_until_right_drop(0) {
   current_pose_estimate_cu.col = 0;
@@ -53,10 +53,10 @@ LocalPose KinematicController::getLocalPose() {
   return local_pose_estimate;
 }
 
-std::pair<double, double> KinematicController::getWheelVelocities() {
+std::pair<double, double> KinematicController::getWheelVelocitiesCPS() {
   std::pair<double, double> vels;
-  vels.first = left_motor.velocity_rps;
-  vels.second = right_motor.velocity_rps;
+  vels.first = smartmouse::kc::radToCU(left_motor.velocity_rps);
+  vels.second = smartmouse::kc::radToCU(right_motor.velocity_rps);
   return vels;
 };
 

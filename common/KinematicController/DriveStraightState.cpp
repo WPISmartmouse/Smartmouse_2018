@@ -29,9 +29,7 @@ DriveStraightState::DriveStraightState(GlobalPose start_pose, double goal_disp, 
       v_2(v_m - std::pow(a_m, 2) / (2 * j_m)),
       t_2(t_1 + (v_2 - v_1) / a_m),
       t_m1(t_2 + t_1),
-      t_m2(compute_v_m(v_0, v_f, a_m, j_m, d) < smartmouse::kc::MAX_SPEED_CUPS ? t_m1 : t_m1
-          + (d - profile_distance(v_0, v_f, a_m, j_m, smartmouse::kc::MAX_SPEED_CUPS))
-              / smartmouse::kc::MAX_SPEED_CUPS),
+      t_m2(compute_v_m(v_0, v_f, a_m, j_m, d) < smartmouse::kc::MAX_SPEED_CUPS ? t_m1 : t_m1 + (d - profile_distance(v_0, v_f, a_m, j_m, smartmouse::kc::MAX_SPEED_CUPS)) / smartmouse::kc::MAX_SPEED_CUPS),
       t_3(t_m2 + a_m / j_m),
       v_3(v_m - std::pow(a_m, 2) / (2 * j_m)),
       v_4(v_f + std::pow(a_m, 2) / (2 * j_m)),
@@ -57,14 +55,15 @@ std::pair<double, double> DriveStraightState::compute_wheel_velocities(Mouse &mo
 
   // given starting velocity, max velocity, acceleration, and jerk, and final velocity...
   // generate the velocity profile for achieving this as fast as possible
-  double forward_velocity = compute_forward_velocity(t_s); // FIXME: our goal is to calculate this!
+  double forward_velocity = compute_forward_velocity(t_s);
 
-  double correction = kPWall * yaw_error;
-  if (yaw_error < 0) { // need to turn clockwise
+  double correction = kPWall * fabs(yaw_error);
+  if (yaw_error < 0) {
+    // need to turn clockwise
     return {forward_velocity, forward_velocity - correction};
   } else {
-    // correction will be negative here, so add it
-    return {forward_velocity + correction, forward_velocity};
+    // need to turn counter-clockwise
+    return {forward_velocity - correction, forward_velocity};
   }
 }
 
@@ -87,7 +86,7 @@ double DriveStraightState::compute_forward_velocity(double t /* seconds */ ) {
     v_t = v_m - j_m * std::pow(t - t_m2, 2) / 2.0;
   } else if (t <= t_4) {
     v_t = v_3 - a_m * (t - t_3);
-  } else if (t < t_f) {
+  } else if (t <= t_f) {
     v_t = v_4 - a_m * (t - t_4) + j_m * std::pow(t - t_4, 2) / 2.0;
   } else {
     v_t = v_f;

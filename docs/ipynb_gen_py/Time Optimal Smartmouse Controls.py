@@ -149,7 +149,7 @@ plt.show()
 # 
 # $t_2$ is the time to when we begin to transition from max acceleration back to 0
 
-# In[55]:
+# In[71]:
 
 
 def profile_distance(v_0, v_f, a_m, j_m, v_m):
@@ -190,7 +190,7 @@ def simulate_profile(v_0, v_f, a_m, j_m, v_m, V=np.inf, d=np.inf):
     print('d =', d)
 
     vs = []
-    T = t_f+0.1
+    T = t_f+0.01
     N = 200
     ts = np.linspace(0, T, N)
     for t in ts:
@@ -239,7 +239,7 @@ simulate_profile(v_0=1, v_f=0, a_m=2, j_m = 10, v_m=3)
 # 
 # For the profile defined above, we are picking $v_m$, and the distance the robot will travel over the whole profile is a function of this. If $v_m$ were lower the robot would travel a shorter distance, and if it were higher the robot would travel further. We can instead solve for the $v_m$ that makes the robot travel a certain distance. With that, we can solve for a velocity profile that will take us to the next of the next unexplored cell, with some final speed, from any initial speed, as fast as possible, while obeying max jerk and acceleration.
 
-# In[35]:
+# In[72]:
 
 
 def compute_v_max(v_0, v_f, a_m, j_m, d):
@@ -257,7 +257,7 @@ def compute_v_max(v_0, v_f, a_m, j_m, d):
     return v_max
 
 
-# In[36]:
+# In[73]:
 
 
 def too_fast():
@@ -278,7 +278,7 @@ too_fast()
 
 # So far in solving for $v_m$, we are have ignored the hardware limit. Let's call that $\mathbb{V}$. If we have a really far distance, it's possible that $v_m > \mathbb{V}$, and in that case we must clamp $v_m=\mathbb{V}$, and create a intermediate section of the profile where we maintain $\mathbb{V}$. An example is shown below
 
-# In[50]:
+# In[74]:
 
 
 def just_right():
@@ -300,16 +300,16 @@ just_right()
 # Here's an example what it looks like in simulation
 # ![s-curve](pid_screenshot_14:57:04_11_03_2018.png)
 
-# In[61]:
+# In[75]:
 
 
 def first_half_cell():
-    v_0 = 0
-    v_f = 1
+    v_0 = 0.95
+    v_f = 0
     a_m = 5
     j_m = 50
     V   = 4
-    d   = 0.5
+    d   = 0.473
     
     v_m = compute_v_max(v_0, v_f, a_m, j_m, d)
     simulate_profile(v_0, v_f, a_m, j_m, v_m, V, d)

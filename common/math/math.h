@@ -3,6 +3,12 @@
 
 namespace smartmouse {
 namespace math {
+/** \brief Computes the signed shorted angle between y2 and y1. Check CommonTest.cpp to see examples
+ *
+ * @param y1 the second angle in the subtraction
+ * @param y2 the first angle in the subtraction
+ * @return the signed shorted angle between y2 and y1.
+ */
 inline double yaw_diff(double y1, double y2) {
   double diff = y2 - y1;
   if (diff > M_PI) return diff - M_PI * 2;

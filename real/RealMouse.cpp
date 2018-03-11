@@ -79,7 +79,7 @@ LocalPose RealMouse::getLocalPose() {
 }
 
 std::pair<double, double> RealMouse::getWheelVelocities() {
-  return kinematic_controller.getWheelVelocities();
+  return kinematic_controller.getWheelVelocitiesCPS();
 };
 
 void RealMouse::run(double dt_s) {

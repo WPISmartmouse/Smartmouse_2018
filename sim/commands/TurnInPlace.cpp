@@ -27,9 +27,10 @@ void TurnInPlace::execute() {
 bool TurnInPlace::isFinished() {
   double currentYaw = mouse->getGlobalPose().yaw;
   dYaw = smartmouse::math::yaw_diff(currentYaw, goalYaw);
-  double vl, vr;
-  std::tie(vl, vr) = mouse->getWheelVelocities();
-  return (fabs(dYaw) < smartmouse::kc::ROT_TOLERANCE) && fabs(vl) < 0.05 && fabs(vr) < 0.05;
+  double vl_cps, vr_cps;
+  std::tie(vl_cps, vr_cps) = mouse->getWheelVelocitiesCPS();
+  return (fabs(dYaw) < smartmouse::kc::ROT_TOLERANCE) && fabs(vl_cps) <= smartmouse::kc::MIN_SPEED_CUPS
+      && fabs(vr_cps) < smartmouse::kc::MIN_SPEED_CUPS;
 }
 
 void TurnInPlace::end() {

@@ -41,8 +41,8 @@ LocalPose SimMouse::getLocalPose() {
   return kinematic_controller.getLocalPose();
 }
 
-std::pair<double, double> SimMouse::getWheelVelocities() {
-  return kinematic_controller.getWheelVelocities();
+std::pair<double, double> SimMouse::getWheelVelocitiesCPS() {
+  return kinematic_controller.getWheelVelocitiesCPS();
 };
 
 bool SimMouse::isStopped() {
