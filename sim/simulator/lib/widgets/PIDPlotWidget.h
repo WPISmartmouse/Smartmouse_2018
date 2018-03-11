@@ -23,6 +23,7 @@ class PIDPlotWidget : public QWidget, public AbstractTab {
   PIDPlotWidget();
 
   void Clear();
+  void Screenshot();
 
   const QString GetTabName() override;
 

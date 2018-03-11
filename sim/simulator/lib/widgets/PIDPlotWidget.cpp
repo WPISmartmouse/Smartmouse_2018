@@ -2,6 +2,9 @@
 #include <sim/simulator/lib/common/TopicNames.h>
 #include <msgs/msgs.h>
 #include <QtWidgets/QBoxLayout>
+#include <sstream>
+#include <qwt_plot_renderer.h>
+#include <QtCore/QDir>
 
 #include "ui_pidwidget.h"
 
@@ -37,6 +40,7 @@ PIDPlotWidget::PIDPlotWidget() : ui_(new Ui::PIDPlotWidget()), capacity_(1000) {
   connect(ui_->left_setpoint_checkbox, &QCheckBox::stateChanged, this, &PIDPlotWidget::LeftSetpointChecked);
   connect(ui_->right_checkbox, &QCheckBox::stateChanged, this, &PIDPlotWidget::RightChecked);
   connect(ui_->right_setpoint_checkbox, &QCheckBox::stateChanged, this, &PIDPlotWidget::RightSetpointChecked);
+  connect(ui_->screenshot_button, &QPushButton::clicked, this, &PIDPlotWidget::Screenshot);
   connect(this, &PIDPlotWidget::Replot, plot_, &QwtPlot::replot, Qt::QueuedConnection);
 }
 
@@ -92,4 +96,19 @@ void PIDPlotWidget::Clear() {
   left_actual_->Clear();
   right_setpoint_->Clear();
   right_actual_->Clear();
+}
+
+void PIDPlotWidget::Screenshot() {
+  // construct filename
+  char datestr[20];
+  auto now = std::time(nullptr);
+  std::stringstream ss;
+  ss << QDir::homePath().toStdString() << "/pid_screenshot_";
+  if (std::strftime(datestr, sizeof(datestr), "%H:%M:%S_%d_%m_%Y", std::localtime(&now))) {
+    ss << datestr;
+  }
+  ss << ".png";
+
+  grab().save(QString::fromStdString(ss.str()), "png", -1);
+  QwtPlotRenderer renderer;
 }
