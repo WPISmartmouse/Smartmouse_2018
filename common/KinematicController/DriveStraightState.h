@@ -28,7 +28,7 @@ class DriveStraightState {
 
  private:
   static constexpr double a_m = 5; // cu/s^2
-  static constexpr double j_m = 15; // cu/s^3
+  static constexpr double j_m = 50; // cu/s^3
   const double d;
   const double v_0;
   const double v_f;

@@ -5,7 +5,6 @@ ForwardToCenter::ForwardToCenter() : Command("FwdToCenter"), mouse(SimMouse::ins
 
 void ForwardToCenter::initialize() {
   start = mouse->getGlobalPose();
-  mouse->kinematic_controller.enable_sensor_pose_estimate = true;
   const double goal_disp = KinematicController::fwdDispToCenter(*mouse);
   const double v0 = mouse->kinematic_controller.getCurrentForwardSpeedCUPS();
   const double vf = 0.0;

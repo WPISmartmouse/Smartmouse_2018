@@ -6,7 +6,7 @@
 ArcTurn::ArcTurn(Direction dir) : Command("SimArcTurn"), mouse(SimMouse::inst()), dir(dir) {}
 
 void ArcTurn::initialize() {
-  mouse->kinematic_controller.enable_sensor_pose_estimate = true;
+  mouse->kinematic_controller.enable_sensor_pose_estimate = false;
   setTimeout(2000);
   goalYaw = dir_to_yaw(dir);
   startPose = mouse->getGlobalPose();
@@ -69,10 +69,6 @@ void ArcTurn::initialize() {
   }
 
   //print("%f,%f\n\r", vtc_x, vtc_y);
-
-  mouse->kinematic_controller.enable_sensor_pose_estimate = true;
-  // when we get close to aligned, there might be a wall we can use to better estimate our angle
-
 }
 
 void ArcTurn::execute() {
@@ -121,7 +117,7 @@ bool ArcTurn::isFinished() {
 void ArcTurn::end() {
   //digitalWrite(RealMouse::LED_3, 1);
   mouse->internalTurnToFace(dir);
-  mouse->kinematic_controller.enable_sensor_pose_estimate = false;
+  mouse->kinematic_controller.enable_sensor_pose_estimate = true;
 }
 
 double ArcTurn::pose_dist(GlobalPose pose, double x, double y) {

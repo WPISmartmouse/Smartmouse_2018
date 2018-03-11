@@ -149,7 +149,7 @@ plt.show()
 # 
 # $t_2$ is the time to when we begin to transition from max acceleration back to 0
 
-# In[47]:
+# In[55]:
 
 
 def profile_distance(v_0, v_f, a_m, j_m, v_m):
@@ -178,9 +178,16 @@ def simulate_profile(v_0, v_f, a_m, j_m, v_m, V=np.inf, d=np.inf):
     t_4 = t_3 - (v_4 - v_3) / a_m
     t_f = t_4 + t_1
     
-    print(t_1, t_2, t_m1, t_m2, t_3, t_4, t_f)
-    print(v_0, v_1, v_2, v_m_, v_3, v_4, v_f)
-    print(d)
+    print('t_1 =', t_1, 't_2 =', t_2)
+    print('t_m1 =', t_m1, 't_m2 =', t_m2)
+    print('t_3 =', t_3, 't_4 =', t_4)
+    print('t_f =', t_f)
+    print('v_0 =', v_0,)
+    print('v_1 =', v_1, 'v_2 =', v_2)
+    print('v_m =', v_m_)
+    print('v_3 =', v_3, 'v_4 =', v_4)
+    print('v_f =', v_f)
+    print('d =', d)
 
     vs = []
     T = t_f+0.1
@@ -271,7 +278,7 @@ too_fast()
 
 # So far in solving for $v_m$, we are have ignored the hardware limit. Let's call that $\mathbb{V}$. If we have a really far distance, it's possible that $v_m > \mathbb{V}$, and in that case we must clamp $v_m=\mathbb{V}$, and create a intermediate section of the profile where we maintain $\mathbb{V}$. An example is shown below
 
-# In[49]:
+# In[50]:
 
 
 def just_right():
@@ -292,6 +299,23 @@ just_right()
 # 
 # Here's an example what it looks like in simulation
 # ![s-curve](pid_screenshot_14:57:04_11_03_2018.png)
+
+# In[61]:
+
+
+def first_half_cell():
+    v_0 = 0
+    v_f = 1
+    a_m = 5
+    j_m = 50
+    V   = 4
+    d   = 0.5
+    
+    v_m = compute_v_max(v_0, v_f, a_m, j_m, d)
+    simulate_profile(v_0, v_f, a_m, j_m, v_m, V, d)
+    
+first_half_cell()
+
 
 # # General Form Trajectory Planning
 

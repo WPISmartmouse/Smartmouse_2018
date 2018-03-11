@@ -6,7 +6,6 @@ Forward::Forward() : Command("Forward"), mouse(RealMouse::inst()) {}
 
 void Forward::initialize() {
   start = mouse->getGlobalPose();
-  mouse->kinematic_controller.enable_sensor_pose_estimate = true;
   const double goal_disp = KinematicController::dispToNextEdge(*mouse);
   const double v0 = mouse->kinematic_controller.getCurrentForwardSpeedCUPS();
   const double vf = smartmouse::kc::kVf;
@@ -28,6 +27,5 @@ bool Forward::isFinished() {
 
 void Forward::end() {
   digitalWrite(RealMouse::LED_1, 0);
-  mouse->kinematic_controller.enable_sensor_pose_estimate = false;
 }
 

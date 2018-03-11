@@ -39,9 +39,9 @@ DriveStraightState::DriveStraightState(GlobalPose start_pose, double goal_disp, 
       t_f(t_4 + t_1),
       disp(0),
       start_pose(start_pose) {
-  print("%0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f\n", t_1, t_2, t_m1, t_m2, t_3, t_4, t_f);
-  print("%0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f\n", v_0, v_1, v_2, v_m, v_3, v_4, v_f);
-  print("%0.3f\n", d);
+//  print("%0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f\n", t_1, t_2, t_m1, t_m2, t_3, t_4, t_f);
+//  print("%0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f\n", v_0, v_1, v_2, v_m, v_3, v_4, v_f);
+//  print("%0.3f\n", d);
 }
 
 std::pair<double, double> DriveStraightState::compute_wheel_velocities(Mouse &mouse, double t_s) {

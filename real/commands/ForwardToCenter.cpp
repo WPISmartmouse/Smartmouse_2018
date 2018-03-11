@@ -6,7 +6,6 @@ ForwardToCenter::ForwardToCenter() : Command("FwdToCenter"), mouse(RealMouse::in
 void ForwardToCenter::initialize() {
 //  setTimeout(2000);
   start = mouse->getGlobalPose();
-  mouse->kinematic_controller.enable_sensor_pose_estimate = true;
   const double goal_disp = KinematicController::fwdDispToCenter(*mouse);
   const double v0 = mouse->kinematic_controller.getCurrentForwardSpeedCUPS();
   const double vf = 0.0;
@@ -30,5 +29,4 @@ bool ForwardToCenter::isFinished() {
 
 void ForwardToCenter::end() {
   digitalWrite(RealMouse::LED_3, 0);
-  mouse->kinematic_controller.enable_sensor_pose_estimate = false;
 }
