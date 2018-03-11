@@ -23,6 +23,7 @@ class ControlPlotWidget : public QWidget, public AbstractTab {
   ControlPlotWidget();
 
   void Clear();
+  void Screenshot();
 
   const QString GetTabName() override;
 

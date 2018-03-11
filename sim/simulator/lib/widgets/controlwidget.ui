@@ -67,6 +67,20 @@
          </property>
         </spacer>
        </item>
+       <item>
+        <widget class="QPushButton" name="screenshot_button">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="../../simulator.qrc">
+           <normaloff>:/images/camera.svg</normaloff>:/images/camera.svg</iconset>
+         </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
       </layout>
      </item>
      <item>
@@ -89,6 +103,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../../simulator.qrc"/>
+ </resources>
  <connections/>
 </ui>

@@ -2,6 +2,10 @@
 #include <sim/simulator/lib/common/TopicNames.h>
 #include <msgs/msgs.h>
 #include <QtWidgets/QBoxLayout>
+#include <QtCore/QDir>
+#include <lib/common/sim_util.h>
+#include <sstream>
+#include <qwt_plot_renderer.h>
 
 #include "ui_controlwidget.h"
 
@@ -30,6 +34,7 @@ ControlPlotWidget::ControlPlotWidget() : ui_(new Ui::ControlPlotWidget()), capac
   connect(ui_->clear_button, &QPushButton::clicked, this, &ControlPlotWidget::Clear);
   connect(ui_->left_checkbox, &QCheckBox::stateChanged, this, &ControlPlotWidget::LeftChecked);
   connect(ui_->right_checkbox, &QCheckBox::stateChanged, this, &ControlPlotWidget::RightChecked);
+  connect(ui_->screenshot_button, &QPushButton::clicked, this, &ControlPlotWidget::Screenshot);
   connect(this, &ControlPlotWidget::Replot, plot_, &QwtPlot::replot, Qt::QueuedConnection);
 }
 
@@ -65,4 +70,14 @@ void ControlPlotWidget::RightChecked() {
 void ControlPlotWidget::Clear() {
   left_actual_->Clear();
   right_actual_->Clear();
+}
+
+void ControlPlotWidget::Screenshot() {
+  std::stringstream ss;
+  ss << QDir::homePath().toStdString() << "/pid_screenshot_";
+  ss << smartmouse::simulator::date_str();
+  ss << ".png";
+
+  grab().save(QString::fromStdString(ss.str()), "png", -1);
+  QwtPlotRenderer renderer;
 }

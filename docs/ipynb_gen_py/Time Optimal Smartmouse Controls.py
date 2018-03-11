@@ -288,6 +288,11 @@ def just_right():
 just_right()
 
 
+# ## Example from the simulator
+# 
+# Here's an example what it looks like in simulation
+# ![s-curve](pid_screenshot_14:57:04_11_03_2018.png)
+
 # # General Form Trajectory Planning
 
 # Let's start out with a generating trajectories that are not time optimal, but rely on specifying the final time $v_f$. For smartmouse, our state space is $[x, y, \theta]$, and a turn can be defined as starting at a point $[x_0, y_0, \theta_0]$ and going to $[x_f, y_f, \theta_0]$. Of course, we also want to specify the velocities at these point, $[\dot{x}_0, \dot{y}_0,\dot{\theta}_0]$ and $[\dot{x}_f, \dot{y}_f,\dot{\theta}_f]$. We have four constraints, so if we want to fit a smooth polynomial to those points we need a 4th order polynomial.

@@ -1,10 +1,13 @@
+#include <sstream>
+
+#include <QtCore/QDir>
+#include <QtWidgets/QBoxLayout>
+#include <qwt_plot_renderer.h>
+
 #include <sim/simulator/lib/widgets/PIDPlotWidget.h>
 #include <sim/simulator/lib/common/TopicNames.h>
-#include <msgs/msgs.h>
-#include <QtWidgets/QBoxLayout>
-#include <sstream>
-#include <qwt_plot_renderer.h>
-#include <QtCore/QDir>
+#include <sim/simulator/msgs/msgs.h>
+#include <sim/simulator/lib/common/sim_util.h>
 
 #include "ui_pidwidget.h"
 
@@ -99,14 +102,9 @@ void PIDPlotWidget::Clear() {
 }
 
 void PIDPlotWidget::Screenshot() {
-  // construct filename
-  char datestr[20];
-  auto now = std::time(nullptr);
   std::stringstream ss;
   ss << QDir::homePath().toStdString() << "/pid_screenshot_";
-  if (std::strftime(datestr, sizeof(datestr), "%H:%M:%S_%d_%m_%Y", std::localtime(&now))) {
-    ss << datestr;
-  }
+  ss << smartmouse::simulator::date_str();
   ss << ".png";
 
   grab().save(QString::fromStdString(ss.str()), "png", -1);
