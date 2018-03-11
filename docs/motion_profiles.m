@@ -30,10 +30,10 @@ p6 = t_1*(v_1-v_0);
 D = p1 + p2 + p3 + p4 + p5 + 2 * p6;
 
 D = simplify(D);
-disp("formula for displacement");
+disp("formula for displacement:");
 disp(D);
-disp("displacement for a_m=2, j_m=10, v_0=1, v_m=5, v_f=0");
-disp(vpa(subs(D, [a_m j_m v_0 v_m v_f], [2 10 1 5 0])));
+disp("displacement:");
+disp(vpa(subs(D, [a_m j_m v_0 v_m v_f], [5 15 0 5 1])));
 
 d = 5;
 vars = [a_m j_m v_0 v_f];

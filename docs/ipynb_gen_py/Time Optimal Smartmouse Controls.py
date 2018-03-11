@@ -1,42 +1,7 @@
 
 # coding: utf-8
 
-# # Time Optimal Velocity Profiles
-# 
-# ***
-# 
-# When the maze solver commands that the robot go forward, it can say that it must go forward one or more squares depending on what it knows about the maze. When we don't know what is after the square we pass through, we must be going slow enough to handle any scenario. In other words, there is some $V_f$ that we must reach by the end of our motion. We also begin motions at this speed, since between we arrived where we are we required that we reach $V_f$ to get there. Therefore, we start and end at $V_f$, and we want to cover some distance $d$ in the fast possible time. To do so, we accelerate at our fixed $a$ until we reach max speed, or until we need to start slowing down (whichever comes first). This gives us a trapezoid shaped velocity profile.
-
-# ## Going Straight
-
 # In[1]:
-
-
-get_ipython().run_line_magic('load_ext', 'tikzmagic')
-
-
-# In[2]:
-
-
-get_ipython().run_cell_magic('tikz', '-s 400,400', '\\draw[->] (0,0) -- (10,0);\n\\draw[->] (0,0) -- (0,5);\n\n\\draw[line width=1] (0,0.5) -- (2.5,3);\n\\draw[line width=1] (2.5,3) -- (5.5,3);\n\\draw[line width=1] (5.5,3) -- (8,0.5);\n\\draw[dashed] (0,0.5) -- (10,0.5);\n\\draw[dashed] (0,3) -- (10,3);\n\\draw[dashed] (2.5,0) -- (2.5,5);\n\\draw[dashed] (5.5,0) -- (5.5,5);\n\\draw[dashed] (8,0) -- (8,5);\n\n\\draw (-0.5, 0.5) node {$V_{f}$};\n\\draw (-0.5, 3) node {$V_{max}$};\n\\draw (2.5, -0.5) node {$t_b$};\n\\draw (5.5, -0.5) node {$t_f-t_b$};\n\\draw (8, -0.5) node {$t_f$};')
-
-
-# The time to accelerate from $V_f$ to $V_{max}$ is $t_b = \frac{V-V_f}{a}$. We can substitute this into newtons first equation of motion as follows.
-# 
-# \begin{align}
-# d &= Vt_b - \frac{1}{2}a{t_b}^2 \\
-#   &= V\Big(\frac{V-V_f}{a}\Big) - \frac{1}{2}a\Big(\frac{V-V_f}{a}\Big)^2 \\
-#   &= \Big(\frac{V^2-VV_f}{a}\Big) - \Big(\frac{a(V-V_f)^2}{2a^2}\Big) \\
-#   &= \Big(\frac{2V^2-2VV_f}{2a}\Big) - \Big(\frac{V^2-2VV_f+{V_f}^2}{2a}\Big) \\
-#   &= \frac{2V^2-2VV_f - V^2 + 2VV_f - {V_f}^2}{2a} \\
-# d &= \frac{V^2-{V_f}^2}{2a} \\
-# \end{align}
-# 
-# For example, if you're at starting at $V_f=0.2\frac{m}{s}$, and you're ramping up to $V=0.5\frac{m}{s}$, and you're acceleration is fixed at the $a=2\frac{m}{s^2}$, the distance you'll need to do that is $d = \frac{0.5 - 0.2}{2*2} = 0.075m$
-
-# ## Code that proves it
-
-# In[2]:
 
 
 # dependencies and global setup
@@ -64,7 +29,42 @@ def log(*args):
         print(*args)
 
 
-# In[4]:
+# # Time Optimal Velocity Profiles
+# 
+# ***
+# 
+# When the maze solver commands that the robot go forward, it can say that it must go forward one or more squares depending on what it knows about the maze. When we don't know what is after the square we pass through, we must be going slow enough to handle any scenario. In other words, there is some $V_f$ that we must reach by the end of our motion. We also begin motions at this speed, since between we arrived where we are we required that we reach $V_f$ to get there. Therefore, we start and end at $V_f$, and we want to cover some distance $d$ in the fast possible time. To do so, we accelerate at our fixed $a$ until we reach max speed, or until we need to start slowing down (whichever comes first). This gives us a trapezoid shaped velocity profile.
+
+# ## Going Straight
+
+# In[ ]:
+
+
+get_ipython().run_line_magic('load_ext', 'tikzmagic')
+
+
+# In[ ]:
+
+
+get_ipython().run_cell_magic('tikz', '-s 400,400', '\\draw[->] (0,0) -- (10,0);\n\\draw[->] (0,0) -- (0,5);\n\n\\draw[line width=1] (0,0.5) -- (2.5,3);\n\\draw[line width=1] (2.5,3) -- (5.5,3);\n\\draw[line width=1] (5.5,3) -- (8,0.5);\n\\draw[dashed] (0,0.5) -- (10,0.5);\n\\draw[dashed] (0,3) -- (10,3);\n\\draw[dashed] (2.5,0) -- (2.5,5);\n\\draw[dashed] (5.5,0) -- (5.5,5);\n\\draw[dashed] (8,0) -- (8,5);\n\n\\draw (-0.5, 0.5) node {$V_{f}$};\n\\draw (-0.5, 3) node {$V_{max}$};\n\\draw (2.5, -0.5) node {$t_b$};\n\\draw (5.5, -0.5) node {$t_f-t_b$};\n\\draw (8, -0.5) node {$t_f$};')
+
+
+# The time to accelerate from $V_f$ to $V_{max}$ is $t_b = \frac{V-V_f}{a}$. We can substitute this into newtons first equation of motion as follows.
+# 
+# \begin{align}
+# d &= Vt_b - \frac{1}{2}a{t_b}^2 \\
+#   &= V\Big(\frac{V-V_f}{a}\Big) - \frac{1}{2}a\Big(\frac{V-V_f}{a}\Big)^2 \\
+#   &= \Big(\frac{V^2-VV_f}{a}\Big) - \Big(\frac{a(V-V_f)^2}{2a^2}\Big) \\
+#   &= \Big(\frac{2V^2-2VV_f}{2a}\Big) - \Big(\frac{V^2-2VV_f+{V_f}^2}{2a}\Big) \\
+#   &= \frac{2V^2-2VV_f - V^2 + 2VV_f - {V_f}^2}{2a} \\
+# d &= \frac{V^2-{V_f}^2}{2a} \\
+# \end{align}
+# 
+# For example, if you're at starting at $V_f=0.2\frac{m}{s}$, and you're ramping up to $V=0.5\frac{m}{s}$, and you're acceleration is fixed at the $a=2\frac{m}{s^2}$, the distance you'll need to do that is $d = \frac{0.5 - 0.2}{2*2} = 0.075m$
+
+# ## Code that proves it
+
+# In[ ]:
 
 
 def profile(V0, Vf, Vmax, d, A, buffer=3e-4):
@@ -119,7 +119,171 @@ graph("acceleration", 2)
 plt.show()
 
 
-# ## General Form Trajectory Planning
+# # Constant Jerk (S-Curve) Motion Profiles
+# 
+# I attempted to acheive the trapezoidal motion profiles shown above in the simulator, but it didn't work very well. We would always end up going too fast and be moving too fast at the end of our position. It's clear to see why this is happening, because there is overshoot in the velocity PIDs--the velocity profiles above have instantaneous changes in slope, so infinite change in acceleration, or infinite jerk. Of course, or motors cannot change their torque instantly, so we now consider using constant jerk to give S-curve profiles.
+# 
+# ## The overall goal
+# 
+# We ultimately need to be able to set the wheel velocities at each instance to acheive the fastest path to reach a certain distance with a certain final velocity, all while subject to a maximum velocity, acceleration, and jerk. Generally speaking, the fastest path is to apply maximum jerk to reach maximum accelerate as fast as possible, and continue at maximum acceleration until maximum velocity is reached. Then, maintain that maximum velocity until the last possible second, at which point you apply maximum negatve jerk, reach maximum negative acceleration, then final velocity.
+
+# We must also consider the case where there is not enough distance to reach our maximum velocity. In this case, we can instead calculate the maximum velocity we can reach given this time-optimal profile and the available distance. To do this, we can take the derivative of the equation for total time with respect to the maximum speed, then find the maximum speed for which this derivative is zero. We then plan to ramp up to this max speed, then back down to our desired final velocity.
+
+# In the case where we have plenty of distance, we will ramp up to max velocity, maintain that maximum velocity for a certain distance, then ramp back down to our final velocity. We will call these **phase 1**, **phase 2**, and  **phase 3**. As mentioned earlier, sometimes we will skip phase 2 entirely. Another weird assumption I'm going to make is that we always have enough time to reach maximum acceleration. If this isn't true than a few of our equations break, but in smartmouse this will never happen.
+
+# ![velocity profile](./velocity_profile.png)
+# 
+# **Definition of variables**
+# 
+# $v_o$ is the initial velocity
+# 
+# $v_s$ is the maximum velocity
+# 
+# $v_f$ is the final velocity
+# 
+# $a_s$ is the maximum acceleration
+# 
+# $T$ is the time to reach max velocity
+# 
+# $t_1$ is the time to transition from 0 to max acceleration
+# 
+# $t_2$ is the time to when we begin to transition from max acceleration back to 0
+
+# In[24]:
+
+
+def profile_distance(v_0, v_f, a_m, j_m, v_m):
+    return (a_m**2*(v_0+v_f+2*v_m)-j_m*(v_0**2+v_f**2-2*v_m**2))/(2*a_m*j_m)
+
+def simulate_profile(v_0, v_f, a_m, j_m, v_m, V=np.inf, d=np.inf):
+    # ramp up
+    t_1 = a_m / j_m
+    v_1 = v_0 + a_m**2 / (2 * j_m)
+    v_2 = v_m - a_m**2 / (2 * j_m)
+    t_2 = t_1 + (v_2 - v_1) / a_m
+    t_m1 = t_2 + t_1
+
+    # middle section
+    if v_m > V and not np.isinf(d):
+        t_m2 = t_m1 + (d - profile_distance(v_0, v_f, a_m, j_m, V))/V
+        print(d, profile_distance(v_0, v_f, a_m, j_m, v_m), t_m1, t_m2)
+    else:
+        t_m2 = t_m1
+
+    # ramp down
+    t_3 = t_m2 + a_m / j_m
+    v_3 = v_m - a_m**2 / (2 * j_m)  # also equal to v_2
+    v_4 = v_f + a_m**2 / (2 * j_m)
+    t_4 = t_3 - (v_4 - v_3) / a_m
+    t_f = t_4 + t_1;
+
+    vs = []
+    T = t_f+0.1
+    N = 200
+    ts = np.linspace(0, T, N)
+    for t in ts:
+        if t <= t_1: # achieve max acceleration
+            v_t = v_0 + j_m * t**2 / 2.0
+        elif t <= t_2: # maintain max acceleration
+            v_t = v_1 + a_m * (t - t_1)
+        elif t <= t_m1: # acheive max velocity
+            v_t = v_2 + a_m * (t - t_2) - j_m * (t - t_2)**2 / 2.0
+        elif t <= t_m2: # maintain max velocity
+            v_t = v_m
+        elif t <= t_3: # acheive max deceleration
+            v_t = v_m - j_m * (t - t_m2)**2 / 2.0
+        elif t <= t_4: # maintain max deceleration
+            v_t = v_3 - a_m * (t - t_3)
+        elif t < t_f: # acheive final velocity
+            v_t = v_4 - a_m * (t - t_4) + j_m * (t - t_4)**2 / 2.0
+        else:
+            v_t = v_f
+        vs.append(v_t)
+
+    plt.figure(figsize=(8,4))
+    plt.plot(ts, vs, label='velocity')
+    plt.plot([t_1, t_1], [0, v_1], color='k', linestyle='--')
+    plt.plot([t_2, t_2], [0, v_2], color='k', linestyle='--')
+    plt.plot([t_m1, t_m1], [0, v_m], color='k', linestyle='--')
+    plt.plot([t_m2, t_m2], [0, v_m], color='k', linestyle='--')
+    plt.plot([t_3, t_3], [0, v_3], color='k', linestyle='--')
+    plt.plot([t_4, t_4], [0, v_4], color='k', linestyle='--')
+    plt.plot([0, t_1], [v_1, v_1], color='k', linestyle='--')
+    plt.plot([0, t_2], [v_2, v_2], color='k', linestyle='--')
+    plt.plot([0, t_m1], [v_m, v_m], color='r', linestyle='--')
+    plt.plot([0, t_3], [v_3, v_3], color='k', linestyle='--')
+    plt.plot([0, t_4], [v_4, v_4], color='k', linestyle='--')
+    plt.plot([0, t_f], [v_f, v_f], color='r', linestyle='--')
+    plt.xlabel("times (s)")
+    plt.ylabel("velocity (cu/s)")
+    plt.title("Time Optimal Velocity Profile w/ Constant Jerk")
+    plt.grid()
+    plt.show()
+    
+simulate_profile(v_0=1, v_f=0, a_m=2, j_m = 10, v_m=3)
+
+
+# ## Calculating max velocity
+# 
+# For the profile defined above, we are picking $v_m$, and the distance the robot will travel over the whole profile is a function of this. If $v_m$ were lower the robot would travel a shorter distance, and if it were higher the robot would travel further. We can instead solve for the $v_m$ that makes the robot travel a certain distance. With that, we can solve for a velocity profile that will take us to the next of the next unexplored cell, with some final speed, from any initial speed, as fast as possible, while obeying max jerk and acceleration.
+
+# In[25]:
+
+
+def compute_v_max(v_0, v_f, a_m, j_m, d):
+    """
+    v_0 - initial velocity (cu/s)
+    v_f - final velocity (cu/s)
+    a_m - max acceleration (cu/s^2)
+    j_m - max jerk (cu/s^3)
+    d   - distance to travel
+    """
+    a = 1/a_m;
+    b = a_m/j_m;
+    c = (a_m**2*(v_0+v_f) - j_m*(v_0**2+v_f**2))/(2*a_m*j_m) - d;
+    v_max = (-b + np.sqrt(b**2-4*a*c))/(2*a)
+    return v_max
+
+
+# In[26]:
+
+
+def too_fast():
+    v_0=0
+    v_f=1
+    a_m=5
+    j_m=15
+    
+    v_m = compute_v_max(v_0, v_f, a_m, j_m, d=10)
+    
+    print("v_m =", v_m)
+    print("d=", profile_distance(v_0, v_f, a_m, j_m, v_m=5))
+
+    simulate_profile(v_0, v_f, a_m, j_m, v_m)
+    
+too_fast()
+
+
+# So far in solving for $v_m$, we are have ignored the hardware limit. Let's call that $\mathbb{V}$. If we have a really far distance, it's possible that $v_m > \mathbb{V}$, and in that case we must clamp $v_m=\mathbb{V}$, and create a intermediate section of the profile where we maintain $\mathbb{V}$. An example is shown below
+
+# In[27]:
+
+
+def just_right():
+    v_0=0
+    v_f=1
+    a_m=5
+    j_m=15
+    V = 5
+    d = 10
+    
+    v_m = compute_v_max(v_0, v_f, a_m, j_m, d)
+    simulate_profile(v_0, v_f, a_m, j_m, v_m, V, d)
+    
+just_right()
+
+
+# # General Form Trajectory Planning
 
 # Let's start out with a generating trajectories that are not time optimal, but rely on specifying the final time $v_f$. For smartmouse, our state space is $[x, y, \theta]$, and a turn can be defined as starting at a point $[x_0, y_0, \theta_0]$ and going to $[x_f, y_f, \theta_0]$. Of course, we also want to specify the velocities at these point, $[\dot{x}_0, \dot{y}_0,\dot{\theta}_0]$ and $[\dot{x}_f, \dot{y}_f,\dot{\theta}_f]$. We have four constraints, so if we want to fit a smooth polynomial to those points we need a 4th order polynomial.
 # 
@@ -159,7 +323,7 @@ plt.show()
 # 
 # It can be shown that the matrix on the left is invertable, so long as $t_f-t_0 > 0$. So we can invert and solve this equation and get all the $a$ coefficients. We can then use this polynomial to generate the $q(t)$ and $\dot{q}(t)$ -- our trajectory.
 
-# In[5]:
+# In[ ]:
 
 
 def simple_traj_solve(q_0, q_f, q_dot_0, q_dot_t_f, t_f):
@@ -183,7 +347,7 @@ simple_traj_coeff = simple_traj_solve(*simple_traj_info)
 
 # Here you can see that the resulting coeffictions are $a_0=0$, $a_1=0$, $a_2=0.54$, $a_0=-0.36$. Intuitively, this says that we're going to have positive acceleration, but our acceleration is going to slow down over time. Let's graph it!
 
-# In[6]:
+# In[ ]:
 
 
 def simple_traj_plot(coeff, t_f):
@@ -203,7 +367,7 @@ simple_traj_plot(simple_traj_coeff, simple_traj_info[-1])
 # 
 # Let's try another example, now with our full state space of $[x, y, \theta]$.
 
-# In[7]:
+# In[ ]:
 
 
 def no_dynamics():
@@ -255,7 +419,7 @@ no_dynamics()
 # 
 # ***
 
-# In[8]:
+# In[ ]:
 
 
 get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45:(0,0)}] (-.5,-1) rectangle (0.5,1);\n\\filldraw (0,0) circle (0.125);\n\n\\draw [->] (0,0) -- (0,1.5);\n\\draw [->] (0,0) -- (1.5,0);\n\\draw [->] (0,0) -- (1.5,1.5);\n\\draw (1.2, -0.2) node {$x$};\n\\draw (-0.2, 1.2) node {$y$};\n\\draw (1, 1.2) node {$v$};')
@@ -383,7 +547,7 @@ get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45
 # \end{bmatrix}
 # \end{equation}
 
-# In[9]:
+# In[ ]:
 
 
 # Let's solve this in code like we did before
@@ -459,7 +623,7 @@ def plot_traj_pts(xs, ys, T, waypoints):
     plt.show()
 
 
-# In[10]:
+# In[ ]:
 
 
 from math import sin, cos, pi
@@ -552,7 +716,7 @@ class TrajPlan:
 
 # ## Example Plots
 
-# In[11]:
+# In[ ]:
 
 
 # forward 1 cell, start from rest, end at 40cm/s, do it in .5 seconds
@@ -563,7 +727,7 @@ plot_vars(fwd_1)
 plot_traj(fwd_1)
 
 
-# In[12]:
+# In[ ]:
 
 
 # continue by turning right 90 degrees
@@ -574,7 +738,7 @@ plot_vars(turn_right)
 plot_traj(turn_right)
 
 
-# In[13]:
+# In[ ]:
 
 
 # 3 waypoints!
@@ -589,7 +753,7 @@ plot_traj(turn_right)
 # 
 # Now let's find one that really sucks!
 
-# In[14]:
+# In[ ]:
 
 
 # 4 waypoints!
@@ -613,7 +777,7 @@ plot_traj(turn_right)
 # 
 # where $v_d$ is desired velocity, $\theta_d$ is the desired angle, $d$ is signed distance to the planned trajectory (to the right of the plan is positive), $v_d$ and $w_d$ are the desired velocities of the robot, and $P_1$, $P_2$, and $P_3$ are constants. Essentially what we're saying with the first equation is that when you're far off the trajectory you need to turn harder to get back on to it, but you also need to be aligned with it. The second equation says if you're lagging behind your plan speed up, or slow down if you're overshooting.
 
-# In[15]:
+# In[ ]:
 
 
 from math import atan2, sqrt
@@ -696,7 +860,7 @@ def simulate(q_0, waypoints, P_1, P_2, P_3, A=3):
     plt.legend(bbox_to_anchor=(1,1), loc=2)
 
 
-# In[16]:
+# In[ ]:
 
 
 test_P_1=300
@@ -708,7 +872,7 @@ simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3)
 plt.show()
 
 
-# In[17]:
+# In[ ]:
 
 
 robot_q_0 = (0.11, 0.18, pi/2, 0.2, 5)
@@ -717,7 +881,7 @@ simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3)
 plt.show()
 
 
-# In[18]:
+# In[ ]:
 
 
 robot_q_0 = (0.0, 0.25, 0, 0.2, 0)
@@ -726,7 +890,7 @@ simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3)
 plt.show()
 
 
-# In[19]:
+# In[ ]:
 
 
 robot_q_0 = (0.45, 0.05, pi+0.25, 0.3, 0)
@@ -735,7 +899,7 @@ simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3)
 plt.show()
 
 
-# In[20]:
+# In[ ]:
 
 
 robot_q_0 = (0.0, 0.25, 0, 0.2, -5)
@@ -744,7 +908,7 @@ simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3)
 plt.show()
 
 
-# In[21]:
+# In[ ]:
 
 
 robot_q_0 = (0.25, 0.28, -pi*4/7, 0.5, 0)
@@ -753,7 +917,7 @@ simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3, A=6)
 plt.show()
 
 
-# In[22]:
+# In[ ]:
 
 
 # no initial error
@@ -929,7 +1093,7 @@ plt.show()
 # ### 7. Apply our new controller of the form $\vec{u} = -K(\vec{x} - \bar{x}) + \bar{u}$
 # 
 
-# In[23]:
+# In[ ]:
 
 
 from math import atan2
@@ -1069,7 +1233,7 @@ def follow_plan(q_0, waypoints, P_1, P_2, P_3):
     plt.legend(bbox_to_anchor=(1,1), loc=2)
 
 
-# In[24]:
+# In[ ]:
 
 
 LOG_LVL=1
@@ -1079,7 +1243,7 @@ follow_plan(robot_q_0, traj, test_P_1, test_P_2, test_P_3)
 plt.show()
 
 
-# In[25]:
+# In[ ]:
 
 
 LOG_LVL=1
@@ -1091,7 +1255,7 @@ plt.show()
 
 # # Tuning new PIDs
 
-# In[26]:
+# In[ ]:
 
 
 import csv
@@ -1109,108 +1273,4 @@ plt.xlabel("time (s)")
 plt.ylabel("speed (m/s)")
 plt.title("PID Performance")
 plt.show()
-
-
-# ## Better Motion profiles
-# 
-# I attempted to acheive the trapezoidal motion profiles shown above in the simulator, but it didn't work very well. We would always end up going too fast and be moving too fast at the end of our position. It's clear to see why this is happening, because there is overshoot in the velocity PIDs--the velocity profiles above have instantaneous changes in slope, so infinite change in acceleration, or infinite jerk. Of course, or motors cannot change their torque instantly, so we now consider using constant jerk to give S-curve profiles.
-# 
-# ### The overall goal
-# 
-# We ultimately need to be able to set the wheel velocities at each instance to acheive the fastest path to reach a certain distance with a certain final velocity, all while subject to a maximum velocity, acceleration, and jerk. Generally speaking, the fastest path is to apply maximum jerk to reach maximum accelerate as fast as possible, and continue at maximum acceleration until maximum velocity is reached. Then, maintain that maximum velocity until the last possible second, at which point you apply maximum negatve jerk, reach maximum negative acceleration, then final velocity.
-
-# We must also consider the case where there is not enough distance to reach our maximum velocity. In this case, we can instead calculate the maximum velocity we can reach given this time-optimal profile and the available distance. To do this, we can take the derivative of the equation for total time with respect to the maximum speed, then find the maximum speed for which this derivative is zero. We then plan to ramp up to this max speed, then back down to our desired final velocity.
-
-# In the case where we have plenty of distance, we will ramp up to max velocity, maintain that maximum velocity for a certain distance, then ramp back down to our final velocity. We will call these **phase 1**, **phase 2**, and  **phase 3**. As mentioned earlier, sometimes we will skip phase 2 entirely. Another weird assumption I'm going to make is that we always have enough time to reach maximum acceleration. If this isn't true than a few of our equations break, but in smartmouse this will never happen.
-
-# ![velocity profile](./velocity_profile.png)
-# 
-# **Definition of variables**
-# 
-# $v_o$ is the initial velocity
-# 
-# $v_s$ is the maximum velocity
-# 
-# $v_f$ is the final velocity
-# 
-# $a_s$ is the maximum acceleration
-# 
-# $T$ is the time to reach max velocity
-# 
-# $t_1$ is the time to transition from 0 to max acceleration
-# 
-# $t_2$ is the time to when we begin to transition from max acceleration back to 0
-
-# In[12]:
-
-
-a_m = 2
-j_m = 10
-v_0 = 1
-v_m = 3.015 #5
-v_f = 0
-
-# find maximum speed
-
-# ramp up
-t_1 = a_m / j_m
-v_1 = v_0 + a_m**2 / (2 * j_m)
-v_2 = v_m - a_m**2 / (2 * j_m)
-t_2 = t_1 + (v_2 - v_1) / a_m
-t_m = t_2 + t_1
-
-# middle section?
-
-# ramp down
-t_3 = t_m + a_m / j_m
-v_3 = v_m - a_m**2 / (2 * j_m)  # also equal to v_2
-v_4 = v_f + a_m**2 / (2 * j_m)
-t_4 = t_3 - (v_4 - v_3) / a_m
-t_f = t_4 + t_1;
-
-vs = []
-T = t_f+0.1
-N = 200
-ts = np.linspace(0, T, N)
-for t in ts:
-    if t <= t_1: # achieve max acceleration
-        v_t = v_0 + j_m * t**2 / 2.0
-    elif t <= t_2: # maintain max acceleration
-        v_t = v_1 + a_m * (t - t_1)
-    elif t <= t_m: # acheive max velocity
-        v_t = v_2 + a_m * (t - t_2) - j_m * (t - t_2)**2 / 2.0
-    elif t <= t_3: # acheive max deceleration
-        v_t = v_m - j_m * (t - t_m)**2 / 2.0
-    elif t <= t_4: # maintain max deceleration
-        v_t = v_3 - a_m * (t - t_3)
-    elif t < t_f: # acheive final velocity
-        v_t = v_4 - a_m * (t - t_4) + j_m * (t - t_4)**2 / 2.0
-    else:
-        v_t = v_f
-    vs.append(v_t)
-
-plt.figure(figsize=(10,10))
-plt.plot(ts, vs, label='velocity')
-plt.plot([t_1, t_1], [0, v_1], color='k', linestyle='--')
-plt.plot([t_2, t_2], [0, v_2], color='k', linestyle='--')
-plt.plot([t_3, t_3], [0, v_3], color='k', linestyle='--')
-plt.plot([t_4, t_4], [0, v_4], color='k', linestyle='--')
-plt.plot([0, t_1], [v_1, v_1], color='k', linestyle='--')
-plt.plot([0, t_2], [v_2, v_2], color='k', linestyle='--')
-plt.plot([0, t_m], [v_m, v_m], color='r', linestyle='--')
-plt.plot([0, t_3], [v_3, v_3], color='k', linestyle='--')
-plt.plot([0, t_4], [v_4, v_4], color='k', linestyle='--')
-plt.plot([0, t_f], [v_f, v_f], color='r', linestyle='--')
-plt.xlabel("times (s)")
-plt.ylabel("velocity (cu/s)")
-plt.grid()
-plt.show()
-
-
-# In[13]:
-
-
-import scipy.integrate as integrate
-numeric_displacement = integrate.simps(vs, ts)
-print(numeric_displacement)
 
