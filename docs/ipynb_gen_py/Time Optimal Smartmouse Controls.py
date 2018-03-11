@@ -36,7 +36,7 @@ get_ipython().run_cell_magic('tikz', '-s 400,400', '\\draw[->] (0,0) -- (10,0);\
 
 # ## Code that proves it
 
-# In[3]:
+# In[2]:
 
 
 # dependencies and global setup
@@ -1141,14 +1141,16 @@ plt.show()
 # 
 # $t_2$ is the time to when we begin to transition from max acceleration back to 0
 
-# In[43]:
+# In[10]:
 
 
 a_m = 2
 j_m = 10
-v_0 = 0.5
+v_0 = 1
 v_m = 5
-v_f = 2
+v_f = 0
+
+# find maximum speed
 
 # ramp up
 t_1 = a_m / j_m
@@ -1156,28 +1158,32 @@ v_1 = v_0 + a_m**2 / (2 * j_m)
 v_2 = v_m - a_m**2 / (2 * j_m)
 t_2 = t_1 + (v_2 - v_1) / a_m
 t_m = t_2 + t_1
+
+# middle section?
+
 # ramp down
 t_3 = t_m + a_m / j_m
-v_3 = v_m - a_m**2 / (2 * j_m)
+v_3 = v_m - a_m**2 / (2 * j_m)  # also equal to v_2
 v_4 = v_f + a_m**2 / (2 * j_m)
-t_4 = t_3 + (v_3 - v_4) / a_m
-t_f = t_4 + t_1
+t_4 = t_3 - (v_4 - v_3) / a_m
+t_f = t_4 + t_1;
 
 vs = []
 T = t_f+0.1
-ts = np.linspace(0, T, 200)
+N = 200
+ts = np.linspace(0, T, N)
 for t in ts:
-    if t <= t_1:
+    if t <= t_1: # achieve max acceleration
         v_t = v_0 + j_m * t**2 / 2.0
-    elif t <= t_2:
+    elif t <= t_2: # maintain max acceleration
         v_t = v_1 + a_m * (t - t_1)
-    elif t <= t_m:
+    elif t <= t_m: # acheive max velocity
         v_t = v_2 + a_m * (t - t_2) - j_m * (t - t_2)**2 / 2.0
-    elif t <= t_3:
+    elif t <= t_3: # acheive max deceleration
         v_t = v_m - j_m * (t - t_m)**2 / 2.0
-    elif t <= t_4:
+    elif t <= t_4: # maintain max deceleration
         v_t = v_3 - a_m * (t - t_3)
-    elif t < t_f:
+    elif t < t_f: # acheive final velocity
         v_t = v_4 - a_m * (t - t_4) + j_m * (t - t_4)**2 / 2.0
     else:
         v_t = v_f
@@ -1185,14 +1191,26 @@ for t in ts:
 
 plt.figure(figsize=(10,10))
 plt.plot(ts, vs, label='velocity')
-plt.plot([t_1, t_1], [0, v_f], color='k', linestyle='--')
-plt.plot([t_2, t_2], [0, v_f], color='k', linestyle='--')
-plt.plot([t_m, t_m], [0, v_f], color='k', linestyle='--')
-plt.plot([0, T], [v_0, v_0], color='k', linestyle='--')
-plt.plot([0, T], [v_m, v_m], color='k', linestyle='--')
-plt.plot([0, T], [v_f, v_f], color='k', linestyle='--')
+plt.plot([t_1, t_1], [0, v_1], color='k', linestyle='--')
+plt.plot([t_2, t_2], [0, v_2], color='k', linestyle='--')
+plt.plot([t_3, t_3], [0, v_3], color='k', linestyle='--')
+plt.plot([t_4, t_4], [0, v_4], color='k', linestyle='--')
+plt.plot([0, t_1], [v_1, v_1], color='k', linestyle='--')
+plt.plot([0, t_2], [v_2, v_2], color='k', linestyle='--')
+plt.plot([0, t_m], [v_m, v_m], color='r', linestyle='--')
+plt.plot([0, t_3], [v_3, v_3], color='k', linestyle='--')
+plt.plot([0, t_4], [v_4, v_4], color='k', linestyle='--')
+plt.plot([0, t_f], [v_f, v_f], color='r', linestyle='--')
 plt.xlabel("times (s)")
 plt.ylabel("velocity (cu/s)")
 plt.grid()
 plt.show()
+
+
+# In[11]:
+
+
+import scipy.integrate as integrate
+numeric_displacement = integrate.simps(vs, ts)
+print(numeric_displacement)
 
