@@ -7,19 +7,22 @@ ForwardN::ForwardN(unsigned int n) : Command("Forward"), mouse(RealMouse::inst()
 void ForwardN::initialize() {
   start = mouse->getGlobalPose();
   mouse->kinematic_controller.enable_sensor_pose_estimate = true;
-  mouse->kinematic_controller.start(start, KinematicController::dispToNthEdge(mouse, n));
-//  mouse->kinematic_controller.plan_traj(start, KinematicController::poseOfNthEdge(mouse, n));
+  const double goal_disp = KinematicController::dispToNthEdge(*mouse, n);
+  const double v0 = mouse->kinematic_controller.getCurrentForwardSpeedCUPS();
+  const double vf = smartmouse::kc::kVf;
+  drive_straight_state = new smartmouse::kc::DriveStraightState(start, goal_disp, v0, vf);
   digitalWrite(RealMouse::LED_4, 1);
 }
 
 void ForwardN::execute() {
   double l, r;
-  std::tie(l, r) = mouse->kinematic_controller.compute_wheel_velocities(this->mouse);
+  double t_s = static_cast<double>(getTime()) / 1000.0;
+  std::tie(l, r) = drive_straight_state->compute_wheel_velocities(*mouse, t_s);
   mouse->setSpeedCps(l, r);
 }
 
 bool ForwardN::isFinished() {
-  return mouse->kinematic_controller.drive_straight_state.disp_error <= 0;
+  return drive_straight_state->dispError() <= 0;
 }
 
 void ForwardN::end() {

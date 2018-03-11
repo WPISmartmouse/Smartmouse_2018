@@ -5,7 +5,7 @@
 
 RegulatedMotor::RegulatedMotor()
     : kP(300),
-      kI(0),
+      kI(5),
       kD(5),
       kDD(0.0),
       ff_offset(0),

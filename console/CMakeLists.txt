@@ -11,16 +11,16 @@ set_target_properties(console PROPERTIES COMPILE_FLAGS "-DCONSOLE -include ${UTI
 # text-only console programs
 ################################
 set(CONSOLES ConsoleSolve
-        Animate
-        GenerateMaze
-        ReadAndPrint)
+    Animate
+    GenerateMaze
+    ReadAndPrint)
 
 foreach (MAIN ${CONSOLES})
-    add_executable(${MAIN} main/${MAIN}.cpp)
-    target_link_libraries(${MAIN} console)
-    set_target_properties(${MAIN} PROPERTIES COMPILE_FLAGS "-DCONSOLE")
+  add_executable(${MAIN} main/${MAIN}.cpp)
+  target_link_libraries(${MAIN} console)
+  set_target_properties(${MAIN} PROPERTIES COMPILE_FLAGS "-DCONSOLE")
 
-    install(TARGETS ${MAIN} DESTINATION bin)
+  install(TARGETS ${MAIN} DESTINATION bin)
 endforeach ()
 
 ################################

@@ -7,12 +7,12 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_CXX_STANDARD 14)
 
 if (NOT ${BUILD_SIM})
-    set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/cmake/teensy-arm.toolchain.cmake")
+  set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/cmake/teensy-arm.toolchain.cmake")
 
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/bin")
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib")
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib")
-    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/bin")
+  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib")
+  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib")
+  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 endif ()
 
 project(smartmouse)
@@ -21,68 +21,71 @@ get_filename_component(UTIL_HEADER common/core/util.h ABSOLUTE)
 file(GLOB_RECURSE CORE_COM_SRC common/commanduino/*.cpp common/core/*.cpp)
 file(GLOB COM_COMMAND_SRC common/commands/*.cpp)
 file(GLOB COM_SRC
-        common/*.cpp
-        common/math/*.cpp
-        common/commanduino/*.cpp
-        common/KinematicController/*.cpp
-        common/argparse/*.cpp)
+     common/*.cpp
+     common/math/*.cpp
+     common/commanduino/*.cpp
+     common/KinematicController/*.cpp
+     common/argparse/*.cpp)
 
 if (NOT ${BUILD_SIM})
-    include(Teensy)
+  include(Teensy)
 
-    file(GLOB REAL_SRC
-            real/*.cpp
-            real/commands/*.cpp)
+  file(GLOB REAL_SRC
+       real/*.cpp
+       real/commands/*.cpp)
 
-    file(GLOB_RECURSE REAL_LIBS_SRC
-            real/lib/*.cpp)
+  file(GLOB_RECURSE REAL_LIBS_SRC
+       real/lib/*.cpp)
 
-    file(GLOB REAL_LIB_DIRS real/lib/*)
+  file(GLOB REAL_LIB_DIRS real/lib/*)
 
-    include_directories(${CMAKE_SOURCE_DIR} ${REAL_LIB_DIRS} real real/commands common/Eigen)
-    add_definitions(-DEMBED)
+  include_directories(${CMAKE_SOURCE_DIR} ${REAL_LIB_DIRS} real real/commands common/Eigen)
+  add_definitions(-DEMBED)
 
-    import_arduino_library(Bounce2)
-    import_arduino_library(i2c_t3)
-    import_arduino_library(SPI)
+  import_arduino_library(Bounce2)
+  import_arduino_library(i2c_t3)
+  import_arduino_library(SPI)
 
-    add_teensy_executable(main real/main/main.cpp ${COM_SRC} ${CORE_COM_SRC} ${COM_COMMAND_SRC} ${REAL_SRC} ${REAL_LIBS_SRC})
-    set_target_properties(main PROPERTIES COMPILE_FLAGS "-include ${UTIL_HEADER}")
-    if (PROFILE)
-        target_compile_definitions(main PRIVATE PROFILE)
-        message("proflilng...")
-    endif ()
+  add_teensy_executable(main real/main/main.cpp ${COM_SRC} ${CORE_COM_SRC} ${COM_COMMAND_SRC} ${REAL_SRC} ${REAL_LIBS_SRC})
+  set_target_properties(main PROPERTIES COMPILE_FLAGS "-include ${UTIL_HEADER}")
+  target_compile_definitions(main PRIVATE PROFILE)
 
-    add_teensy_executable(profile_encoders real/main/profile_encoders.cpp ${COM_SRC} ${CORE_COM_SRC} ${REAL_SRC} ${REAL_LIBS_SRC})
-    set_target_properties(profile_encoders PROPERTIES COMPILE_FLAGS "-include ${UTIL_HEADER}")
+  set(mains
+      real/main/profile_encoders.cpp
+      real/main/measure_motor_response.cpp
+      real/main/eigen_test.cpp)
 
-    add_teensy_executable(eigen_test real/main/eigen_test.cpp common/core/util.cpp)
-    set_target_properties(eigen_test PROPERTIES COMPILE_FLAGS "-include ${UTIL_HEADER}")
+  foreach (main ${mains})
+    get_filename_component(main_target ${main} NAME_WE)
+    add_teensy_executable(${main_target} ${main} ${COM_SRC} ${CORE_COM_SRC} ${REAL_SRC} ${REAL_LIBS_SRC})
+    set_target_properties(${main_target} PROPERTIES COMPILE_FLAGS "-include ${UTIL_HEADER}")
+  endforeach ()
+
 else ()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-unknown-pragmas")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-unknown-pragmas")
 
-    ################################
-    # gtest
-    ################################
-    add_subdirectory(gtest)
-    include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+  ################################
+  # gtest
+  ################################
+  add_subdirectory(gtest)
+  include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
-    ################################
-    # common tests
-    ################################
-    add_executable(common_tests common/test/CommonTest.cpp ${COM_SRC} ${CORE_COM_SRC})
-    target_link_libraries(common_tests gtest gtest_main)
-    set_target_properties(common_tests PROPERTIES COMPILE_FLAGS "-include ${UTIL_HEADER}")
+  ################################
+  # common tests
+  ################################
+  add_executable(common_tests common/test/CommonTest.cpp ${COM_SRC} ${CORE_COM_SRC})
+  target_link_libraries(common_tests gtest gtest_main)
+  set_target_properties(common_tests PROPERTIES COMPILE_FLAGS "-include ${UTIL_HEADER}")
 
-    ################################
-    # console
-    ################################
-    add_subdirectory(console)
+  ################################
+  # console
+  ################################
+  add_subdirectory(console)
 
-    ################################
-    # all simulation stuff
-    ################################
-    if (BUILD_SIM)
-        add_subdirectory(sim)
-    endif ()
+  ################################
+  # all simulation stuff
+  ################################
+  if (BUILD_SIM)
+    add_subdirectory(sim)
+  endif ()
 endif ()

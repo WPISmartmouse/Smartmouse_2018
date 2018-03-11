@@ -1,5 +1,5 @@
 #include <real/RealMouse.h>
-#include "ForwardToCenter.h"
+#include <real/commands/ForwardToCenter.h>
 
 ForwardToCenter::ForwardToCenter() : Command("FwdToCenter"), mouse(RealMouse::inst()) {}
 
@@ -7,20 +7,24 @@ void ForwardToCenter::initialize() {
 //  setTimeout(2000);
   start = mouse->getGlobalPose();
   mouse->kinematic_controller.enable_sensor_pose_estimate = true;
-  mouse->kinematic_controller.start(start, KinematicController::fwdDispToCenter(mouse), 0.0);
+  const double goal_disp = KinematicController::fwdDispToCenter(*mouse);
+  const double v0 = mouse->kinematic_controller.getCurrentForwardSpeedCUPS();
+  const double vf = 0.0;
+  drive_straight_state = new smartmouse::kc::DriveStraightState(start, goal_disp, v0, vf);
   digitalWrite(RealMouse::LED_3, 1);
 }
 
 void ForwardToCenter::execute() {
   double l, r;
-  std::tie(l, r) = mouse->kinematic_controller.compute_wheel_velocities(this->mouse);
+  double t_s = static_cast<double>(getTime()) / 1000.0;
+  std::tie(l, r) = drive_straight_state->compute_wheel_velocities(*mouse, t_s);
   mouse->setSpeedCps(l, r);
 }
 
 bool ForwardToCenter::isFinished() {
   double vl, vr;
   std::tie(vl, vr) = mouse->getWheelVelocities();
-  return fabs(mouse->kinematic_controller.drive_straight_state.disp_error) <= 0.01
+  return fabs(drive_straight_state->dispError()) <= 0.01
       or (fabs(vl) < 0.01 and fabs(vr) < 0.01);
 }
 

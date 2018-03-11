@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 plt.style.use("./smartmouse.mlpstyle")
 
 
-# In[17]:
+# In[10]:
 
 
 def simulate(V, J, C, K, R, L, theta_dot=0, i=0):
@@ -71,7 +71,7 @@ plt.xlabel("Time (seconds)")
 plt.show()
 
 
-# In[20]:
+# In[25]:
 
 
 ts, theta_dots, currents = simulate(const_V(5), J=0.000658, C=0.0000024571, K=0.0787, R=5, L=0.58)
@@ -89,10 +89,10 @@ plt.title("Current of realistic motor")
 plt.ylabel("Current (amps)")
 plt.xlabel("Time (seconds)")
 plt.show()
-print(currents[-1], theta_dots[-1])
+print('max speed', theta_dots[-1]*0.0145)
 
 
-# In[27]:
+# In[12]:
 
 
 ts, theta_dots, currents = simulate(const_V(0), J=0.000658, C=0.0000024571,
@@ -159,7 +159,7 @@ plt.show()
 # 
 # The following code calculates the roots
 
-# In[18]:
+# In[13]:
 
 
 J = 0.000658
@@ -201,7 +201,7 @@ print(root_2)
 # 
 # We now need a particular solution.
 
-# In[13]:
+# In[6]:
 
 
 print("for u=5 volts")
@@ -222,7 +222,7 @@ print("forcing term = ", f)
 #     A &= 1022.4519
 # \end{align*}$$
 
-# In[14]:
+# In[7]:
 
 
 print("A = ", (f - b)/a)
@@ -233,7 +233,7 @@ y_particular = (f - b)/a
 # 
 # $$ y(x) = 0.06546e^{-2.7845x} + -0.06546e^{-5.8399x}  + 1022.4520 $$
 
-# In[15]:
+# In[8]:
 
 
 x = np.linspace(0, 10, 1000)

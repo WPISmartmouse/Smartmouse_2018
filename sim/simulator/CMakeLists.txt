@@ -8,14 +8,14 @@ find_package(Qt5 COMPONENTS Core Widgets Charts REQUIRED)
 
 # Find QWT
 find_path(QWT_INCLUDE_DIR NAMES qwt.h PATHS
-        /usr/local/qwt-6.1.3/include)
+          /usr/local/qwt-6.1.3/include)
 
 find_library(QWT_LIBRARY NAMES qwt-qt5 qwt PATHS
-        /usr/local/qwt-6.1.3/lib)
+             /usr/local/qwt-6.1.3/lib)
 
 add_subdirectory(msgs)
 set_source_files_properties(${PROTO_SRC} ${PROTO_HEADER}
-        PROPERTIES GENERATED TRUE)
+                            PROPERTIES GENERATED TRUE)
 
 file(GLOB SIMULATOR_COMMON_SRC lib/common/*.cpp)
 add_library(simulator_lib ${SIMULATOR_COMMON_SRC})
@@ -27,14 +27,14 @@ target_link_libraries(server msgs sim simulator_lib ${IGNITION-TRANSPORT_LIBRARI
 add_library(client lib/Client.cpp)
 target_include_directories(client PRIVATE ${QWT_INCLUDE_DIR})
 target_link_libraries(client
-    msgs
-    Qt5::Widgets
-    Qt5::Charts
-    simulator_lib
-    sim
-    server
-    ${IGNITION-TRANSPORT_LIBRARIES}
-    ${QWT_LIBRARY})
+                      msgs
+                      Qt5::Widgets
+                      Qt5::Charts
+                      simulator_lib
+                      sim
+                      server
+                      ${IGNITION-TRANSPORT_LIBRARIES}
+                      ${QWT_LIBRARY})
 
 file(GLOB WIDGET_SRCS lib/widgets/*.cpp)
 

@@ -50,11 +50,6 @@ double IRConverter::adcToMeters(int adc) {
   }
 }
 
-double RealMouse::tick_to_rad(int ticks) {
-  // if in quadrant I or II, it's positive
-  return ticks * RAD_PER_TICK;
-}
-
 RealMouse *RealMouse::inst() {
   if (instance == NULL) {
     instance = new RealMouse();

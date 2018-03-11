@@ -42,8 +42,8 @@ target_link_libraries(sim sim_common sim_common_commands ${IGNITION-TRANSPORT_LI
 set(SIMS SimSolve SimNavTest VelocityControlTest)
 
 foreach (MAIN ${SIMS})
-    add_executable(${MAIN} "main/${MAIN}.cpp")
-    target_link_libraries(${MAIN} sim_common sim_common_commands sim ${IGNITION-TRANSPORT_LIBRARIES})
+  add_executable(${MAIN} "main/${MAIN}.cpp")
+  target_link_libraries(${MAIN} sim_common sim_common_commands sim ${IGNITION-TRANSPORT_LIBRARIES})
 endforeach ()
 
 #################################

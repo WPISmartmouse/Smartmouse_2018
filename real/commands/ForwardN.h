@@ -5,6 +5,7 @@
 #include <common/core/Pose.h>
 
 #include <real/RealMouse.h>
+#include <common/KinematicController/DriveStraightState.h>
 
 class ForwardN : public Command {
 public:
@@ -23,5 +24,6 @@ private:
   unsigned int n;
   GlobalPose start;
   RealMouse *mouse;
+  smartmouse::kc::DriveStraightState *drive_straight_state;
 };
 

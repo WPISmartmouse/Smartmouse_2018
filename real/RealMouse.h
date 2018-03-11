@@ -23,6 +23,11 @@ public:
   static constexpr int TICKS_PER_REV = 900;
   static constexpr double RAD_PER_TICK = 2 * M_PI / TICKS_PER_REV;
 
+  static constexpr double tick_to_rad(int ticks) {
+    // if in quadrant I or II, it's positive
+    return ticks * RAD_PER_TICK;
+  }
+
   static const unsigned int FRONT_RIGHT_ANALOG_PIN = A18;
   static const unsigned int BACK_RIGHT_ANALOG_PIN = A14;
   static const unsigned int FRONT_ANALOG_PIN = A16;
@@ -80,8 +85,6 @@ public:
 
 private:
   RealMouse();
-
-  double tick_to_rad(int ticks);
 
   static RealMouse *instance;
 

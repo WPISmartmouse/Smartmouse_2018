@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[45]:
 
 
 # dependencies and global setup
@@ -149,33 +149,38 @@ plt.show()
 # 
 # $t_2$ is the time to when we begin to transition from max acceleration back to 0
 
-# In[24]:
+# In[47]:
 
 
 def profile_distance(v_0, v_f, a_m, j_m, v_m):
     return (a_m**2*(v_0+v_f+2*v_m)-j_m*(v_0**2+v_f**2-2*v_m**2))/(2*a_m*j_m)
 
 def simulate_profile(v_0, v_f, a_m, j_m, v_m, V=np.inf, d=np.inf):
+    v_m_ = min(v_m, V)
+    
     # ramp up
     t_1 = a_m / j_m
     v_1 = v_0 + a_m**2 / (2 * j_m)
-    v_2 = v_m - a_m**2 / (2 * j_m)
+    v_2 = v_m_ - a_m**2 / (2 * j_m)
     t_2 = t_1 + (v_2 - v_1) / a_m
     t_m1 = t_2 + t_1
 
     # middle section
     if v_m > V and not np.isinf(d):
         t_m2 = t_m1 + (d - profile_distance(v_0, v_f, a_m, j_m, V))/V
-        print(d, profile_distance(v_0, v_f, a_m, j_m, v_m), t_m1, t_m2)
     else:
         t_m2 = t_m1
 
     # ramp down
     t_3 = t_m2 + a_m / j_m
-    v_3 = v_m - a_m**2 / (2 * j_m)  # also equal to v_2
+    v_3 = v_m_ - a_m**2 / (2 * j_m)  # also equal to v_2
     v_4 = v_f + a_m**2 / (2 * j_m)
     t_4 = t_3 - (v_4 - v_3) / a_m
-    t_f = t_4 + t_1;
+    t_f = t_4 + t_1
+    
+    print(t_1, t_2, t_m1, t_m2, t_3, t_4, t_f)
+    print(v_0, v_1, v_2, v_m_, v_3, v_4, v_f)
+    print(d)
 
     vs = []
     T = t_f+0.1
@@ -189,9 +194,9 @@ def simulate_profile(v_0, v_f, a_m, j_m, v_m, V=np.inf, d=np.inf):
         elif t <= t_m1: # acheive max velocity
             v_t = v_2 + a_m * (t - t_2) - j_m * (t - t_2)**2 / 2.0
         elif t <= t_m2: # maintain max velocity
-            v_t = v_m
+            v_t = v_m_
         elif t <= t_3: # acheive max deceleration
-            v_t = v_m - j_m * (t - t_m2)**2 / 2.0
+            v_t = v_m_ - j_m * (t - t_m2)**2 / 2.0
         elif t <= t_4: # maintain max deceleration
             v_t = v_3 - a_m * (t - t_3)
         elif t < t_f: # acheive final velocity
@@ -204,13 +209,13 @@ def simulate_profile(v_0, v_f, a_m, j_m, v_m, V=np.inf, d=np.inf):
     plt.plot(ts, vs, label='velocity')
     plt.plot([t_1, t_1], [0, v_1], color='k', linestyle='--')
     plt.plot([t_2, t_2], [0, v_2], color='k', linestyle='--')
-    plt.plot([t_m1, t_m1], [0, v_m], color='k', linestyle='--')
-    plt.plot([t_m2, t_m2], [0, v_m], color='k', linestyle='--')
+    plt.plot([t_m1, t_m1], [0, v_m_], color='k', linestyle='--')
+    plt.plot([t_m2, t_m2], [0, v_m_], color='k', linestyle='--')
     plt.plot([t_3, t_3], [0, v_3], color='k', linestyle='--')
     plt.plot([t_4, t_4], [0, v_4], color='k', linestyle='--')
     plt.plot([0, t_1], [v_1, v_1], color='k', linestyle='--')
     plt.plot([0, t_2], [v_2, v_2], color='k', linestyle='--')
-    plt.plot([0, t_m1], [v_m, v_m], color='r', linestyle='--')
+    plt.plot([0, t_m1], [v_m_, v_m_], color='r', linestyle='--')
     plt.plot([0, t_3], [v_3, v_3], color='k', linestyle='--')
     plt.plot([0, t_4], [v_4, v_4], color='k', linestyle='--')
     plt.plot([0, t_f], [v_f, v_f], color='r', linestyle='--')
@@ -227,7 +232,7 @@ simulate_profile(v_0=1, v_f=0, a_m=2, j_m = 10, v_m=3)
 # 
 # For the profile defined above, we are picking $v_m$, and the distance the robot will travel over the whole profile is a function of this. If $v_m$ were lower the robot would travel a shorter distance, and if it were higher the robot would travel further. We can instead solve for the $v_m$ that makes the robot travel a certain distance. With that, we can solve for a velocity profile that will take us to the next of the next unexplored cell, with some final speed, from any initial speed, as fast as possible, while obeying max jerk and acceleration.
 
-# In[25]:
+# In[35]:
 
 
 def compute_v_max(v_0, v_f, a_m, j_m, d):
@@ -238,14 +243,14 @@ def compute_v_max(v_0, v_f, a_m, j_m, d):
     j_m - max jerk (cu/s^3)
     d   - distance to travel
     """
-    a = 1/a_m;
-    b = a_m/j_m;
-    c = (a_m**2*(v_0+v_f) - j_m*(v_0**2+v_f**2))/(2*a_m*j_m) - d;
+    a = 1/a_m
+    b = a_m/j_m
+    c = (a_m**2*(v_0+v_f) - j_m*(v_0**2+v_f**2))/(2*a_m*j_m) - d
     v_max = (-b + np.sqrt(b**2-4*a*c))/(2*a)
     return v_max
 
 
-# In[26]:
+# In[36]:
 
 
 def too_fast():
@@ -266,7 +271,7 @@ too_fast()
 
 # So far in solving for $v_m$, we are have ignored the hardware limit. Let's call that $\mathbb{V}$. If we have a really far distance, it's possible that $v_m > \mathbb{V}$, and in that case we must clamp $v_m=\mathbb{V}$, and create a intermediate section of the profile where we maintain $\mathbb{V}$. An example is shown below
 
-# In[27]:
+# In[48]:
 
 
 def just_right():
@@ -275,7 +280,7 @@ def just_right():
     a_m=5
     j_m=15
     V = 5
-    d = 10
+    d = 9.5
     
     v_m = compute_v_max(v_0, v_f, a_m, j_m, d)
     simulate_profile(v_0, v_f, a_m, j_m, v_m, V, d)

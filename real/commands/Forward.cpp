@@ -1,5 +1,5 @@
 #include <real/RealMouse.h>
-#include "Forward.h"
+#include <real/commands/Forward.h>
 
 Forward::Forward() : Command("Forward"), mouse(RealMouse::inst()) {}
 
@@ -7,18 +7,23 @@ Forward::Forward() : Command("Forward"), mouse(RealMouse::inst()) {}
 void Forward::initialize() {
   start = mouse->getGlobalPose();
   mouse->kinematic_controller.enable_sensor_pose_estimate = true;
-  mouse->kinematic_controller.start(start, KinematicController::dispToNextEdge(mouse));
+  const double goal_disp = KinematicController::dispToNextEdge(*mouse);
+  const double v0 = mouse->kinematic_controller.getCurrentForwardSpeedCUPS();
+  const double vf = smartmouse::kc::kVf;
+  drive_straight_state = new smartmouse::kc::DriveStraightState(start, goal_disp, v0, vf);
+//  mouse->kinematic_controller.start(start, KinematicController::dispToNextEdge(mouse));
   digitalWrite(RealMouse::LED_1, 1);
 }
 
 void Forward::execute() {
   double l, r;
-  std::tie(l, r) = mouse->kinematic_controller.compute_wheel_velocities(this->mouse);
+  double t_s = static_cast<double>(getTime()) / 1000.0;
+  std::tie(l, r) = drive_straight_state->compute_wheel_velocities(*mouse, t_s);
   mouse->setSpeedCps(l, r);
 }
 
 bool Forward::isFinished() {
-  return mouse->kinematic_controller.drive_straight_state.disp_error <= 0;
+  return drive_straight_state->dispError() <= 0;
 }
 
 void Forward::end() {
