@@ -188,7 +188,7 @@ void Server::UpdateRobotState(double dt) {
 
   // update yaw, omega, and alpha
   double new_yaw = yaw + d_pose.yaw; //eq 27
-  double new_dyawdt = smartmouse::math::yawDiff(new_yaw, yaw) / dt;
+  double new_dyawdt = smartmouse::math::yaw_diff(new_yaw, yaw) / dt;
   double new_a = (new_dyawdt - dyawdt) / dt;
 
   // handle wrap-around of theta

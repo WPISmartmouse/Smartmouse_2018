@@ -75,7 +75,8 @@ void ArcTurn::execute() {
     dAngle = atanf(fabs(cur_y / cur_x));
   }
 
-  double ang_error = smartmouse::math::yawDiff(dAngle, fabs(smartmouse::math::yawDiff(curPose.yaw, dir_to_yaw(curDir))));
+  double ang_error =
+      smartmouse::math::yaw_diff(dAngle, fabs(smartmouse::math::yaw_diff(curPose.yaw, dir_to_yaw(curDir))));
   double arc_error = (smartmouse::maze::HALF_UNIT_DIST / pose_dist(curPose, vtc_x, vtc_y)) - 1;
   double corr = (ang_error * ang_weight) + (arc_error * arc_weight);
 
@@ -95,7 +96,7 @@ bool ArcTurn::isFinished() {
   curRow = mouse->getRow();
   curDir = mouse->getDir();
 
-  dYaw = smartmouse::math::yawDiff(curPose.yaw, goalYaw);
+  dYaw = smartmouse::math::yaw_diff(curPose.yaw, goalYaw);
   return (curCol != startCol) || (curRow != startRow);
 }
 

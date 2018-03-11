@@ -243,6 +243,14 @@ Next we combine these in a matrix.
 
 What this gives us is a nice matrix-y formula for the change in the current and angle of our motor over time. We can use this equation to simulate the behavior of the motor. If we assume the motor start at some initial $\dot{\theta}$, $i_0$ and $\dot{i}$, and we know all our motor constants ($K$, $R$, $L$, $C$, $J$) we can figure out the right hand side of the equation, and the result will be how much $i$ and $\dot{\theta}$ changes over some discrete time step. That is what we do in the smartmouse simulator server code.
 
+\subsection{Other useful formulations}
+
+\textbf{Open-Loop Transfer Function:}
+
+This is the transfer function of our ``Plant''.
+
+$$ P(s) \frac{\dot{\Theta}(s)}{V(s)} = \frac{K}{(Js+b)(Ls+R)+K^2} $$
+
 \section{sources}
 \url{http://ctms.engin.umich.edu/CTMS/index.php?example=MotorSpeed&section=SystemModeling}
 

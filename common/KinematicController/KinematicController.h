@@ -9,45 +9,27 @@
 #include <common/KinematicController/RegulatedMotor.h>
 #include <tuple>
 
-struct drive_straight_state_t {
-  double disp;
-  double goalDisp;
-  double disp_error;
-  GlobalPose start_pose;
-  double start_time_s;
-  double left_speed_cellps;
-  double right_speed_cellps;
-  double forward_v;
-  double v_final;
-};
-
 class KinematicController {
-public:
+ public:
   KinematicController(Mouse *mouse);
 
-  static double dispToNextEdge(Mouse *mouse);
+  static double dispToNextEdge(Mouse &mouse);
 
-  static double dispToNthEdge(Mouse *mouse, unsigned int n);
+  static double dispToNthEdge(Mouse &mouse, unsigned int n);
 
-  static GlobalPose poseOfToNthEdge(Mouse *mouse, unsigned int n);
+  static GlobalPose poseOfToNthEdge(Mouse &mouse, unsigned int n);
 
-  static double fwdDispToCenter(Mouse *mouse);
+  static double fwdDispToCenter(Mouse &mouse);
 
   static double fwdDisp(Direction dir, GlobalPose current_pose, GlobalPose start_pose);
 
-  static double yawDiff(double y1, double y2);
-
   static GlobalPose forwardKinematics(double vl, double vr, double yaw, double dt);
-
-  void start(GlobalPose start_pose, double goalDisp, double v_final=smartmouse::kc::END_SPEED_CUPS);
 
   void planTraj(Waypoints waypoints);
 
-  double sidewaysDispToCenter(Mouse *mouse);
+  static double sidewaysDispToCenter(Mouse &mouse);
 
-  std::pair<double, double> compute_wheel_velocities(Mouse *mouse);
-
-  std::tuple<double, double, bool> estimate_pose(RangeData range_data, Mouse *mouse);
+  std::tuple<double, double, bool> estimate_pose(RangeData range_data, Mouse &mouse);
 
   GlobalPose getGlobalPose();
 
@@ -73,7 +55,6 @@ public:
   static const double kDWall;
   static const double kPYaw;
 
-  drive_straight_state_t drive_straight_state;
   void setParams(double kP, double kI, double kD, double ff_scale, double ff_offset);
 
   RegulatedMotor left_motor;
@@ -85,7 +66,9 @@ public:
   unsigned int row;
   unsigned int col;
 
-private:
+  double getCurrentForwardSpeedCUPS();
+
+ private:
   bool initialized;
   bool ignoring_left;
   bool ignoring_right;

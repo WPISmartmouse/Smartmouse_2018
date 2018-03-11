@@ -5,16 +5,18 @@
 
 # Look at the dynamics_model.pdf for the explanation behind this code.
 
-# In[1]:
+# In[9]:
+
 
 import numpy as np
 import matplotlib.pyplot as plt
+plt.style.use("./smartmouse.mlpstyle")
 
 
-# In[2]:
+# In[17]:
+
 
 def simulate(V, J, C, K, R, L, theta_dot=0, i=0):
-    # simulate T seconds
     T = 5
     dt = 0.01
     ts = np.arange(0, T, dt)
@@ -24,9 +26,8 @@ def simulate(V, J, C, K, R, L, theta_dot=0, i=0):
         A = np.array([[-C/J,K/J],[-K/L,-R/L]])
         B = np.array([0, 1/L])
         x = np.array([theta_dot, i])
-        w = V(t, i, theta_dot)
-        x_dot = A@x+B*w
-#         print(x_dot, theta_dot, i)
+        u = V(t, i, theta_dot)
+        x_dot = A@x+B*u
         theta_dot += (x_dot[0] * dt)
         i += (x_dot[1] * dt)
         theta_dots[idx] = theta_dot
@@ -70,9 +71,10 @@ plt.xlabel("Time (seconds)")
 plt.show()
 
 
-# In[3]:
+# In[20]:
 
-ts, theta_dots, currents = simulate(const_V(5), J=0.00005, C=0.0004, K=0.01, R=2.5, L=0.1)
+
+ts, theta_dots, currents = simulate(const_V(5), J=0.000658, C=0.0000024571, K=0.0787, R=5, L=0.58)
 
 plt.figure(figsize=(11,5))
 plt.subplot(121)
@@ -86,6 +88,33 @@ plt.plot(ts, currents)
 plt.title("Current of realistic motor")
 plt.ylabel("Current (amps)")
 plt.xlabel("Time (seconds)")
+plt.show()
+print(currents[-1], theta_dots[-1])
+
+
+# In[27]:
+
+
+ts, theta_dots, currents = simulate(const_V(0), J=0.000658, C=0.0000024571,
+                                    K=0.0787, R=5, L=0.58, theta_dot=63, i=0.00198)
+
+plt.figure(figsize=(11,5))
+plt.plot(ts, theta_dots * 0.0145)
+plt.title("Speed of realistic motor")
+plt.ylabel("Speed (meter/s)")
+plt.xlabel("Time (seconds)")
+
+# integrate theta_dots to get theta
+x = 0
+xs = []
+for theta_dot in theta_dots:
+    x = x + theta_dot*0.01*0.0145
+    xs.append(x)
+
+plt.figure(figsize=(10,10))
+plt.plot(ts, xs)
+plt.ylabel("Position (m)")
+plt.xlabel("Time (seconds))")
 plt.show()
 
 
@@ -106,11 +135,17 @@ plt.show()
 # 
 # The following differential equation describes our dc motor model
 # 
-# $$ \frac{K}{LJ}u = \ddot{y} + \bigg(\frac{C}{J} + \frac{RJ}{L}\bigg)\dot{y} + \bigg(\frac{RC}{LJ} + \frac{K^2}{LJ}\bigg)y $$
+# \begin{align}
+# u &= \frac{LJ}{K}\ddot{y} + \bigg(\frac{LC}{K} + \frac{RJ}{K}\bigg)\dot{y} + \bigg(\frac{RC}{K} + K\bigg)y \\
+# \frac{K}{LJ}u &= \frac{K}{LJ}\Bigg(\frac{LJ}{K}\ddot{y} + \bigg(\frac{LC}{K} + \frac{RJ}{K}\bigg)\dot{y} + \bigg(\frac{RC}{K} + K\bigg)y\Bigg) \\
+# \frac{K}{LJ}u &= \ddot{y} + \frac{K}{LJ}\bigg(\frac{LC}{K} + \frac{RJ}{K}\bigg)\dot{y} + \frac{K}{LJ}\bigg(\frac{RC}{K} + K\bigg)y \\
+# \frac{K}{LJ}u &= \ddot{y} + \bigg(\frac{C}{J} + \frac{R}{L}\bigg)\dot{y} + \bigg(\frac{RC}{LJ} + \frac{K^2}{LJ}\bigg)y \\
+# \end{align}
+# 
 # 
 # First find the generic solution to the homogeneous form:
 # 
-# $$ 0 = \ddot{y} + \bigg(\frac{C}{J} + \frac{RJ}{L}\bigg)\dot{y} + \bigg(\frac{RC}{LJ} + \frac{K^2}{LJ}\bigg)y $$
+# $$ 0 = \ddot{y} + \bigg(\frac{C}{J} + \frac{R}{L}\bigg)\dot{y} + \bigg(\frac{RC}{LJ} + \frac{K^2}{LJ}\bigg)y $$
 # 
 # If we plug in the following coefficients
 # 
@@ -124,7 +159,8 @@ plt.show()
 # 
 # The following code calculates the roots
 
-# In[5]:
+# In[18]:
+
 
 J = 0.000658
 C = 0.0000012615 + 0.0000011956
@@ -135,10 +171,9 @@ L = 0.58
 a = 1
 b = C/J+R/L
 c = R*C/(L*J) + K**2/(L*J)
-print(a, b, c)
 
-root_1 = (-b + np.sqrt(b**2-4*a*c))/2
-root_2 = (-b - np.sqrt(b**2-4*a*c))/2
+root_1 = (-b + np.sqrt(b**2-4*a*c))/(2*a)
+root_2 = (-b - np.sqrt(b**2-4*a*c))/(2*a)
 print("characteristic roots:")
 print(root_1)
 print(root_2)
@@ -164,9 +199,10 @@ print(root_2)
 #   0.06546 &= c_1
 # \end{align*}
 # 
-# We how need a particular solution.
+# We now need a particular solution.
 
-# In[6]:
+# In[13]:
+
 
 print("for u=5 volts")
 u=5
@@ -186,7 +222,8 @@ print("forcing term = ", f)
 #     A &= 1022.4519
 # \end{align*}$$
 
-# In[7]:
+# In[14]:
+
 
 print("A = ", (f - b)/a)
 y_particular = (f - b)/a
@@ -194,12 +231,12 @@ y_particular = (f - b)/a
 
 # This means our end result specific solution is
 # 
-# $$ y(x) = c_1e^{-2.7845x} + c_2e^{-5.8399x}  + 1022.4520 $$
+# $$ y(x) = 0.06546e^{-2.7845x} + -0.06546e^{-5.8399x}  + 1022.4520 $$
 
-# In[8]:
+# In[15]:
+
 
 x = np.linspace(0, 10, 1000)
-u = 5
 y = 0.06546*np.exp(-2.7845*x) + -0.06546*np.exp(-5.8399*x) + y_particular
 
 plt.figure(figsize=(10,10))

@@ -19,7 +19,7 @@ void TurnInPlace::execute() {
 
 bool TurnInPlace::isFinished() {
   double currentYaw = mouse->getGlobalPose().yaw;
-  dYaw = smartmouse::math::yawDiff(currentYaw, goalYaw);
+  dYaw = smartmouse::math::yaw_diff(currentYaw, goalYaw);
   double vl, vr;
   std::tie(vl, vr) = mouse->getWheelVelocities();
   return isTimedOut() || (fabs(dYaw) < smartmouse::kc::ROT_TOLERANCE);

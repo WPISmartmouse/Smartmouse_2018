@@ -1,9 +1,9 @@
 #pragma once
 
 #include <math.h>
-#include "common/core/Direction.h"
-#include "common/core/AbstractMaze.h"
-#include "common/core/Pose.h"
+#include <common/core/Direction.h>
+#include <common/core/AbstractMaze.h>
+#include <common/core/Pose.h>
 
 typedef struct {
   double gerald_left;
@@ -77,6 +77,7 @@ public:
   bool isWallInDirection(Direction d);
 
   AbstractMaze *maze;
+
 
   virtual GlobalPose getGlobalPose() = 0;
   virtual LocalPose getLocalPose() = 0;

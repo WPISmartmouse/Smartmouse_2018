@@ -7,9 +7,8 @@
 #include <common/core/Mouse.h>
 #include <common/KinematicController/KinematicController.h>
 
+
 const double KinematicController::kDropSafety = 0.8;
-const double KinematicController::kPWall = 0.8;
-const double KinematicController::kPYaw = -1.2;
 const double smartmouse::kc::END_SPEED_CUPS = 1.0;
 const double smartmouse::kc::SOFT_ACCELERATION_CPSS = 2;
 
@@ -29,7 +28,7 @@ GlobalPose KinematicController::getGlobalPose() {
 LocalPose KinematicController::getLocalPose() {
   LocalPose local_pose_estimate;
   local_pose_estimate.yaw_from_straight =
-      smartmouse::math::yawDiff(dir_to_yaw(mouse->getDir()), current_pose_estimate_cu.yaw);
+      smartmouse::math::yaw_diff(dir_to_yaw(mouse->getDir()), current_pose_estimate_cu.yaw);
   switch (mouse->getDir()) {
     case Direction::N: {
       local_pose_estimate.to_back = ceil(current_pose_estimate_cu.row) - current_pose_estimate_cu.row;
@@ -114,7 +113,7 @@ KinematicController::run(double dt_s, double left_angle_rad, double right_angle_
       // offset_cu is measured from center wall line left of the robot (it's in the local pose frame)
       double est_yaw, offset_m;
       bool no_walls;
-      std::tie(est_yaw, offset_m, no_walls) = estimate_pose(range_data, mouse);
+      std::tie(est_yaw, offset_m, no_walls) = estimate_pose(range_data, *mouse);
       double offset_cu = smartmouse::maze::toCellUnits(offset_m);
 
       if (enable_sensor_pose_estimate && !no_walls) {
@@ -123,7 +122,7 @@ KinematicController::run(double dt_s, double left_angle_rad, double right_angle_
         double d_wall_front_cu = 0;
         bool wall_in_front = false;
         if (range_data.front < 0.08) {
-          double yaw_error = smartmouse::math::yawDiff(current_pose_estimate_cu.yaw, dir_to_yaw(mouse->getDir()));
+          double yaw_error = smartmouse::math::yaw_diff(current_pose_estimate_cu.yaw, dir_to_yaw(mouse->getDir()));
           double d_wall_front_m = cos(yaw_error) * range_data.front + smartmouse::kc::FRONT_ANALOG_X;
           d_wall_front_cu = smartmouse::maze::toCellUnits(d_wall_front_m);
           wall_in_front = true;
@@ -199,7 +198,7 @@ GlobalPose KinematicController::forwardKinematics(double vl_cups, double vr_cups
   return GlobalPose(dcol_cu, drow_cu, dtheta_rad);
 }
 
-std::tuple<double, double, bool> KinematicController::estimate_pose(RangeData range_data, Mouse *mouse) {
+std::tuple<double, double, bool> KinematicController::estimate_pose(RangeData range_data, Mouse &mouse) {
   static double last_front_left_analog_dist;
   static double last_front_right_analog_dist;
   static double last_back_left_analog_dist;
@@ -263,13 +262,13 @@ std::tuple<double, double, bool> KinematicController::estimate_pose(RangeData ra
   }
 
   // consider the "logical" state of walls AND actual range reading
-  if (sense_right_wall && mouse->isWallInDirection(right_of_dir(mouse->getDir()))) { // wall is on right
+  if (sense_right_wall && mouse.isWallInDirection(right_of_dir(mouse.getDir()))) { // wall is on right
     *offset = smartmouse::maze::UNIT_DIST_M - d_to_wall_right - smartmouse::maze::HALF_WALL_THICKNESS_M;
-    *yaw = dir_to_yaw(mouse->getDir()) + currentYaw_r;
+    *yaw = dir_to_yaw(mouse.getDir()) + currentYaw_r;
     *ignore_walls = false;
-  } else if (sense_left_wall && mouse->isWallInDirection(left_of_dir(mouse->getDir()))) { // wall is on left
+  } else if (sense_left_wall && mouse.isWallInDirection(left_of_dir(mouse.getDir()))) { // wall is on left
     *offset = d_to_wall_left + smartmouse::maze::HALF_WALL_THICKNESS_M;
-    *yaw = dir_to_yaw(mouse->getDir()) + currentYaw_l;
+    *yaw = dir_to_yaw(mouse.getDir()) + currentYaw_l;
     *ignore_walls = false;
   } else { // we're too far from any walls, use our pose estimation
     *ignore_walls = true;
@@ -295,62 +294,23 @@ void KinematicController::setSpeedCps(double left_setpoint_cps,
   right_motor.setSetpointCps(right_setpoint_cps);
 }
 
-void KinematicController::start(GlobalPose start_pose, double goalDisp, double v_final) {
-  drive_straight_state.disp = 0;
-  drive_straight_state.disp_error = goalDisp;
-  drive_straight_state.goalDisp = goalDisp;
-  drive_straight_state.start_pose = start_pose;
-  drive_straight_state.forward_v = smartmouse::kc::radToCU((left_motor.velocity_rps + right_motor.velocity_rps) / 2);
-  drive_straight_state.v_final = v_final;
-}
-
 void KinematicController::planTraj(Waypoints waypoints) {
   TrajectoryPlanner planner(waypoints);
   Eigen::Matrix<double, 10, 1> plan = planner.plan();
 }
 
-std::pair<double, double> KinematicController::compute_wheel_velocities(Mouse *mouse) {
-  GlobalPose current_pose = mouse->getGlobalPose();
-  drive_straight_state.disp = fwdDisp(mouse->getDir(), current_pose, drive_straight_state.start_pose);
-  drive_straight_state.disp_error = drive_straight_state.goalDisp - drive_straight_state.disp;
-
-  double error_to_center_cu = sidewaysDispToCenter(mouse);
-  double goal_yaw = dir_to_yaw(mouse->getDir()) + error_to_center_cu * kPYaw;
-
-  // The goal is to be facing straight when you wall distance is correct.
-  // To achieve this, we control our yaw as a function of our error in wall distance
-  double yaw_error = KinematicController::yawDiff(goal_yaw, current_pose.yaw);
-
-  // given starting velocity, fixed acceleration, and final velocity
-  // generate the velocity profile for achieving this as fast as possible
-  double acc = smartmouse::kc::SOFT_ACCELERATION_CPSS * dt_s;
-  double current_speed = smartmouse::kc::radToCU((left_motor.velocity_rps + right_motor.velocity_rps) / 2);
-  double disp_needed_to_deccelerate = (std::pow(current_speed * 1.1, 2) - std::pow(drive_straight_state.v_final, 2)) / (2.0 * smartmouse::kc::SOFT_ACCELERATION_CPSS);
-  if (drive_straight_state.disp_error <= disp_needed_to_deccelerate) {
-    drive_straight_state.forward_v -= acc;
-  } else if (drive_straight_state.forward_v + acc <= smartmouse::kc::MAX_SPEED_CUPS) {
-    drive_straight_state.forward_v += acc;
+double distance_needed(const double v_0, const double v_f, const double a_0) {
+  constexpr double j_mag = 20;
+  const double b = a_0;
+  const double c = v_0 - v_f;
+  double j = -j_mag;
+  // if we are accelerating, j should be positive
+  if (v_f > v_0) {
+    j = j_mag;
   }
-
-  drive_straight_state.left_speed_cellps = drive_straight_state.forward_v;
-  drive_straight_state.right_speed_cellps = drive_straight_state.forward_v;
-  double correction = kPWall * yaw_error;
-
-  if (yaw_error < 0) { // need to turn clockwise
-    drive_straight_state.left_speed_cellps -= correction;
-  } else {
-    // correction will be negative here
-    drive_straight_state.right_speed_cellps += correction;
-  }
-
-  return std::pair<double, double>(drive_straight_state.left_speed_cellps, drive_straight_state.right_speed_cellps);
-}
-
-double KinematicController::yawDiff(double y1, double y2) {
-  double diff = y2 - y1;
-  if (diff > M_PI) return diff - M_PI * 2;
-  if (diff < -M_PI) return diff + M_PI * 2;
-  return diff;
+  const double a = 0.5 * j;
+  const double t = (-b - sqrt(std::pow(b, 2) - 4 * a * c)) / (2 * a);
+  return v_0 * t + 1 / 2 * a_0 * std::pow(t, 2) + 1 / 6 * j * std::pow(t, 3);
 }
 
 double KinematicController::fwdDisp(Direction dir, GlobalPose current_pose, GlobalPose start_pose) {
@@ -363,52 +323,56 @@ double KinematicController::fwdDisp(Direction dir, GlobalPose current_pose, Glob
   }
 }
 
-double KinematicController::dispToNextEdge(Mouse *mouse) {
-  GlobalPose current_pose = mouse->getGlobalPose();
-  Direction dir = mouse->getDir();
+double KinematicController::dispToNextEdge(Mouse &mouse) {
+  GlobalPose current_pose = mouse.getGlobalPose();
+  Direction dir = mouse.getDir();
 
   switch (dir) {
     case Direction::N: {
-      return current_pose.row - mouse->getRow();
+      return current_pose.row - mouse.getRow();
     }
     case Direction::S: {
-      return mouse->getRow() + 1 - current_pose.row;
+      return mouse.getRow() + 1 - current_pose.row;
     }
     case Direction::E: {
-      return mouse->getCol() + 1 - current_pose.col;
+      return mouse.getCol() + 1 - current_pose.col;
     }
     case Direction::W: {
-      return current_pose.col - mouse->getCol();
+      return current_pose.col - mouse.getCol();
     }
     default: return std::numeric_limits<double>::quiet_NaN();
   }
 }
 
-double KinematicController::dispToNthEdge(Mouse *mouse, unsigned int n) {
+double KinematicController::dispToNthEdge(Mouse &mouse, unsigned int n) {
   // give the displacement to the nth edge like above...
   return dispToNextEdge(mouse) + (n - 1);
 }
 
-GlobalPose KinematicController::poseOfToNthEdge(Mouse *mouse, unsigned int n) {
+GlobalPose KinematicController::poseOfToNthEdge(Mouse &mouse, unsigned int n) {
   // give the displacement to the nth edge like above...
   double disp = dispToNthEdge(mouse, n);
-  GlobalPose pose = mouse->getGlobalPose();
+  GlobalPose pose = mouse.getGlobalPose();
   pose.col += cos(pose.yaw) * disp;
   pose.row += sin(pose.yaw) * disp;
 
   return pose;
 }
 
-double KinematicController::sidewaysDispToCenter(Mouse *mouse) {
+double KinematicController::sidewaysDispToCenter(Mouse &mouse) {
   // local y is sideways, increasing from left to right
-  return mouse->getLocalPose().to_left - 0.5;
+  return mouse.getLocalPose().to_left - 0.5;
 }
 
-double KinematicController::fwdDispToCenter(Mouse *mouse) {
-  return 0.5 - mouse->getLocalPose().to_back;
+double KinematicController::fwdDispToCenter(Mouse &mouse) {
+  return 0.5 - mouse.getLocalPose().to_back;
 }
 
 void KinematicController::setParams(double kP, double kI, double kD, double ff_scale, double ff_offset) {
   left_motor.setParams(kP, kI, kD, ff_scale, ff_offset);
   right_motor.setParams(kP, kI, kD, ff_scale, ff_offset);
+}
+
+double KinematicController::getCurrentForwardSpeedCUPS() {
+  return smartmouse::kc::radToCU((left_motor.velocity_rps + right_motor.velocity_rps)/2);
 }
