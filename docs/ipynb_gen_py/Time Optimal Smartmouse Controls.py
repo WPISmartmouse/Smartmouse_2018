@@ -36,7 +36,7 @@ get_ipython().run_cell_magic('tikz', '-s 400,400', '\\draw[->] (0,0) -- (10,0);\
 
 # ## Code that proves it
 
-# In[27]:
+# In[3]:
 
 
 # dependencies and global setup
@@ -64,7 +64,7 @@ def log(*args):
         print(*args)
 
 
-# In[28]:
+# In[4]:
 
 
 def profile(V0, Vf, Vmax, d, A, buffer=3e-4):
@@ -159,7 +159,7 @@ plt.show()
 # 
 # It can be shown that the matrix on the left is invertable, so long as $t_f-t_0 > 0$. So we can invert and solve this equation and get all the $a$ coefficients. We can then use this polynomial to generate the $q(t)$ and $\dot{q}(t)$ -- our trajectory.
 
-# In[29]:
+# In[5]:
 
 
 def simple_traj_solve(q_0, q_f, q_dot_0, q_dot_t_f, t_f):
@@ -183,7 +183,7 @@ simple_traj_coeff = simple_traj_solve(*simple_traj_info)
 
 # Here you can see that the resulting coeffictions are $a_0=0$, $a_1=0$, $a_2=0.54$, $a_0=-0.36$. Intuitively, this says that we're going to have positive acceleration, but our acceleration is going to slow down over time. Let's graph it!
 
-# In[30]:
+# In[6]:
 
 
 def simple_traj_plot(coeff, t_f):
@@ -203,7 +203,7 @@ simple_traj_plot(simple_traj_coeff, simple_traj_info[-1])
 # 
 # Let's try another example, now with our full state space of $[x, y, \theta]$.
 
-# In[31]:
+# In[7]:
 
 
 def no_dynamics():
@@ -255,7 +255,7 @@ no_dynamics()
 # 
 # ***
 
-# In[32]:
+# In[8]:
 
 
 get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45:(0,0)}] (-.5,-1) rectangle (0.5,1);\n\\filldraw (0,0) circle (0.125);\n\n\\draw [->] (0,0) -- (0,1.5);\n\\draw [->] (0,0) -- (1.5,0);\n\\draw [->] (0,0) -- (1.5,1.5);\n\\draw (1.2, -0.2) node {$x$};\n\\draw (-0.2, 1.2) node {$y$};\n\\draw (1, 1.2) node {$v$};')
@@ -383,7 +383,7 @@ get_ipython().run_cell_magic('tikz', '-s 100,100', '\n\\draw [rotate around={-45
 # \end{bmatrix}
 # \end{equation}
 
-# In[33]:
+# In[9]:
 
 
 # Let's solve this in code like we did before
@@ -459,7 +459,7 @@ def plot_traj_pts(xs, ys, T, waypoints):
     plt.show()
 
 
-# In[34]:
+# In[10]:
 
 
 from math import sin, cos, pi
@@ -552,7 +552,7 @@ class TrajPlan:
 
 # ## Example Plots
 
-# In[35]:
+# In[11]:
 
 
 # forward 1 cell, start from rest, end at 40cm/s, do it in .5 seconds
@@ -563,7 +563,7 @@ plot_vars(fwd_1)
 plot_traj(fwd_1)
 
 
-# In[36]:
+# In[12]:
 
 
 # continue by turning right 90 degrees
@@ -574,7 +574,7 @@ plot_vars(turn_right)
 plot_traj(turn_right)
 
 
-# In[37]:
+# In[13]:
 
 
 # 3 waypoints!
@@ -589,7 +589,7 @@ plot_traj(turn_right)
 # 
 # Now let's find one that really sucks!
 
-# In[38]:
+# In[14]:
 
 
 # 4 waypoints!
@@ -613,7 +613,7 @@ plot_traj(turn_right)
 # 
 # where $v_d$ is desired velocity, $\theta_d$ is the desired angle, $d$ is signed distance to the planned trajectory (to the right of the plan is positive), $v_d$ and $w_d$ are the desired velocities of the robot, and $P_1$, $P_2$, and $P_3$ are constants. Essentially what we're saying with the first equation is that when you're far off the trajectory you need to turn harder to get back on to it, but you also need to be aligned with it. The second equation says if you're lagging behind your plan speed up, or slow down if you're overshooting.
 
-# In[39]:
+# In[15]:
 
 
 from math import atan2, sqrt
@@ -696,7 +696,7 @@ def simulate(q_0, waypoints, P_1, P_2, P_3, A=3):
     plt.legend(bbox_to_anchor=(1,1), loc=2)
 
 
-# In[40]:
+# In[16]:
 
 
 test_P_1=300
@@ -708,7 +708,7 @@ simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3)
 plt.show()
 
 
-# In[41]:
+# In[17]:
 
 
 robot_q_0 = (0.11, 0.18, pi/2, 0.2, 5)
@@ -717,7 +717,7 @@ simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3)
 plt.show()
 
 
-# In[42]:
+# In[18]:
 
 
 robot_q_0 = (0.0, 0.25, 0, 0.2, 0)
@@ -726,7 +726,7 @@ simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3)
 plt.show()
 
 
-# In[43]:
+# In[19]:
 
 
 robot_q_0 = (0.45, 0.05, pi+0.25, 0.3, 0)
@@ -735,7 +735,7 @@ simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3)
 plt.show()
 
 
-# In[44]:
+# In[20]:
 
 
 robot_q_0 = (0.0, 0.25, 0, 0.2, -5)
@@ -744,7 +744,7 @@ simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3)
 plt.show()
 
 
-# In[45]:
+# In[21]:
 
 
 robot_q_0 = (0.25, 0.28, -pi*4/7, 0.5, 0)
@@ -753,7 +753,7 @@ simulate(robot_q_0, traj, test_P_1, test_P_2, test_P_3, A=6)
 plt.show()
 
 
-# In[46]:
+# In[22]:
 
 
 # no initial error
@@ -929,7 +929,7 @@ plt.show()
 # ### 7. Apply our new controller of the form $\vec{u} = -K(\vec{x} - \bar{x}) + \bar{u}$
 # 
 
-# In[47]:
+# In[23]:
 
 
 from math import atan2
@@ -1069,7 +1069,7 @@ def follow_plan(q_0, waypoints, P_1, P_2, P_3):
     plt.legend(bbox_to_anchor=(1,1), loc=2)
 
 
-# In[48]:
+# In[24]:
 
 
 LOG_LVL=1
@@ -1079,7 +1079,7 @@ follow_plan(robot_q_0, traj, test_P_1, test_P_2, test_P_3)
 plt.show()
 
 
-# In[49]:
+# In[25]:
 
 
 LOG_LVL=1
@@ -1091,7 +1091,7 @@ plt.show()
 
 # # Tuning new PIDs
 
-# In[50]:
+# In[26]:
 
 
 import csv
@@ -1121,20 +1121,61 @@ plt.show()
 
 # We must also consider the case where there is not enough distance to reach our maximum velocity. In this case, we can instead calculate the maximum velocity we can reach given this time-optimal profile and the available distance. To do this, we can take the derivative of the equation for total time with respect to the maximum speed, then find the maximum speed for which this derivative is zero. We then plan to ramp up to this max speed, then back down to our desired final velocity.
 
-# In the case where we have plenty of distance, we will ramp up to max velocity, maintain that maximum velocity for a certain distance, then ramp back down to our final velocity. 
+# In the case where we have plenty of distance, we will ramp up to max velocity, maintain that maximum velocity for a certain distance, then ramp back down to our final velocity. We will call these **phase 1**, **phase 2**, and  **phase 3**. As mentioned earlier, sometimes we will skip phase 2 entirely. Another weird assumption I'm going to make is that we always have enough time to reach maximum acceleration. If this isn't true than a few of our equations break, but in smartmouse this will never happen.
 
-# In[14]:
+# ![velocity profile](./velocity_profile.png)
+# 
+# **Definition of variables**
+# 
+# $v_o$ is the initial velocity
+# 
+# $v_s$ is the maximum velocity
+# 
+# $v_f$ is the final velocity
+# 
+# $a_s$ is the maximum acceleration
+# 
+# $T$ is the time to reach max velocity
+# 
+# $t_1$ is the time to transition from 0 to max acceleration
+# 
+# $t_2$ is the time to when we begin to transition from max acceleration back to 0
+
+# In[39]:
 
 
-import matplotlib.pyplot as plt
-import numpy as np
-plt.style.use("./smartmouse.mlpstyle")
+a_m = 2
+j_m = 10
+v_0 = 0.5
+v_f = 2
+t_1 = a_m / j_m
+v_1 = v_0 + a_m**2 / (2 * j_m)
+v_2 = v_f - a_m**2 / (2 * j_m)
+t_2 = t_1 + (v_2 - v_1) / a_m
+t_f = t_2 + t_1
+vs = []
+T = t_f+0.1
+ts = np.linspace(0, T, 200)
+for t in ts:
+    if t <= t_1:
+        v_t = v_0 + j_m * t**2 / 2.0
+    elif t <= t_2:
+        v_t = v_1 + a_m * (t - t_1)
+    elif t <= t_f:
+        v_t = v_2 + a_m * (t - t_2) - j_m * (t - t_2)**2 / 2.0
+    else:
+        v_t = v_f
+    vs.append(v_t)
 
-t = np.linspace(0,10,1000)
-
-
-fig, ax = plt.subplots(4,1, figsize=(10,10))
-plt.tight_layout()
-ax[0,0].plot()
+plt.figure(figsize=(10,10))
+plt.plot(ts, vs, label='velocity')
+plt.plot([t_1, t_1], [0, v_f], color='k', linestyle='--')
+plt.plot([t_2, t_2], [0, v_f], color='k', linestyle='--')
+plt.plot([t_f, t_f], [0, v_f], color='k', linestyle='--')
+plt.plot([0, T], [v_0, v_0], color='k', linestyle='--')
+plt.plot([0, T], [v_f, v_f], color='k', linestyle='--')
+plt.xlabel("times (s)")
+plt.ylabel("velocity (cu/s)")
+plt.grid()
 plt.show()
 
