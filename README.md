@@ -74,3 +74,9 @@ This is super experimental, and I don't want to support it, and it only works fo
  1. Install teensyduino
  1. Install CLion and clone our repoistory. Open our repository in CLion
  1. try to build. Good luck...
+
+# Licensing and Attribution
+
+I'm using font-awesome icons with no changes, which are under CCA4: https://fontawesome.com/license
+I'm using source from gazebo and ignition projces, which are under Apache: http://www.apache.org/licenses/LICENSE-2.0
+
