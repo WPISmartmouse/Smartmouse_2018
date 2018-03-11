@@ -1141,18 +1141,28 @@ plt.show()
 # 
 # $t_2$ is the time to when we begin to transition from max acceleration back to 0
 
-# In[39]:
+# In[43]:
 
 
 a_m = 2
 j_m = 10
 v_0 = 0.5
+v_m = 5
 v_f = 2
+
+# ramp up
 t_1 = a_m / j_m
 v_1 = v_0 + a_m**2 / (2 * j_m)
-v_2 = v_f - a_m**2 / (2 * j_m)
+v_2 = v_m - a_m**2 / (2 * j_m)
 t_2 = t_1 + (v_2 - v_1) / a_m
-t_f = t_2 + t_1
+t_m = t_2 + t_1
+# ramp down
+t_3 = t_m + a_m / j_m
+v_3 = v_m - a_m**2 / (2 * j_m)
+v_4 = v_f + a_m**2 / (2 * j_m)
+t_4 = t_3 + (v_3 - v_4) / a_m
+t_f = t_4 + t_1
+
 vs = []
 T = t_f+0.1
 ts = np.linspace(0, T, 200)
@@ -1161,8 +1171,14 @@ for t in ts:
         v_t = v_0 + j_m * t**2 / 2.0
     elif t <= t_2:
         v_t = v_1 + a_m * (t - t_1)
-    elif t <= t_f:
+    elif t <= t_m:
         v_t = v_2 + a_m * (t - t_2) - j_m * (t - t_2)**2 / 2.0
+    elif t <= t_3:
+        v_t = v_m - j_m * (t - t_m)**2 / 2.0
+    elif t <= t_4:
+        v_t = v_3 - a_m * (t - t_3)
+    elif t < t_f:
+        v_t = v_4 - a_m * (t - t_4) + j_m * (t - t_4)**2 / 2.0
     else:
         v_t = v_f
     vs.append(v_t)
@@ -1171,8 +1187,9 @@ plt.figure(figsize=(10,10))
 plt.plot(ts, vs, label='velocity')
 plt.plot([t_1, t_1], [0, v_f], color='k', linestyle='--')
 plt.plot([t_2, t_2], [0, v_f], color='k', linestyle='--')
-plt.plot([t_f, t_f], [0, v_f], color='k', linestyle='--')
+plt.plot([t_m, t_m], [0, v_f], color='k', linestyle='--')
 plt.plot([0, T], [v_0, v_0], color='k', linestyle='--')
+plt.plot([0, T], [v_m, v_m], color='k', linestyle='--')
 plt.plot([0, T], [v_f, v_f], color='k', linestyle='--')
 plt.xlabel("times (s)")
 plt.ylabel("velocity (cu/s)")
