@@ -2,7 +2,8 @@
   <qresource prefix="/">
     <file>style.qss</file>
   </qresource>
-  <qresource prefix="/">
-    <file>images/vsplitter_handle.png</file>
+  <qresource prefix="/images">
+    <file alias="vsplitter_handle.svg">images/vsplitter_handle.svg</file>
+    <file alias="camera.svg">images/camera.svg</file>
   </qresource>
 </RCC>

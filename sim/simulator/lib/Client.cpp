@@ -32,7 +32,6 @@ Client::Client(QMainWindow *parent) :
   // publish the initial configuration
   smartmouse::msgs::PhysicsConfig initial_physics_config;
   initial_physics_config.set_ns_of_sim_per_step(1000000u);
-  initial_physics_config.set_real_time_factor(1);
   physics_pub_.Publish(initial_physics_config);
 
   // publish initial config of the server
@@ -308,6 +307,12 @@ void Client::SaveSettings() {
   settings_->setValue("gui/main_splitter", ui_->main_splitter->saveState());
   settings_->setValue("gui/info_tabs", ui_->info_tabs->currentIndex());
   settings_->setValue("gui/static_", ui_->static_checkbox->isChecked());
+  settings_->setValue("gui/real_time_value", ui_->real_time_factor_spinner->value());
+  settings_->setValue("gui/kp", ui_->kp_spinbox->value());
+  settings_->setValue("gui/ki", ui_->ki_spinbox->value());
+  settings_->setValue("gui/kd", ui_->kd_spinbox->value());
+  settings_->setValue("gui/kff_offset", ui_->kff_offset_spinbox->value());
+  settings_->setValue("gui/kff_scale", ui_->kff_scale_spinbox->value());
 }
 
 void Client::RestoreSettings() {
@@ -333,4 +338,11 @@ void Client::RestoreSettings() {
   LoadDefaultMouse();
 
   ui_->static_checkbox->setChecked(settings_->value("gui/static_").toBool());
+
+  ui_->real_time_factor_spinner->setValue(settings_->value("gui/real_time_value").toDouble());
+  ui_->kp_spinbox->setValue(settings_->value("gui/kp").toDouble());
+  ui_->ki_spinbox->setValue(settings_->value("gui/ki").toDouble());
+  ui_->kd_spinbox->setValue(settings_->value("gui/kd").toDouble());
+  ui_->kff_offset_spinbox->setValue(settings_->value("gui/kff_offset").toDouble());
+  ui_->kff_scale_spinbox->setValue(settings_->value("gui/kff_scale").toDouble());
 }

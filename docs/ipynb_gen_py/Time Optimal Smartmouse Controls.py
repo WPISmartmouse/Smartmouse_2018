@@ -271,7 +271,7 @@ too_fast()
 
 # So far in solving for $v_m$, we are have ignored the hardware limit. Let's call that $\mathbb{V}$. If we have a really far distance, it's possible that $v_m > \mathbb{V}$, and in that case we must clamp $v_m=\mathbb{V}$, and create a intermediate section of the profile where we maintain $\mathbb{V}$. An example is shown below
 
-# In[48]:
+# In[49]:
 
 
 def just_right():
@@ -279,7 +279,7 @@ def just_right():
     v_f=1
     a_m=5
     j_m=15
-    V = 5
+    V = 4
     d = 9.5
     
     v_m = compute_v_max(v_0, v_f, a_m, j_m, d)

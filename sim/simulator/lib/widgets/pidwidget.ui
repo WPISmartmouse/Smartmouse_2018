@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
+    <width>485</width>
     <height>300</height>
    </rect>
   </property>
@@ -75,6 +75,20 @@
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="screenshot_button">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset>
+           <normaloff>:/images/camera.svg</normaloff>:/images/camera.svg</iconset>
+         </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
         <spacer name="horizontalSpacer">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -109,6 +123,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../../simulator.qrc"/>
+ </resources>
  <connections/>
 </ui>

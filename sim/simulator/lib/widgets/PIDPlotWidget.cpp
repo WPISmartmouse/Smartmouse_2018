@@ -25,7 +25,6 @@ PIDPlotWidget::PIDPlotWidget() : ui_(new Ui::PIDPlotWidget()), capacity_(1000) {
   right_setpoint_->Attach(plot_);
   right_actual_->Attach(plot_);
 
-  plot_->axisScaleDraw(QwtPlot::xBottom)->enableComponent(QwtAbstractScaleDraw::Labels, false);
   plot_->setAxisTitle(QwtPlot::xBottom, "Time (seconds)");
   plot_->setAxisTitle(QwtPlot::yLeft, "Speed cell/second");
 

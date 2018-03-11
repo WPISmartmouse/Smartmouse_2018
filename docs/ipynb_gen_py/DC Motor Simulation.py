@@ -71,10 +71,12 @@ plt.xlabel("Time (seconds)")
 plt.show()
 
 
-# In[25]:
+# In[40]:
 
 
 ts, theta_dots, currents = simulate(const_V(5), J=0.000658, C=0.0000024571, K=0.0787, R=5, L=0.58)
+
+print('max speed', theta_dots[-1]*0.0145)
 
 plt.figure(figsize=(11,5))
 plt.subplot(121)
@@ -89,7 +91,6 @@ plt.title("Current of realistic motor")
 plt.ylabel("Current (amps)")
 plt.xlabel("Time (seconds)")
 plt.show()
-print('max speed', theta_dots[-1]*0.0145)
 
 
 # In[12]:

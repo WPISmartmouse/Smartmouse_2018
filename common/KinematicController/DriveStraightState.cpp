@@ -79,7 +79,7 @@ double DriveStraightState::compute_forward_velocity(double t /* seconds */ ) {
     v_t = v_0 + j_m * std::pow(t, 2) / 2.0;
   } else if (t <= t_2) {
     v_t = v_1 + a_m * (t - t_1);
-  } else if (t <= t_f) {
+  } else if (t <= t_m1) {
     v_t = v_2 + a_m * (t - t_2) - j_m * std::pow(t - t_2, 2) / 2.0;
   } else if (t <= t_m2) {
     v_t = v_m;
