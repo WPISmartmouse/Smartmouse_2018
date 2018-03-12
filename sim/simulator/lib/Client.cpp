@@ -15,6 +15,8 @@ Client::Client(QMainWindow *parent) :
     QMainWindow(parent), ui_(new Ui::MainWindow) {
   ui_->setupUi(this);
 
+  uuid = sole::uuid1();
+
   server_control_pub_ = node_.Advertise<smartmouse::msgs::ServerControl>(TopicNames::kServerControl);
   physics_pub_ = node_.Advertise<smartmouse::msgs::PhysicsConfig>(TopicNames::kPhysics);
   maze_pub_ = node_.Advertise<smartmouse::msgs::Maze>(TopicNames::kMaze);
@@ -25,6 +27,7 @@ Client::Client(QMainWindow *parent) :
   node_.Subscribe(TopicNames::kWorldStatistics, &Client::OnWorldStats, this);
   node_.Subscribe(TopicNames::kGuiActions, &Client::OnGuiActions, this);
   node_.Subscribe(TopicNames::kPhysics, &Client::OnPhysics, this);
+  node_.Subscribe(TopicNames::kServerControl, &Client::OnServerControl, this);
 
   ConfigureGui();
   RestoreSettings();
@@ -32,10 +35,12 @@ Client::Client(QMainWindow *parent) :
   // publish the initial configuration
   smartmouse::msgs::PhysicsConfig initial_physics_config;
   initial_physics_config.set_ns_of_sim_per_step(1000000u);
+  initial_physics_config.set_author(uuid.str());
   physics_pub_.Publish(initial_physics_config);
 
   // publish initial config of the server
   smartmouse::msgs::ServerControl initial_server_control;
+  initial_server_control.set_author(uuid.str());
   initial_server_control.set_pause(false);
   initial_server_control.set_reset_robot(true);
   initial_server_control.set_reset_time(true);
@@ -46,6 +51,7 @@ void Client::Exit() {
   SaveSettings();
   smartmouse::msgs::ServerControl quit_msg;
   quit_msg.set_quit(true);
+  quit_msg.set_author(uuid.str());
   server_control_pub_.Publish(quit_msg);
   QApplication::exit(0);
 }
@@ -55,38 +61,37 @@ void Client::Restart() {
   QApplication::exit(kRestartCode);
 }
 
-void Client::Play() {
-  smartmouse::msgs::ServerControl play_msg;
-  play_msg.set_pause(false);
-  server_control_pub_.Publish(play_msg);
-}
-
-void Client::Pause() {
-  smartmouse::msgs::ServerControl pause_msg;
-  pause_msg.set_pause(true);
-  server_control_pub_.Publish(pause_msg);
+void Client::TogglePlayPause() {
+  smartmouse::msgs::ServerControl msg;
+  msg.set_toggle_play_pause(true);
+  msg.set_author(uuid.str());
+  server_control_pub_.Publish(msg);
 }
 
 void Client::SetStatic() {
   smartmouse::msgs::ServerControl static_msg;
+  static_msg.set_author(uuid.str());
   static_msg.set_static_(ui_->static_checkbox->isChecked());
   server_control_pub_.Publish(static_msg);
 }
 
 void Client::Step() {
   smartmouse::msgs::ServerControl step_msg;
+  step_msg.set_author(uuid.str());
   step_msg.set_step(step_count_);
   server_control_pub_.Publish(step_msg);
 }
 
 void Client::ResetMouse() {
   smartmouse::msgs::ServerControl reset_msg;
+  reset_msg.set_author(uuid.str());
   reset_msg.set_reset_robot(true);
   server_control_pub_.Publish(reset_msg);
 }
 
 void Client::ResetTime() {
   smartmouse::msgs::ServerControl reset_msg;
+  reset_msg.set_author(uuid.str());
   reset_msg.set_reset_time(true);
   server_control_pub_.Publish(reset_msg);
 }
@@ -94,6 +99,7 @@ void Client::ResetTime() {
 void Client::RealTimeFactorChanged(double real_time_factor) {
   smartmouse::msgs::PhysicsConfig rtf_msg;
   rtf_msg.set_real_time_factor(real_time_factor);
+  rtf_msg.set_author(uuid.str());
   physics_pub_.Publish(rtf_msg);
 }
 
@@ -104,9 +110,10 @@ void Client::StepCountChanged(int step_time_ms) {
 }
 
 void Client::TimePerStepMsChanged(int step_time_ms) {
-  smartmouse::msgs::PhysicsConfig physics_msg;
-  physics_msg.set_ns_of_sim_per_step(step_time_ms * 1000000u);
-  physics_pub_.Publish(physics_msg);
+  smartmouse::msgs::PhysicsConfig time_per_step_msg;
+  time_per_step_msg.set_ns_of_sim_per_step(step_time_ms * 1000000u);
+  time_per_step_msg.set_author(uuid.str());
+  physics_pub_.Publish(time_per_step_msg);
 }
 
 void Client::OnWorldStats(const smartmouse::msgs::WorldStatistics &msg) {
@@ -116,11 +123,24 @@ void Client::OnWorldStats(const smartmouse::msgs::WorldStatistics &msg) {
 }
 
 void Client::OnPhysics(const smartmouse::msgs::PhysicsConfig &msg) {
+  if (msg.author() == uuid.str()) {
+    return;
+  }
   if (msg.has_ns_of_sim_per_step()) {
     ui_->ms_per_step_spinner->setValue(msg.ns_of_sim_per_step() / 1000000);
   }
   if (msg.has_real_time_factor()) {
     ui_->real_time_factor_spinner->setValue(msg.real_time_factor());
+  }
+}
+
+void Client::OnServerControl(const smartmouse::msgs::ServerControl &msg) {
+  if (msg.has_pause()) {
+    if (msg.pause()) {
+      ui_->play_button->setText("Play");
+    } else {
+      ui_->play_button->setText("Pause");
+    }
   }
 }
 
@@ -131,30 +151,35 @@ void Client::OnGuiActions(const smartmouse::msgs::GuiActions &msg) {
 }
 
 void Client::ShowWiki() {
-  QDesktopServices::openUrl(QUrl("https://github.com/WPISmartMouse/SmartmouseSim/wiki", QUrl::TolerantMode));
+  QDesktopServices::openUrl(QUrl("https://github.com/WPISmartMouse/Smartmouse_2018/wiki", QUrl::TolerantMode));
 }
 
 void Client::ShowSourceCode() {
-  QDesktopServices::openUrl(QUrl("https://github.com/WPISmartMouse/SmartmouseSim", QUrl::TolerantMode));
+  QDesktopServices::openUrl(QUrl("https://github.com/WPISmartMouse/Smartmouse_2018", QUrl::TolerantMode));
+}
+
+void Client::ShowKeyboardShortcuts() {
+  QDesktopServices::openUrl(QUrl("https://github.com/WPISmartMouse/Smartmouse_2018/wiki/Simulator-Hotkeys",
+                                 QUrl::TolerantMode));
 }
 
 void Client::LoadNewMouse() {
-    QString file_name = QFileDialog::getOpenFileName(this, tr("Open Mouse"), mouse_files_dir_, tr("Mouse Files (*.ms)"));
+  QString file_name = QFileDialog::getOpenFileName(this, tr("Open Mouse"), mouse_files_dir_, tr("Mouse Files (*.ms)"));
 
-    if (!file_name.isEmpty()) {
-      QFileInfo file_info(file_name);
-      mouse_files_dir_ = file_info.dir().absolutePath();
-      default_mouse_file_name_ = file_name;
-      settings_->setValue("gui/default_mouse_file_name", default_mouse_file_name_);
-      settings_->setValue("gui/mouse_files_directory", mouse_files_dir_);
+  if (!file_name.isEmpty()) {
+    QFileInfo file_info(file_name);
+    mouse_files_dir_ = file_info.dir().absolutePath();
+    default_mouse_file_name_ = file_name;
+    settings_->setValue("gui/default_mouse_file_name", default_mouse_file_name_);
+    settings_->setValue("gui/mouse_files_directory", mouse_files_dir_);
 
-      std::ifstream fs;
-      fs.open(file_info.absoluteFilePath().toStdString(), std::fstream::in);
+    std::ifstream fs;
+    fs.open(file_info.absoluteFilePath().toStdString(), std::fstream::in);
 
-      smartmouse::msgs::RobotDescription robot_description_msg = smartmouse::msgs::Convert(fs);
-      robot_description_pub_.Publish(robot_description_msg);
-      ui_->mouse_file_name_label->setText(file_info.fileName());
-    }
+    smartmouse::msgs::RobotDescription robot_description_msg = smartmouse::msgs::Convert(fs);
+    robot_description_pub_.Publish(robot_description_msg);
+    ui_->mouse_file_name_label->setText(file_info.fileName());
+  }
 }
 
 void Client::LoadNewMaze() {
@@ -191,8 +216,7 @@ void Client::LoadDefaultMouse() {
     smartmouse::msgs::RobotDescription mouse_msg = smartmouse::msgs::Convert(fs);
     robot_description_pub_.Publish(mouse_msg);
     ui_->mouse_file_name_label->setText(file_info.fileName());
-  }
-  else {
+  } else {
     std::cout << "no default mouse" << std::endl;
     // TODO: handle this case
   }
@@ -208,8 +232,7 @@ void Client::LoadDefaultMaze() {
     smartmouse::msgs::Maze maze_msg = smartmouse::msgs::Convert(&maze);
     maze_pub_.Publish(maze_msg);
     ui_->maze_file_name_label->setText(file_info.fileName());
-  }
-  else {
+  } else {
     std::cout << "no default maze" << std::endl;
     // TODO: handle this case
   }
@@ -230,6 +253,7 @@ void Client::SendTeleportCmd() {
   cmd.set_reset_col(ui_->teleport_column_spinbox->value());
   cmd.set_reset_row(ui_->teleport_row_spinbox->value());
   cmd.set_reset_yaw(ui_->teleport_yaw_spinbox->value());
+  cmd.set_author(uuid.str());
   server_control_pub_.Publish(cmd);
 }
 
@@ -258,9 +282,12 @@ void Client::ConfigureGui() {
   ui_->info_tabs->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Expanding);
   ui_->info_tabs->setMaximumWidth(300);
 
+  shortcut = new QShortcut(QKeySequence(tr("Space", "Toggle Play/Pause")), this);
+  connect(shortcut, &QShortcut::activated, this, &Client::TogglePlayPause);
+
   connect(ui_->load_maze_button, &QPushButton::clicked, this, &Client::LoadNewMaze);
   connect(ui_->load_mouse_button, &QPushButton::clicked, this, &Client::LoadNewMouse);
-  connect(ui_ ->random_maze_button, &QPushButton::clicked, this, &Client::LoadRandomMaze);
+  connect(ui_->random_maze_button, &QPushButton::clicked, this, &Client::LoadRandomMaze);
   connect(ui_->refresh_mouse_button, &QPushButton::clicked, this, &Client::LoadDefaultMouse);
   connect(ui_->actionExit, &QAction::triggered, this, &Client::Exit);
   connect(ui_->actionRestart, &QAction::triggered, this, &Client::Restart);
@@ -268,8 +295,8 @@ void Client::ConfigureGui() {
   connect(ui_->actionReset_Time, &QAction::triggered, this, &Client::ResetTime);
   connect(ui_->actionSourceCode, &QAction::triggered, this, &Client::ShowSourceCode);
   connect(ui_->actionWiki, &QAction::triggered, this, &Client::ShowWiki);
-  connect(ui_->play_button, &QPushButton::clicked, this, &Client::Play);
-  connect(ui_->pause_button, &QPushButton::clicked, this, &Client::Pause);
+  connect(ui_->actionKeyboard_Shortcuts, &QAction::triggered, this, &Client::ShowKeyboardShortcuts);
+  connect(ui_->play_button, &QPushButton::clicked, this, &Client::TogglePlayPause);
   connect(ui_->step_button, &QPushButton::clicked, this, &Client::Step);
   // Casting is to handle overloaded slot valueChanged. Don't overload slots!
   connect(ui_->static_checkbox, &QCheckBox::stateChanged, this, &Client::SetStatic);

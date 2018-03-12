@@ -49,6 +49,7 @@ class Server {
   ignition::transport::Node *node_ptr_;
   ignition::transport::Node::Publisher world_stats_pub_;
   ignition::transport::Node::Publisher sim_state_pub_;
+  ignition::transport::Node::Publisher server_control_pub_;
   Time sim_time_;
   unsigned long steps_ = 0UL;
   std::mutex physics_mutex_;

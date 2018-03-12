@@ -31,6 +31,7 @@ void Server::Connect() {
   node_ptr_ = new ignition::transport::Node();
   world_stats_pub_ = node_ptr_->Advertise<smartmouse::msgs::WorldStatistics>(TopicNames::kWorldStatistics);
   sim_state_pub_ = node_ptr_->Advertise<smartmouse::msgs::RobotSimState>(TopicNames::kRobotSimState);
+  server_control_pub_ = node_ptr_->Advertise<smartmouse::msgs::ServerControl>(TopicNames::kServerControl);
   node_ptr_->Subscribe(TopicNames::kServerControl, &Server::OnServerControl, this);
   node_ptr_->Subscribe(TopicNames::kPhysics, &Server::OnPhysics, this);
   node_ptr_->Subscribe(TopicNames::kMaze, &Server::OnMaze, this);
@@ -62,7 +63,7 @@ bool Server::Run() {
 
   // Begin Critical Section
   {
-    std::lock_guard<std::mutex> guard(physics_mutex_);
+//    std::lock_guard<std::mutex> guard(physics_mutex_);
     if (quit_) {
       return true;
     }
@@ -276,9 +277,14 @@ void Server::PublishWorldStats(double rtf) {
 void Server::OnServerControl(const smartmouse::msgs::ServerControl &msg) {
   // Enter critical section
   {
-    std::lock_guard<std::mutex> guard(physics_mutex_);
+//    std::lock_guard<std::mutex> guard(physics_mutex_);
     if (msg.has_pause()) {
       pause_ = msg.pause();
+    }
+    else if (msg.toggle_play_pause()) {
+      smartmouse::msgs::ServerControl play_pause_msg;
+      play_pause_msg.set_pause(!pause_);
+      server_control_pub_.Publish(play_pause_msg);
     }
     if (msg.has_static_()) {
       static_ = msg.static_();
@@ -315,7 +321,7 @@ void Server::OnServerControl(const smartmouse::msgs::ServerControl &msg) {
 void Server::OnPhysics(const smartmouse::msgs::PhysicsConfig &msg) {
   // Enter critical section
   {
-    std::lock_guard<std::mutex> guard(physics_mutex_);
+//    std::lock_guard<std::mutex> guard(physics_mutex_);
     if (msg.has_ns_of_sim_per_step()) {
       ns_of_sim_per_step_ = msg.ns_of_sim_per_step();
     }
@@ -331,7 +337,7 @@ void Server::OnPhysics(const smartmouse::msgs::PhysicsConfig &msg) {
 void Server::OnMaze(const smartmouse::msgs::Maze &msg) {
   // Enter critical section
   {
-    std::lock_guard<std::mutex> guard(physics_mutex_);
+//    std::lock_guard<std::mutex> guard(physics_mutex_);
     smartmouse::msgs::Convert(msg, maze_walls_);
   }
   // End critical section
@@ -340,7 +346,7 @@ void Server::OnMaze(const smartmouse::msgs::Maze &msg) {
 void Server::OnRobotCommand(const smartmouse::msgs::RobotCommand &msg) {
   // Enter critical section
   {
-    std::lock_guard<std::mutex> guard(physics_mutex_);
+//    std::lock_guard<std::mutex> guard(physics_mutex_);
     cmd_ = msg;
   }
   // End critical section
@@ -349,7 +355,7 @@ void Server::OnRobotCommand(const smartmouse::msgs::RobotCommand &msg) {
 void Server::OnRobotDescription(const smartmouse::msgs::RobotDescription &msg) {
   // Enter critical section
   {
-    std::lock_guard<std::mutex> guard(physics_mutex_);
+//    std::lock_guard<std::mutex> guard(physics_mutex_);
     mouse_ = msg;
     ComputeMaxSensorRange();
     mouse_set_ = true;

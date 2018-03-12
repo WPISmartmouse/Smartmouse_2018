@@ -10,6 +10,7 @@
 #include <sim/simulator/msgs/physics_config.pb.h>
 #include <sim/simulator/msgs/server_control.pb.h>
 #include <sim/simulator/msgs/world_statistics.pb.h>
+#include <sim/simulator/lib/common/sole.hpp>
 #include <lib/widgets/MazeWidget.h>
 
 namespace Ui {
@@ -32,8 +33,7 @@ class Client : public QMainWindow {
  private slots:
 
   void Restart();
-  void Play();
-  void Pause();
+  void TogglePlayPause();
   void SetStatic();
   void ResetMouse();
   void ResetTime();
@@ -41,6 +41,7 @@ class Client : public QMainWindow {
   void LoadNewMaze();
   void LoadNewMouse();
   void ShowSourceCode();
+  void ShowKeyboardShortcuts();
   void ShowWiki();
   void RealTimeFactorChanged(double real_time_factor);
   void StepCountChanged(int step_time_ms);
@@ -68,8 +69,10 @@ class Client : public QMainWindow {
   void OnWorldStats(const smartmouse::msgs::WorldStatistics &msg);
   void OnGuiActions(const smartmouse::msgs::GuiActions &msg);
   void OnPhysics(const smartmouse::msgs::PhysicsConfig &msg);
+  void OnServerControl(const smartmouse::msgs::ServerControl &msg);
 
   unsigned int step_count_ = 1u;
+  sole::uuid uuid;
   ignition::transport::Node node_;
   ignition::transport::Node::Publisher maze_pub_;
   ignition::transport::Node::Publisher physics_pub_;
@@ -86,4 +89,5 @@ class Client : public QMainWindow {
   QString default_maze_file_name_;
   QString default_mouse_file_name_;
   Ui::MainWindow *ui_;
+  QShortcut *shortcut;
 };

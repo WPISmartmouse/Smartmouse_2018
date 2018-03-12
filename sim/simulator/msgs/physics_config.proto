@@ -4,4 +4,5 @@ package smartmouse.msgs;
 message PhysicsConfig {
     optional uint32 ns_of_sim_per_step = 1;
     optional double real_time_factor = 2; // desired RTF
+    optional string author = 3;
 }

@@ -13,5 +13,7 @@ message ServerControl {
     optional double reset_row = 10;
     optional double reset_col = 11;
     optional double reset_yaw = 12;
+    optional string author = 13;
+    optional bool toggle_play_pause = 14;
 }
 
