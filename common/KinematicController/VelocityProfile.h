@@ -9,15 +9,15 @@ namespace kc {
 
 extern const double kVf;
 
-class DriveStraightState {
+class VelocityProfiles {
  public:
 
-  DriveStraightState(GlobalPose start_pose,
+  VelocityProfiles(GlobalPose start_pose,
                      double goal_disp,
                      double v_initial,
                      double v_final);
 
-  std::pair<double, double> compute_wheel_velocities(Mouse &mouse, double t_s);
+  std::pair<double, double> drive_straight_wheel_velocities(Mouse &mouse, double t_s);
 
   constexpr static double kPWall = 0.8;
   constexpr static double kPYaw = -1.2;
