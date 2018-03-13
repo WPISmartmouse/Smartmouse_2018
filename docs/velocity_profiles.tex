@@ -1,0 +1,33 @@
+\documentclass{article}
+
+\usepackage[letterpaper, portrait, margin=1in]{geometry}
+\usepackage{siunitx}
+\usepackage{url}
+\usepackage{tikz}
+\usepackage{mathtools}
+\usetikzlibrary{shapes,backgrounds}
+\usepackage{graphicx}
+\usepackage{amsmath}
+
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+\title{Velocity Profiles for Smartmouse 2018}
+\author{Peter Mitrano}
+
+\maketitle
+
+\section{Velocity Profiles}
+
+This document describes the generation of velocity profiles for smartmouse. Our goal is to get the robot from one position to another as fast as possible in a realistic way. In this case, ``in a realistic way'' means obeying a limit on velocity, acceleration, and jerk. This is very hard to do for arbitrary point-to-point motion in X/Y, but we can make a simplification. We consider only two primitive motions, driving straight across N cells, and turning in place. We will consider how to do time optimal motion in each case.
+
+\section{Straight Line Motion}
+
+Consider the robot at rest in the first cell of the maze. Lets say our first move is to go to the edge of this first cell. We then make our decision about what move to make next: forward again, turn 90, or turn 180. We want to make sure we're going the right speed to do any of these three things, since we don't know which one we will be doing until we get there. Therefore, there is some desired final velocity we want to be going when we reach the end of our motion. We of course also have an initial velocity that we start our motion with. For another example, consider we have explored some stretch of the maze and we now want to drive over three cells in a row before we reach the next turn or unkown decision. In this case, we have the same desired final velocity. We can then define our problem as such: determine the velocity profile which moves us some known distance, obeying max velocity, acceleration, and jerk, in the shortest time possible.
+
+\section{sources}
+\url{http://www.et.byu.edu/~ered/ME537/Notes/Ch5.pdf}
+
+\end{document}
+

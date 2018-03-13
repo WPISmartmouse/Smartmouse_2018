@@ -1,7 +1,7 @@
 #pragma once
 
 #include <common/commanduino/CommanDuino.h>
-#include <common/KinematicController/DriveStraightState.h>
+#include <common/KinematicController/VelocityProfile.h>
 #include <sim/lib/SimMouse.h>
 
 class ForwardToCenter : public Command {
@@ -20,6 +20,6 @@ private:
 
   GlobalPose start;
   SimMouse *mouse;
-  smartmouse::kc::DriveStraightState *drive_straight_state;
+  smartmouse::kc::VelocityProfile *profile;
 };
 

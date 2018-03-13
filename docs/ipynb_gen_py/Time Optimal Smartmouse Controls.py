@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[45]:
+# In[1]:
 
 
 # dependencies and global setup
@@ -37,13 +37,13 @@ def log(*args):
 
 # ## Going Straight
 
-# In[ ]:
+# In[2]:
 
 
 get_ipython().run_line_magic('load_ext', 'tikzmagic')
 
 
-# In[ ]:
+# In[3]:
 
 
 get_ipython().run_cell_magic('tikz', '-s 400,400', '\\draw[->] (0,0) -- (10,0);\n\\draw[->] (0,0) -- (0,5);\n\n\\draw[line width=1] (0,0.5) -- (2.5,3);\n\\draw[line width=1] (2.5,3) -- (5.5,3);\n\\draw[line width=1] (5.5,3) -- (8,0.5);\n\\draw[dashed] (0,0.5) -- (10,0.5);\n\\draw[dashed] (0,3) -- (10,3);\n\\draw[dashed] (2.5,0) -- (2.5,5);\n\\draw[dashed] (5.5,0) -- (5.5,5);\n\\draw[dashed] (8,0) -- (8,5);\n\n\\draw (-0.5, 0.5) node {$V_{f}$};\n\\draw (-0.5, 3) node {$V_{max}$};\n\\draw (2.5, -0.5) node {$t_b$};\n\\draw (5.5, -0.5) node {$t_f-t_b$};\n\\draw (8, -0.5) node {$t_f$};')
@@ -64,7 +64,7 @@ get_ipython().run_cell_magic('tikz', '-s 400,400', '\\draw[->] (0,0) -- (10,0);\
 
 # ## Code that proves it
 
-# In[ ]:
+# In[4]:
 
 
 def profile(V0, Vf, Vmax, d, A, buffer=3e-4):
@@ -149,7 +149,7 @@ plt.show()
 # 
 # $t_2$ is the time to when we begin to transition from max acceleration back to 0
 
-# In[76]:
+# In[5]:
 
 
 def profile_distance(v_0, v_f, a_m, j_m, v_m):
@@ -239,7 +239,7 @@ simulate_profile(v_0=1, v_f=0, a_m=2, j_m = 10, v_m=3)
 # 
 # For the profile defined above, we are picking $v_m$, and the distance the robot will travel over the whole profile is a function of this. If $v_m$ were lower the robot would travel a shorter distance, and if it were higher the robot would travel further. We can instead solve for the $v_m$ that makes the robot travel a certain distance. With that, we can solve for a velocity profile that will take us to the next of the next unexplored cell, with some final speed, from any initial speed, as fast as possible, while obeying max jerk and acceleration.
 
-# In[77]:
+# In[6]:
 
 
 def compute_v_max(v_0, v_f, a_m, j_m, d):
@@ -257,7 +257,7 @@ def compute_v_max(v_0, v_f, a_m, j_m, d):
     return v_max
 
 
-# In[79]:
+# In[7]:
 
 
 def too_fast():
@@ -278,14 +278,14 @@ too_fast()
 
 # So far in solving for $v_m$, we are have ignored the hardware limit. Let's call that $\mathbb{V}$. If we have a really far distance, it's possible that $v_m > \mathbb{V}$, and in that case we must clamp $v_m=\mathbb{V}$, and create a intermediate section of the profile where we maintain $\mathbb{V}$. An example is shown below
 
-# In[80]:
+# In[15]:
 
 
 def just_right():
     v_0=0
     v_f=1
     a_m=5
-    j_m=15
+    j_m=50
     V = 4
     d = 9.5
     
@@ -299,6 +299,23 @@ just_right()
 # 
 # Here's an example what it looks like in simulation
 # ![s-curve](pid_screenshot_14:57:04_11_03_2018.png)
+
+# In[14]:
+
+
+def turn_in_place():
+    v_0=0
+    v_f=0
+    a_m=5
+    j_m=50
+    V = 4
+    d = np.pi * 0.35166666666 / 2
+    
+    v_m = compute_v_max(v_0, v_f, a_m, j_m, d)
+    simulate_profile(v_0, v_f, a_m, j_m, v_m, V, d)
+    
+turn_in_place()
+
 
 # # General Form Trajectory Planning
 

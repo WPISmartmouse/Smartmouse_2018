@@ -2,7 +2,7 @@
 
 #include <common/commanduino/CommanDuino.h>
 #include <common/core/Mouse.h>
-#include <common/KinematicController/DriveStraightState.h>
+#include <common/KinematicController/VelocityProfile.h>
 
 #include <real/RealMouse.h>
 
@@ -21,6 +21,6 @@ public:
 private:
   GlobalPose start;
   RealMouse *mouse;
-  smartmouse::kc::DriveStraightState *drive_straight_state;
+  smartmouse::kc::VelocityProfile *profile;
 };
 

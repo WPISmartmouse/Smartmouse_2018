@@ -3,6 +3,7 @@
 #include <common/commanduino/CommanDuino.h>
 #include <common/core/Direction.h>
 #include <sim/lib/SimMouse.h>
+#include <common/KinematicController/VelocityProfile.h>
 
 class TurnInPlace : public Command {
 public:
@@ -17,11 +18,13 @@ public:
   void end();
 
 private:
-  double goalYaw;
-  double dYaw;
+  double goal_yaw;
+  double yaw_error;
   SimMouse *mouse;
   Direction dir;
 
   const static double kP;
+  smartmouse::kc::VelocityProfile *left_profile;
+  smartmouse::kc::VelocityProfile *right_profile;
 };
 

@@ -5,7 +5,7 @@
 #include <common/core/Pose.h>
 
 #include <real/RealMouse.h>
-#include <common/KinematicController/DriveStraightState.h>
+#include <common/KinematicController/VelocityProfile.h>
 
 class Forward : public Command {
 public:
@@ -22,6 +22,6 @@ public:
 private:
   GlobalPose start;
   RealMouse *mouse;
-  smartmouse::kc::DriveStraightState *drive_straight_state;
+  smartmouse::kc::VelocityProfile *profile;
 };
 

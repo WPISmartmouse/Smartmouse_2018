@@ -5,7 +5,7 @@
 #include <common/core/Pose.h>
 
 #include <sim/lib/SimMouse.h>
-#include <common/KinematicController/DriveStraightState.h>
+#include <common/KinematicController/VelocityProfile.h>
 
 class ForwardN : public Command {
 public:
@@ -24,6 +24,6 @@ private:
   GlobalPose start;
   SimMouse *mouse;
   unsigned int n;
-  smartmouse::kc::DriveStraightState *drive_straight_state;
+  smartmouse::kc::VelocityProfile *profile;
 };
 

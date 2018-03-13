@@ -9,10 +9,10 @@ namespace kc {
 
 extern const double kVf;
 
-class VelocityProfiles {
+class VelocityProfile {
  public:
 
-  VelocityProfiles(GlobalPose start_pose,
+  VelocityProfile(GlobalPose start_pose,
                      double goal_disp,
                      double v_initial,
                      double v_final);

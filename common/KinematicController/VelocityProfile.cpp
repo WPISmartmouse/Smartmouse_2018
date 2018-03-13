@@ -1,5 +1,5 @@
 #include <common/KinematicController/KinematicController.h>
-#include <common/KinematicController/VelocityProfiles.h>
+#include <common/KinematicController/VelocityProfile.h>
 #include <common/math/math.h>
 
 namespace smartmouse {
@@ -19,7 +19,7 @@ constexpr double compute_v_m(double v_0, double v_f, double a_m, double j_m, dou
   return (-b + sqrt(std::pow(b, 2) - 4 * a * c)) / (2 * a);
 }
 
-VelocityProfiles::VelocityProfiles(GlobalPose start_pose, double goal_disp, double v_initial, double v_final)
+VelocityProfile::VelocityProfile(GlobalPose start_pose, double goal_disp, double v_initial, double v_final)
     : d(goal_disp),
       v_0(v_initial),
       v_f(v_final),
@@ -42,7 +42,7 @@ VelocityProfiles::VelocityProfiles(GlobalPose start_pose, double goal_disp, doub
 //  print("%0.3f\n", d);
 }
 
-std::pair<double, double> VelocityProfiles::drive_straight_wheel_velocities(Mouse &mouse, double t_s) {
+std::pair<double, double> VelocityProfile::drive_straight_wheel_velocities(Mouse &mouse, double t_s) {
   GlobalPose current_pose = mouse.getGlobalPose();
   disp = KinematicController::fwdDisp(mouse.getDir(), current_pose, start_pose);
 
@@ -67,11 +67,11 @@ std::pair<double, double> VelocityProfiles::drive_straight_wheel_velocities(Mous
   }
 }
 
-double VelocityProfiles::dispError() {
+double VelocityProfile::dispError() {
   return d - disp;
 }
 
-double VelocityProfiles::compute_forward_velocity(double t /* seconds */ ) {
+double VelocityProfile::compute_forward_velocity(double t /* seconds */ ) {
   // see the docs/Time Optimal Smartmouse Controls notebook for documentation
   double v_t = 0;
   if (t <= t_1) {

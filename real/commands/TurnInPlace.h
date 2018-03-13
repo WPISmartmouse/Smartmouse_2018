@@ -17,8 +17,8 @@ public:
   void end();
 
 private:
-  double goalYaw;
-  double dYaw;
+  double goal_yaw;
+  double yaw_error;
   RealMouse *mouse;
   Direction dir;
 
