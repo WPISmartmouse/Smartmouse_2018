@@ -53,6 +53,7 @@ if (NOT ${BUILD_SIM})
   set(mains
       real/main/profile_encoders.cpp
       real/main/measure_motor_response.cpp
+      real/main/measure_w_freq_res_changes.cpp
       real/main/eigen_test.cpp)
 
   foreach (main ${mains})

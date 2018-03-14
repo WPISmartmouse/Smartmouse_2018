@@ -113,7 +113,7 @@ macro(add_teensy_executable TARGET_NAME)
     add_dependencies(${TARGET_NAME}_Firmware ${TARGET_NAME})
 
     if(NOT TY_EXECUTABLE)
-        message("teensy_cli does not exist! Will not generate ${TARGET_NAME}_Upload target")
+        message("teensy_loader_cli does not exist! Will not generate ${TARGET_NAME}_Upload target")
     else()
         add_custom_target(${TARGET_NAME}_Upload
                           DEPENDS ${TY_EXECUTABLE} ${TARGET_ELF}.hex
