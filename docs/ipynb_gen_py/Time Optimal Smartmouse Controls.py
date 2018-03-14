@@ -229,7 +229,7 @@ def simulate_profile(v_0, v_f, a_m, j_m, v_m, V=np.inf, d=np.inf):
     plt.xlabel("times (s)")
     plt.ylabel("velocity (cu/s)")
     plt.title("Time Optimal Velocity Profile w/ Constant Jerk")
-    plt.grid()
+#     plt.grid()
     plt.show()
     
 simulate_profile(v_0=1, v_f=0, a_m=2, j_m = 10, v_m=3)
@@ -238,6 +238,32 @@ simulate_profile(v_0=1, v_f=0, a_m=2, j_m = 10, v_m=3)
 # ## Calculating max velocity
 # 
 # For the profile defined above, we are picking $v_m$, and the distance the robot will travel over the whole profile is a function of this. If $v_m$ were lower the robot would travel a shorter distance, and if it were higher the robot would travel further. We can instead solve for the $v_m$ that makes the robot travel a certain distance. With that, we can solve for a velocity profile that will take us to the next of the next unexplored cell, with some final speed, from any initial speed, as fast as possible, while obeying max jerk and acceleration.
+# 
+# ### Solving for max speed
+# 
+# We do this by writing an equation $\mathbb{D}(v_0, v_f, a_m, j_m)$, then subtracting our desired distance $d$, and minimizing this equation. In other words, we're doing:
+# $$\mathrm{arg\,min}_{v_m}(\mathbb{D}(v_0, v_f, a_m, v_m, j_m) - d)$$
+# 
+# Fortunately, to do this we can just take the derivative with respect to $v_m$ and use the quadratic formula to solve for zero. I found it easier to define the $\mathbb{D}$ function graphically as the sum of a bunch of areas under the velocity curve.
+# 
+# ![annotated_velocity_profile](annotated_velocity_profile.png)
+# 
+# \begin{align*}
+# \mathbb{D} &= p_1 + p_2 + p_3 + p_4 + p_5 + 2*p_6 \\
+# &= t_1v_0 + (t_2-t_1)\frac{v_2+v_1}{2} + (t_3-t_2)v_2 + (t_4-t_3)\frac{v_3+v_4}{2} + (t_f-t_4)v_f + 2t_1(v_1-v_0)\\
+# \end{align*}
+# 
+# If we then sub in with the formulas for each of those speeds and times and simplify, MATLAB tells us we get this, which we want to solve for $m_v$.
+# 
+# $$0 = \frac{a_m^2v_0 + a_m^2v_f + 2a_m^2v_m - j_mv_0^2 - j_mv_f^2 + 2j_mv_m^2}{2a_mj_m} - d$$
+# $$0 = -\frac{j_mv_f^2 + 2j_m}{2a_mj_m}v_m^2 + \frac{2a_m^2}{2a_mj_m}v_m + \frac{a_m^2v_0 + a_m^2v_f - j_mv_0^2}{2a_mj_m} - d$$
+# 
+# Apply the quadratic formula with these coefficients
+# \begin{align*}
+# a &= -\frac{j_mv_f^2 + 2j_m}{2a_mj_m} \\
+# b &= \frac{2a_m^2}{2a_mj_m} \\
+# c &= \frac{a_m^2v_0 + a_m^2v_f - j_mv_0^2}{2a_mj_m} - d \\
+# \end{align*}
 
 # In[6]:
 
@@ -260,6 +286,24 @@ def compute_v_max(v_0, v_f, a_m, j_m, d):
 # In[7]:
 
 
+def turn_in_place():
+    v_0=1
+    v_f=0
+    a_m=5
+    j_m=50
+    V = -m4
+    d = -np.pi * 0.35166666666 / 2
+    
+    v_m = compute_v_max(v_0, v_f, a_m, j_m, d)
+    print(v_m)
+#     simulate_profile(v_0, v_f, a_m, j_m, v_m, V, d)
+    
+turn_in_place()
+
+
+# In[ ]:
+
+
 def too_fast():
     v_0=0
     v_f=1
@@ -278,16 +322,16 @@ too_fast()
 
 # So far in solving for $v_m$, we are have ignored the hardware limit. Let's call that $\mathbb{V}$. If we have a really far distance, it's possible that $v_m > \mathbb{V}$, and in that case we must clamp $v_m=\mathbb{V}$, and create a intermediate section of the profile where we maintain $\mathbb{V}$. An example is shown below
 
-# In[15]:
+# In[ ]:
 
 
 def just_right():
-    v_0=0
+    v_0=0.5
     v_f=1
     a_m=5
-    j_m=50
+    j_m=15
     V = 4
-    d = 9.5
+    d = 4
     
     v_m = compute_v_max(v_0, v_f, a_m, j_m, d)
     simulate_profile(v_0, v_f, a_m, j_m, v_m, V, d)
@@ -299,23 +343,6 @@ just_right()
 # 
 # Here's an example what it looks like in simulation
 # ![s-curve](pid_screenshot_14:57:04_11_03_2018.png)
-
-# In[14]:
-
-
-def turn_in_place():
-    v_0=0
-    v_f=0
-    a_m=5
-    j_m=50
-    V = 4
-    d = np.pi * 0.35166666666 / 2
-    
-    v_m = compute_v_max(v_0, v_f, a_m, j_m, d)
-    simulate_profile(v_0, v_f, a_m, j_m, v_m, V, d)
-    
-turn_in_place()
-
 
 # # General Form Trajectory Planning
 
