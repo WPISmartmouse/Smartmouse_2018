@@ -29,7 +29,9 @@ VelocityProfile::VelocityProfile(GlobalPose start_pose, double goal_disp, double
       v_2(v_m - std::pow(a_m, 2) / (2 * j_m)),
       t_2(t_1 + (v_2 - v_1) / a_m),
       t_m1(t_2 + t_1),
-      t_m2(compute_v_m(v_0, v_f, a_m, j_m, d) < smartmouse::kc::MAX_SPEED_CUPS ? t_m1 : t_m1 + (d - profile_distance(v_0, v_f, a_m, j_m, smartmouse::kc::MAX_SPEED_CUPS)) / smartmouse::kc::MAX_SPEED_CUPS),
+      t_m2(compute_v_m(v_0, v_f, a_m, j_m, d) < smartmouse::kc::MAX_SPEED_CUPS ? t_m1 : t_m1
+          + (d - profile_distance(v_0, v_f, a_m, j_m, smartmouse::kc::MAX_SPEED_CUPS))
+              / smartmouse::kc::MAX_SPEED_CUPS),
       t_3(t_m2 + a_m / j_m),
       v_3(v_m - std::pow(a_m, 2) / (2 * j_m)),
       v_4(v_f + std::pow(a_m, 2) / (2 * j_m)),

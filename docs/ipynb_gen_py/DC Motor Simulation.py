@@ -5,7 +5,7 @@
 
 # Look at the dynamics_model.pdf for the explanation behind this code.
 
-# In[9]:
+# In[1]:
 
 
 import numpy as np
@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 plt.style.use("./smartmouse.mlpstyle")
 
 
-# In[10]:
+# In[2]:
 
 
 def simulate(V, J, C, K, R, L, theta_dot=0, i=0):
@@ -71,7 +71,7 @@ plt.xlabel("Time (seconds)")
 plt.show()
 
 
-# In[40]:
+# In[3]:
 
 
 ts, theta_dots, currents = simulate(const_V(5), J=0.000658, C=0.0000024571, K=0.0787, R=5, L=0.58)
@@ -93,7 +93,7 @@ plt.xlabel("Time (seconds)")
 plt.show()
 
 
-# In[12]:
+# In[4]:
 
 
 ts, theta_dots, currents = simulate(const_V(0), J=0.000658, C=0.0000024571,
@@ -132,116 +132,29 @@ plt.show()
 # 
 # \*source for mass & radius: https://www.pololu.com/product/1127
 
-# # Solving IVP for DC Motor Model
+# # Analyzing and Tuning Our Model
 # 
-# The following differential equation describes our dc motor model
-# 
-# \begin{align}
-# u &= \frac{LJ}{K}\ddot{y} + \bigg(\frac{LC}{K} + \frac{RJ}{K}\bigg)\dot{y} + \bigg(\frac{RC}{K} + K\bigg)y \\
-# \frac{K}{LJ}u &= \frac{K}{LJ}\Bigg(\frac{LJ}{K}\ddot{y} + \bigg(\frac{LC}{K} + \frac{RJ}{K}\bigg)\dot{y} + \bigg(\frac{RC}{K} + K\bigg)y\Bigg) \\
-# \frac{K}{LJ}u &= \ddot{y} + \frac{K}{LJ}\bigg(\frac{LC}{K} + \frac{RJ}{K}\bigg)\dot{y} + \frac{K}{LJ}\bigg(\frac{RC}{K} + K\bigg)y \\
-# \frac{K}{LJ}u &= \ddot{y} + \bigg(\frac{C}{J} + \frac{R}{L}\bigg)\dot{y} + \bigg(\frac{RC}{LJ} + \frac{K^2}{LJ}\bigg)y \\
-# \end{align}
-# 
-# 
-# First find the generic solution to the homogeneous form:
-# 
-# $$ 0 = \ddot{y} + \bigg(\frac{C}{J} + \frac{R}{L}\bigg)\dot{y} + \bigg(\frac{RC}{LJ} + \frac{K^2}{LJ}\bigg)y $$
-# 
-# If we plug in the following coefficients
-# 
-# | Var | Value        |
-# |-----|--------------|
-# |   J | 0.000658     |
-# |   C | 0.0000024571 |
-# |   K | 0.0787       |
-# |   R | 5            |
-# |   L | 0.58         |
-# 
-# The following code calculates the roots
+# We can use experimental data from our motors to determine how accurate our model is, and to automatically tune the parameters to make it more accurate. This is important because it means work done in simulation will better translate to the real world.
 
-# In[13]:
+# In[33]:
 
 
-J = 0.000658
-C = 0.0000012615 + 0.0000011956
-K = 0.0787
-R = 5
-L = 0.58
-
-a = 1
-b = C/J+R/L
-c = R*C/(L*J) + K**2/(L*J)
-
-root_1 = (-b + np.sqrt(b**2-4*a*c))/(2*a)
-root_2 = (-b - np.sqrt(b**2-4*a*c))/(2*a)
-print("characteristic roots:")
-print(root_1)
-print(root_2)
+# load our data
+data = np.genfromtxt("./impulse_response_data/with_load_left_1.csv", skip_header=True, delimiter=',')
+N = data.shape[0]
+t = data[:,0]
+speeds = np.zeros((N, 1))
+for i in range(1, N):
+    speeds[i] = (data[i,1] - data[i-1,1]) / (data[i,0] - data[i-1,0])
 
 
-# These roots then give us the general form of our solution:
-# 
-# $$ y(x) = c_1e^{-2.7845x} + c_2e^{-5.8399x} $$
-# 
-# If we have an initial speed an velocity $y(0) = y_0$ and $\dot{y}(0) = \dot{y}_0$ we can solve for $c_1$ and $c_2$. Remember, $y$ here is wheel angle, so this means we just need our initial angle and velocity. Let's do an example where $y_0 = 0m$ and $\dot{y}_0 = 0.2m/s$
-# 
-# \begin{align*}
-#   0 &= c_1e^{-2.7845(0)} + c_2e^{-5.8399(0)} \\
-#   0  &= c_1 + c_2 \\
-#   c_1  &= -c_2 \\
-#   \dot{y}(x) &= -2.7845c_1e^{-2.7845x} + -5.8399c_2e^{-5.8399x} \\
-#   0.2 &= -2.7845c_1e^{-2.7845(0)} + -5.8399c_2e^{-5.8399(0)} \\
-#   0.2 &= -2.7845c_1 + -5.8399c_2 \\
-#   0.2 &= -2.7845(-c_2) + -5.8399c_2 \\
-#   0.2 &= (2.7845 + -5.8399)c_2 \\
-#   0.2 &= -3.0554c_2 \\
-#   -0.06546 &= c_2 \\
-#   0.06546 &= c_1
-# \end{align*}
-# 
-# We now need a particular solution.
-
-# In[6]:
+# In[34]:
 
 
-print("for u=5 volts")
-u=5
-f = K/(L*J)*u
-print("forcing term = ", f)
-
-
-# A particular solution will satisfy this equation:
-# 
-# $$ 1031.0764 = \ddot{y} + 8.6244\dot{y} + 16.2613y $$
-# 
-# We should suspect this has a constant solution A, so we can solve for that like so
-# $$\begin{align*}
-#     1031.0764 &= (0) + 8.6244(1) + 16.2613A \\
-#     1031.0764 &= 8.6244 + 16.2613A \\
-#     A &= \frac{1031.0764 - 8.6244}{16.2613} \\
-#     A &= 1022.4519
-# \end{align*}$$
-
-# In[7]:
-
-
-print("A = ", (f - b)/a)
-y_particular = (f - b)/a
-
-
-# This means our end result specific solution is
-# 
-# $$ y(x) = 0.06546e^{-2.7845x} + -0.06546e^{-5.8399x}  + 1022.4520 $$
-
-# In[8]:
-
-
-x = np.linspace(0, 10, 1000)
-y = 0.06546*np.exp(-2.7845*x) + -0.06546*np.exp(-5.8399*x) + y_particular
-
-plt.figure(figsize=(10,10))
-plt.plot(x, y)
-plt.title("y(x) = 0.06546e^{-2.7845x} + -0.06546e^{-5.8399x}")
+plt.figure(figsize=(15,15))
+plt.scatter(t, speeds, s=1)
+plt.title("Encoder Speed")
+plt.xlabel("Time (micros)")
+plt.ylabel("Ticks")
 plt.show()
 
