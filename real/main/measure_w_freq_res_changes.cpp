@@ -37,13 +37,14 @@ void loop() {
   setAllMotors(0);
   delay(1000);
 
+  print("resolution,frequency,analog write value,change in left encoder,changein right encoder\r\n");
   for (unsigned int res = STARTING_RES; res <= HIGHEST_SUPPORTED_RES; res++) {
     analogWriteRes(res);
     for (float point : STARTING_POINTS) {
       double value = std::pow(2, res) * point;
       for (unsigned int freqMultiplier = 1; freqMultiplier < 5; freqMultiplier++) {
         float freq = DEFAULT_FREQ * freqMultiplier;
-        print("Reso = %d, Freq = %f, AW = %f ", res, freq, value);
+        print("%d,%f,%f,", res, freq, value);
         analogWriteFrequency(RealMouse::MOTOR_LEFT_A, freq);
         analogWriteFrequency(RealMouse::MOTOR_LEFT_B, freq);
         analogWriteFrequency(RealMouse::MOTOR_RIGHT_A, freq);
@@ -51,14 +52,14 @@ void loop() {
         int32_t l_enc_initial = mouse->left_encoder.read();
         int32_t r_enc_initial = mouse->right_encoder.read();
         setAllMotors(static_cast<int>(value));
-        delay(10);
-        int32_t l_enc_lo = mouse->left_encoder.read() - l_enc_initial;
-        int32_t r_enc_lo = mouse->right_encoder.read() - r_enc_initial;
+        delay(100);
+        int32_t l_enc_mid = mouse->left_encoder.read();
+        int32_t r_enc_mid = mouse->right_encoder.read();
         setAllMotors(static_cast<int>(value + 1));
-        delay(10);
-        int32_t l_enc_hi = mouse->left_encoder.read() - l_enc_lo;
-        int32_t r_enc_hi = mouse->right_encoder.read() - r_enc_lo;
-        print("dLeftEncoder = %d, dRightEncoder = %d \r\n", l_enc_hi - l_enc_lo, r_enc_hi - r_enc_lo);
+        delay(100);
+        int32_t dl_enc = (mouse->left_encoder.read() - l_enc_mid) - (l_enc_mid - l_enc_initial);
+        int32_t dr_enc = (mouse->right_encoder.read() - r_enc_mid) - (r_enc_mid - r_enc_initial);
+        print("%d,%d\r\n", dl_enc, dr_enc);
       }
     }
   }
