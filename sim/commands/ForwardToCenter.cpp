@@ -7,7 +7,7 @@ void ForwardToCenter::initialize() {
   start = mouse->getGlobalPose();
   const double goal_disp = KinematicController::fwdDispToCenter(*mouse);
   const double v0 = mouse->kinematic_controller.getCurrentForwardSpeedCUPS();
-  const double vf = 0.0;
+  const double vf = smartmouse::kc::MIN_SPEED_CUPS;
   profile = new smartmouse::kc::VelocityProfile(start, {goal_disp, v0, vf});
 }
 
@@ -21,8 +21,7 @@ void ForwardToCenter::execute() {
 bool ForwardToCenter::isFinished() {
   double vl, vr;
   std::tie(vl, vr) = mouse->getWheelVelocitiesCPS();
-  return profile->dispError() <= 0.01
-      or (fabs(vl) < 0.01 and fabs(vr) < 0.01);
+  return profile->dispError() <= 0.01;
 }
 
 void ForwardToCenter::end() {

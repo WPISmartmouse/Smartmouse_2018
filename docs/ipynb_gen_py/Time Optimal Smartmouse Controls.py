@@ -137,7 +137,7 @@ plt.show()
 get_ipython().run_cell_magic('HTML', '', '<img src="./full_velocity_profile.png" alt="velocity profile" style="width: 500px;"/>')
 
 
-# In[105]:
+# In[147]:
 
 
 def compute_v_max(v_0, v_f, a_m, j_m, d):
@@ -181,6 +181,7 @@ def simulate_profile(v_0, v_f, a_m, j_m, v_m_theoretical, V, d):
                                       + pow(a_m,2)*j_m*v_f + 2*v_0*pow(a_m,2)*j_m - pow(j_m,2)*pow(v_f,2))/(2*a_m*pow(j_m,2))
         two_phase_stop_profile_d = (4*pow(a_m,2) + 2*pow(a_m,3) - pow(a_m,4) + 2*pow(a_m,3)*j_m + pow(a_m,2)*j_m*v_f
                                     - pow(j_m,2)*pow(v_f,2))/(2*a_m*pow(j_m,2))
+        print(two_phase_stop_profile_d)
         if three_phase_stop_profile_d > d:
             t_1 = 0
             t_2 = 0
@@ -265,21 +266,21 @@ def simulate_profile(v_0, v_f, a_m, j_m, v_m_theoretical, V, d):
     return t_1, v_1, t_2, v_2, t_m1, t_m2, t_3, t_4, t_f
 
 
-# In[106]:
+# In[148]:
 
 
 def test_profile():
-    v_0=1.5
-    v_f=3
+    v_0=1.524460044553825
+    v_f=0.07
     a_m=5
-    j_m=50
+    j_m=60
     V = 4
-    d = 0.5
+    d = 0.46246674216267336
     
     v_m = compute_v_max(v_0, v_f, a_m, j_m, d)
     t_1, v_1, t_2, v_2, t_m1, t_m2, t_3, t_4, t_f = simulate_profile(v_0, v_f, a_m, j_m, v_m, V, d)
-    t_1, v_1, t_2, v_2, t_m1, t_m2, t_3, t_4, t_f = simulate_profile(v_f, v_0, a_m, j_m, v_m, V, d)
     
+LOG_LVL=0
 test_profile()
 
 

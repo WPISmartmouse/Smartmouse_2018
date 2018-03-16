@@ -11,7 +11,7 @@ class VelocityProfileTiming {
   double compute_forward_velocity(double t) const;
 
   static constexpr double a_m = 5; // cu/s^2
-  static constexpr double j_m = 50; // cu/s^3
+  static constexpr double j_m = 60; // cu/s^3
 
   const double d;
   const double v_0;
@@ -30,6 +30,14 @@ class VelocityProfileTiming {
   double v_2;
   double v_3;
   double v_4;
+
+  double profile_distance(double v_0, double v_f, double a_m, double j_m, double v_m) const;
+
+  double compute_v_m(double v_0, double v_f, double a_m, double j_m, double d) const;
+
+  double three_phase_profile_d(double v_a, double v_b) const;
+
+  double two_phase_profile_d(double v) const;
 };
 
 

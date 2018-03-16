@@ -9,9 +9,11 @@
 class NavTestCommand : public CommandGroup {
  public:
   NavTestCommand() : CommandGroup("NavTestGroup") {
-    addSequential(new ForwardN(4));
+    addSequential(new ForwardN(1));
     addSequential(new ForwardToCenter());
-    addSequential(new ForwardN(4));
+    addSequential(new ForwardN(2));
+    addSequential(new ForwardToCenter());
+    addSequential(new ForwardN(5));
     addSequential(new ForwardToCenter());
 //    for (int i = 0; i < 50; i++) {
 //      addSequential(new ForwardN(3));

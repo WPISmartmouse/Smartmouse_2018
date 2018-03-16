@@ -4,9 +4,9 @@
 #include <common/KinematicController/RegulatedMotor.h>
 
 RegulatedMotor::RegulatedMotor()
-    : kP(300),
+    : kP(500),
       kI(5),
-      kD(5),
+      kD(6),
       ff_offset(0),
       ff_scale(4),
       int_cap(75),
