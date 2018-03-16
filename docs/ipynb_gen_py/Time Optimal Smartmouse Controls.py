@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[22]:
 
 
 # dependencies and global setup
@@ -37,13 +37,13 @@ def log(*args):
 
 # ## Going Straight
 
-# In[2]:
+# In[23]:
 
 
 get_ipython().run_line_magic('load_ext', 'tikzmagic')
 
 
-# In[3]:
+# In[24]:
 
 
 get_ipython().run_cell_magic('tikz', '-s 400,400', '\\draw[->] (0,0) -- (10,0);\n\\draw[->] (0,0) -- (0,5);\n\n\\draw[line width=1] (0,0.5) -- (2.5,3);\n\\draw[line width=1] (2.5,3) -- (5.5,3);\n\\draw[line width=1] (5.5,3) -- (8,0.5);\n\\draw[dashed] (0,0.5) -- (10,0.5);\n\\draw[dashed] (0,3) -- (10,3);\n\\draw[dashed] (2.5,0) -- (2.5,5);\n\\draw[dashed] (5.5,0) -- (5.5,5);\n\\draw[dashed] (8,0) -- (8,5);\n\n\\draw (-0.5, 0.5) node {$V_{f}$};\n\\draw (-0.5, 3) node {$V_{max}$};\n\\draw (2.5, -0.5) node {$t_b$};\n\\draw (5.5, -0.5) node {$t_f-t_b$};\n\\draw (8, -0.5) node {$t_f$};')
@@ -64,7 +64,7 @@ get_ipython().run_cell_magic('tikz', '-s 400,400', '\\draw[->] (0,0) -- (10,0);\
 
 # ## Code that proves it
 
-# In[4]:
+# In[25]:
 
 
 def profile(V0, Vf, Vmax, d, A, buffer=3e-4):
@@ -131,13 +131,13 @@ plt.show()
 
 # In the case where we have plenty of distance, we will ramp up to max velocity, maintain that maximum velocity for a certain distance, then ramp back down to our final velocity. We will call these **phase 1**, **phase 2**, and  **phase 3**. As mentioned earlier, sometimes we will skip phase 2 entirely. Another weird assumption I'm going to make is that we always have enough time to reach maximum acceleration. If this isn't true than a few of our equations break, but in smartmouse this will never happen.
 
-# In[5]:
+# In[26]:
 
 
 get_ipython().run_cell_magic('HTML', '', '<img src="./full_velocity_profile.png" alt="velocity profile" style="width: 500px;"/>')
 
 
-# In[17]:
+# In[63]:
 
 
 def compute_v_max(v_0, v_f, a_m, j_m, d):
@@ -150,28 +150,46 @@ def compute_v_max(v_0, v_f, a_m, j_m, d):
 def profile_distance(v_0, v_f, a_m, j_m, v_m):
     return (a_m**2*(v_0+v_f+2*v_m)-j_m*(v_0**2+v_f**2-2*v_m**2))/(2*a_m*j_m)
 
-def simulate_profile(v_0, v_f, a_m, j_m, v_m, V=np.inf, d=np.inf):
-    v_m_ = min(v_m, V)
+def simulate_profile(v_0, v_f, a_m, j_m, v_m_theoretical, V, d):
+    v_m = min(v_m_theoretical, V)
     
     # ramp up
     t_1 = a_m / j_m
     v_1 = v_0 + a_m**2 / (2 * j_m)
-    v_2 = v_m_ - a_m**2 / (2 * j_m)
+    v_2 = v_m - a_m**2 / (2 * j_m)
     t_2 = t_1 + (v_2 - v_1) / a_m
     t_m1 = t_2 + t_1
 
     # middle section
-    if v_m > V and not np.isinf(d):
+    if v_m_theoretical > V and not np.isinf(d):
         t_m2 = t_m1 + (d - profile_distance(v_0, v_f, a_m, j_m, V))/V
     else:
         t_m2 = t_m1
+        
+    if v_f < v_0:
+        three_phase_stop_profile_d = (4*pow(a_m,2) + 6*pow(a_m,3) - 2*pow(a_m,4) + 4*pow(a_m,3)*j_m
+                                      + pow(a_m,2)*j_m*v_f + 2*v_0*pow(a_m,2)*j_m - pow(j_m,2)*pow(v_f,2))/(2*a_m*pow(j_m,2))
+        two_phase_stop_profile_d = (4*pow(a_m,2) + 2*pow(a_m,3) - pow(a_m,4) + 2*pow(a_m,3)*j_m + pow(a_m,2)*j_m*v_f
+                                    - pow(j_m,2)*pow(v_f,2))/(2*a_m*pow(j_m,2))
+        if three_phase_stop_profile_d > d:
+            t_1 = 0
+            t_2 = 0
+            t_m1 = 0
+            t_m2 = (d-two_phase_stop_profile_d) / v_0
+            v_m = v_0
 
     # ramp down
     t_3 = t_m2 + a_m / j_m
-    v_3 = v_m_ - a_m**2 / (2 * j_m)  # also equal to v_2
+    v_3 = v_m - a_m**2 / (2 * j_m)  # also equal to v_2
     v_4 = v_f + a_m**2 / (2 * j_m)
     t_4 = t_3 - (v_4 - v_3) / a_m
-    t_f = t_4 + t_1
+    t_f = t_4 + a_m / j_m
+    
+#     if v_f > v_0:
+#         if three_phase_start_profile_d > d:
+#             pass
+#         else:
+#             pass
     
     debug('t_1 =', t_1, 't_2 =', t_2)
     debug('t_m1 =', t_m1, 't_m2 =', t_m2)
@@ -179,7 +197,7 @@ def simulate_profile(v_0, v_f, a_m, j_m, v_m, V=np.inf, d=np.inf):
     debug('t_f =', t_f)
     debug('v_0 =', v_0,)
     debug('v_1 =', v_1, 'v_2 =', v_2)
-    debug('v_m =', v_m_)
+    debug('v_m =', v_m)
     debug('v_3 =', v_3, 'v_4 =', v_4)
     debug('v_f =', v_f)
     debug('d =', d)
@@ -196,9 +214,9 @@ def simulate_profile(v_0, v_f, a_m, j_m, v_m, V=np.inf, d=np.inf):
         elif t <= t_m1: # acheive max velocity
             v_t = v_2 + a_m * (t - t_2) - j_m * (t - t_2)**2 / 2.0
         elif t <= t_m2: # maintain max velocity
-            v_t = v_m_
+            v_t = v_m
         elif t <= t_3: # acheive max deceleration
-            v_t = v_m_ - j_m * (t - t_m2)**2 / 2.0
+            v_t = v_m - j_m * (t - t_m2)**2 / 2.0
         elif t <= t_4: # maintain max deceleration
             v_t = v_3 - a_m * (t - t_3)
         elif t < t_f: # acheive final velocity
@@ -211,32 +229,29 @@ def simulate_profile(v_0, v_f, a_m, j_m, v_m, V=np.inf, d=np.inf):
     plt.plot(ts, vs, label='velocity')
     plt.plot([t_1, t_1], [0, v_1], color='k', linestyle='--')
     plt.plot([t_2, t_2], [0, v_2], color='k', linestyle='--')
-    plt.plot([t_m1, t_m1], [0, v_m_], color='k', linestyle='--')
-    plt.plot([t_m2, t_m2], [0, v_m_], color='k', linestyle='--')
+    plt.plot([t_m1, t_m1], [0, v_m], color='k', linestyle='--')
+    plt.plot([t_m2, t_m2], [0, v_m], color='k', linestyle='--')
     plt.plot([t_3, t_3], [0, v_3], color='k', linestyle='--')
     plt.plot([t_4, t_4], [0, v_4], color='k', linestyle='--')
     plt.plot([0, t_1], [v_1, v_1], color='k', linestyle='--')
     plt.plot([0, t_2], [v_2, v_2], color='k', linestyle='--')
-    plt.plot([0, t_m1], [v_m_, v_m_], color='r', linestyle='--')
+    plt.plot([0, t_m1], [v_m, v_m], color='r', linestyle='--')
     plt.plot([0, t_3], [v_3, v_3], color='k', linestyle='--')
     plt.plot([0, t_4], [v_4, v_4], color='k', linestyle='--')
     plt.plot([0, t_f], [v_f, v_f], color='r', linestyle='--')
     plt.xlabel("times (s)")
     plt.ylabel("velocity (cu/s)")
-    plt.title("Time Optimal Velocity Profile w/ Constant Jerk")
     plt.show()
     
     return t_1, v_1, t_2, v_2, t_m1, t_m2, t_3, t_4, t_f
-    
-_ = simulate_profile(v_0=1, v_f=0, a_m=5, j_m = 20, v_m=3)
 
 
-# In[21]:
+# In[64]:
 
 
 def test_profile():
-    v_0=2
-    v_f=0
+    v_0=0
+    v_f=1.5
     a_m=5
     j_m=50
     V = 4
@@ -244,8 +259,9 @@ def test_profile():
     
     v_m = compute_v_max(v_0, v_f, a_m, j_m, d)
     t_1, v_1, t_2, v_2, t_m1, t_m2, t_3, t_4, t_f = simulate_profile(v_0, v_f, a_m, j_m, v_m, V, d)
-    print(t_1, v_1, t_2, v_2, t_m1, t_m2, v_m, t_3, t_4, t_f)
+    t_1, v_1, t_2, v_2, t_m1, t_m2, t_3, t_4, t_f = simulate_profile(v_f, v_0, a_m, j_m, v_m, V, d)
     
+LOG_LVL=0    
 test_profile()
 
 

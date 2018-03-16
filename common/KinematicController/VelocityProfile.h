@@ -8,7 +8,7 @@
 namespace smartmouse {
 namespace kc {
 
-constexpr double kVf = 2.0;
+constexpr double kVf = 1.5;
 
 class VelocityProfile {
  public:
