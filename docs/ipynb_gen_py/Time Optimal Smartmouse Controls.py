@@ -137,7 +137,7 @@ plt.show()
 get_ipython().run_cell_magic('HTML', '', '<img src="./full_velocity_profile.png" alt="velocity profile" style="width: 500px;"/>')
 
 
-# In[63]:
+# In[105]:
 
 
 def compute_v_max(v_0, v_f, a_m, j_m, d):
@@ -153,6 +153,15 @@ def profile_distance(v_0, v_f, a_m, j_m, v_m):
 def simulate_profile(v_0, v_f, a_m, j_m, v_m_theoretical, V, d):
     v_m = min(v_m_theoretical, V)
     
+    # for when we don't have enough distance to slow down after speeding up
+    if v_f > v_0:
+        three_phase_start_profile_d = (4*pow(a_m,2) + 6*pow(a_m,3) - 2*pow(a_m,4) + 4*pow(a_m,3)*j_m
+                                      + pow(a_m,2)*j_m*v_0 + 2*v_f*pow(a_m,2)*j_m - pow(j_m,2)*pow(v_0,2))/(2*a_m*pow(j_m,2))
+        two_phase_start_profile_d = (4*pow(a_m,2) + 2*pow(a_m,3) - pow(a_m,4) + 2*pow(a_m,3)*j_m + pow(a_m,2)*j_m*v_0
+                                    - pow(j_m,2)*pow(v_0,2))/(2*a_m*pow(j_m,2))
+        if three_phase_start_profile_d > d:
+            v_m = v_f
+    
     # ramp up
     t_1 = a_m / j_m
     v_1 = v_0 + a_m**2 / (2 * j_m)
@@ -166,6 +175,7 @@ def simulate_profile(v_0, v_f, a_m, j_m, v_m_theoretical, V, d):
     else:
         t_m2 = t_m1
         
+    # for when we don't have enough distance to speed up before stopping
     if v_f < v_0:
         three_phase_stop_profile_d = (4*pow(a_m,2) + 6*pow(a_m,3) - 2*pow(a_m,4) + 4*pow(a_m,3)*j_m
                                       + pow(a_m,2)*j_m*v_f + 2*v_0*pow(a_m,2)*j_m - pow(j_m,2)*pow(v_f,2))/(2*a_m*pow(j_m,2))
@@ -184,12 +194,21 @@ def simulate_profile(v_0, v_f, a_m, j_m, v_m_theoretical, V, d):
     v_4 = v_f + a_m**2 / (2 * j_m)
     t_4 = t_3 - (v_4 - v_3) / a_m
     t_f = t_4 + a_m / j_m
-    
-#     if v_f > v_0:
-#         if three_phase_start_profile_d > d:
-#             pass
-#         else:
-#             pass
+        
+    # for when we don't have enough distance to slow down after speeding up
+    if v_f > v_0:
+        three_phase_start_profile_d = (4*pow(a_m,2) + 6*pow(a_m,3) - 2*pow(a_m,4) + 4*pow(a_m,3)*j_m
+                                      + pow(a_m,2)*j_m*v_0 + 2*v_f*pow(a_m,2)*j_m - pow(j_m,2)*pow(v_0,2))/(2*a_m*pow(j_m,2))
+        two_phase_start_profile_d = (4*pow(a_m,2) + 2*pow(a_m,3) - pow(a_m,4) + 2*pow(a_m,3)*j_m + pow(a_m,2)*j_m*v_0
+                                    - pow(j_m,2)*pow(v_0,2))/(2*a_m*pow(j_m,2))
+        if three_phase_start_profile_d > d:
+            t_m2 = t_m1 + (d-two_phase_start_profile_d) / v_f
+            v_m = v_f
+            t_3 = t_m2
+            v_3 = v_f
+            t_4 = t_m2
+            v_4 = v_f
+            t_f = t_m2
     
     debug('t_1 =', t_1, 't_2 =', t_2)
     debug('t_m1 =', t_m1, 't_m2 =', t_m2)
@@ -246,12 +265,12 @@ def simulate_profile(v_0, v_f, a_m, j_m, v_m_theoretical, V, d):
     return t_1, v_1, t_2, v_2, t_m1, t_m2, t_3, t_4, t_f
 
 
-# In[64]:
+# In[106]:
 
 
 def test_profile():
-    v_0=0
-    v_f=1.5
+    v_0=1.5
+    v_f=3
     a_m=5
     j_m=50
     V = 4
@@ -261,7 +280,6 @@ def test_profile():
     t_1, v_1, t_2, v_2, t_m1, t_m2, t_3, t_4, t_f = simulate_profile(v_0, v_f, a_m, j_m, v_m, V, d)
     t_1, v_1, t_2, v_2, t_m1, t_m2, t_3, t_4, t_f = simulate_profile(v_f, v_0, a_m, j_m, v_m, V, d)
     
-LOG_LVL=0    
 test_profile()
 
 
