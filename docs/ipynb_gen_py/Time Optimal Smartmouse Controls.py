@@ -131,25 +131,20 @@ plt.show()
 
 # In the case where we have plenty of distance, we will ramp up to max velocity, maintain that maximum velocity for a certain distance, then ramp back down to our final velocity. We will call these **phase 1**, **phase 2**, and  **phase 3**. As mentioned earlier, sometimes we will skip phase 2 entirely. Another weird assumption I'm going to make is that we always have enough time to reach maximum acceleration. If this isn't true than a few of our equations break, but in smartmouse this will never happen.
 
-# ![velocity profile](./velocity_profile.png)
-# 
-# **Definition of variables**
-# 
-# $v_o$ is the initial velocity
-# 
-# $v_s$ is the maximum velocity
-# 
-# $v_f$ is the final velocity
-# 
-# $a_s$ is the maximum acceleration
-# 
-# $T$ is the time to reach max velocity
-# 
-# $t_1$ is the time to transition from 0 to max acceleration
-# 
-# $t_2$ is the time to when we begin to transition from max acceleration back to 0
-
 # In[5]:
+
+
+get_ipython().run_cell_magic('HTML', '', '<img src="./full_velocity_profile.png" alt="velocity profile" style="width: 500px;"/>')
+
+
+# In[17]:
+
+
+def compute_v_max(v_0, v_f, a_m, j_m, d):
+    a = 1 / a_m
+    b = a_m / j_m
+    c = (pow(a_m, 2) * (v_0 + v_f) - j_m * (pow(v_0, 2) + pow(v_f, 2))) / (2 * a_m * j_m) - d
+    return (-b + np.sqrt(pow(b, 2) - 4 * a * c)) / (2 * a)
 
 
 def profile_distance(v_0, v_f, a_m, j_m, v_m):
@@ -188,7 +183,7 @@ def simulate_profile(v_0, v_f, a_m, j_m, v_m, V=np.inf, d=np.inf):
     debug('v_3 =', v_3, 'v_4 =', v_4)
     debug('v_f =', v_f)
     debug('d =', d)
-
+    
     vs = []
     T = t_f+0.01
     N = 200
@@ -229,10 +224,29 @@ def simulate_profile(v_0, v_f, a_m, j_m, v_m, V=np.inf, d=np.inf):
     plt.xlabel("times (s)")
     plt.ylabel("velocity (cu/s)")
     plt.title("Time Optimal Velocity Profile w/ Constant Jerk")
-#     plt.grid()
     plt.show()
     
-simulate_profile(v_0=1, v_f=0, a_m=2, j_m = 10, v_m=3)
+    return t_1, v_1, t_2, v_2, t_m1, t_m2, t_3, t_4, t_f
+    
+_ = simulate_profile(v_0=1, v_f=0, a_m=5, j_m = 20, v_m=3)
+
+
+# In[21]:
+
+
+def test_profile():
+    v_0=2
+    v_f=0
+    a_m=5
+    j_m=50
+    V = 4
+    d = 0.5
+    
+    v_m = compute_v_max(v_0, v_f, a_m, j_m, d)
+    t_1, v_1, t_2, v_2, t_m1, t_m2, t_3, t_4, t_f = simulate_profile(v_0, v_f, a_m, j_m, v_m, V, d)
+    print(t_1, v_1, t_2, v_2, t_m1, t_m2, v_m, t_3, t_4, t_f)
+    
+test_profile()
 
 
 # ## Calculating max velocity
@@ -241,12 +255,12 @@ simulate_profile(v_0=1, v_f=0, a_m=2, j_m = 10, v_m=3)
 # 
 # ### Solving for max speed
 # 
+# Most of the equations that follow are solved for or described in the MATLAB code as well as here.
+# 
 # We do this by writing an equation $\mathbb{D}(v_0, v_f, a_m, j_m)$, then subtracting our desired distance $d$, and minimizing this equation. In other words, we're doing:
 # $$\mathrm{arg\,min}_{v_m}(\mathbb{D}(v_0, v_f, a_m, v_m, j_m) - d)$$
 # 
 # Fortunately, to do this we can just take the derivative with respect to $v_m$ and use the quadratic formula to solve for zero. I found it easier to define the $\mathbb{D}$ function graphically as the sum of a bunch of areas under the velocity curve.
-# 
-# ![annotated_velocity_profile](annotated_velocity_profile.png)
 # 
 # \begin{align*}
 # \mathbb{D} &= p_1 + p_2 + p_3 + p_4 + p_5 + 2*p_6 \\
@@ -265,79 +279,24 @@ simulate_profile(v_0=1, v_f=0, a_m=2, j_m = 10, v_m=3)
 # c &= \frac{a_m^2v_0 + a_m^2v_f - j_mv_0^2}{2a_mj_m} - d \\
 # \end{align*}
 
-# In[6]:
-
-
-def compute_v_max(v_0, v_f, a_m, j_m, d):
-    """
-    v_0 - initial velocity (cu/s)
-    v_f - final velocity (cu/s)
-    a_m - max acceleration (cu/s^2)
-    j_m - max jerk (cu/s^3)
-    d   - distance to travel
-    """
-    a = 1/a_m
-    b = a_m/j_m
-    c = (a_m**2*(v_0+v_f) - j_m*(v_0**2+v_f**2))/(2*a_m*j_m) - d
-    v_max = (-b + np.sqrt(b**2-4*a*c))/(2*a)
-    return v_max
-
-
-# In[7]:
-
-
-def turn_in_place():
-    v_0=1
-    v_f=0
-    a_m=5
-    j_m=50
-    V = -m4
-    d = -np.pi * 0.35166666666 / 2
-    
-    v_m = compute_v_max(v_0, v_f, a_m, j_m, d)
-    print(v_m)
-#     simulate_profile(v_0, v_f, a_m, j_m, v_m, V, d)
-    
-turn_in_place()
-
-
-# In[ ]:
-
-
-def too_fast():
-    v_0=0
-    v_f=1
-    a_m=5
-    j_m=15
-    
-    v_m = compute_v_max(v_0, v_f, a_m, j_m, d=10)
-    
-    print("v_m =", v_m)
-    print("d =", profile_distance(v_0, v_f, a_m, j_m, v_m=5))
-
-    simulate_profile(v_0, v_f, a_m, j_m, v_m)
-    
-too_fast()
-
+# We can do the same for computing max acceleration. It's possible, give a very short distance, that we don't even have enough space to acceleration to max acceleration and back down. We can create an equation for the distance traveled over this acc up/down, and solve for $a_m$ where the distance meets our constraint.
+# 
+# \begin{align*}
+# 0 &= \frac{a_m^3 + (j_mv_0 + j_mv_f)a_m}{j_m^2} - d \\
+# 0 &= \frac{1}{j_m^2}a_m^3 + \frac{(j_mv_0 + j_mv_f)}{j_m^2}a_m - d \\
+# \end{align*}
+# 
+# Again use the quadratic formula
+# 
+# \begin{align*}
+# a & = \frac{1}{j_m^2}\\
+# b & = \frac{(j_mv_0 + j_mv_f)}{j_m^2}\\
+# c & = d \\
+# \end{align*}
+# 
+# $$ a_m = -(j_m^2*((j_m*v_0 + j_m*v_f)/j_m^2 - ((j_mv_0 + j_mv_f)^2/j_m^4 - (4*d)/j_m^2)^(1/2)))/2 $$
 
 # So far in solving for $v_m$, we are have ignored the hardware limit. Let's call that $\mathbb{V}$. If we have a really far distance, it's possible that $v_m > \mathbb{V}$, and in that case we must clamp $v_m=\mathbb{V}$, and create a intermediate section of the profile where we maintain $\mathbb{V}$. An example is shown below
-
-# In[ ]:
-
-
-def just_right():
-    v_0=0.5
-    v_f=1
-    a_m=5
-    j_m=15
-    V = 4
-    d = 4
-    
-    v_m = compute_v_max(v_0, v_f, a_m, j_m, d)
-    simulate_profile(v_0, v_f, a_m, j_m, v_m, V, d)
-    
-just_right()
-
 
 # ## Example from the simulator
 # 
