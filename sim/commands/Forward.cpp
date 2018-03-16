@@ -9,7 +9,7 @@ void Forward::initialize() {
   const double goal_disp = KinematicController::dispToNextEdge(*mouse);
   const double v0 = mouse->kinematic_controller.getCurrentForwardSpeedCUPS();
   const double vf = smartmouse::kc::kVf;
-  profile  = new smartmouse::kc::VelocityProfile(start, goal_disp, v0, vf);
+  profile  = new smartmouse::kc::VelocityProfile(start, {goal_disp, v0, vf});
 }
 
 void Forward::execute() {
@@ -24,6 +24,6 @@ bool Forward::isFinished() {
 }
 
 void Forward::end() {
-//  mouse->pauseSim();
+  mouse->pauseSim();
 }
 

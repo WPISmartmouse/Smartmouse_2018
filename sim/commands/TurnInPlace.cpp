@@ -14,9 +14,8 @@ void TurnInPlace::initialize() {
   double left_v_cps, right_v_cps;
   std::tie(left_v_cps, right_v_cps) = mouse->kinematic_controller.getWheelVelocitiesCPS();
   const double vf = 0;
-  std::cout << left_v_cps << ", " << right_v_cps << "\n";
-  left_profile = new smartmouse::kc::VelocityProfile(start, goal_disp, left_v_cps, vf);
-  right_profile = new smartmouse::kc::VelocityProfile(start, goal_disp, right_v_cps, vf);
+  left_profile = new smartmouse::kc::VelocityProfile(start, {goal_disp, left_v_cps, vf});
+  right_profile = new smartmouse::kc::VelocityProfile(start, {goal_disp, right_v_cps, vf});
 }
 
 void TurnInPlace::execute() {
@@ -47,5 +46,6 @@ bool TurnInPlace::isFinished() {
 void TurnInPlace::end() {
   mouse->internalTurnToFace(dir);
   mouse->kinematic_controller.enable_sensor_pose_estimate = true;
+  mouse->pauseSim();
 }
 

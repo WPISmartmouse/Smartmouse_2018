@@ -24,6 +24,6 @@ private:
   GlobalPose start;
   SimMouse *mouse;
   unsigned int n;
-  smartmouse::kc::VelocityProfile *profile;
+  smartmouse::kc::VelocityProfile *profile = nullptr;
 };
 

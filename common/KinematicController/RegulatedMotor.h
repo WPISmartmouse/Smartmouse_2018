@@ -21,7 +21,6 @@ public:
   double kP;
   double kI;
   double kD;
-  double kDD;
   double ff_offset;
   double ff_scale;
   double int_cap;
@@ -38,7 +37,6 @@ public:
   double last_velocity_rps;
   double regulated_setpoint_rps;
   double setpoint_rps;
-  double smooth_derivative;
   double velocity_rps;
   double second_derivative;
   double last_derivative;

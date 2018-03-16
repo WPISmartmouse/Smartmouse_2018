@@ -1,16 +1,15 @@
 #include <algorithm>
 #include <common/core/Mouse.h>
 #include <common/KinematicController/RobotConfig.h>
-#include "RegulatedMotor.h"
+#include <common/KinematicController/RegulatedMotor.h>
 
 RegulatedMotor::RegulatedMotor()
     : kP(300),
       kI(5),
       kD(5),
-      kDD(0.0),
       ff_offset(0),
       ff_scale(4),
-      int_cap(50),
+      int_cap(75),
       initialized(false),
       abstract_force(0),
       acceleration_rpss(0),
@@ -20,7 +19,6 @@ RegulatedMotor::RegulatedMotor()
       last_velocity_rps(0),
       regulated_setpoint_rps(0),
       setpoint_rps(0),
-      smooth_derivative(0),
       velocity_rps(0),
       second_derivative(0),
       last_derivative(0) {}

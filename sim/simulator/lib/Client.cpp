@@ -212,12 +212,17 @@ void Client::LoadDefaultMouse() {
     QFileInfo file_info(default_mouse_file_name_);
 
     std::ifstream fs;
-    fs.open(file_info.absoluteFilePath().toStdString(), std::fstream::in);
-    smartmouse::msgs::RobotDescription mouse_msg = smartmouse::msgs::Convert(fs);
-    robot_description_pub_.Publish(mouse_msg);
-    ui_->mouse_file_name_label->setText(file_info.fileName());
+    std::string mouse_filename = file_info.absoluteFilePath().toStdString();
+    fs.open(mouse_filename, std::fstream::in);
+    if (fs.good()) {
+      smartmouse::msgs::RobotDescription mouse_msg = smartmouse::msgs::Convert(fs);
+      robot_description_pub_.Publish(mouse_msg);
+      ui_->mouse_file_name_label->setText(file_info.fileName());
+    } else {
+      std::cout << "default mouse file [" << mouse_filename << "] not found\n";
+    }
   } else {
-    std::cout << "no default mouse" << std::endl;
+    std::cout << "no default mouse\n";
     // TODO: handle this case
   }
 }
@@ -227,14 +232,20 @@ void Client::LoadDefaultMaze() {
     QFileInfo file_info(default_maze_file_name_);
 
     std::ifstream fs;
-    fs.open(file_info.absoluteFilePath().toStdString(), std::fstream::in);
-    AbstractMaze maze(fs);
-    smartmouse::msgs::Maze maze_msg = smartmouse::msgs::Convert(&maze);
-    maze_pub_.Publish(maze_msg);
-    ui_->maze_file_name_label->setText(file_info.fileName());
+    std::string maze_filename = file_info.absoluteFilePath().toStdString();
+    fs.open(maze_filename, std::fstream::in);
+    if (fs.good()) {
+      AbstractMaze maze(fs);
+      smartmouse::msgs::Maze maze_msg = smartmouse::msgs::Convert(&maze);
+      maze_pub_.Publish(maze_msg);
+      ui_->maze_file_name_label->setText(file_info.fileName());
+    } else {
+      std::cout << "default mouse file [" << maze_filename << "] not found. Loading random maze.\n";
+      LoadRandomMaze();
+    }
   } else {
-    std::cout << "no default maze" << std::endl;
-    // TODO: handle this case
+    std::cout << "No default maze. Loading random maze\n";
+    LoadRandomMaze();
   }
 }
 

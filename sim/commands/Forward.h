@@ -25,7 +25,7 @@ private:
   SimMouse *mouse;
 
   RangeData range_data;
-  smartmouse::kc::VelocityProfile *profile;
+  smartmouse::kc::VelocityProfile *profile = nullptr;
 
 };
 
