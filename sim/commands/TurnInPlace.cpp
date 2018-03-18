@@ -6,23 +6,24 @@ const double TurnInPlace::kP = 0.5;
 TurnInPlace::TurnInPlace(Direction dir) : Command("SimTurnInPlace"), mouse(SimMouse::inst()), dir(dir) {}
 
 void TurnInPlace::initialize() {
+  setTimeout(1000);
   goal_yaw = dir_to_yaw(dir);
   mouse->kinematic_controller.enable_sensor_pose_estimate = false;
   const auto start = mouse->getGlobalPose();
   yaw_error = smartmouse::math::yaw_diff(start.yaw, goal_yaw);
-  const double goal_disp = fabs(yaw_error) * smartmouse::kc::TRACK_WIDTH_CU / 2;
-  double left_v_cps, right_v_cps;
-  std::tie(left_v_cps, right_v_cps) = mouse->kinematic_controller.getWheelVelocitiesCPS();
-  const double vf = 0;
-  left_profile = new smartmouse::kc::VelocityProfile(start, {goal_disp, left_v_cps, vf});
-  right_profile = new smartmouse::kc::VelocityProfile(start, {goal_disp, right_v_cps, vf});
+  const double turn_arc_length = fabs(yaw_error) * smartmouse::kc::TRACK_WIDTH_CU / 2;
+  left_turn = (yaw_error < 0);
+  profile = new smartmouse::kc::VelocityProfile(start, {turn_arc_length, 0, 0});
 }
 
 void TurnInPlace::execute() {
   double t_s = getTime() / 1000.0;
-  double v_l = left_profile->compute_forward_velocity(t_s);
-  double v_r = right_profile->compute_forward_velocity(t_s);
-  mouse->setSpeedCps(v_l, v_r);
+  double fwd_v = profile->compute_forward_velocity(t_s);
+  if (left_turn) {
+    mouse->setSpeedCps(-fwd_v, fwd_v);
+  } else {
+    mouse->setSpeedCps(fwd_v, -fwd_v);
+  }
 
   // when we get close to aligned, there might be a wall we can use to better estimate our angle
   // this allows us to use that
@@ -39,13 +40,13 @@ bool TurnInPlace::isFinished() {
   yaw_error = smartmouse::math::yaw_diff(current_yaw, goal_yaw);
   double vl_cps, vr_cps;
   std::tie(vl_cps, vr_cps) = mouse->getWheelVelocitiesCPS();
-  return (fabs(yaw_error) < smartmouse::kc::ROT_TOLERANCE) && fabs(vl_cps) <= smartmouse::kc::MIN_SPEED_CUPS
-      && fabs(vr_cps) < smartmouse::kc::MIN_SPEED_CUPS;
+  return isTimedOut() || ((fabs(yaw_error) < smartmouse::kc::ROT_TOLERANCE) && fabs(vl_cps) <= smartmouse::kc::MIN_SPEED_CUPS
+      && fabs(vr_cps) < smartmouse::kc::MIN_SPEED_CUPS);
 }
 
 void TurnInPlace::end() {
   mouse->internalTurnToFace(dir);
   mouse->kinematic_controller.enable_sensor_pose_estimate = true;
-  mouse->pauseSim();
+//  mouse->pauseSim();
 }
 

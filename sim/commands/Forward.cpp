@@ -24,6 +24,6 @@ bool Forward::isFinished() {
 }
 
 void Forward::end() {
-  mouse->pauseSim();
+//  mouse->pauseSim();
 }
 

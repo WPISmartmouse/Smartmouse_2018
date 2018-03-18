@@ -18,13 +18,13 @@ public:
   void end();
 
 private:
+  bool left_turn;
   double goal_yaw;
   double yaw_error;
   SimMouse *mouse;
   Direction dir;
 
   const static double kP;
-  smartmouse::kc::VelocityProfile *left_profile;
-  smartmouse::kc::VelocityProfile *right_profile;
+  smartmouse::kc::VelocityProfile *profile;
 };
 
