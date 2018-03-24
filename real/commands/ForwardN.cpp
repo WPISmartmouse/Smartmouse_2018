@@ -9,7 +9,7 @@ void ForwardN::initialize() {
   const double goal_disp = KinematicController::dispToNthEdge(*mouse, n);
   const double v0 = mouse->kinematic_controller.getCurrentForwardSpeedCUPS();
   const double vf = smartmouse::kc::kVf;
-  profile = new smartmouse::kc::VelocityProfile(start, goal_disp, v0, vf);
+  profile = new smartmouse::kc::VelocityProfile(start, {goal_disp, v0, vf});
   digitalWrite(RealMouse::LED_4, 1);
 }
 

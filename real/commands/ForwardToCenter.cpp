@@ -9,7 +9,7 @@ void ForwardToCenter::initialize() {
   const double goal_disp = KinematicController::fwdDispToCenter(*mouse);
   const double v0 = mouse->kinematic_controller.getCurrentForwardSpeedCUPS();
   const double vf = 0.0;
-  profile = new smartmouse::kc::VelocityProfile(start, goal_disp, v0, vf);
+  profile = new smartmouse::kc::VelocityProfile(start, {goal_disp, v0, vf});
   digitalWrite(RealMouse::LED_3, 1);
 }
 
