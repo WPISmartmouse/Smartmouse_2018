@@ -62,6 +62,10 @@ if (NOT ${BUILD_SIM})
     set_target_properties(${main_target} PROPERTIES COMPILE_FLAGS "-include ${UTIL_HEADER}")
   endforeach ()
 
+  add_teensy_executable(as5048_test real/main/as5048a_test.cpp ${REAL_LIBS_SRC})
+  set_target_properties(as5048_test PROPERTIES COMPILE_FLAGS "-include ${UTIL_HEADER}")
+#  target_compile_definitions(as5048_test PRIVATE AS5048A_DEBUG)
+
 else ()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-unknown-pragmas")
 
