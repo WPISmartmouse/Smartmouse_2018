@@ -5,31 +5,31 @@
 RealMouse *RealMouse::instance = nullptr;
 
 IRConverter::IRConverter() : ir_lookup{
-        755, // .01
-        648, // .02
-        492, // .03
-        409, // .04
-        315, // .05
-        268, // .06
-        224, // .07
-        192, // .08
-        165, // .09
-        147, // .10
-        134, // .11
-        115, // .12
-        105, // .13
-        93,  // .14
-        86,  // .15
-        75,  // .16
-        68,  // .17
-        58,  // .18
-} {}
+    755, // .01
+    648, // .02
+    492, // .03
+    409, // .04
+    315, // .05
+    268, // .06
+    224, // .07
+    192, // .08
+    165, // .09
+    147, // .10
+    134, // .11
+    115, // .12
+    105, // .13
+    93,  // .14
+    86,  // .15
+    75,  // .16
+    68,  // .17
+    58,  // .18
+}, calibration_offset(0) {}
 
 void IRConverter::calibrate(int avg_adc_value_on_center) {
   double actual_dist = (0.08 - smartmouse::kc::FRONT_SIDE_ANALOG_Y) / sin(smartmouse::kc::FRONT_ANALOG_ANGLE);
   int centered_idx = 4;
   double expected_distance = (avg_adc_value_on_center - ir_lookup[centered_idx]) * 0.01 /
-                             (ir_lookup[centered_idx] - ir_lookup[centered_idx - 1]) + (centered_idx + 1) * .01;
+      (ir_lookup[centered_idx] - ir_lookup[centered_idx - 1]) + (centered_idx + 1) * .01;
   calibration_offset = actual_dist - expected_distance;
 }
 
@@ -57,7 +57,11 @@ RealMouse *RealMouse::inst() {
   return instance;
 }
 
-RealMouse::RealMouse() : kinematic_controller(this), range_data({0.18, 0.18, 0.18, 0.18, 0.18}), left_encoder(LEFT_ENCODER_CS), right_encoder(RIGHT_ENCODER_CS) {}
+RealMouse::RealMouse()
+    : kinematic_controller(this),
+      range_data({0.18, 0.18, 0.18, 0.18, 0.18}),
+      left_encoder(LEFT_ENCODER_CS),
+      right_encoder(RIGHT_ENCODER_CS) {}
 
 SensorReading RealMouse::checkWalls() {
   SensorReading sr(row, col);
@@ -108,8 +112,6 @@ void RealMouse::run(double dt_s) {
 #endif
   std::tie(abstract_left_force, abstract_right_force) = kinematic_controller.run(dt_s, left_angle_rad,
                                                                                  right_angle_rad, range_data);
-  abstract_left_force = -128;
-  abstract_right_force = -128;
 #ifdef PROFILE
   Serial.print("KC, ");
   Serial.println(micros() - t1);

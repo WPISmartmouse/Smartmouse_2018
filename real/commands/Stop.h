@@ -6,7 +6,7 @@ class Stop : public Command {
 public:
   Stop();
 
-  Stop(unsigned long stop_time);
+  explicit Stop(unsigned long stop_time);
 
   void initialize();
 

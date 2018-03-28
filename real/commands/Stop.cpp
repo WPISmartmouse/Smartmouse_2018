@@ -1,7 +1,7 @@
 #include <real/RealMouse.h>
 #include "Stop.h"
 
-Stop::Stop() : Command("end") {}
+Stop::Stop() : Command("end"), stop_time(10000) {}
 
 Stop::Stop(unsigned long stop_time) : Command("end"), stop_time(stop_time) {}
 

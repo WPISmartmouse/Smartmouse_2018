@@ -9,7 +9,7 @@
 
 class ForwardN : public Command {
 public:
-  ForwardN(unsigned int n);
+  explicit ForwardN(unsigned int n);
 
   void initialize();
 

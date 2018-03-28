@@ -6,7 +6,7 @@
 
 class Finish : public Command {
 public:
-  Finish(AbstractMaze *maze);
+  explicit Finish(AbstractMaze *maze);
 
   void initialize();
   void execute();

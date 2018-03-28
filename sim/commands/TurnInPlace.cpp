@@ -3,7 +3,8 @@
 
 const double TurnInPlace::kP = 0.5;
 
-TurnInPlace::TurnInPlace(Direction dir) : Command("SimTurnInPlace"), mouse(SimMouse::inst()), dir(dir) {}
+TurnInPlace::TurnInPlace(Direction dir)
+    : Command("SimTurnInPlace"), mouse(SimMouse::inst()), dir(dir), goal_yaw(0), yaw_error(0) {}
 
 void TurnInPlace::initialize() {
   setTimeout(1000);
@@ -40,8 +41,9 @@ bool TurnInPlace::isFinished() {
   yaw_error = smartmouse::math::yaw_diff(current_yaw, goal_yaw);
   double vl_cps, vr_cps;
   std::tie(vl_cps, vr_cps) = mouse->getWheelVelocitiesCPS();
-  return isTimedOut() || ((fabs(yaw_error) < smartmouse::kc::ROT_TOLERANCE) && fabs(vl_cps) <= smartmouse::kc::MIN_SPEED_CUPS
-      && fabs(vr_cps) < smartmouse::kc::MIN_SPEED_CUPS);
+  return isTimedOut()
+      || ((fabs(yaw_error) < smartmouse::kc::ROT_TOLERANCE) && fabs(vl_cps) <= smartmouse::kc::MIN_SPEED_CUPS
+          && fabs(vr_cps) < smartmouse::kc::MIN_SPEED_CUPS);
 }
 
 void TurnInPlace::end() {

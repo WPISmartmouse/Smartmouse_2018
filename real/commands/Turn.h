@@ -5,7 +5,7 @@
 
 class Turn : public CommandGroup {
 public:
-  Turn(Direction dir);
+  explicit Turn(Direction dir);
 
   void initialize();
 

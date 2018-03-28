@@ -1,6 +1,6 @@
 #include "Finish.h"
 
-Finish::Finish(AbstractMaze *maze) : Command("finish"), maze(maze), mouse(RealMouse::inst()) {
+Finish::Finish(AbstractMaze *maze) : Command("finish"), maze(maze), mouse(RealMouse::inst()), t(0), pin_id(0), on(false) {
 }
 
 void Finish::initialize() {

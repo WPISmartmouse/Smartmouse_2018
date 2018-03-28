@@ -6,7 +6,7 @@
 
 class TurnInPlace : public Command {
 public:
-  TurnInPlace(Direction dir);
+  explicit TurnInPlace(Direction dir);
 
   void initialize();
 

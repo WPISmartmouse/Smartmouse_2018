@@ -40,21 +40,21 @@ public:
   static const unsigned int LEFT_ENCODER_CS = 9;
   static const unsigned int RIGHT_ENCODER_CS = 10;
 
-  static const unsigned int MOTOR_LEFT_A1 = 5;
-  static const unsigned int MOTOR_LEFT_A2 = 6;
-  static const unsigned int MOTOR_RIGHT_B1 = 8;
-  static const unsigned int MOTOR_RIGHT_B2 = 7;
+  static const uint8_t MOTOR_LEFT_A1 = 5;
+  static const uint8_t MOTOR_LEFT_A2 = 6;
+  static const uint8_t MOTOR_RIGHT_B1 = 8;
+  static const uint8_t MOTOR_RIGHT_B2 = 7;
 
-  static const unsigned int LED_1 = 25;
-  static const unsigned int LED_2 = 26;
-  static const unsigned int LED_3 = 27;
-  static const unsigned int LED_4 = 28;
-  static const unsigned int LED_5 = 29;
-  static const unsigned int LED_6 = 30;
-  static const unsigned int LED_7 = 31;
-  static const unsigned int SYS_LED = 32;
+  static const uint8_t LED_1 = 25;
+  static const uint8_t LED_2 = 26;
+  static const uint8_t LED_3 = 27;
+  static const uint8_t LED_4 = 28;
+  static const uint8_t LED_5 = 29;
+  static const uint8_t LED_6 = 30;
+  static const uint8_t LED_7 = 31;
+  static const uint8_t SYS_LED = 32;
 
-  static const unsigned int BUTTON_PIN = 23;
+  static const uint8_t BUTTON_PIN = 23;
 
   static RealMouse *inst();
 

@@ -7,7 +7,7 @@
 #include <Arduino.h>
 
 void setup() {
-  analogWriteResolution(13);
+  analogReadResolution(13);
   pinMode(13, OUTPUT);
   digitalWrite(13, HIGH);
   Serial.begin(115200);
