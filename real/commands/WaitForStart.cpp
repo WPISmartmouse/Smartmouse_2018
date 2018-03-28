@@ -5,7 +5,7 @@
 bool WaitForStart::calibrated = false;
 
 WaitForStart::WaitForStart()
-    : CommandGroup("wait_calibrate"), mouse(RealMouse::inst()), speed(0), init_ticks_left(0), init_ticks_right(0) {
+    : CommandGroup("wait_calibrate"), mouse(RealMouse::inst()), speed(0) {
   mouse->kinematic_controller.enabled = false;
   if (!calibrated) {
     addSequential(new Calibrate());
@@ -14,19 +14,20 @@ WaitForStart::WaitForStart()
 }
 
 void WaitForStart::initialize() {
-  init_ticks_left = mouse->left_encoder.getRotation();
-  init_ticks_right = mouse->right_encoder.getRotation();
+  mouse->left_encoder.ResetPosition();
+  mouse->right_encoder.ResetPosition();
 }
 
 void WaitForStart::execute() {
   CommandGroup::execute();
 
   // Set the max speed of the robot based on the right wheel
-  double percent_speed = fmod(mouse->left_encoder.getRotation() - init_ticks_left, 1024) / 1024;
+  double percent_speed = mouse->left_encoder.getUnsignedRotation() / smartmouse::kc::TICKS_PER_REVOLUTION;
   speed = percent_speed * smartmouse::kc::MAX_HARDWARE_SPEED_MPS;
 
-  uint8_t light_up_until_led_index = static_cast<uint8_t >(percent_speed * 7);
-  for (uint8_t i = 0; i < 7; i++) {
+  constexpr uint8_t NUM_LEDS = 7;
+  uint8_t light_up_until_led_index = static_cast<uint8_t >(percent_speed * NUM_LEDS);
+  for (uint8_t i = 0; i < NUM_LEDS; i++) {
     if (i < light_up_until_led_index) {
       digitalWrite(RealMouse::LED_7 - i, 1);
     } else {
@@ -35,7 +36,7 @@ void WaitForStart::execute() {
   }
 
   // Set arc turn on or off based on left wheel
-  smartmouse::kc::ARC_TURN = fmod(fabs(mouse->right_encoder.getRotation() - init_ticks_right), 200) > 100;
+  smartmouse::kc::ARC_TURN = mouse->right_encoder.getUnsignedRotation() > smartmouse::kc::TICKS_PER_REVOLUTION / 2;
   if (smartmouse::kc::ARC_TURN) {
     digitalWrite(RealMouse::LED_1, 1);
   } else {
@@ -52,9 +53,9 @@ bool WaitForStart::isFinished() {
 }
 
 void WaitForStart::end() {
-  smartmouse::kc::MAX_SPEED_MPS = max(speed, 0.1);
+  smartmouse::kc::MAX_SPEED_MPS = max(speed, 0.2);
   smartmouse::kc::MAX_SPEED_CUPS = smartmouse::maze::toCellUnits(smartmouse::kc::MAX_SPEED_MPS);
-  for (int i = 0; i < 7; i++) {
+  for (uint8_t i = 0; i < 7; i++) {
     digitalWrite(RealMouse::LED_7 - i, 0);
   }
   mouse->resetToStartPose();

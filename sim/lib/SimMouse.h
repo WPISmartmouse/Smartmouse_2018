@@ -15,15 +15,12 @@
 
 class SimMouse : public Mouse {
 public:
-  static constexpr int TICKS_PER_REV = static_cast<const int>(std::pow(2, 14));
-  static constexpr double RAD_PER_TICK = 2 * M_PI / TICKS_PER_REV;
-
   static constexpr int rad_to_tick(double rad) {
-    return static_cast<int>(rad / RAD_PER_TICK);
+    return static_cast<int>(rad / smartmouse::kc::RAD_PER_TICK);
   }
 
   static constexpr double tick_to_rad(int ticks) {
-    return ticks * RAD_PER_TICK;
+    return ticks * smartmouse::kc::RAD_PER_TICK;
   }
 
   static SimMouse *inst();

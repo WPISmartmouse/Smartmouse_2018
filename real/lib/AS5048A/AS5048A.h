@@ -4,105 +4,117 @@
 
 #include <SPI.h>
 
-class AS5048A{
+class AS5048A {
 
-	bool errorFlag;
-	byte _cs;
-	byte cs;
-	byte dout;
-	byte din;
-	byte clk;
-	word position;
-	word transaction(word data);
-	
-	SPISettings settings;
-	
-	public:
+  bool errorFlag;
+  byte _cs;
+  byte cs;
+  byte dout;
+  byte din;
+  byte clk;
+  word position;
 
-	/**
-	 *	Constructor
-	 */
-	AS5048A(byte arg_cs);
+  word transaction(word data);
 
-	/**
-	 * Initialiser
-	 * Sets up the SPI interface
-	 */
-	void init();
+  SPISettings settings;
 
-	/**
-	 * Closes the SPI connection
-	 */
-	void close();
+ public:
 
-	/*
-	 * Read a register from the sensor
-	 * Takes the address of the register as a 16 bit word
-	 * Returns the value of the register
-	 */
-	word read(word registerAddress);
+  /**
+   *	Constructor
+   */
+  AS5048A(byte arg_cs);
 
-	/*
-	 * Write to a register
-	 * Takes the 16-bit  address of the target register and the 16 bit word of data
-	 * to be written to that register
-	 * Returns the value of the register after the write has been performed. This
-	 * is read back from the sensor to ensure a sucessful write.
-	 */
-	word write(word registerAddress, word data);
+  /**
+   * Initialiser
+   * Sets up the SPI interface
+   */
+  void init();
 
-	/**
-	 * Get the rotation of the sensor relative to the zero position.
-	 *
-	 * @return {int} between -2^13 and 2^13
-	 */
-	int getRotation();
+  /**
+   * Closes the SPI connection
+   */
+  void close();
 
-	/**
-	 * Returns the raw angle directly from the sensor
-	 */
-	word getRawRotation();
+  /*
+   * Read a register from the sensor
+   * Takes the address of the register as a 16 bit word
+   * Returns the value of the register
+   */
+  word read(word registerAddress);
 
+  /*
+   * Write to a register
+   * Takes the 16-bit  address of the target register and the 16 bit word of data
+   * to be written to that register
+   * Returns the value of the register after the write has been performed. This
+   * is read back from the sensor to ensure a sucessful write.
+   */
+  word write(word registerAddress, word data);
 
-	/**
-	 * returns the value of the state register
-	 * @return 16 bit word containing flags
-	 */
-	word getState();
+  /**
+   * Get the unsigned rotation of the sensor relative to the zero position.
+   *
+   * @return {int} between and 2^14
+   */
+  unsigned int getUnsignedRotation();
 
-	/**
-	 * Print the diagnostic register of the sensor
-	 */
-	void printState();
+  /**
+   * Get the rotation of the sensor relative to the zero position.
+   *
+   * @return {int} between -2^13 and 2^13
+   */
+  int getRotation();
 
-	/**
-	 * Returns the value used for Automatic Gain Control (Part of diagnostic
-	 * register)
-	 */
-	byte getGain();
+  /**
+   * Returns the raw angle directly from the sensor
+   */
+  word getRawRotation();
 
-	/*
-	 * Get and clear the error register by reading it
-	 */
-	word getErrors();
+  /**
+   * returns the value of the state register
+   * @return 16 bit word containing flags
+   */
+  word getState();
 
-	/*
-	 * Set the zero position
-	 */
-	void setZeroPosition(word arg_position);
+  /**
+   * Print the diagnostic register of the sensor
+   */
+  void printState();
 
-	/*
-	 * Returns the current zero position
-	 */
-	word getZeroPosition();
+  /**
+   * Returns the value used for Automatic Gain Control (Part of diagnostic
+   * register)
+   */
+  byte getGain();
 
-	/*
-	 * Check if an error has been encountered.
-	 */
-	bool error();
+  /*
+   * Get and clear the error register by reading it
+   */
+  word getErrors();
 
-	private:
+  /*
+   * Set the zero position
+   */
+  void setZeroPosition(word arg_position);
 
-	byte spiCalcEvenParity(word);
+  /*
+   * Reset zero to current posiiton
+   */
+  void ResetPosition();
+
+  /*
+   * Returns the current zero position
+   */
+  word getZeroPosition();
+
+  /*
+   * Check if an error has been encountered.
+   */
+  bool error();
+
+ private:
+
+  byte spiCalcEvenParity(word);
 };
 #endif

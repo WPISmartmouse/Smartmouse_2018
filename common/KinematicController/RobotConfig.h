@@ -29,6 +29,8 @@ constexpr double ANALOG_MAX_DIST_M = 0.18;
 constexpr double ANALOG_MIN_DIST_M = 0.01;
 constexpr double WHEEL_RAD = 0.0145;
 constexpr double MIN_ABSTRACT_FORCE = 3.5;
+constexpr int TICKS_PER_REVOLUTION = static_cast<const int>(std::pow(2, 14));
+constexpr double RAD_PER_TICK = 2 * M_PI / TICKS_PER_REVOLUTION;
 
 extern double MAX_SPEED_MPS;
 extern bool ARC_TURN;

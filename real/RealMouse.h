@@ -21,11 +21,9 @@ private:
 
 class RealMouse : public Mouse {
 public:
-  static constexpr int TICKS_PER_REV = static_cast<const int>(std::pow(2, 14));
-  static constexpr double RAD_PER_TICK = 2 * M_PI / TICKS_PER_REV;
 
   static constexpr double tick_to_rad(int ticks) {
-    return ticks * RAD_PER_TICK;
+    return ticks * smartmouse::kc::RAD_PER_TICK;
   }
 
   static const unsigned int FRONT_RIGHT_ANALOG_PIN = A18;
