@@ -18,10 +18,10 @@ public:
   void end();
 
 private:
+  SimMouse *mouse;
   bool left_turn;
   double goal_yaw;
   double yaw_error;
-  SimMouse *mouse;
   Direction dir;
 
   const static double kP;

@@ -57,3 +57,5 @@ else ()
     add_subdirectory(sim)
   endif ()
 endif ()
+
+add_subdirectory(tools)

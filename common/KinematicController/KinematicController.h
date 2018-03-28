@@ -9,6 +9,39 @@
 #include <common/KinematicController/RegulatedMotor.h>
 #include <tuple>
 
+namespace smartmouse {
+namespace kc {
+
+constexpr std::pair<double, double> from_sensors_to_wall(smartmouse::kc::SensorPose s1,
+                                                         smartmouse::kc::SensorPose s2,
+                                                         double s1_dist_m,
+                                                         double s2_dist_m) {
+  const double d1x = cos(s1.angle) * s1_dist_m + s1.x;
+  const double d2x = cos(s2.angle) * s2_dist_m + s2.x;
+  const double d1y = sin(s1.angle) * s1_dist_m + s1.y;
+  const double d2y = sin(s2.angle) * s2_dist_m + s2.y;
+  const double yaw = atan2(d2y - d1y, d2x - d1x);
+  // distance from point to line:
+  // https://en.wikipedia.org/w/index.php?title=Distance_from_a_point_to_a_line&oldid=828284744
+  // where x_0 and y_0 are equal to 0
+  // the fabs is required because the numerator represents an area
+  const double dist = fabs(d2x * d1y - d2y * d1x) / sqrt(pow(d2y - d1y, 2) + pow(d2x - d1x, 2));
+  return {dist, yaw};
+};
+
+const std::pair<double, double> from_sensors_to_left_wall(smartmouse::kc::SensorPose s1,
+                                                          smartmouse::kc::SensorPose s2,
+                                                          double s1_dist_m,
+                                                          double s2_dist_m);
+
+const std::pair<double, double> from_sensors_to_right_wall(smartmouse::kc::SensorPose s1,
+                                                           smartmouse::kc::SensorPose s2,
+                                                           double s1_dist_m,
+                                                           double s2_dist_m);
+
+}
+}
+
 class KinematicController {
  public:
   KinematicController(Mouse *mouse);

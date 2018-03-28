@@ -4,7 +4,7 @@
 const double TurnInPlace::kP = 0.5;
 
 TurnInPlace::TurnInPlace(Direction dir)
-    : Command("SimTurnInPlace"), mouse(SimMouse::inst()), dir(dir), goal_yaw(0), yaw_error(0) {}
+    : Command("SimTurnInPlace"), mouse(SimMouse::inst()), left_turn(false), goal_yaw(0), yaw_error(0), dir(dir) {}
 
 void TurnInPlace::initialize() {
   setTimeout(1000);

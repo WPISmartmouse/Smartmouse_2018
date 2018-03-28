@@ -1,6 +1,7 @@
 #pragma  once
 
 #include <cmath>
+#include <vector>
 
 #include <common/Eigen/Eigen.h>
 #include <common/Eigen/Eigen/Dense>

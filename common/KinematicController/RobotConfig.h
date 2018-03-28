@@ -6,6 +6,14 @@
 namespace smartmouse {
 namespace kc {
 
+struct SensorPose {
+  SensorPose() = delete;
+
+  double x;
+  double y;
+  double angle;
+};
+
 // most stuff here is meters or meters/second
 constexpr double FRONT_ANALOG_ANGLE = 1.35255;
 constexpr double BACK_ANALOG_ANGLE = 1.35255;
@@ -41,6 +49,13 @@ constexpr double MAX_HARDWARE_SPEED_CUPS = smartmouse::maze::toCellUnits(MAX_HAR
 constexpr double MIN_SPEED_CUPS = smartmouse::maze::toCellUnits(MIN_SPEED_MPS);
 constexpr double ANALOG_MAX_DIST_CU = smartmouse::maze::toCellUnits(ANALOG_MAX_DIST_M);
 constexpr double ANALOG_MIN_DIST_CU = smartmouse::maze::toCellUnits(ANALOG_MIN_DIST_M);
+
+constexpr SensorPose BACK_LEFT {BACK_SIDE_ANALOG_X, -BACK_SIDE_ANALOG_Y, -BACK_ANALOG_ANGLE};
+constexpr SensorPose FRONT_LEFT {FRONT_SIDE_ANALOG_X, -FRONT_SIDE_ANALOG_Y, -FRONT_ANALOG_ANGLE};
+constexpr SensorPose GERALD_LEFT {GERALD_X, -GERALD_Y, -GERALD_ANGLE};
+constexpr SensorPose BACK_RIGHT {BACK_SIDE_ANALOG_X, BACK_SIDE_ANALOG_Y, BACK_ANALOG_ANGLE};
+constexpr SensorPose FRONT_RIGHT {FRONT_SIDE_ANALOG_X, FRONT_SIDE_ANALOG_Y, FRONT_ANALOG_ANGLE};
+constexpr SensorPose GERALD_RIGHT {GERALD_X, GERALD_Y, GERALD_ANGLE};
 
 constexpr double cellsToRad(double x) {
   return x * smartmouse::maze::UNIT_DIST_M / WHEEL_RAD;

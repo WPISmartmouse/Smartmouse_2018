@@ -7,7 +7,6 @@
 #include <common/core/Mouse.h>
 #include <common/KinematicController/KinematicController.h>
 
-
 const double KinematicController::kDropSafety = 0.8;
 
 KinematicController::KinematicController(Mouse *mouse)
@@ -206,21 +205,23 @@ std::tuple<double, double, bool> KinematicController::estimate_pose(RangeData ra
   double *yaw = &std::get<0>(newest_estimate);
   double *offset = &std::get<1>(newest_estimate);
   bool *ignore_walls = &std::get<2>(newest_estimate);
+//  double d1x_r = cos(smartmouse::kc::BACK_ANALOG_ANGLE) * range_data.back_right + smartmouse::kc::BACK_SIDE_ANALOG_X;
+//  double d2x_r = cos(smartmouse::kc::FRONT_ANALOG_ANGLE) * range_data.front_right + smartmouse::kc::FRONT_SIDE_ANALOG_X;
+//  double d1y_r = sin(smartmouse::kc::BACK_ANALOG_ANGLE) * range_data.back_right + smartmouse::kc::BACK_SIDE_ANALOG_Y;
+//  double d2y_r = sin(smartmouse::kc::FRONT_ANALOG_ANGLE) * range_data.front_right + smartmouse::kc::FRONT_SIDE_ANALOG_Y;
+//  double currentYaw_r = -atan2(d2y_r - d1y_r, d2x_r - d1x_r);
 
-  double d1x_l = cos(smartmouse::kc::BACK_ANALOG_ANGLE) * range_data.back_left + smartmouse::kc::BACK_SIDE_ANALOG_X;
-  double d2x_l = cos(smartmouse::kc::FRONT_ANALOG_ANGLE) * range_data.front_left + smartmouse::kc::FRONT_SIDE_ANALOG_X;
-  double d1y_l = sin(smartmouse::kc::BACK_ANALOG_ANGLE) * range_data.back_left + smartmouse::kc::BACK_SIDE_ANALOG_Y;
-  double d2y_l = sin(smartmouse::kc::FRONT_ANALOG_ANGLE) * range_data.front_left + smartmouse::kc::FRONT_SIDE_ANALOG_Y;
-  double currentYaw_l = atan2(d2y_l - d1y_l, d2x_l - d1x_l);
-
-  double d1x_r = cos(smartmouse::kc::BACK_ANALOG_ANGLE) * range_data.back_right + smartmouse::kc::BACK_SIDE_ANALOG_X;
-  double d2x_r = cos(smartmouse::kc::FRONT_ANALOG_ANGLE) * range_data.front_right + smartmouse::kc::FRONT_SIDE_ANALOG_X;
-  double d1y_r = sin(smartmouse::kc::BACK_ANALOG_ANGLE) * range_data.back_right + smartmouse::kc::BACK_SIDE_ANALOG_Y;
-  double d2y_r = sin(smartmouse::kc::FRONT_ANALOG_ANGLE) * range_data.front_right + smartmouse::kc::FRONT_SIDE_ANALOG_Y;
-  double currentYaw_r = -atan2(d2y_r - d1y_r, d2x_r - d1x_r);
-
-  double d_to_wall_left = (d2x_l * d1y_l - d2y_l * d1x_l) / sqrt(pow(d2y_l - d1y_l, 2) + pow(d2x_l - d1x_l, 2));
-  double d_to_wall_right = (d2x_r * d1y_r - d2y_r * d1x_r) / sqrt(pow(d2y_r - d1y_r, 2) + pow(d2x_r - d1x_r, 2));
+//  double d_to_wall_right = (d2x_r * d1y_r - d2y_r * d1x_r) / sqrt(pow(d2y_r - d1y_r, 2) + pow(d2x_r - d1x_r, 2));
+  double d_to_wall_left, yaw_left;
+  double d_to_wall_right, yaw_right;
+  std::tie(d_to_wall_left, yaw_left) = smartmouse::kc::from_sensors_to_left_wall(smartmouse::kc::BACK_LEFT,
+                                                                                 smartmouse::kc::FRONT_LEFT,
+                                                                                 range_data.back_left,
+                                                                                 range_data.front_left);
+  std::tie(d_to_wall_right, yaw_right) = smartmouse::kc::from_sensors_to_right_wall(smartmouse::kc::BACK_RIGHT,
+                                                                                    smartmouse::kc::FRONT_RIGHT,
+                                                                                    range_data.back_right,
+                                                                                    range_data.front_right);
   bool sense_left_wall = range_data.front_left < smartmouse::kc::SIDE_WALL_THRESHOLD &&
       range_data.back_left < smartmouse::kc::SIDE_WALL_THRESHOLD;
   bool sense_right_wall = range_data.front_right < smartmouse::kc::SIDE_WALL_THRESHOLD &&
@@ -261,12 +262,13 @@ std::tuple<double, double, bool> KinematicController::estimate_pose(RangeData ra
 
   // consider the "logical" state of walls AND actual range reading
   if (sense_right_wall && mouse.isWallInDirection(right_of_dir(mouse.getDir()))) { // wall is on right
+    // d_to_wall_right should be positive here for this to be correct
     *offset = smartmouse::maze::UNIT_DIST_M - d_to_wall_right - smartmouse::maze::HALF_WALL_THICKNESS_M;
-    *yaw = dir_to_yaw(mouse.getDir()) + currentYaw_r;
+    *yaw = dir_to_yaw(mouse.getDir()) + yaw_right;
     *ignore_walls = false;
   } else if (sense_left_wall && mouse.isWallInDirection(left_of_dir(mouse.getDir()))) { // wall is on left
     *offset = d_to_wall_left + smartmouse::maze::HALF_WALL_THICKNESS_M;
-    *yaw = dir_to_yaw(mouse.getDir()) + currentYaw_l;
+    *yaw = dir_to_yaw(mouse.getDir()) + yaw_left;
     *ignore_walls = false;
   } else { // we're too far from any walls, use our pose estimation
     *ignore_walls = true;
@@ -295,20 +297,6 @@ void KinematicController::setSpeedCps(double left_setpoint_cps,
 void KinematicController::planTraj(Waypoints waypoints) {
   TrajectoryPlanner planner(waypoints);
   Eigen::Matrix<double, 10, 1> plan = planner.plan();
-}
-
-double distance_needed(const double v_0, const double v_f, const double a_0) {
-  constexpr double j_mag = 20;
-  const double b = a_0;
-  const double c = v_0 - v_f;
-  double j = -j_mag;
-  // if we are accelerating, j should be positive
-  if (v_f > v_0) {
-    j = j_mag;
-  }
-  const double a = 0.5 * j;
-  const double t = (-b - sqrt(std::pow(b, 2) - 4 * a * c)) / (2 * a);
-  return v_0 * t + 1 / 2 * a_0 * std::pow(t, 2) + 1 / 6 * j * std::pow(t, 3);
 }
 
 double KinematicController::fwdDisp(Direction dir, GlobalPose current_pose, GlobalPose start_pose) {
@@ -372,5 +360,31 @@ void KinematicController::setParams(double kP, double kI, double kD, double ff_s
 }
 
 double KinematicController::getCurrentForwardSpeedCUPS() {
-  return smartmouse::kc::radToCU((left_motor.velocity_rps + right_motor.velocity_rps)/2);
+  return smartmouse::kc::radToCU((left_motor.velocity_rps + right_motor.velocity_rps) / 2);
+}
+
+namespace smartmouse {
+namespace kc {
+
+const std::pair<double, double> from_sensors_to_left_wall(smartmouse::kc::SensorPose s1,
+                                                          smartmouse::kc::SensorPose s2,
+                                                          double s1_dist_m,
+                                                          double s2_dist_m) {
+  double dist;
+  double yaw;
+  std::tie(dist, yaw) = from_sensors_to_wall(s1, s2, s1_dist_m, s2_dist_m);
+  return {dist, yaw};
+};
+
+const std::pair<double, double> from_sensors_to_right_wall(smartmouse::kc::SensorPose s1,
+                                                           smartmouse::kc::SensorPose s2,
+                                                           double s1_dist_m,
+                                                           double s2_dist_m) {
+  double dist;
+  double yaw;
+  std::tie(dist, yaw) = from_sensors_to_wall(s1, s2, s1_dist_m, s2_dist_m);
+  return {dist, -yaw};
+};
+
+}
 }
