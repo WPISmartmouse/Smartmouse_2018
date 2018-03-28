@@ -34,32 +34,32 @@ void setup() {
 unsigned long m = 0;
 void loop() {
   // turn off the motors
-  analogWrite(RealMouse::MOTOR_LEFT_A, 0);
-  analogWrite(RealMouse::MOTOR_LEFT_B, 0);
-  analogWrite(RealMouse::MOTOR_RIGHT_A, 0);
-  analogWrite(RealMouse::MOTOR_RIGHT_B, 0);
+  analogWrite(RealMouse::MOTOR_LEFT_A1, 0);
+  analogWrite(RealMouse::MOTOR_LEFT_A2, 0);
+  analogWrite(RealMouse::MOTOR_RIGHT_B1, 0);
+  analogWrite(RealMouse::MOTOR_RIGHT_B2, 0);
   delay(1000);
 
   unsigned long dt_while_stationary;
   dt_while_stationary = measure();
 
   // turn on motors
-  analogWrite(RealMouse::MOTOR_LEFT_A, 0);
-  analogWrite(RealMouse::MOTOR_LEFT_B, 255);
-  analogWrite(RealMouse::MOTOR_RIGHT_A, 0);
-  analogWrite(RealMouse::MOTOR_RIGHT_B, 255);
+  analogWrite(RealMouse::MOTOR_LEFT_A1, 0);
+  analogWrite(RealMouse::MOTOR_LEFT_A2, 255);
+  analogWrite(RealMouse::MOTOR_RIGHT_B1, 0);
+  analogWrite(RealMouse::MOTOR_RIGHT_B2, 255);
   delay(1000);
 
   // measure again
   unsigned long dt_while_moving;
 
-  int32_t l_enc0 = mouse->left_encoder.read();
-  int32_t r_enc0 = mouse->right_encoder.read();
+  int32_t l_enc0 = mouse->left_encoder.getRotation();
+  int32_t r_enc0 = mouse->right_encoder.getRotation();
 
   dt_while_moving = measure();
 
-  auto d_l = (mouse->left_encoder.read() - l_enc0);
-  auto d_r =  (mouse->right_encoder.read() - r_enc0);
+  auto d_l = (mouse->left_encoder.getRotation() - l_enc0);
+  auto d_r =  (mouse->right_encoder.getRotation() - r_enc0);
   auto dticks_while_moving = d_l + d_r;
 
   float micros_per_tick = (float)(dt_while_moving - dt_while_stationary) / dticks_while_moving;

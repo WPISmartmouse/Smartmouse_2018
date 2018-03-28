@@ -7,10 +7,9 @@
 #include <common/commands/SolveCommand.h>
 
 ArduinoTimer timer;
-AbstractMaze maze;
 Scheduler *scheduler;
 RealMouse *mouse;
-unsigned long last_t, last_blink;
+unsigned long last_t_us, last_blink;
 bool done = false;
 bool on = true;
 bool paused = false;
@@ -26,7 +25,7 @@ void setup() {
 //  scheduler = new Scheduler(new NavTestCommand());
   scheduler = new Scheduler(new SolveCommand(new Flood(mouse)));
 
-  last_t = timer.programTimeMs();
+  last_t_us = timer.programTimeMs();
   last_blink = timer.programTimeMs();
 }
 
@@ -35,10 +34,10 @@ void loop() {
     int c = Serial1.read();
     if (c == (int) 'p') {
       Serial1.clear();
-      analogWrite(RealMouse::MOTOR_LEFT_A, 0);
-      analogWrite(RealMouse::MOTOR_RIGHT_A, 0);
-      analogWrite(RealMouse::MOTOR_LEFT_B, 0);
-      analogWrite(RealMouse::MOTOR_RIGHT_B, 0);
+      analogWrite(RealMouse::MOTOR_LEFT_A1, 0);
+      analogWrite(RealMouse::MOTOR_RIGHT_B1, 0);
+      analogWrite(RealMouse::MOTOR_LEFT_A2, 0);
+      analogWrite(RealMouse::MOTOR_RIGHT_B2, 0);
       paused = !paused;
     }
   }
@@ -49,7 +48,7 @@ void loop() {
   }
 
   unsigned long now = timer.programTimeMs();
-  double dt_s = (now - last_t) / 1000.0;
+  double dt_s = (now - last_t_us) / 1000.0;
 
   if (now - last_blink > 100) {
     last_blink = now;
@@ -77,5 +76,5 @@ void loop() {
     mouse->setSpeedCps(0, 0);
     digitalWrite(RealMouse::SYS_LED, 1);
   }
-  last_t = now;
+  last_t_us = now;
 }

@@ -22,8 +22,8 @@ void Finish::execute() {
     } else {
       digitalWrite(pin_id, 0);
       pin_id++;
-      if (pin_id > RealMouse::LED_8) {
-        pin_id = RealMouse::LED_1;
+      if (pin_id > RealMouse::LED_1) {
+        pin_id = RealMouse::LED_2;
       }
     }
   }

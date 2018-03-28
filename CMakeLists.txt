@@ -51,6 +51,10 @@ if (NOT ${BUILD_SIM})
   target_compile_definitions(main PRIVATE PROFILE)
 
   set(mains
+      real/main/as5048a_test.cpp
+      real/main/analog_test.cpp
+      real/main/execute_velocity_profile.cpp
+      real/main/motor_and_battery_test.cpp
       real/main/profile_encoders.cpp
       real/main/measure_motor_response.cpp
       real/main/measure_w_freq_res_changes.cpp
@@ -61,10 +65,6 @@ if (NOT ${BUILD_SIM})
     add_teensy_executable(${main_target} ${main} ${COM_SRC} ${CORE_COM_SRC} ${REAL_SRC} ${REAL_LIBS_SRC})
     set_target_properties(${main_target} PROPERTIES COMPILE_FLAGS "-include ${UTIL_HEADER}")
   endforeach ()
-
-  add_teensy_executable(as5048_test real/main/as5048a_test.cpp ${REAL_LIBS_SRC})
-  set_target_properties(as5048_test PROPERTIES COMPILE_FLAGS "-include ${UTIL_HEADER}")
-#  target_compile_definitions(as5048_test PRIVATE AS5048A_DEBUG)
 
 else ()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-unknown-pragmas")

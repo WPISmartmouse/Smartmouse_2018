@@ -4,3 +4,7 @@
 unsigned long ArduinoTimer::programTimeMs() {
   return millis();
 }
+
+unsigned long ArduinoTimer::programTimeUs() {
+  return micros();
+}

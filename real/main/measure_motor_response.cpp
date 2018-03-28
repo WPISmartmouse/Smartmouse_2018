@@ -16,10 +16,10 @@ unsigned long m = 0;
 
 void loop() {
   // turn off the motors
-  analogWrite(RealMouse::MOTOR_LEFT_A, 0);
-  analogWrite(RealMouse::MOTOR_LEFT_B, 0);
-  analogWrite(RealMouse::MOTOR_RIGHT_A, 0);
-  analogWrite(RealMouse::MOTOR_RIGHT_B, 0);
+  analogWrite(RealMouse::MOTOR_LEFT_A1, 0);
+  analogWrite(RealMouse::MOTOR_LEFT_A2, 0);
+  analogWrite(RealMouse::MOTOR_RIGHT_B1, 0);
+  analogWrite(RealMouse::MOTOR_RIGHT_B2, 0);
   delay(1000);
 
   // turn on left motor for split second
@@ -32,18 +32,18 @@ void loop() {
     auto m1 = static_cast<int>(sin(t) * 255);
     auto m2 = static_cast<int>(sin(t) * 255);
     if (m1 > 0) {
-      analogWrite(RealMouse::MOTOR_LEFT_A,m1);
-      analogWrite(RealMouse::MOTOR_LEFT_B, 0);
+      analogWrite(RealMouse::MOTOR_LEFT_A1,m1);
+      analogWrite(RealMouse::MOTOR_LEFT_A2, 0);
     } else {
-      analogWrite(RealMouse::MOTOR_LEFT_A, 0);
-      analogWrite(RealMouse::MOTOR_LEFT_B, -m1);
+      analogWrite(RealMouse::MOTOR_LEFT_A1, 0);
+      analogWrite(RealMouse::MOTOR_LEFT_A2, -m1);
     }
     if (m2 > 0) {
-      analogWrite(RealMouse::MOTOR_RIGHT_A,m2);
-      analogWrite(RealMouse::MOTOR_RIGHT_B, 0);
+      analogWrite(RealMouse::MOTOR_RIGHT_B1,m2);
+      analogWrite(RealMouse::MOTOR_RIGHT_B2, 0);
     } else {
-      analogWrite(RealMouse::MOTOR_RIGHT_A, 0);
-      analogWrite(RealMouse::MOTOR_RIGHT_B, -m2);
+      analogWrite(RealMouse::MOTOR_RIGHT_B1, 0);
+      analogWrite(RealMouse::MOTOR_RIGHT_B2, -m2);
     }
 
     int32_t l_enc = mouse->left_encoder.read();
@@ -52,10 +52,10 @@ void loop() {
     delayMicroseconds(10);
   }
 
-  analogWrite(RealMouse::MOTOR_LEFT_A, 0);
-  analogWrite(RealMouse::MOTOR_LEFT_B, 0);
-  analogWrite(RealMouse::MOTOR_RIGHT_A, 0);
-  analogWrite(RealMouse::MOTOR_RIGHT_B, 0);
+  analogWrite(RealMouse::MOTOR_LEFT_A1, 0);
+  analogWrite(RealMouse::MOTOR_LEFT_A2, 0);
+  analogWrite(RealMouse::MOTOR_RIGHT_B1, 0);
+  analogWrite(RealMouse::MOTOR_RIGHT_B2, 0);
 
   delay(10 * 1000);
 }

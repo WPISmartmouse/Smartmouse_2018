@@ -1,7 +1,7 @@
 #include <real/RealMouse.h>
 #include <real/commands/Forward.h>
 
-Forward::Forward() : Command("Forward"), mouse(RealMouse::inst()) {}
+Forward::Forward() : Command("Forward"), mouse(RealMouse::inst()), profile(nullptr) {}
 
 
 void Forward::initialize() {
@@ -10,7 +10,6 @@ void Forward::initialize() {
   const double v0 = mouse->kinematic_controller.getCurrentForwardSpeedCUPS();
   const double vf = smartmouse::kc::kVf;
   profile = new smartmouse::kc::VelocityProfile(start, {goal_disp, v0, vf});
-//  mouse->kinematic_controller.start(start, KinematicController::dispToNextEdge(mouse));
   digitalWrite(RealMouse::LED_1, 1);
 }
 

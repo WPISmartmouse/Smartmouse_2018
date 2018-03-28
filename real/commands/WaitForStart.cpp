@@ -13,15 +13,15 @@ WaitForStart::WaitForStart() : CommandGroup("wait_calibrate"), mouse(RealMouse::
 }
 
 void WaitForStart::initialize() {
-  init_ticks_left = mouse->left_encoder.read();
-  init_ticks_right = mouse->right_encoder.read();
+  init_ticks_left = mouse->left_encoder.getRotation();
+  init_ticks_right = mouse->right_encoder.getRotation();
 }
 
 void WaitForStart::execute() {
   CommandGroup::execute();
 
   // Set the max speed of the robot based on the right wheel
-  double percent_speed = fmod(mouse->left_encoder.read() - init_ticks_left, 1024) / 1024;
+  double percent_speed = fmod(mouse->left_encoder.getRotation() - init_ticks_left, 1024) / 1024;
   speed =  percent_speed * smartmouse::kc::MAX_HARDWARE_SPEED_MPS;
 
   int idx = percent_speed * 100 / 7;
@@ -34,11 +34,11 @@ void WaitForStart::execute() {
   }
 
   // Set arc turn on or off based on left wheel
-  smartmouse::kc::ARC_TURN = fmod(fabs(mouse->right_encoder.read() - init_ticks_right), 200) > 100;
+  smartmouse::kc::ARC_TURN = fmod(fabs(mouse->right_encoder.getRotation() - init_ticks_right), 200) > 100;
   if (smartmouse::kc::ARC_TURN) {
-    digitalWrite(RealMouse::LED_8, 1);
+    digitalWrite(RealMouse::LED_1, 1);
   } else {
-    digitalWrite(RealMouse::LED_8, 0);
+    digitalWrite(RealMouse::LED_1, 0);
   }
 }
 

@@ -16,17 +16,17 @@ const int HIGHEST_SUPPORTED_RES = 16;
 RealMouse *mouse;
 
 void setAllMotors(int value) {
-  analogWrite(RealMouse::MOTOR_LEFT_A, value);
-  analogWrite(RealMouse::MOTOR_LEFT_B, 0);
-  analogWrite(RealMouse::MOTOR_RIGHT_A, value);
-  analogWrite(RealMouse::MOTOR_RIGHT_B, 0);
+  analogWrite(RealMouse::MOTOR_LEFT_A1, value);
+  analogWrite(RealMouse::MOTOR_LEFT_A2, 0);
+  analogWrite(RealMouse::MOTOR_RIGHT_B1, value);
+  analogWrite(RealMouse::MOTOR_RIGHT_B2, 0);
 }
 
 void setup() {
   mouse = RealMouse::inst();
   mouse->setup();
-  analogWriteFrequency(RealMouse::MOTOR_LEFT_A, 2600);
-  analogWriteFrequency(RealMouse::MOTOR_LEFT_B, 2600);
+  analogWriteFrequency(RealMouse::MOTOR_LEFT_A1, 2600);
+  analogWriteFrequency(RealMouse::MOTOR_LEFT_A2, 2600);
 }
 
 unsigned long m = 0;
@@ -44,10 +44,10 @@ void loop() {
       for (unsigned int freqMultiplier = 1; freqMultiplier < 5; freqMultiplier++) {
         float freq = DEFAULT_FREQ * freqMultiplier;
         print("%d,%f,%f,", res, freq, value);
-        analogWriteFrequency(RealMouse::MOTOR_LEFT_A, freq);
-        analogWriteFrequency(RealMouse::MOTOR_LEFT_B, freq);
-        analogWriteFrequency(RealMouse::MOTOR_RIGHT_A, freq);
-        analogWriteFrequency(RealMouse::MOTOR_RIGHT_B, freq);
+        analogWriteFrequency(RealMouse::MOTOR_LEFT_A1, freq);
+        analogWriteFrequency(RealMouse::MOTOR_LEFT_A2, freq);
+        analogWriteFrequency(RealMouse::MOTOR_RIGHT_B1, freq);
+        analogWriteFrequency(RealMouse::MOTOR_RIGHT_B2, freq);
         int32_t l_enc_initial = mouse->left_encoder.read();
         int32_t r_enc_initial = mouse->right_encoder.read();
         setAllMotors(static_cast<int>(value));

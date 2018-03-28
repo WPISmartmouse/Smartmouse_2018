@@ -1,8 +1,7 @@
 #include <real/RealMouse.h>
 #include "ForwardN.h"
 
-ForwardN::ForwardN(unsigned int n) : Command("Forward"), mouse(RealMouse::inst()), n(n) {}
-
+ForwardN::ForwardN(unsigned int n) : Command("Forward"), mouse(RealMouse::inst()), n(n), profile(nullptr) {}
 
 void ForwardN::initialize() {
   start = mouse->getGlobalPose();
