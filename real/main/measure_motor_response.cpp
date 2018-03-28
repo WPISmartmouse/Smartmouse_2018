@@ -46,8 +46,8 @@ void loop() {
       analogWrite(RealMouse::MOTOR_RIGHT_B2, -m2);
     }
 
-    int32_t l_enc = mouse->left_encoder.read();
-    int32_t r_enc = mouse->right_encoder.read();
+    int l_enc = mouse->left_encoder.getRotation();
+    int r_enc = mouse->right_encoder.getRotation();
     print("%u,%i,%i\r\n", micros(), l_enc, r_enc);
     delayMicroseconds(10);
   }

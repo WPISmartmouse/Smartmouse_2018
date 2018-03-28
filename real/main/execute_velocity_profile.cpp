@@ -14,7 +14,7 @@ RealMouse *mouse;
 unsigned long last_t_us, last_blink_us;
 bool done = false;
 bool on = true;
-smartmouse::kc::VelocityProfile profile;
+smartmouse::kc::VelocityProfile *profile;
 
 void setup() {
   delay(1000);
@@ -28,7 +28,7 @@ void setup() {
   last_blink_us = timer.programTimeUs();
 
   GlobalPose start(0, 0, 0);
-  profile = smartmouse::kc::VelocityProfile(start, {1, 0, 0});
+  profile = new smartmouse::kc::VelocityProfile(start, {1, 0, 0});
 }
 
 void loop() {
@@ -51,7 +51,7 @@ void loop() {
   // time since start of the motion in seconds
   // since this program only does this once it's just millis converted to seconds
   double t_s = static_cast<double>(millis()) / 1000.0;
-  double v = profile.compute_forward_velocity(t_s);
+  double v = profile->compute_forward_velocity(t_s);
   mouse->setSpeedCps(v, v);
 
   last_t_us = now_us;

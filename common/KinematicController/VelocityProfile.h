@@ -13,7 +13,6 @@ constexpr double kVf = 1.5;
 class VelocityProfile {
  public:
 
-  VelocityProfile() = default;
   VelocityProfile(GlobalPose start_pose, const VelocityProfileTiming timing);
 
   std::pair<double, double> drive_straight_wheel_velocities(Mouse &mouse, double t_s);

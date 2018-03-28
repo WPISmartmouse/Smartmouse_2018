@@ -48,16 +48,16 @@ void loop() {
         analogWriteFrequency(RealMouse::MOTOR_LEFT_A2, freq);
         analogWriteFrequency(RealMouse::MOTOR_RIGHT_B1, freq);
         analogWriteFrequency(RealMouse::MOTOR_RIGHT_B2, freq);
-        int32_t l_enc_initial = mouse->left_encoder.read();
-        int32_t r_enc_initial = mouse->right_encoder.read();
+        int l_enc_initial = mouse->left_encoder.getRotation();
+        int r_enc_initial = mouse->right_encoder.getRotation();
         setAllMotors(static_cast<int>(value));
         delay(500);
-        int32_t l_enc_mid = mouse->left_encoder.read();
-        int32_t r_enc_mid = mouse->right_encoder.read();
+        int l_enc_mid = mouse->left_encoder.getRotation();
+        int r_enc_mid = mouse->right_encoder.getRotation();
         setAllMotors(static_cast<int>(value + 1));
         delay(500);
-        int32_t dl_enc = (mouse->left_encoder.read() - l_enc_mid) - (l_enc_mid - l_enc_initial);
-        int32_t dr_enc = (mouse->right_encoder.read() - r_enc_mid) - (r_enc_mid - r_enc_initial);
+        int dl_enc = (mouse->left_encoder.getRotation() - l_enc_mid) - (l_enc_mid - l_enc_initial);
+        int dr_enc = (mouse->right_encoder.getRotation() - r_enc_mid) - (r_enc_mid - r_enc_initial);
         print("%d,%d\r\n", dl_enc, dr_enc);
       }
     }
