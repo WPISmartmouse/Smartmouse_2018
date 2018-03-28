@@ -59,8 +59,10 @@ void SimMouse::robotSimStateCallback(const smartmouse::msgs::RobotSimState &msg)
   true_pose.col = msg.p().col();
   true_pose.yaw = msg.p().yaw();
 
-  this->left_wheel_angle_rad = msg.left_wheel().theta();
-  this->right_wheel_angle_rad = msg.right_wheel().theta();
+  // angle should be measured from virtual encoders
+  // we can do this by taking the true angle and limiting it with the resolution of our encoders
+  this->left_wheel_angle_rad = tick_to_rad(rad_to_tick(msg.left_wheel().theta()));
+  this->right_wheel_angle_rad = tick_to_rad(rad_to_tick(msg.right_wheel().theta()));
 
   this->range_data.front_left = msg.front_left();
   this->range_data.front_right = msg.front_right();
