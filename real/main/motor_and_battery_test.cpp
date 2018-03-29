@@ -1,9 +1,3 @@
-/**
- * Test the AS5048A library with the evaluation boards
- *
- * YOU MUST WIRE THIS IN THREE WIRE MODE!!!!
- */
-
 #include <RealMouse.h>
 #include <common/commanduino/Command.h>
 #include <common/commanduino/Scheduler.h>
@@ -22,8 +16,6 @@ void setup() {
   mouse = RealMouse::inst();
   mouse->setup();
 
-  mouse->kinematic_controller.enabled = false;
-
   last_t_us = timer.programTimeUs();
   last_blink_us = timer.programTimeUs();
 
@@ -40,14 +32,16 @@ void loop() {
     on = !on;
   }
 
-  Serial.println(analogRead(A14));
-
   // minimum period of main loop
-  if (dt_us < 1500) {
+  if (dt_us < 2000) {
     return;
   }
 
   mouse->run(dt_us / 1e6);
+  double vl, vr;
+  std::tie(vl, vr) = mouse->getWheelVelocities();
+
+  print("%0.3f, %0.3f\r\n", vl, vr);
 
   mouse->setSpeedCps(1, 0);
 

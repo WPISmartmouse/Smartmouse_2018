@@ -26,13 +26,14 @@ public:
     return ticks * smartmouse::kc::RAD_PER_TICK;
   }
 
-  static const unsigned int FRONT_RIGHT_ANALOG_PIN = A18;
-  static const unsigned int BACK_RIGHT_ANALOG_PIN = A14;
+  static const unsigned int BACK_LEFT_ANALOG_PIN = A14;
+  static const unsigned int FRONT_RIGHT_ANALOG_PIN = A15;
   static const unsigned int FRONT_ANALOG_PIN = A16;
-  static const unsigned int FRONT_LEFT_ANALOG_PIN = A17;
-  static const unsigned int BACK_LEFT_ANALOG_PIN = A15;
-  static const unsigned int GERALD_LEFT_ANALOG_PIN = A20;
+  static const unsigned int GERALD_LEFT_ANALOG_PIN = A17;
+  static const unsigned int FRONT_LEFT_ANALOG_PIN = A18;
   static const unsigned int GERALD_RIGHT_ANALOG_PIN = A19;
+  static const unsigned int BACK_RIGHT_ANALOG_PIN = A20;
+  static const unsigned int BATTERY_ANALOG_PIN = A21;
 
   // TODO: remove these and use new SPI encoders
   static const unsigned int LEFT_ENCODER_CS = 9;
@@ -70,6 +71,8 @@ public:
 
   void setSpeedCps(double l_mps, double r_mps);
 
+  double checkVoltage();
+
   /** runs setup things like pin initializes */
   void setup();
 
@@ -79,7 +82,7 @@ public:
   double left_angle_rad;
   double right_angle_rad;
 
-private:
+ private:
   RealMouse();
 
   static RealMouse *instance;

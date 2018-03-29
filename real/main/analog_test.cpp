@@ -5,6 +5,7 @@
  */
 
 #include <Arduino.h>
+#include <RealMouse.h>
 
 void setup() {
   analogReadResolution(13);
@@ -14,6 +15,13 @@ void setup() {
 }
 
 void loop() {
-  delayMicroseconds(1500);
-  Serial.println(analogRead(A9));
+  delay(2);
+  print("%04i, %04i, %04i, %04i, %04i, %04i, %04i\r\n",
+        analogRead(RealMouse::BACK_LEFT_ANALOG_PIN),
+        analogRead(RealMouse::FRONT_LEFT_ANALOG_PIN),
+        analogRead(RealMouse::GERALD_LEFT_ANALOG_PIN),
+        analogRead(RealMouse::FRONT_ANALOG_PIN),
+        analogRead(RealMouse::GERALD_RIGHT_ANALOG_PIN),
+        analogRead(RealMouse::FRONT_RIGHT_ANALOG_PIN),
+        analogRead(RealMouse::BACK_RIGHT_ANALOG_PIN));
 }

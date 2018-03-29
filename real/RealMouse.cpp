@@ -194,3 +194,17 @@ void RealMouse::resetToStartPose() {
 void RealMouse::setSpeedCps(double l_cps, double r_cps) {
   kinematic_controller.setSpeedCps(l_cps, r_cps);
 }
+
+double RealMouse::checkVoltage() {
+  // 3.2v is max and 2.7v is min
+  int a = analogRead(BATTERY_ANALOG_PIN);
+  double voltage = a / std::pow(2, 13) * 3.3;
+
+  if (voltage < 2.7) {
+    print("VOLTAGE IS TOO LOW. CHARGE THE BATTERY!!!\r\n");
+  } else if (voltage < 3.2) {
+    print("VOLTAGE IS TOO HIGH. SHE'S GONNA BLOW!!!\r\n");
+  }
+
+  return voltage;
+}

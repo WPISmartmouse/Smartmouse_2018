@@ -5,6 +5,7 @@
 #include <common/core/util.h>
 #include <common/core/Flood.h>
 #include <common/commands/SolveCommand.h>
+#include <real/commands/BatteryMonitor.h>
 
 ArduinoTimer timer;
 Scheduler *scheduler;
@@ -24,6 +25,7 @@ void setup() {
 
 //  scheduler = new Scheduler(new NavTestCommand());
   scheduler = new Scheduler(new SolveCommand(new Flood(mouse)));
+  scheduler->addCommand(new BatteryMonitor());
 
   last_t_us = timer.programTimeMs();
   last_blink = timer.programTimeMs();
