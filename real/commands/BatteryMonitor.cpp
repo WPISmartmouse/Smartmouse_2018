@@ -2,11 +2,11 @@
 
 BatteryMonitor::BatteryMonitor() : Command("battery monitor"), mouse(RealMouse::inst()){}
 
-void BatteryMonitor::Execute() {
+void BatteryMonitor::execute() {
   // this will print error messages if anything is wrong;
   mouse->checkVoltage();
 }
 
-bool BatteryMonitor::IsFinished() {
+bool BatteryMonitor::isFinished() {
   return false;
 }

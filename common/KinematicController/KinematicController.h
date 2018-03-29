@@ -17,8 +17,8 @@ constexpr std::pair<double, double> from_sensors_to_wall(smartmouse::kc::SensorP
                                                          double s1_dist_m,
                                                          double s2_dist_m) {
   const double d1x = cos(s1.angle) * s1_dist_m + s1.x;
-  const double d2x = cos(s2.angle) * s2_dist_m + s2.x;
   const double d1y = sin(s1.angle) * s1_dist_m + s1.y;
+  const double d2x = cos(s2.angle) * s2_dist_m + s2.x;
   const double d2y = sin(s2.angle) * s2_dist_m + s2.y;
   const double yaw = -atan2(d2y - d1y, d2x - d1x);
   // distance from point to line:

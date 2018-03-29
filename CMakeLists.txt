@@ -56,6 +56,6 @@ else ()
   if (BUILD_SIM)
     add_subdirectory(sim)
   endif ()
-endif ()
 
-add_subdirectory(tools)
+  add_subdirectory(tools)
+endif ()

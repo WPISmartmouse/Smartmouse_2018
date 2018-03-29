@@ -7,9 +7,9 @@ class BatteryMonitor : public Command {
  public:
   BatteryMonitor();
 
-  void Execute();
+  void execute();
 
-  bool IsFinished();
+  bool isFinished();
 
  private:
   RealMouse *mouse;

@@ -26,6 +26,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 // was derived from:
 // http://forum.arduino.cc/index.php?PHPSESSID=a86gv50nb3e3ireijfmli63260&topic=144446.msg1089371#msg1089371
 
+#pragma once
+
 // Disable debug asserts.
 #define EIGEN_NO_DEBUG 1
 
@@ -54,7 +56,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 #endif
 
 namespace std {
-	struct nothrow_t;
+struct nothrow_t;
 }
 
 // Include main EIGEN Core header

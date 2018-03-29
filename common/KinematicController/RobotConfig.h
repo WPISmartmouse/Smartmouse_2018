@@ -7,8 +7,6 @@ namespace smartmouse {
 namespace kc {
 
 struct SensorPose {
-  SensorPose() = delete;
-
   double x;
   double y;
   double angle;
