@@ -36,7 +36,10 @@ TEST(ForwardKinematicsTest, half_ccw_turn_one_second) {
 }
 
 TEST(ForwardKinematicsTest, cw_turn_one_second) {
-  GlobalPose d_pose = KinematicController::forwardKinematics(smartmouse::kc::TRACK_WIDTH_CU * M_PI, -smartmouse::kc::TRACK_WIDTH_CU * M_PI, 0, 1);
+  GlobalPose d_pose = KinematicController::forwardKinematics(smartmouse::kc::TRACK_WIDTH_CU * M_PI,
+                                                             -smartmouse::kc::TRACK_WIDTH_CU * M_PI,
+                                                             0,
+                                                             1);
 
   EXPECT_NEAR(d_pose.col, 0, 1e-9);
   EXPECT_NEAR(d_pose.row, 0, 1e-9);
@@ -44,7 +47,10 @@ TEST(ForwardKinematicsTest, cw_turn_one_second) {
 }
 
 TEST(ForwardKinematicsTest, ccw_turn_one_second) {
-  GlobalPose d_pose = KinematicController::forwardKinematics(-smartmouse::kc::TRACK_WIDTH_CU * M_PI, smartmouse::kc::TRACK_WIDTH_CU * M_PI, 0, 1);
+  GlobalPose d_pose = KinematicController::forwardKinematics(-smartmouse::kc::TRACK_WIDTH_CU * M_PI,
+                                                             smartmouse::kc::TRACK_WIDTH_CU * M_PI,
+                                                             0,
+                                                             1);
 
   EXPECT_NEAR(d_pose.col, 0, 1e-9);
   EXPECT_NEAR(d_pose.row, 0, 1e-9);
@@ -77,6 +83,57 @@ TEST(YawDiffTest, taw_diff_6) {
 
 TEST(YawDiffTest, taw_diff_7) {
   EXPECT_NEAR(smartmouse::math::yaw_diff(M_PI - 0.1, -M_PI + 0.1), 0.2, 1e-6);
+}
+
+TEST(FromSensorsToWallTest, from_sensors_to_wall_left_1) {
+  // negative is counter clockwise--see dynamic_model pdf for justification
+  smartmouse::kc::SensorPose back_left{-1, 0, -M_PI_2};
+  smartmouse::kc::SensorPose front_left{1, 0, -M_PI_2};
+  double d;
+  std::tie(d, std::ignore) = smartmouse::kc::from_sensors_to_left_wall(back_left, front_left, 1, 1);
+  EXPECT_NEAR(d, 1, 1e-6);
+}
+
+TEST(FromSensorsToWallTest, from_sensors_to_wall_left_2) {
+  // TODO: negatives
+  smartmouse::kc::SensorPose back_left{1, 0, -M_PI_2};
+  smartmouse::kc::SensorPose front_left{2, -0.5, -M_PI_2};
+  double d;
+  std::tie(d, std::ignore) = smartmouse::kc::from_sensors_to_left_wall(back_left, front_left, 1, 0.5);
+  EXPECT_NEAR(d, 1, 1e-6);
+}
+
+TEST(FromSensorsToWallTest, from_sensors_to_wall_left_3) {
+  smartmouse::kc::SensorPose back_left{-sqrt(2), 0, -M_PI_4};
+  smartmouse::kc::SensorPose front_left{sqrt(2), 0, -M_PI_4};
+  double d;
+  std::tie(d, std::ignore) = smartmouse::kc::from_sensors_to_left_wall(back_left, front_left, 3, 1);
+  EXPECT_NEAR(d, 2, 1e-6);
+}
+
+TEST(FromSensorsToWallTest, from_sensors_to_wall_right_1) {
+  smartmouse::kc::SensorPose back_right{-1, 0, M_PI_2};
+  smartmouse::kc::SensorPose front_right{1, 0, M_PI_2};
+  double d;
+  std::tie(d, std::ignore) = smartmouse::kc::from_sensors_to_right_wall(back_right, front_right, 1, 1);
+  EXPECT_NEAR(d, 1, 1e-6);
+}
+
+TEST(FromSensorsToWallTest, from_sensors_to_wall_right_2) {
+  // TODO: negatives
+  smartmouse::kc::SensorPose back_right{1, 0, M_PI_2};
+  smartmouse::kc::SensorPose front_right{2, 0.5, M_PI_2};
+  double d;
+  std::tie(d, std::ignore) = smartmouse::kc::from_sensors_to_right_wall(back_right, front_right, 1, 0.5);
+  EXPECT_NEAR(d, 1, 1e-6);
+}
+
+TEST(FromSensorsToWallTest, from_sensors_to_wall_right_3) {
+  smartmouse::kc::SensorPose back_right{-sqrt(2), 0, M_PI_4};
+  smartmouse::kc::SensorPose front_right{sqrt(2), 0, M_PI_4};
+  double d;
+  std::tie(d, std::ignore) = smartmouse::kc::from_sensors_to_right_wall(back_right, front_right, 3, 1);
+  EXPECT_NEAR(d, 2, 1e-6);
 }
 
 int main(int argc, char **argv) {
