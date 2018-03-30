@@ -36,6 +36,7 @@ public:
   static const unsigned int BATTERY_ANALOG_PIN = A21;
 
   // TODO: remove these and use new SPI encoders
+  static const unsigned int MOSI = 11;
   static const unsigned int LEFT_ENCODER_CS = 9;
   static const unsigned int RIGHT_ENCODER_CS = 10;
 

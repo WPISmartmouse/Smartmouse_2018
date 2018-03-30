@@ -7,15 +7,19 @@
 #include <Arduino.h>
 #include <AS5048A.h>
 
-AS5048A angleSensor(10);
+AS5048A left(9);
+AS5048A right(10);
 
 void setup() {
-  angleSensor.init();
+  left.init();
+  right.init();
   Serial.begin(0);
+  pinMode(11, OUTPUT);
+  digitalWrite(11, HIGH);
 }
 
 void loop() {
-  word val = angleSensor.getRawRotation();
-  Serial.print("Rotation of: 0x");
-  Serial.println(val, HEX);
+  word l = left.getRawRotation();
+  word r = right.getRawRotation();
+  print("%d, %d\r\n", l, r);
 }

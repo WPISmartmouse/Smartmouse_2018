@@ -193,10 +193,11 @@ word AS5048A::read(word registerAddress) {
   SPI.beginTransaction(settings);
 
   //Send the command
-  digitalWrite(_cs, LOW);
-  SPI.transfer(left_byte);
-  SPI.transfer(right_byte);
-  digitalWrite(_cs, HIGH);
+  // TODO: Figure out why this is wrong?
+//  digitalWrite(_cs, LOW);
+//  SPI.transfer(left_byte);
+//  SPI.transfer(right_byte);
+//  digitalWrite(_cs, HIGH);
 
   //Now read the response
   digitalWrite(_cs, LOW);

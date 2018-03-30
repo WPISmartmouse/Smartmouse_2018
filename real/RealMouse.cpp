@@ -163,6 +163,8 @@ void RealMouse::setup() {
 
   left_encoder.init();
   right_encoder.init();
+  // pull MOSI high to run encoders in 3 wire mode
+  digitalWrite(MOSI, HIGH);
 
 //  analogWriteFrequency(MOTOR_LEFT_A1, 1831.055);
 //  analogWriteFrequency(MOTOR_LEFT_A2, 1831.055);
