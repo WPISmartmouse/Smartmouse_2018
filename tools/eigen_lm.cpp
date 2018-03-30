@@ -118,25 +118,36 @@ void testCalibrationFun() {
   std::cout << "Testing the Calibration function..." << std::endl;
   // initial gues of parameters
   Eigen::VectorXd xInit(smartmouse::kc::kSensors * smartmouse::kc::kParamsPerSensor);
-  xInit << 20, 1, 0,
-      20, 1, 0,
-      20, 1, 0,
-      20, 1, 0,
-      20, 1, 0,
-      20, 1, 0;
+  xInit << 1, 1, 0.005,
+      1, 1, 0.005,
+      1, 1, 0.005,
+      1, 1, 0.005,
+      1, 1, 0.005,
+      1, 1, 0.005;
   std::cout << "xInit: " << xInit.transpose() << std::endl;
   std::cout << "soln: [25, 1, 0.005]" << std::endl;
 
-  smartmouse::kc::SensorVector sample;
-  sample << 508, 459, 302, 143, 424, 508;
-
-  smartmouse::kc::CalibrationFunctor functor(sample);
+  smartmouse::kc::SampleMatrix samples;
+  samples(0, 0) = 508;
+  samples(0, 1) = 459;
+  samples(0, 2) = 302;
+  samples(0, 3) = 143;
+  samples(0, 4) = 424;
+  samples(0, 5) = 508;
+  samples(1, 0) = 508;
+  samples(1, 1) = 459;
+  samples(1, 2) = 302;
+  samples(1, 3) = 143;
+  samples(1, 4) = 424;
+  samples(1, 5) = 508;
+  smartmouse::kc::CalibrationFunctor functor(samples);
   Eigen::NumericalDiff<smartmouse::kc::CalibrationFunctor> numDiff(functor);
   Eigen::LevenbergMarquardt<Eigen::NumericalDiff<smartmouse::kc::CalibrationFunctor>, double> lm(numDiff);
   lm.parameters.maxfev = 1000;
   lm.parameters.xtol = 1.0e-10;
   std::cout << "max fun eval: " << lm.parameters.maxfev << std::endl;
   std::cout << "x tol: " << lm.parameters.xtol << std::endl;
+  std::cout << "f tol: " << lm.parameters.ftol << std::endl;
 
   Eigen::VectorXd z = xInit;
   int ret = lm.minimize(z);
