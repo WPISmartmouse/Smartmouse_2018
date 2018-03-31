@@ -30,11 +30,13 @@ def main():
         return
 
     # load data
+    MAX_DIST = 0.1
+    MIN_DIST = 0.01
     S = len(args.logs)
     N = args.samples_per_interval
     D = args.number_of_distances
     distances = np.arange(D, 0, -1) * args.spacing
-    distances[0] = 0.2
+    distances[0] = MAX_DIST
 
     data = np.ndarray((len(args.logs), D, N))
     for i, (column, log) in enumerate(zip(args.columns, args.logs)):
@@ -49,6 +51,7 @@ def main():
     # fit our model Y=a*X^b+c for each sensor
     params = np.ndarray((S, 3))
     model_errors = np.ndarray((S, D-4))
+    model_predictions = np.ndarray((S, D-4))
     print("|sensor|a|b|c|stddev|")
     print("|------|-|-|-|------|")
     for i, m in enumerate(means):
@@ -57,9 +60,11 @@ def main():
         m = clip(m)
         d = clip(distances)
         p, _ = optimize.curve_fit(sensor_model, m, d, maxfev=10000)
-        model_error = sensor_model(m, *p) - d
+        model_prediction = sensor_model(m, *p)
+        model_error = model_prediction - d
         print("|{:s}|{:0.6f}|{:0.6f}|{:0.6f}|".format(args.logs[i].strip(".csv"), *p))
         params[i] = p
+        model_predictions[i] = model_prediction
         model_errors[i] = model_error
 
     # compute the "average" model
@@ -67,7 +72,8 @@ def main():
     average_model_errors = np.ndarray((S, D-4))
     for i, m in enumerate(means):
         m = clip(m)
-        average_model_error = model_error = sensor_model(m, *average_model_params) - d
+        average_model_prediction = sensor_model(m, *average_model_params)
+        average_model_error = average_model_prediction - d
         average_model_errors[i] = average_model_error
 
     if not args.no_plot:
@@ -84,15 +90,17 @@ def main():
         plt.plot([distances[1], distances[-3]], [0, 0], label='zero', linestyle='--')
         for average_model_error, log in zip(average_model_errors, args.logs):
             plt.plot(clip(distances), average_model_error, label=log)
-        plt.title("Error with 'Average' Model ")
+        plt.title("Error with 'Average' Model: a={:0.3f} b={:0.6f} c={:0.3f}".format(*average_model_params))
         plt.xlabel("distance")
         plt.ylabel("error (meters)")
         plt.legend()
 
         plt.figure()
-        for d, xerr, log in zip(data, ranges, args.logs):
+        for d, predictions, xerr, log in zip(data, model_predictions, ranges, args.logs):
             plt.scatter(x=d.mean(axis=1), y=distances, label=log, s=4)
             plt.errorbar(x=d.mean(axis=1), y=distances, xerr=xerr, linewidth=1)
+            #plt.scatter(x=d.mean(axis=1), y=predictions, label=log + " model", s=4)
+            plt.plot(clip(d.mean(axis=1)), predictions, label=log + " model", alpha=0.5, linestyle='--')
         plt.title("Averaged Data")
         plt.xlabel("ADC Value 0-8192")
         plt.ylabel("Distance (meters)")
