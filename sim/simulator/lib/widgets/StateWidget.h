@@ -12,6 +12,7 @@
 #include <sim/simulator/lib/widgets/AbstractTab.h>
 #include <sim/simulator/lib/widgets/PIDPlotWidget.h>
 #include <sim/simulator/lib/widgets/ControlPlotWidget.h>
+#include <sim/simulator/lib/widgets/SensorWidget.h>
 #include <sim/simulator/msgs/debug_state.pb.h>
 #include <sim/simulator/msgs/robot_command.pb.h>
 #include <sim/simulator/msgs/robot_sim_state.pb.h>
@@ -68,4 +69,5 @@ class StateWidget : public QWidget, public AbstractTab {
   Ui::StateWidget *ui_;
   PIDPlotWidget *pid_widget_;
   ControlPlotWidget *control_widget_;
+  SensorWidget *sensor_widget_;
 };
