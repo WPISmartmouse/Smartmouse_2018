@@ -51,17 +51,17 @@ void loop() {
   digitalWrite(RealMouse::LED_6, static_cast<uint8_t>(pressed));
   digitalWrite(RealMouse::LED_7, static_cast<uint8_t>(pressed));
 
-//  print("%0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f, %0.3f\r\n",
-//        mouse->checkVoltage(),
-//        vl,
-//        vr,
-//        mouse->range_data.back_left,
-//        mouse->range_data.front_left,
-//        mouse->range_data.gerald_left,
-//        mouse->range_data.front,
-//        mouse->range_data.gerald_right,
-//        mouse->range_data.front_right,
-//        mouse->range_data.back_right);
+  print("%0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f, %0.3f\r\n",
+        mouse->checkVoltage(),
+        vl,
+        vr,
+        mouse->range_data.back_left,
+        mouse->range_data.front_left,
+        mouse->range_data.gerald_left,
+        mouse->range_data.front,
+        mouse->range_data.gerald_right,
+        mouse->range_data.front_right,
+        mouse->range_data.back_right);
 
   mouse->setSpeedCps(1, 1);
 
