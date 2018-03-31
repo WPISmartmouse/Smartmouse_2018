@@ -5,6 +5,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import optimize
 
+def clip(x):
+    return x[1:-3]
+
+def sensor_model(x, a, b, c):
+    return a*pow(x, b) + c
 
 def main():
     np.warnings.simplefilter("ignore", optimize.OptimizeWarning)
@@ -47,24 +52,39 @@ def main():
     print("|sensor|a|b|c|stddev|")
     print("|------|-|-|-|------|")
     for i, m in enumerate(means):
-        def model(x, a, b, c):
-            return a*pow(x, b) + c
         # we ignore the first data point here because it doesn't have a proper distance, it's infinitly far
         # we also ignore the last three points where shit starts to go down
-        m = m[1:-3]
-        d = distances[1:-3]
-        p, _ = optimize.curve_fit(model, m, d, maxfev=10000)
-        model_error = model(m, *p) - d
+        m = clip(m)
+        d = clip(distances)
+        p, _ = optimize.curve_fit(sensor_model, m, d, maxfev=10000)
+        model_error = sensor_model(m, *p) - d
         print("|{:s}|{:0.6f}|{:0.6f}|{:0.6f}|".format(args.logs[i].strip(".csv"), *p))
         params[i] = p
         model_errors[i] = model_error
+
+    # compute the "average" model
+    average_model_params = params.mean(axis=0)
+    average_model_errors = np.ndarray((S, D-4))
+    for i, m in enumerate(means):
+        m = clip(m)
+        average_model_error = model_error = sensor_model(m, *average_model_params) - d
+        average_model_errors[i] = average_model_error
 
     if not args.no_plot:
         plt.figure()
         plt.plot([distances[1], distances[-3]], [0, 0], label='zero', linestyle='--')
         for model_error, log in zip(model_errors, args.logs):
-            plt.plot(distances[1:-3], model_error, label=log)
+            plt.plot(clip(distances), model_error, label=log)
         plt.title("Modeling Error")
+        plt.xlabel("distance")
+        plt.ylabel("error (meters)")
+        plt.legend()
+
+        plt.figure()
+        plt.plot([distances[1], distances[-3]], [0, 0], label='zero', linestyle='--')
+        for average_model_error, log in zip(average_model_errors, args.logs):
+            plt.plot(clip(distances), average_model_error, label=log)
+        plt.title("Error with 'Average' Model ")
         plt.xlabel("distance")
         plt.ylabel("error (meters)")
         plt.legend()
