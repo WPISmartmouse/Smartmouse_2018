@@ -14,8 +14,8 @@ void setup() {
   left.init();
   right.init();
   Serial.begin(0);
-  pinMode(11, OUTPUT);
-  digitalWrite(11, HIGH);
+  pinMode(MOSI, OUTPUT);
+  digitalWrite(MOSI, HIGH);
 }
 
 void loop() {

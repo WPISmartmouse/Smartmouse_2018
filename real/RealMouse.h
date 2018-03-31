@@ -82,11 +82,10 @@ public:
   IRConverter ir_converter;
   double left_angle_rad;
   double right_angle_rad;
+  RangeData range_data;
 
  private:
   RealMouse();
 
   static RealMouse *instance;
-
-  RangeData range_data;
 };

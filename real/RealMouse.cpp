@@ -125,6 +125,8 @@ void RealMouse::run(double dt_s) {
 #ifdef PROFILE
   unsigned long t2 = micros();
 #endif
+  abstract_left_force = 140;
+  abstract_right_force = 0;
   if (abstract_left_force < 0) {
     analogWrite(MOTOR_LEFT_A1, (int) -abstract_left_force);
     analogWrite(MOTOR_LEFT_A2, 0);
@@ -164,6 +166,7 @@ void RealMouse::setup() {
   left_encoder.init();
   right_encoder.init();
   // pull MOSI high to run encoders in 3 wire mode
+  pinMode(MOSI, OUTPUT);
   digitalWrite(MOSI, HIGH);
 
 //  analogWriteFrequency(MOTOR_LEFT_A1, 1831.055);
@@ -204,7 +207,7 @@ double RealMouse::checkVoltage() {
 
   if (voltage < 2.7) {
     print("VOLTAGE IS TOO LOW. CHARGE THE BATTERY!!!\r\n");
-  } else if (voltage < 3.2) {
+  } else if (voltage > 3.2) {
     print("VOLTAGE IS TOO HIGH. SHE'S GONNA BLOW!!!\r\n");
   }
 
