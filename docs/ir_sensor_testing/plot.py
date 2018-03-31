@@ -8,8 +8,12 @@ from scipy import optimize
 def clip(x):
     return x[1:-3]
 
-def sensor_model(x, a, b, c):
-    return a*pow(x, b) + c
+def sensor_model(x, a, b):
+    return -a*pow(x, b) + 180
+
+def weighting_model():
+    return np.array([1, 1, 1, 0.95, 0.8, 0.5, 0.3, 0.3, 0.5, 0.8, 0.95, 1, 1])
+
 
 def main():
     np.warnings.simplefilter("ignore", optimize.OptimizeWarning)
@@ -49,9 +53,10 @@ def main():
     ranges = np.stack((data.max(axis=2) - means, means - data.min(axis=2)), axis=1)
 
     # fit our model Y=a*X^b+c for each sensor
-    params = np.ndarray((S, 3))
+    params = np.ndarray((S, 2))
     model_errors = np.ndarray((S, D-4))
     model_predictions = np.ndarray((S, D-4))
+    initial_guess = np.array([180, 0.000244])
     print("|sensor|a|b|c|stddev|")
     print("|------|-|-|-|------|")
     for i, m in enumerate(means):
@@ -59,10 +64,11 @@ def main():
         # we also ignore the last three points where shit starts to go down
         m = clip(m)
         d = clip(distances)
-        p, _ = optimize.curve_fit(sensor_model, m, d, maxfev=10000)
+        weights = weighting_model()
+        p, _ = optimize.curve_fit(sensor_model, m, d, sigma=weights, p0=initial_guess, maxfev=100000, bounds=([150, 0],[200, 0.01]))
         model_prediction = sensor_model(m, *p)
         model_error = model_prediction - d
-        print("|{:s}|{:0.6f}|{:0.6f}|{:0.6f}|".format(args.logs[i].strip(".csv"), *p))
+        print("|{:s}|{:0.6f}|{:0.6f}|".format(args.logs[i].strip(".csv"), *p))
         params[i] = p
         model_predictions[i] = model_prediction
         model_errors[i] = model_error
@@ -90,7 +96,7 @@ def main():
         plt.plot([distances[1], distances[-3]], [0, 0], label='zero', linestyle='--')
         for average_model_error, log in zip(average_model_errors, args.logs):
             plt.plot(clip(distances), average_model_error, label=log)
-        plt.title("Error with 'Average' Model: a={:0.3f} b={:0.6f} c={:0.3f}".format(*average_model_params))
+        plt.title("Error with 'Average' Model: a={:0.3f} b={:0.6f}".format(*average_model_params))
         plt.xlabel("distance")
         plt.ylabel("error (meters)")
         plt.legend()
