@@ -57,8 +57,8 @@ def main():
     model_errors = np.ndarray((S, D-4))
     model_predictions = np.ndarray((S, D-4))
     initial_guess = np.array([180, 0.000244])
-    print("|sensor|a|b|c|stddev|")
-    print("|------|-|-|-|------|")
+    print("|sensor|a|b|")
+    print("|------|-|-|")
     for i, m in enumerate(means):
         # we ignore the first data point here because it doesn't have a proper distance, it's infinitly far
         # we also ignore the last three points where shit starts to go down
