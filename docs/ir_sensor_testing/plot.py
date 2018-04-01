@@ -24,18 +24,13 @@ def main():
     np.set_printoptions(suppress=True, precision=6)
 
     parser = argparse.ArgumentParser("plot a log file from analog_test.cpp")
-    parser.add_argument("--logs", help="csv file output form logging serial", nargs="*", required=True)
-    parser.add_argument("--columns", help="number of column to plot (0 indexed)", nargs="*", type=int, required=True)
+    parser.add_argument("logs", help="csv file output form logging serial", nargs="+")
     parser.add_argument("--no-plot", help="skip plotting", action="store_true")
     parser.add_argument("--samples-per-interval", '-n', help="number of readings at each distance", type=int, default=10)
     parser.add_argument("--number-of-distances", '-d', help="number of distances", type=int, default=17)
     parser.add_argument("--spacing", '-s', help="spacing between each interval in meters", type=float, default=0.005)
 
     args = parser.parse_args()
-
-    if len(args.logs) != len(args.columns):
-        print("you must provide one and only one column from every log")
-        return
 
     # load data
     MAX_DIST = 0.1
@@ -45,9 +40,12 @@ def main():
     D = args.number_of_distances
     distances = np.arange(D, 0, -1) * args.spacing
     distances[0] = MAX_DIST
+    columns = {"B": 0, "A": 1, "F": 2, "E": 3, "G": 4, "D": 5, "H": 6}
 
     data = np.ndarray((len(args.logs), D, N))
-    for i, (column, log) in enumerate(zip(args.columns, args.logs)):
+    for i, log in enumerate(args.logs):
+        letter = os.path.basename(log).strip(".csv")
+        column = columns[letter]
         x = np.genfromtxt(log, delimiter=', ')[:, column]
         x = x.reshape((D, N))
         data[i] = x
