@@ -44,7 +44,7 @@ motion_primitive_t Flood::planNextStep() {
       //this way commands can see this used to visualize in gazebo
       mouse->maze->path_to_next_goal = no_wall_path;
       all_wall_maze->flood_fill_from_point(&all_wall_path, mouse->getRow(), mouse->getCol(), smartmouse::maze::CENTER,
-                                                    smartmouse::maze::CENTER);
+                                           smartmouse::maze::CENTER);
       break;
     }
     case Solver::Goal::START: {
@@ -68,7 +68,11 @@ motion_primitive_t Flood::planNextStep() {
   // Walk along the no_wall_path as far as possible in the all_wall_maze
   // This will results in the longest path where we know there are no walls
   route_t nextPath = all_wall_maze->truncate(mouse->getRow(), mouse->getCol(), mouse->getDir(), no_wall_path);
-  return nextPath.at(0);
+  if (nextPath.empty()) {
+    motion_primitive_t{0, Direction::INVALID};
+  } else {
+    return nextPath.at(0);
+  }
 }
 
 route_t Flood::solve() {

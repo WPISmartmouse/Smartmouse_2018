@@ -13,54 +13,178 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
-    <widget class="QLabel" name="back_left_label">
-     <property name="text">
-      <string>TextLabel</string>
+  <layout class="QHBoxLayout" name="horizontalLayout_2">
+   <item>
+    <widget class="QGroupBox" name="estimated_group">
+     <property name="title">
+      <string>True Range (m)</string>
      </property>
+     <layout class="QFormLayout" name="formLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="true_back_left_label">
+        <property name="text">
+         <string>Back Left</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="true_back_left_edit"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="true_front_left_label">
+        <property name="text">
+         <string>Front Left</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="true_gerald_left_label">
+        <property name="text">
+         <string>Gerald Left</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="true_front_label">
+        <property name="text">
+         <string>Front</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="true_gerald_right_label">
+        <property name="text">
+         <string>Gerald Right</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="true_front_right_label">
+        <property name="text">
+         <string>Front Right</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="true_back_right_label">
+        <property name="text">
+         <string>Back Right</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="true_front_left_edit"/>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLineEdit" name="true_gerald_left_edit"/>
+      </item>
+      <item row="3" column="1">
+       <widget class="QLineEdit" name="true_front_edit"/>
+      </item>
+      <item row="4" column="1">
+       <widget class="QLineEdit" name="true_gerald_right_edit"/>
+      </item>
+      <item row="5" column="1">
+       <widget class="QLineEdit" name="true_front_right_edit"/>
+      </item>
+      <item row="6" column="1">
+       <widget class="QLineEdit" name="true_back_right_edit"/>
+      </item>
+     </layout>
     </widget>
    </item>
-   <item row="0" column="1">
-    <widget class="QLabel" name="front_left_label">
-     <property name="text">
-      <string>TextLabel</string>
+   <item>
+    <widget class="QGroupBox" name="true_group">
+     <property name="title">
+      <string>Estimated Range (m)</string>
      </property>
-    </widget>
-   </item>
-   <item row="0" column="2">
-    <widget class="QLabel" name="gerald_left_label">
-     <property name="text">
-      <string>TextLabel</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="2">
-    <widget class="QLabel" name="front_label">
-     <property name="text">
-      <string>TextLabel</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0">
-    <widget class="QLabel" name="back_right_label">
-     <property name="text">
-      <string>TextLabel</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="1">
-    <widget class="QLabel" name="front_right_label">
-     <property name="text">
-      <string>TextLabel</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="2">
-    <widget class="QLabel" name="gerald_right_label">
-     <property name="text">
-      <string>TextLabel</string>
-     </property>
+     <layout class="QFormLayout" name="formLayout_2">
+      <item row="0" column="0">
+       <widget class="QLabel" name="estimated_back_left_label">
+        <property name="text">
+         <string>Back Left</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="estimated_front_left_label">
+        <property name="text">
+         <string>Front Left</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="estimated_gerald_left_label">
+        <property name="text">
+         <string>Gerald Left</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="estimated_front_label">
+        <property name="text">
+         <string>Front</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="estimated_gerald_right_label">
+        <property name="text">
+         <string>Gerald Right</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="estimated_front_right_label">
+        <property name="text">
+         <string>Front Right</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="estimated_back_right_label">
+        <property name="text">
+         <string>Back Right</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="estimated_back_left_edit"/>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="estimated_front_left_edit"/>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLineEdit" name="estimated_gerald_left_edit"/>
+      </item>
+      <item row="3" column="1">
+       <widget class="QLineEdit" name="estimated_front_edit"/>
+      </item>
+      <item row="4" column="1">
+       <widget class="QLineEdit" name="estimated_gerald_right_edit"/>
+      </item>
+      <item row="5" column="1">
+       <widget class="QLineEdit" name="estimated_front_right_edit"/>
+      </item>
+      <item row="6" column="1">
+       <widget class="QLineEdit" name="estimated_back_right_edit"/>
+      </item>
+     </layout>
+     <zorder>estimated_group</zorder>
+     <zorder>estimated_back_left_label</zorder>
+     <zorder>estimated_front_left_label</zorder>
+     <zorder>estimated_gerald_left_label</zorder>
+     <zorder>estimated_front_label</zorder>
+     <zorder>estimated_gerald_right_label</zorder>
+     <zorder>estimated_front_right_label</zorder>
+     <zorder>estimated_back_right_label</zorder>
+     <zorder>estimated_back_left_edit</zorder>
+     <zorder>estimated_front_left_edit</zorder>
+     <zorder>estimated_gerald_left_edit</zorder>
+     <zorder>estimated_front_edit</zorder>
+     <zorder>estimated_gerald_right_edit</zorder>
+     <zorder>estimated_front_right_edit</zorder>
+     <zorder>estimated_back_right_edit</zorder>
     </widget>
    </item>
   </layout>

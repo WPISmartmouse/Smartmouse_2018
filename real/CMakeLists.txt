@@ -28,6 +28,7 @@ target_compile_definitions(main PRIVATE PROFILE)
 
 set(mains
     main/test_everything.cpp
+    main/measure_analog_curves.cpp
     main/as5048a_test.cpp
     main/analog_test.cpp
     main/execute_velocity_profile.cpp

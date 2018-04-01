@@ -64,13 +64,20 @@ void SimMouse::robotSimStateCallback(const smartmouse::msgs::RobotSimState &msg)
   this->left_wheel_angle_rad = tick_to_rad(rad_to_tick(msg.left_wheel().theta()));
   this->right_wheel_angle_rad = tick_to_rad(rad_to_tick(msg.right_wheel().theta()));
 
-  this->range_data_m.front_left = msg.front_left_m();
-  this->range_data_m.front_right = msg.front_right_m();
-  this->range_data_m.gerald_left = msg.gerald_left_m();
-  this->range_data_m.gerald_right = msg.gerald_right_m();
-  this->range_data_m.back_left = msg.back_left_m();
-  this->range_data_m.back_right = msg.back_right_m();
-  this->range_data_m.front = msg.front_m();
+  this->range_data_adc.front_left = msg.front_left_adc();
+  this->range_data_adc.front_right = msg.front_right_adc();
+  this->range_data_adc.gerald_left = msg.gerald_left_adc();
+  this->range_data_adc.gerald_right = msg.gerald_right_adc();
+  this->range_data_adc.back_left = msg.back_left_adc();
+  this->range_data_adc.back_right = msg.back_right_adc();
+  this->range_data_adc.front = msg.front_adc();
+  this->range_data_m.front_left = front_left_model.toMeters(msg.front_left_adc());
+  this->range_data_m.front_right = front_right_model.toMeters(msg.front_right_adc());
+  this->range_data_m.gerald_left = gerald_left_model.toMeters(msg.gerald_left_adc());
+  this->range_data_m.gerald_right = gerald_right_model.toMeters(msg.gerald_right_adc());
+  this->range_data_m.back_left = back_left_model.toMeters(msg.back_left_adc());
+  this->range_data_m.back_right = back_right_model.toMeters(msg.back_right_adc());
+  this->range_data_m.front = front_model.toMeters(msg.front_adc());
 
   dataCond.notify_all();
 }
@@ -117,6 +124,13 @@ void SimMouse::run() {
   state.set_left_cps_actual(smartmouse::kc::radToCU(kinematic_controller.left_motor.velocity_rps));
   state.set_right_cps_setpoint(smartmouse::kc::radToCU(kinematic_controller.right_motor.setpoint_rps));
   state.set_right_cps_actual(smartmouse::kc::radToCU(kinematic_controller.right_motor.velocity_rps));
+  state.set_back_left_m(range_data_m.back_left);
+  state.set_front_left_m(range_data_m.front_left);
+  state.set_gerald_left_m(range_data_m.gerald_left);
+  state.set_front_m(range_data_m.front);
+  state.set_gerald_right_m(range_data_m.gerald_right);
+  state.set_front_right_m(range_data_m.front_right);
+  state.set_back_right_m(range_data_m.back_right);
   auto p_c = state.mutable_position_cu();
   auto global_pose = kinematic_controller.getGlobalPose();
   p_c->set_row(global_pose.row);

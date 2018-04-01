@@ -77,6 +77,9 @@ def main():
         model_predictions[i] = model_prediction
         model_errors[i] = model_error
 
+    print("Average Model Parameters (these suck, so beware)")
+    print(params.mean(axis=0))
+
     if not args.no_plot:
         colors = { 'A': 'r', 'B': 'b', 'D': 'g', 'E': 'y', 'F': 'm', 'G': 'k', 'H': 'sienna'}
         plt.figure()

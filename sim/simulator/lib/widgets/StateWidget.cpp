@@ -65,24 +65,27 @@ void StateWidget::DebugStateCallback(const smartmouse::msgs::DebugState &msg) {
 
 void StateWidget::StateCallback(const smartmouse::msgs::RobotSimState &msg) {
   auto p = msg.p();
+  true_row = p.row();
+  true_col = p.col();
+  true_yaw = p.yaw();
   this->SetLeftVelocity(QString::asprintf("%0.3f c/s", smartmouse::kc::radToCU(msg.left_wheel().omega())));
   this->SetRightVelocity(QString::asprintf("%0.3f c/s", smartmouse::kc::radToCU(msg.right_wheel().omega())));
   this->SetLeftAcceleration(QString::asprintf("%0.3f c/s^2", smartmouse::kc::radToCU(msg.left_wheel().alpha())));
   this->SetRightAcceleration(QString::asprintf("%0.3f c/s^2", smartmouse::kc::radToCU(msg.right_wheel().alpha())));
   this->SetLeftCurrent(QString::asprintf("%0.3f mA", msg.left_wheel().current() * 1000));
   this->SetRightCurrent(QString::asprintf("%0.3f mA", msg.right_wheel().current() * 1000));
-  this->SetTrueCol(QString::asprintf("%0.3f (%0.1f cm)", msg.p().col(), smartmouse::maze::toMeters(p.col()) * 100));
-  this->SetTrueRow(QString::asprintf("%0.3f (%0.1f cm)", msg.p().row(), smartmouse::maze::toMeters(p.row()) * 100));
-  this->SetTrueYaw(QString::asprintf("%0.1f deg", msg.p().yaw() * 180 / M_PI));
+  this->SetTrueCol(QString::asprintf("%0.3f (%0.1f cm)", p.col(), smartmouse::maze::toMeters(p.col()) * 100));
+  this->SetTrueRow(QString::asprintf("%0.3f (%0.1f cm)", p.row(), smartmouse::maze::toMeters(p.row()) * 100));
+  this->SetTrueYaw(QString::asprintf("%0.1f deg", p.yaw() * 180 / M_PI));
 
   // compute x and y with respect to the top left square
   char col_str[14];
-  snprintf(col_str, 14, "%i", (int) msg.p().col());
+  snprintf(col_str, 14, "%i", (int) p.col());
   char row_str[14];
-  snprintf(row_str, 14, "%i", (int) msg.p().row());
+  snprintf(row_str, 14, "%i", (int) p.row());
   this->SetCol(col_str);
   this->SetRow(row_str);
-  this->SetDir(QChar(yaw_to_char(msg.p().yaw())));
+  this->SetDir(QChar(yaw_to_char(p.yaw())));
 }
 
 void StateWidget::RobotCommandCallback(const smartmouse::msgs::RobotCommand &msg) {

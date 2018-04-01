@@ -34,7 +34,9 @@ def main():
         letter = os.path.basename(log).strip(".csv")
         data = np.genfromtxt(log, delimiter=', ')[:, columns[letter]]
         data = data.reshape((D, 2, N))
-        mean = data.mean(axis=2)
+        mean = np.zeros((D, 3))
+        mean[:,0] = data.mean(axis=2)[:,0]
+        mean[:,1] = data.mean(axis=2)[:,1]
         if letter in letter_data_map:
             print(letter, "already in map. overwriting.")
         letter_data_map[letter] = mean
@@ -43,13 +45,21 @@ def main():
     for letter, data in letter_data_map.items():
         white_p, _ = optimize.curve_fit(sensor_model, data[:, 0], distances, maxfev=100000)
         unpainted_p, _ = optimize.curve_fit(sensor_model, data[:, 1], distances, maxfev=100000)
-        print(white_p, unpainted_p)
+
+        # try to account for reflectance
+        modeled_p = unpainted_p
+        data[:, 2]  = sensor_model(data[:, 1] - 40, *modeled_p)
+
+        print(white_p, unpainted_p, modeled_p)
+
+
 
     if not args.no_plot:
         plt.figure()
         for letter, data in letter_data_map.items():
             plt.plot(data[:, 0], distances, label=letter + " white", linewidth=1, c='k')
             plt.plot(data[:, 1], distances, label=letter + " unpainted", linewidth=1, c='r')
+            plt.plot(data[:, 1], data[:, 2], label=letter + " modeled", linewidth=1, c='g')
         plt.title("Averaged Data")
         plt.xlabel("ADC Value 0-8192")
         plt.ylabel("Distance (meters)")

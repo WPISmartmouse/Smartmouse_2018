@@ -106,40 +106,66 @@ RobotDescription Convert(std::ifstream &fs) {
   right_wheel->set_radius(json["right_wheel"]["radius"]);
   right_wheel->set_thickness(json["right_wheel"]["thickness"]);
 
-  auto front = robot_description.mutable_sensors()->mutable_front()->mutable_p();
-  front->set_x(json["range_sensors"]["front"]["x"]);
-  front->set_y(json["range_sensors"]["front"]["y"]);
-  front->set_theta(json["range_sensors"]["front"]["theta"]);
+  auto front = robot_description.mutable_sensors()->mutable_front();
+  auto front_p = front->mutable_p();
+  front->set_a(json["range_sensors"]["front"]["a"]);
+  front->set_b(json["range_sensors"]["front"]["b"]);
+  front_p->set_x(json["range_sensors"]["front"]["x"]);
+  front_p->set_y(json["range_sensors"]["front"]["y"]);
+  front_p->set_theta(json["range_sensors"]["front"]["theta"]);
 
-  auto back_right = robot_description.mutable_sensors()->mutable_back_right()->mutable_p();
-  back_right->set_x(json["range_sensors"]["back_right"]["x"]);
-  back_right->set_y(json["range_sensors"]["back_right"]["y"]);
-  back_right->set_theta(json["range_sensors"]["back_right"]["theta"]);
+  auto back_right = robot_description.mutable_sensors()->mutable_back_right();
+  auto back_right_p = back_right->mutable_p();
+  back_right_p->set_x(json["range_sensors"]["back_right"]["x"]);
+  back_right_p->set_y(json["range_sensors"]["back_right"]["y"]);
+  back_right_p->set_theta(json["range_sensors"]["back_right"]["theta"]);
+  back_right->set_a(json["range_sensors"]["back_right"]["a"]);
+  back_right->set_b(json["range_sensors"]["back_right"]["b"]);
 
-  auto back_left = robot_description.mutable_sensors()->mutable_back_left()->mutable_p();
-  back_left->set_x(json["range_sensors"]["back_left"]["x"]);
-  back_left->set_y(json["range_sensors"]["back_left"]["y"]);
-  back_left->set_theta(json["range_sensors"]["back_left"]["theta"]);
+  auto back_left = robot_description.mutable_sensors()->mutable_back_left();
+  auto back_left_p = back_left->mutable_p();
+  back_left_p->set_x(json["range_sensors"]["back_left"]["x"]);
+  back_left_p->set_y(json["range_sensors"]["back_left"]["y"]);
+  back_left_p->set_theta(json["range_sensors"]["back_left"]["theta"]);
+  back_left->set_a(json["range_sensors"]["back_left"]["a"]);
+  back_left->set_b(json["range_sensors"]["back_left"]["b"]);
 
-  auto gerald_right = robot_description.mutable_sensors()->mutable_gerald_right()->mutable_p();
-  gerald_right->set_x(json["range_sensors"]["gerald_right"]["x"]);
-  gerald_right->set_y(json["range_sensors"]["gerald_right"]["y"]);
-  gerald_right->set_theta(json["range_sensors"]["gerald_right"]["theta"]);
 
-  auto gerald_left = robot_description.mutable_sensors()->mutable_gerald_left()->mutable_p();
-  gerald_left->set_x(json["range_sensors"]["gerald_left"]["x"]);
-  gerald_left->set_y(json["range_sensors"]["gerald_left"]["y"]);
-  gerald_left->set_theta(json["range_sensors"]["gerald_left"]["theta"]);
+  auto gerald_right = robot_description.mutable_sensors()->mutable_gerald_right();
+  auto gerald_right_p = gerald_right->mutable_p();
+  gerald_right_p->set_x(json["range_sensors"]["gerald_right"]["x"]);
+  gerald_right_p->set_y(json["range_sensors"]["gerald_right"]["y"]);
+  gerald_right_p->set_theta(json["range_sensors"]["gerald_right"]["theta"]);
+  gerald_right->set_a(json["range_sensors"]["gerald_right"]["a"]);
+  gerald_right->set_b(json["range_sensors"]["gerald_right"]["b"]);
 
-  auto front_right = robot_description.mutable_sensors()->mutable_front_right()->mutable_p();
-  front_right->set_x(json["range_sensors"]["front_right"]["x"]);
-  front_right->set_y(json["range_sensors"]["front_right"]["y"]);
-  front_right->set_theta(json["range_sensors"]["front_right"]["theta"]);
 
-  auto front_left = robot_description.mutable_sensors()->mutable_front_left()->mutable_p();
-  front_left->set_x(json["range_sensors"]["front_left"]["x"]);
-  front_left->set_y(json["range_sensors"]["front_left"]["y"]);
-  front_left->set_theta(json["range_sensors"]["front_left"]["theta"]);
+  auto gerald_left = robot_description.mutable_sensors()->mutable_gerald_left();
+  auto gerald_left_p = gerald_left->mutable_p();
+  gerald_left_p->set_x(json["range_sensors"]["gerald_left"]["x"]);
+  gerald_left_p->set_y(json["range_sensors"]["gerald_left"]["y"]);
+  gerald_left_p->set_theta(json["range_sensors"]["gerald_left"]["theta"]);
+  gerald_left->set_a(json["range_sensors"]["gerald_left"]["a"]);
+  gerald_left->set_b(json["range_sensors"]["gerald_left"]["b"]);
+
+
+  auto front_right = robot_description.mutable_sensors()->mutable_front_right();
+  auto front_right_p = front_right->mutable_p();
+  front_right_p->set_x(json["range_sensors"]["front_right"]["x"]);
+  front_right_p->set_y(json["range_sensors"]["front_right"]["y"]);
+  front_right_p->set_theta(json["range_sensors"]["front_right"]["theta"]);
+  front_right->set_a(json["range_sensors"]["front_right"]["a"]);
+  front_right->set_b(json["range_sensors"]["front_right"]["b"]);
+
+
+  auto front_left = robot_description.mutable_sensors()->mutable_front_left();
+  auto front_left_p = front_left->mutable_p();
+  front_left_p->set_x(json["range_sensors"]["front_left"]["x"]);
+  front_left_p->set_y(json["range_sensors"]["front_left"]["y"]);
+  front_left_p->set_theta(json["range_sensors"]["front_left"]["theta"]);
+  front_left->set_a(json["range_sensors"]["front_left"]["a"]);
+  front_left->set_b(json["range_sensors"]["front_left"]["b"]);
+
 
   return robot_description;
 }

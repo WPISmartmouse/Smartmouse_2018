@@ -205,13 +205,7 @@ std::tuple<double, double, bool> KinematicController::estimate_pose(RangeData ra
   double *yaw = &std::get<0>(newest_estimate);
   double *offset = &std::get<1>(newest_estimate);
   bool *ignore_walls = &std::get<2>(newest_estimate);
-//  double d1x_r = cos(smartmouse::kc::BACK_ANALOG_ANGLE) * range_data.back_right + smartmouse::kc::BACK_SIDE_ANALOG_X;
-//  double d2x_r = cos(smartmouse::kc::FRONT_ANALOG_ANGLE) * range_data.front_right + smartmouse::kc::FRONT_SIDE_ANALOG_X;
-//  double d1y_r = sin(smartmouse::kc::BACK_ANALOG_ANGLE) * range_data.back_right + smartmouse::kc::BACK_SIDE_ANALOG_Y;
-//  double d2y_r = sin(smartmouse::kc::FRONT_ANALOG_ANGLE) * range_data.front_right + smartmouse::kc::FRONT_SIDE_ANALOG_Y;
-//  double currentYaw_r = -atan2(d2y_r - d1y_r, d2x_r - d1x_r);
 
-//  double d_to_wall_right = (d2x_r * d1y_r - d2y_r * d1x_r) / sqrt(pow(d2y_r - d1y_r, 2) + pow(d2x_r - d1x_r, 2));
   double d_to_wall_left, yaw_left;
   double d_to_wall_right, yaw_right;
   std::tie(d_to_wall_left, yaw_left) = smartmouse::kc::from_sensors_to_left_wall(smartmouse::kc::BACK_LEFT,

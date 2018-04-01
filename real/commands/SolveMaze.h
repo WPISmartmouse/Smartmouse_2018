@@ -20,5 +20,5 @@ private:
   Solver::Goal goal;
   bool solved;
 
-  bool atCenter;
+  bool at_center;
 };

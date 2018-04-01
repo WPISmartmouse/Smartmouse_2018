@@ -1,6 +1,7 @@
 #pragma once
 
 #include <common/commanduino/CommanDuino.h>
+#include <sim/lib/SimMouse.h>
 
 class WaitForStart : public Command {
 public:
@@ -13,4 +14,7 @@ public:
   bool isFinished();
 
   void end();
+
+  private:
+    SimMouse *mouse;
 };

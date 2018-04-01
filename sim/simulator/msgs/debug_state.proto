@@ -12,4 +12,11 @@ message DebugState {
     optional double right_cps_setpoint = 4;
     optional double right_cps_actual = 5;
     optional RowColYaw position_cu = 6; // cells
+    optional double front_left_m = 7;
+    optional double front_right_m = 8;
+    optional double gerald_left_m = 9;
+    optional double gerald_right_m = 10;
+    optional double back_left_m = 11;
+    optional double back_right_m = 12;
+    optional double front_m = 13;
 }

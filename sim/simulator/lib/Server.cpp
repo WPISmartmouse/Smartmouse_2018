@@ -202,14 +202,6 @@ void Server::UpdateRobotState(double dt) {
   // if the intersection exists, and the distance is the shortest range for that sensor, replace the current range
   auto stamp = robot_state_.mutable_stamp();
   *stamp = sim_time_.toIgnMsg();
-  robot_state_.set_front_adc(ComputeADCValue(mouse_.sensors().front()));
-  robot_state_.set_front_left_adc(ComputeADCValue(mouse_.sensors().front_left()));
-  robot_state_.set_front_right_adc(ComputeADCValue(mouse_.sensors().front_right()));
-  robot_state_.set_gerald_left_adc(ComputeADCValue(mouse_.sensors().gerald_left()));
-  robot_state_.set_gerald_right_adc(ComputeADCValue(mouse_.sensors().gerald_right()));
-  robot_state_.set_back_left_adc(ComputeADCValue(mouse_.sensors().back_left()));
-  robot_state_.set_back_right_adc(ComputeADCValue(mouse_.sensors().back_right()));
-
   robot_state_.set_front_m(ComputeSensorDistToWall(mouse_.sensors().front()));
   robot_state_.set_front_left_m(ComputeSensorDistToWall(mouse_.sensors().front_left()));
   robot_state_.set_front_right_m(ComputeSensorDistToWall(mouse_.sensors().front_right()));
@@ -217,6 +209,14 @@ void Server::UpdateRobotState(double dt) {
   robot_state_.set_gerald_right_m(ComputeSensorDistToWall(mouse_.sensors().gerald_right()));
   robot_state_.set_back_left_m(ComputeSensorDistToWall(mouse_.sensors().back_left()));
   robot_state_.set_back_right_m(ComputeSensorDistToWall(mouse_.sensors().back_right()));
+
+  robot_state_.set_front_adc(ComputeADCValue(mouse_.sensors().front()));
+  robot_state_.set_front_left_adc(ComputeADCValue(mouse_.sensors().front_left()));
+  robot_state_.set_front_right_adc(ComputeADCValue(mouse_.sensors().front_right()));
+  robot_state_.set_gerald_left_adc(ComputeADCValue(mouse_.sensors().gerald_left()));
+  robot_state_.set_gerald_right_adc(ComputeADCValue(mouse_.sensors().gerald_right()));
+  robot_state_.set_back_left_adc(ComputeADCValue(mouse_.sensors().back_left()));
+  robot_state_.set_back_right_adc(ComputeADCValue(mouse_.sensors().back_right()));
 
   if (!static_) {
     robot_state_.mutable_p()->set_col(new_col);

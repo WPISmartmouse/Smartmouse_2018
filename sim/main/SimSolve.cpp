@@ -10,7 +10,7 @@ int main(int argc, char *argv[]) {
 
   mouse->simInit();
 
-  GlobalProgramSettings.quiet = true;
+  GlobalProgramSettings.quiet = false;
 
   Scheduler scheduler(new SolveCommand(new Flood(mouse)));
 

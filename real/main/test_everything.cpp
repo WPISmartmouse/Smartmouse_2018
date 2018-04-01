@@ -51,7 +51,7 @@ void loop() {
   digitalWrite(RealMouse::LED_6, static_cast<uint8_t>(pressed));
   digitalWrite(RealMouse::LED_7, static_cast<uint8_t>(pressed));
 
-  print("%0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f, %0.3f\r\n",
+  print("%+ 7.3f %+ 7.3f %+ 7.3f %+ 7.3f %+ 7.3f %+ 7.3f %+ 7.3f %+ 7.3f %+ 7.3f, %+ 7.3f\r\n",
         mouse->checkVoltage(),
         vl,
         vr,

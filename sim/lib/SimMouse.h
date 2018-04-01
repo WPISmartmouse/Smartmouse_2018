@@ -59,6 +59,18 @@ public:
   ignition::transport::Node node;
 
   KinematicController kinematic_controller;
+  RangeData range_data_adc;
+
+  /** store this as meters interally. the RoboSimState msg will be in ADC values **/
+  RangeData range_data_m;
+
+  smartmouse::ir::ModelParams back_left_model;
+  smartmouse::ir::ModelParams front_left_model;
+  smartmouse::ir::ModelParams gerald_left_model;
+  smartmouse::ir::ModelParams front_model;
+  smartmouse::ir::ModelParams back_right_model;
+  smartmouse::ir::ModelParams front_right_model;
+  smartmouse::ir::ModelParams gerald_right_model;
 
   void resetToStartPose();
 
@@ -72,17 +84,6 @@ private:
   double abstract_right_force;
   double left_wheel_angle_rad;
   double right_wheel_angle_rad;
-
-  /** store this as meters interally. the RoboSimState msg will be in ADC values **/
-  RangeData range_data_m;
-
-  smartmouse::ir::ModelParams back_left_model;
-  smartmouse::ir::ModelParams front_left_model;
-  smartmouse::ir::ModelParams gerald_left_model;
-  smartmouse::ir::ModelParams front_model;
-  smartmouse::ir::ModelParams back_right_model;
-  smartmouse::ir::ModelParams front_right_model;
-  smartmouse::ir::ModelParams gerald_right_model;
 
   std::condition_variable dataCond;
   std::mutex dataMutex;

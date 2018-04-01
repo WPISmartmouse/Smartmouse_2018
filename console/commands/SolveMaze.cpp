@@ -20,7 +20,7 @@ bool SolveMaze::isFinished() {
     if (!mazeSolved) {
       motion_primitive_t prim = solver->planNextStep();
 
-      if (!solver->isSolvable()) {
+      if (prim.d == Direction ::INVALID || !solver->isSolvable()) {
         solved = false;
         return true;
       }

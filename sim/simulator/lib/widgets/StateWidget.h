@@ -51,9 +51,9 @@ class StateWidget : public QWidget, public AbstractTab {
   void SetEstimatedCol(QString str);
   void SetEstimatedRow(QString str);
   void SetEstimatedYaw(QString str);
-  void HighlightCol(QString str);
-  void HighlightRow(QString str);
-  void HighlightYaw(QString str);
+  void HighlightCol();
+  void HighlightRow();
+  void HighlightYaw();
 #pragma clang diagnostic pop
 
  private:

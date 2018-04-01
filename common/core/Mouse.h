@@ -1,11 +1,13 @@
 #pragma once
 
+#include <sstream>
+
 #include <math.h>
 #include <common/core/Direction.h>
 #include <common/core/AbstractMaze.h>
 #include <common/core/Pose.h>
 
-typedef struct {
+struct RangeData {
   double gerald_left;
   double gerald_right;
   double front_left;
@@ -13,7 +15,19 @@ typedef struct {
   double back_left;
   double back_right;
   double front;
-} RangeData;
+
+  std::string to_string() {
+    std::stringstream ss;
+    ss << back_left << ", "
+       << front_left << ","
+       << gerald_left << ","
+       << front << ","
+       << gerald_right << ","
+       << front_right << ","
+       << back_right << ",";
+    return ss.str();
+  }
+};
 
 /** \brief depresents a mouse
  * don't ever change the row/col of a mouse directly. This prevents it from
@@ -23,7 +37,7 @@ typedef struct {
  */
 class Mouse {
 
-public:
+ public:
 
   Mouse();
 
@@ -72,17 +86,16 @@ public:
 
   virtual SensorReading checkWalls() = 0;
 
-
   /** doesn't simply read sensors. Check the internal maze structure */
   bool isWallInDirection(Direction d);
 
   AbstractMaze *maze;
 
-
   virtual GlobalPose getGlobalPose() = 0;
+
   virtual LocalPose getLocalPose() = 0;
 
-protected:
+ protected:
   unsigned int row, col;
   Direction dir;
 };

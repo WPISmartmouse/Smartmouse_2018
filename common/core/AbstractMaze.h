@@ -4,6 +4,8 @@
 #pragma once
 
 #include <stdio.h>
+#include <sstream>
+#include <vector>
 
 #ifndef ARDUINO
 #include <fstream>
@@ -12,7 +14,6 @@
 #include "SensorReading.h"
 #include "Node.h"
 #include "Direction.h"
-#include <vector>
 
 /**
  * \brief the maze is graph of nodes, stored internally as an matrix.
@@ -22,11 +23,19 @@
 struct motion_primitive_t {
   uint8_t n;
   Direction d;
+
+  std::string to_string() {
+    std::stringstream ss;
+    ss << (int) n << dir_to_char(d);
+    return ss.str();
+  }
 };
 typedef std::vector<motion_primitive_t> route_t;
 
 std::string route_to_string(route_t &route);
+
 void insert_motion_primitive_front(route_t *route, motion_primitive_t prim);
+
 void insert_motion_primitive_back(route_t *route, motion_primitive_t prim);
 
 namespace smartmouse {
@@ -72,7 +81,9 @@ class AbstractMaze {
   AbstractMaze();
 
 #ifndef ARDUINO // this can't exist on arduino
+
   AbstractMaze(std::ifstream &fs);
+
 #endif
 
   void mark_origin_known();
@@ -141,10 +152,12 @@ class AbstractMaze {
   * @param maze the maze
   */
   void print_maze();
+
   void print_maze_str(char *buff);
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
+
   /** duh*/
   void print_pointer_maze();
 
@@ -160,9 +173,11 @@ class AbstractMaze {
 
   /** duh*/
   void print_dist_maze();
+
 #pragma clang diagnostic pop
 
   static AbstractMaze gen_random_legal_maze();
+
   static void _make_connections(AbstractMaze *maze, Node *node);
 
   bool flood_fill(route_t *path, unsigned int r0, unsigned int c0, unsigned int r1, unsigned int c1);
