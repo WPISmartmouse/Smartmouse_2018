@@ -7,6 +7,7 @@
 using namespace Eigen;    // Eigen related statement; simplifies syntax for declaration of matrices
 
 #include <Arduino.h>
+#include <real/RealMouse.h>
 
 void print_mtx(const Eigen::Matrix<double, Dynamic, Dynamic> &X);
 
@@ -33,6 +34,7 @@ void setup() {
 }
 
 void loop() {
+  RealMouse::checkVoltage();
 }
 
 

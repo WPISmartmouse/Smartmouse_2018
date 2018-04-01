@@ -15,6 +15,8 @@ void setup() {
 unsigned long m = 0;
 
 void loop() {
+  RealMouse::checkVoltage();
+
   // turn off the motors
   analogWrite(RealMouse::MOTOR_LEFT_A1, 0);
   analogWrite(RealMouse::MOTOR_LEFT_A2, 0);

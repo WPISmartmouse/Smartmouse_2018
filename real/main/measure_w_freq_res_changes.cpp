@@ -32,6 +32,8 @@ void setup() {
 unsigned long m = 0;
 
 void loop() {
+  RealMouse::checkVoltage();
+
   // turn off the motors
   setAllMotors(0);
   delay(2000);

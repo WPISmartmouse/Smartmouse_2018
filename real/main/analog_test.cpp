@@ -5,7 +5,7 @@
  */
 
 #include <Arduino.h>
-#include <RealMouse.h>
+#include <real/RealMouse.h>
 
 void setup() {
   analogReadResolution(13);

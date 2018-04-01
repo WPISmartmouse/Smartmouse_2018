@@ -6,6 +6,7 @@
 
 #include <Arduino.h>
 #include <AS5048A.h>
+#include <real/RealMouse.h>
 
 AS5048A left(9);
 AS5048A right(10);
@@ -19,6 +20,8 @@ void setup() {
 }
 
 void loop() {
+  RealMouse::checkVoltage();
+
   word l = left.getRawRotation();
   word r = right.getRawRotation();
   print("%d, %d\r\n", l, r);

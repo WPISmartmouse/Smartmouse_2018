@@ -2,7 +2,7 @@
  * Test the PID values by executing a fixed velocity profile
  */
 
-#include <RealMouse.h>
+#include <real/RealMouse.h>
 #include <common/commanduino/Command.h>
 #include <common/commanduino/Scheduler.h>
 #include <real/ArduinoTimer.h>
@@ -32,6 +32,8 @@ void setup() {
 }
 
 void loop() {
+  RealMouse::checkVoltage();
+
   unsigned long now_us = timer.programTimeUs();
   double dt_us = now_us - last_t_us;
 

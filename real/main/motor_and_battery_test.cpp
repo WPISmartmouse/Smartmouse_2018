@@ -23,6 +23,8 @@ void setup() {
 }
 
 void loop() {
+  RealMouse::checkVoltage();
+
   unsigned long now_us = timer.programTimeUs();
   double dt_us = now_us - last_t_us;
 
