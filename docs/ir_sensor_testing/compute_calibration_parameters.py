@@ -10,10 +10,7 @@ def clip(x):
     return x[1:-2]
 
 def sensor_model(x, a, b):
-    return -a*pow(x, b) + 180
-
-def bigger_sensor_model(x, a, b, c):
-    return -a*pow(x, b) + c
+    return a - pow(x, b)
 
 def weighting_model():
     return np.array([1, 1, 1, 0.95, 0.8, 0.5, 0.3, 0.3, 0.5, 0.8, 0.95, 1, 1, 1])
@@ -24,7 +21,7 @@ def main():
     np.set_printoptions(suppress=True, precision=6)
 
     parser = argparse.ArgumentParser("plot a log file from analog_test.cpp")
-    parser.add_argument("--logs", help="csv file output form logging serial", nargs="*", required=True)
+    parser.add_argument("logs", help="csv file output form logging serial", nargs="+")
     parser.add_argument("--no-plot", help="skip plotting", action="store_true")
     parser.add_argument("--samples-per-interval", '-n', help="number of readings at each distance", type=int, default=10)
     parser.add_argument("--number-of-distances", '-d', help="number of distances", type=int, default=17)
@@ -41,6 +38,7 @@ def main():
     distances = np.arange(D, 0, -1) * args.spacing
     distances[0] = MAX_DIST
     columns = {"B": 0, "A": 1, "F": 2, "E": 3, "G": 4, "D": 5, "H": 6}
+    letters = list(columns.keys())
 
     letter_data_map = {}
     for i, log in enumerate(args.logs):
@@ -83,18 +81,17 @@ def main():
         colors = { 'A': 'r', 'B': 'b', 'D': 'g', 'E': 'y', 'F': 'm', 'G': 'k', 'H': 'sienna'}
         plt.figure()
         plt.plot([distances[1], distances[-3]], [0, 0], label='zero', linestyle='--')
-        for model_error, log in zip(model_errors, args.logs):
-            plt.plot(clip(distances), model_error, label=log)
+        for letter, model_error in zip(letters, model_errors):
+            plt.plot(clip(distances), model_error, label=letter)
         plt.title("Modeling Error")
         plt.xlabel("distance")
         plt.ylabel("error (meters)")
         plt.legend()
 
         plt.figure()
-        for m, predictions, log in zip(means, model_predictions, args.logs):
-            letter = os.path.basename(log).strip(".csv")
+        for m, predictions, letter in zip(means, model_predictions, letters):
             plt.plot(m, distances, label=letter, linewidth=1, c=colors[letter])
-            plt.plot(clip(m), predictions, label=log + " model", alpha=0.7, linestyle='--', c=colors[letter])
+            plt.plot(clip(m), predictions, label=letter + " model", alpha=0.7, linestyle='--', c=colors[letter])
         plt.title("Averaged Data")
         plt.xlabel("ADC Value 0-8192")
         plt.ylabel("Distance (meters)")

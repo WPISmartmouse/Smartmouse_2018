@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from scipy import optimize
 
 def sensor_model(x, a, b):
-    return -a*pow(x, b) + 180
+    return a - pow(x, b)
 
 def main():
     np.warnings.simplefilter("ignore", optimize.OptimizeWarning)
@@ -35,9 +35,15 @@ def main():
         data = np.genfromtxt(log, delimiter=', ')[:, columns[letter]]
         data = data.reshape((D, 2, N))
         mean = data.mean(axis=2)
-        if letter not in letter_data_map:
+        if letter in letter_data_map:
             print(letter, "already in map. overwriting.")
         letter_data_map[letter] = mean
+
+
+    for letter, data in letter_data_map.items():
+        white_p, _ = optimize.curve_fit(sensor_model, data[:, 0], distances, maxfev=100000)
+        unpainted_p, _ = optimize.curve_fit(sensor_model, data[:, 1], distances, maxfev=100000)
+        print(white_p, unpainted_p)
 
     if not args.no_plot:
         plt.figure()

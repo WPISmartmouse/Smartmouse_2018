@@ -10,10 +10,7 @@ def clip(x):
     return x[1:-2]
 
 def sensor_model(x, a, b):
-    return -a*pow(x, b) + 180
-
-def bigger_sensor_model(x, a, b, c):
-    return -a*pow(x, b) + c
+    return a - pow(x, b)
 
 def weighting_model():
     return np.array([1, 1, 1, 0.95, 0.8, 0.5, 0.3, 0.3, 0.5, 0.8, 0.95, 1, 1, 1])
