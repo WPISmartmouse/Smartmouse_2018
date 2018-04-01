@@ -7,6 +7,7 @@
 #include <sim/simulator/lib/Server.h>
 #include <sim/simulator/lib/common/TopicNames.h>
 #include <sim/simulator/msgs/world_statistics.pb.h>
+#include <common/IRSensorModeling/Model.h>
 
 Server::Server()
     : sim_time_(Time::Zero),
@@ -201,13 +202,21 @@ void Server::UpdateRobotState(double dt) {
   // if the intersection exists, and the distance is the shortest range for that sensor, replace the current range
   auto stamp = robot_state_.mutable_stamp();
   *stamp = sim_time_.toIgnMsg();
-  robot_state_.set_front(ComputeSensorDistToWall(mouse_.sensors().front()));
-  robot_state_.set_front_left(ComputeSensorDistToWall(mouse_.sensors().front_left()));
-  robot_state_.set_front_right(ComputeSensorDistToWall(mouse_.sensors().front_right()));
-  robot_state_.set_gerald_left(ComputeSensorDistToWall(mouse_.sensors().gerald_left()));
-  robot_state_.set_gerald_right(ComputeSensorDistToWall(mouse_.sensors().gerald_right()));
-  robot_state_.set_back_left(ComputeSensorDistToWall(mouse_.sensors().back_left()));
-  robot_state_.set_back_right(ComputeSensorDistToWall(mouse_.sensors().back_right()));
+  robot_state_.set_front_adc(ComputeADCValue(mouse_.sensors().front()));
+  robot_state_.set_front_left_adc(ComputeADCValue(mouse_.sensors().front_left()));
+  robot_state_.set_front_right_adc(ComputeADCValue(mouse_.sensors().front_right()));
+  robot_state_.set_gerald_left_adc(ComputeADCValue(mouse_.sensors().gerald_left()));
+  robot_state_.set_gerald_right_adc(ComputeADCValue(mouse_.sensors().gerald_right()));
+  robot_state_.set_back_left_adc(ComputeADCValue(mouse_.sensors().back_left()));
+  robot_state_.set_back_right_adc(ComputeADCValue(mouse_.sensors().back_right()));
+
+  robot_state_.set_front_m(ComputeSensorDistToWall(mouse_.sensors().front()));
+  robot_state_.set_front_left_m(ComputeSensorDistToWall(mouse_.sensors().front_left()));
+  robot_state_.set_front_right_m(ComputeSensorDistToWall(mouse_.sensors().front_right()));
+  robot_state_.set_gerald_left_m(ComputeSensorDistToWall(mouse_.sensors().gerald_left()));
+  robot_state_.set_gerald_right_m(ComputeSensorDistToWall(mouse_.sensors().gerald_right()));
+  robot_state_.set_back_left_m(ComputeSensorDistToWall(mouse_.sensors().back_left()));
+  robot_state_.set_back_right_m(ComputeSensorDistToWall(mouse_.sensors().back_right()));
 
   if (!static_) {
     robot_state_.mutable_p()->set_col(new_col);
@@ -373,6 +382,13 @@ bool Server::IsConnected() {
 
 unsigned int Server::getNsOfSimPerStep() const {
   return ns_of_sim_per_step_;
+}
+
+int Server::ComputeADCValue(smartmouse::msgs::SensorDescription sensor) {
+  // take the actual distance and the angle and reverse-calculate the ADC value
+  double d = ComputeSensorDistToWall(sensor);
+  smartmouse::ir::ModelParams model{sensor.a(), sensor.b(), sensor.c(), sensor.d()};
+  return model.toADC(d);
 }
 
 double Server::ComputeSensorDistToWall(smartmouse::msgs::SensorDescription sensor) {

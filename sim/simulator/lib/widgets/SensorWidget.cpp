@@ -13,11 +13,11 @@ const QString SensorWidget::GetTabName() {
 }
 
 void SensorWidget::RoboSimStateCallback(const smartmouse::msgs::RobotSimState &msg) {
-  ui_->back_left_label->setText(QString::number(msg.back_left()));
-  ui_->front_left_label->setText(QString::number(msg.front_left()));
-  ui_->gerald_left_label->setText(QString::number(msg.gerald_left()));
-  ui_->front_label->setText(QString::number(msg.front()));
-  ui_->back_right_label->setText(QString::number(msg.back_right()));
-  ui_->front_right_label->setText(QString::number(msg.front_right()));
-  ui_->gerald_right_label->setText(QString::number(msg.gerald_right()));
+  ui_->back_left_label->setText(QString::number(msg.back_left_m()));
+  ui_->front_left_label->setText(QString::number(msg.front_left_m()));
+  ui_->gerald_left_label->setText(QString::number(msg.gerald_left_m()));
+  ui_->front_label->setText(QString::number(msg.front_m()));
+  ui_->back_right_label->setText(QString::number(msg.back_right_m()));
+  ui_->front_right_label->setText(QString::number(msg.front_right_m()));
+  ui_->gerald_right_label->setText(QString::number(msg.gerald_right_m()));
 }

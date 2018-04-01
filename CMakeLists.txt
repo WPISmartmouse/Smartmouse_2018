@@ -25,6 +25,7 @@ file(GLOB COM_SRC
      common/math/*.cpp
      common/commanduino/*.cpp
      common/KinematicController/*.cpp
+     common/IRSensorModeling/*.cpp
      common/argparse/*.cpp)
 
 if (NOT ${BUILD_SIM})

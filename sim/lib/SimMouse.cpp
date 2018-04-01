@@ -8,7 +8,7 @@
 
 SimMouse *SimMouse::instance = nullptr;
 
-SimMouse::SimMouse() : kinematic_controller(this), range_data({}) {
+SimMouse::SimMouse() : kinematic_controller(this), range_data_m({}) {
   dir = Direction::N;
 }
 
@@ -25,9 +25,9 @@ SensorReading SimMouse::checkWalls() {
   dataCond.wait(lk);
   SensorReading sr(row, col);
 
-  sr.walls[static_cast<int>(dir)] = range_data.front < smartmouse::kc::FRONT_WALL_THRESHOLD;
-  sr.walls[static_cast<int>(left_of_dir(dir))] = range_data.front_left < smartmouse::kc::SIDE_WALL_THRESHOLD;
-  sr.walls[static_cast<int>(right_of_dir(dir))] = range_data.front_right < smartmouse::kc::SIDE_WALL_THRESHOLD;
+  sr.walls[static_cast<int>(dir)] = range_data_m.front < smartmouse::kc::FRONT_WALL_THRESHOLD;
+  sr.walls[static_cast<int>(left_of_dir(dir))] = range_data_m.front_left < smartmouse::kc::SIDE_WALL_THRESHOLD;
+  sr.walls[static_cast<int>(right_of_dir(dir))] = range_data_m.front_right < smartmouse::kc::SIDE_WALL_THRESHOLD;
   sr.walls[static_cast<int>(opposite_direction(dir))] = false;
 
   return sr;
@@ -64,13 +64,13 @@ void SimMouse::robotSimStateCallback(const smartmouse::msgs::RobotSimState &msg)
   this->left_wheel_angle_rad = tick_to_rad(rad_to_tick(msg.left_wheel().theta()));
   this->right_wheel_angle_rad = tick_to_rad(rad_to_tick(msg.right_wheel().theta()));
 
-  this->range_data.front_left = msg.front_left();
-  this->range_data.front_right = msg.front_right();
-  this->range_data.gerald_left = msg.gerald_left();
-  this->range_data.gerald_right = msg.gerald_right();
-  this->range_data.back_left = msg.back_left();
-  this->range_data.back_right = msg.back_right();
-  this->range_data.front = msg.front();
+  this->range_data_m.front_left = msg.front_left_m();
+  this->range_data_m.front_right = msg.front_right_m();
+  this->range_data_m.gerald_left = msg.gerald_left_m();
+  this->range_data_m.gerald_right = msg.gerald_right_m();
+  this->range_data_m.back_left = msg.back_left_m();
+  this->range_data_m.back_right = msg.back_right_m();
+  this->range_data_m.front = msg.front_m();
 
   dataCond.notify_all();
 }
@@ -98,7 +98,7 @@ void SimMouse::run() {
   last_state_stamp = state_stamp;
 
   // handle updating of odometry and PID
-  auto forces = kinematic_controller.run(dt_s, this->left_wheel_angle_rad, this->right_wheel_angle_rad, range_data);
+  auto forces = kinematic_controller.run(dt_s, this->left_wheel_angle_rad, this->right_wheel_angle_rad, range_data_m);
   abstract_left_force = forces.first;
   abstract_right_force = forces.second;
 

@@ -100,13 +100,13 @@ void MazeWidget::PaintMouse(QPainter &painter, QTransform tf) {
   painter.fillPath(tf.map(right_wheel_path), QBrush(Qt::black));
 
   std::vector<std::pair<smartmouse::msgs::XYTheta, double>> sensor_poses;
-  sensor_poses.push_back({mouse_.sensors().front().p(), robot_state_.front()});
-  sensor_poses.push_back({mouse_.sensors().front_left().p(), robot_state_.front_left()});
-  sensor_poses.push_back({mouse_.sensors().front_right().p(), robot_state_.front_right()});
-  sensor_poses.push_back({mouse_.sensors().back_left().p(), robot_state_.back_left()});
-  sensor_poses.push_back({mouse_.sensors().back_right().p(), robot_state_.back_right()});
-  sensor_poses.push_back({mouse_.sensors().gerald_left().p(), robot_state_.gerald_left()});
-  sensor_poses.push_back({mouse_.sensors().gerald_right().p(), robot_state_.gerald_right()});
+  sensor_poses.push_back({mouse_.sensors().front().p(), robot_state_.front_m()});
+  sensor_poses.push_back({mouse_.sensors().front_left().p(), robot_state_.front_left_m()});
+  sensor_poses.push_back({mouse_.sensors().front_right().p(), robot_state_.front_right_m()});
+  sensor_poses.push_back({mouse_.sensors().back_left().p(), robot_state_.back_left_m()});
+  sensor_poses.push_back({mouse_.sensors().back_right().p(), robot_state_.back_right_m()});
+  sensor_poses.push_back({mouse_.sensors().gerald_left().p(), robot_state_.gerald_left_m()});
+  sensor_poses.push_back({mouse_.sensors().gerald_right().p(), robot_state_.gerald_right_m()});
 
   for (auto pair : sensor_poses) {
     auto sensor_pose = pair.first;
@@ -114,6 +114,8 @@ void MazeWidget::PaintMouse(QPainter &painter, QTransform tf) {
     QTransform line_tf(tf);
     line_tf.translate(sensor_pose.x(), sensor_pose.y());
     line_tf.rotateRadians(sensor_pose.theta(), Qt::ZAxis);
+
+    // draw the ray to the wall
     QLineF line(0, 0, sensor_range, 0);
     painter.setPen(QPen(Qt::black));
     painter.drawLine(line_tf.map(line));

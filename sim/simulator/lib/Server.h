@@ -44,6 +44,7 @@ class Server {
   void ComputeMaxSensorRange();
   const double ComputeSensorRange(const smartmouse::msgs::SensorDescription sensor);
 
+  int ComputeADCValue(smartmouse::msgs::SensorDescription sensor);
   double ComputeSensorDistToWall(smartmouse::msgs::SensorDescription sensor);
 
   ignition::transport::Node *node_ptr_;

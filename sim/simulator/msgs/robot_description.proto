@@ -30,6 +30,10 @@ message SensorDescription {
     optional double min_range_m = 2;
     optional double max_range_m = 3;
     optional double beam_angle_rad = 6;
+    optional double a = 7;
+    optional double b = 8;
+    optional double c = 9;
+    optional double d = 10;
 }
 
 message MotorDescription {
