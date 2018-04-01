@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import optimize
@@ -10,6 +11,9 @@ def clip(x):
 
 def sensor_model(x, a, b):
     return -a*pow(x, b) + 180
+
+def bigger_sensor_model(x, a, b, c):
+    return -a*pow(x, b) + c
 
 def weighting_model():
     return np.array([1, 1, 1, 0.95, 0.8, 0.5, 0.3, 0.3, 0.5, 0.8, 0.95, 1, 1])
@@ -56,7 +60,6 @@ def main():
     params = np.ndarray((S, 2))
     model_errors = np.ndarray((S, D-4))
     model_predictions = np.ndarray((S, D-4))
-    initial_guess = np.array([180, 0.000244])
     print("|sensor|a|b|")
     print("|------|-|-|")
     for i, m in enumerate(means):
@@ -65,7 +68,7 @@ def main():
         m = clip(m)
         d = clip(distances)
         weights = weighting_model()
-        p, _ = optimize.curve_fit(sensor_model, m, d, sigma=weights, p0=initial_guess, maxfev=100000, bounds=([150, 0],[200, 0.01]))
+        p, _ = optimize.curve_fit(sensor_model, m, d, sigma=weights, maxfev=100000)
         model_prediction = sensor_model(m, *p)
         model_error = model_prediction - d
         print("|{:s}|{:0.6f}|{:0.6f}|".format(args.logs[i].strip(".csv"), *p))
@@ -83,6 +86,7 @@ def main():
         average_model_errors[i] = average_model_error
 
     if not args.no_plot:
+        colors = { 'A': 'r', 'B': 'b', 'D': 'g', 'E': 'y', 'F': 'm', 'G': 'k', 'H': 'sienna'}
         plt.figure()
         plt.plot([distances[1], distances[-3]], [0, 0], label='zero', linestyle='--')
         for model_error, log in zip(model_errors, args.logs):
@@ -103,10 +107,10 @@ def main():
 
         plt.figure()
         for d, predictions, xerr, log in zip(data, model_predictions, ranges, args.logs):
-            plt.scatter(x=d.mean(axis=1), y=distances, label=log, s=4)
-            plt.errorbar(x=d.mean(axis=1), y=distances, xerr=xerr, linewidth=1)
-            #plt.scatter(x=d.mean(axis=1), y=predictions, label=log + " model", s=4)
-            plt.plot(clip(d.mean(axis=1)), predictions, label=log + " model", alpha=0.5, linestyle='--')
+            letter = os.path.basename(log).strip(".csv")
+            #plt.scatter(x=d.mean(axis=1), y=distances, label=log, s=4)
+            plt.errorbar(x=d.mean(axis=1), y=distances, xerr=xerr, linewidth=1, c=colors[letter])
+            plt.plot(clip(d.mean(axis=1)), predictions, label=log + " model", alpha=0.7, linestyle='--', c=colors[letter])
         plt.title("Averaged Data")
         plt.xlabel("ADC Value 0-8192")
         plt.ylabel("Distance (meters)")
