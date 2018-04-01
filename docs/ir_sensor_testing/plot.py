@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from scipy import optimize
 
 def clip(x):
-    return x[1:-3]
+    return x[1:-2]
 
 def sensor_model(x, a, b):
     return -a*pow(x, b) + 180
@@ -16,7 +16,7 @@ def bigger_sensor_model(x, a, b, c):
     return -a*pow(x, b) + c
 
 def weighting_model():
-    return np.array([1, 1, 1, 0.95, 0.8, 0.5, 0.3, 0.3, 0.5, 0.8, 0.95, 1, 1])
+    return np.array([1, 1, 1, 0.95, 0.8, 0.5, 0.3, 0.3, 0.5, 0.8, 0.95, 1, 1, 1])
 
 
 def main():
@@ -58,8 +58,8 @@ def main():
 
     # fit our model Y=a*X^b+c for each sensor
     params = np.ndarray((S, 2))
-    model_errors = np.ndarray((S, D-4))
-    model_predictions = np.ndarray((S, D-4))
+    model_errors = np.ndarray((S, D-3))
+    model_predictions = np.ndarray((S, D-3))
     print("|sensor|a|b|")
     print("|------|-|-|")
     for i, m in enumerate(means):
@@ -78,7 +78,7 @@ def main():
 
     # compute the "average" model
     average_model_params = params.mean(axis=0)
-    average_model_errors = np.ndarray((S, D-4))
+    average_model_errors = np.ndarray((S, D-3))
     for i, m in enumerate(means):
         m = clip(m)
         average_model_prediction = sensor_model(m, *average_model_params)
