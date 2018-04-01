@@ -125,8 +125,8 @@ void RealMouse::run(double dt_s) {
 #ifdef PROFILE
   unsigned long t2 = micros();
 #endif
-  abstract_left_force = 140;
-  abstract_right_force = 0;
+  abstract_left_force = 170;
+  abstract_right_force = 170;
   if (abstract_left_force < 0) {
     analogWrite(MOTOR_LEFT_A1, (int) -abstract_left_force);
     analogWrite(MOTOR_LEFT_A2, 0);

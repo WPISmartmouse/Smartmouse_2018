@@ -82,6 +82,7 @@ class CalibrationFunctor : public Functor<double> {
         double distance;
         std::tie(distance, std::ignore) = from_sensors_to_wall(sensors(i, 0), sensors(i, 1), s1_dist_m, s2_dist_m);
         distances(i) = distance;
+        std::cout << i << ", " << distances(i) << "\n";
       }
 
       // add up the all combinations of sensors from left and right side
@@ -98,8 +99,7 @@ class CalibrationFunctor : public Functor<double> {
       std::cout << "======\n";
       for (size_t i = 0; i < 9; i++) {
         for (size_t j = i + 1; j < 9; j++) {
-          fvec(fvec_idx) = 1e10 * (widths(i) - widths(j));
-          std::cout << fvec(fvec_idx) << ", ";
+          fvec(fvec_idx) = std::fabs(widths(i) - widths(j));
           ++fvec_idx;
         }
       }

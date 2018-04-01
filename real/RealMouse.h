@@ -72,7 +72,7 @@ public:
 
   void setSpeedCps(double l_mps, double r_mps);
 
-  double checkVoltage();
+  static double checkVoltage();
 
   /** runs setup things like pin initializes */
   void setup();
