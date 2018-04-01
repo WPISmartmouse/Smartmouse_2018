@@ -34,7 +34,7 @@ def main():
             return x[args.start:-args.end]
 
     # load data
-    MAX_DIST = 0.1
+    MAX_DIST = 0.2
     MIN_DIST = 0.01
     S = args.sensors
     N = args.samples_per_interval
@@ -66,8 +66,8 @@ def main():
     params = np.ndarray((S, 3))
     model_errors = np.ndarray((S, D - args.end - args.start))
     model_predictions = np.ndarray((S, D - args.end - args.start))
-    print("|sensor|a|b|")
-    print("|------|-|-|")
+    print("|sensor|a|b|c|")
+    print("|------|-|-|-|")
     for i, (letter, m) in enumerate(zip(letter_data_map.keys(), means)):
         # we ignore the first data point here because it doesn't have a proper distance, it's infinitly far
         # we also ignore the last three points where shit starts to go down
