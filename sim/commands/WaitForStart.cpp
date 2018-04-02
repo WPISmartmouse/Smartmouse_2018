@@ -12,10 +12,7 @@ void WaitForStart::initialize() {
 
     calibrated = true;
 
-    // grab the latest sensor readings
     auto adc = mouse->range_data_adc;
-
-    // for each sensor, compare the ADC value to what it should be since we know we know the starting distance of each sensor
     mouse->back_left_model.calibrate(adc.back_left);
     mouse->front_left_model.calibrate(adc.front_left);
     mouse->gerald_left_model.calibrate(adc.gerald_left);
@@ -23,9 +20,10 @@ void WaitForStart::initialize() {
     mouse->gerald_right_model.calibrate(adc.gerald_right);
     mouse->front_right_model.calibrate(adc.front_right);
     mouse->back_right_model.calibrate(adc.back_right);
+    print("Calibration complete.\r\n");
+    print("%i\r\n", mouse->back_left_model.adc_offset);
   }
 
-  print("Reset mouse pose, then press enter to begin...\n");
 }
 
 void WaitForStart::execute() {

@@ -108,11 +108,12 @@ RobotDescription Convert(std::ifstream &fs) {
 
   auto front = robot_description.mutable_sensors()->mutable_front();
   auto front_p = front->mutable_p();
-  front->set_a(json["range_sensors"]["front"]["a"]);
-  front->set_b(json["range_sensors"]["front"]["b"]);
   front_p->set_x(json["range_sensors"]["front"]["x"]);
   front_p->set_y(json["range_sensors"]["front"]["y"]);
   front_p->set_theta(json["range_sensors"]["front"]["theta"]);
+  front->set_a(json["range_sensors"]["front"]["a"]);
+  front->set_b(json["range_sensors"]["front"]["b"]);
+  front->set_c(json["range_sensors"]["front"]["c"]);
 
   auto back_right = robot_description.mutable_sensors()->mutable_back_right();
   auto back_right_p = back_right->mutable_p();
@@ -121,6 +122,7 @@ RobotDescription Convert(std::ifstream &fs) {
   back_right_p->set_theta(json["range_sensors"]["back_right"]["theta"]);
   back_right->set_a(json["range_sensors"]["back_right"]["a"]);
   back_right->set_b(json["range_sensors"]["back_right"]["b"]);
+  back_right->set_c(json["range_sensors"]["back_right"]["c"]);
 
   auto back_left = robot_description.mutable_sensors()->mutable_back_left();
   auto back_left_p = back_left->mutable_p();
@@ -129,6 +131,7 @@ RobotDescription Convert(std::ifstream &fs) {
   back_left_p->set_theta(json["range_sensors"]["back_left"]["theta"]);
   back_left->set_a(json["range_sensors"]["back_left"]["a"]);
   back_left->set_b(json["range_sensors"]["back_left"]["b"]);
+  back_left->set_c(json["range_sensors"]["back_left"]["c"]);
 
 
   auto gerald_right = robot_description.mutable_sensors()->mutable_gerald_right();
@@ -138,6 +141,7 @@ RobotDescription Convert(std::ifstream &fs) {
   gerald_right_p->set_theta(json["range_sensors"]["gerald_right"]["theta"]);
   gerald_right->set_a(json["range_sensors"]["gerald_right"]["a"]);
   gerald_right->set_b(json["range_sensors"]["gerald_right"]["b"]);
+  gerald_right->set_c(json["range_sensors"]["gerald_right"]["c"]);
 
 
   auto gerald_left = robot_description.mutable_sensors()->mutable_gerald_left();
@@ -147,6 +151,7 @@ RobotDescription Convert(std::ifstream &fs) {
   gerald_left_p->set_theta(json["range_sensors"]["gerald_left"]["theta"]);
   gerald_left->set_a(json["range_sensors"]["gerald_left"]["a"]);
   gerald_left->set_b(json["range_sensors"]["gerald_left"]["b"]);
+  gerald_left->set_c(json["range_sensors"]["gerald_left"]["c"]);
 
 
   auto front_right = robot_description.mutable_sensors()->mutable_front_right();
@@ -156,6 +161,7 @@ RobotDescription Convert(std::ifstream &fs) {
   front_right_p->set_theta(json["range_sensors"]["front_right"]["theta"]);
   front_right->set_a(json["range_sensors"]["front_right"]["a"]);
   front_right->set_b(json["range_sensors"]["front_right"]["b"]);
+  front_right->set_c(json["range_sensors"]["front_right"]["c"]);
 
 
   auto front_left = robot_description.mutable_sensors()->mutable_front_left();
@@ -165,6 +171,7 @@ RobotDescription Convert(std::ifstream &fs) {
   front_left_p->set_theta(json["range_sensors"]["front_left"]["theta"]);
   front_left->set_a(json["range_sensors"]["front_left"]["a"]);
   front_left->set_b(json["range_sensors"]["front_left"]["b"]);
+  front_left->set_c(json["range_sensors"]["front_left"]["c"]);
 
 
   return robot_description;

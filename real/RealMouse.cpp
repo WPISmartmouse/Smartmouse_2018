@@ -57,13 +57,13 @@ void RealMouse::run(double dt_s) {
   range_data_adc.gerald_right = analogRead(GERALD_RIGHT_ANALOG_PIN);
   range_data_adc.front_right = analogRead(FRONT_RIGHT_ANALOG_PIN);
   range_data_adc.back_right = analogRead(BACK_RIGHT_ANALOG_PIN);
-  range_data_m.back_left = smartmouse::kc::BACK_LEFT_MODEL.toMeters(range_data_adc.back_left);
-  range_data_m.front_left = smartmouse::kc::FRONT_LEFT_MODEL.toMeters(range_data_adc.front_left);
-  range_data_m.gerald_left = smartmouse::kc::GERALD_LEFT_MODEL.toMeters(range_data_adc.gerald_left);
-  range_data_m.front = smartmouse::kc::FRONT_MODEL.toMeters(range_data_adc.front);
-  range_data_m.gerald_right = smartmouse::kc::GERALD_RIGHT_MODEL.toMeters(range_data_adc.gerald_right);
-  range_data_m.front_right = smartmouse::kc::FRONT_RIGHT_MODEL.toMeters(range_data_adc.front_right);
-  range_data_m.back_right = smartmouse::kc::BACK_RIGHT_MODEL.toMeters(range_data_adc.back_right);
+  range_data_m.back_left = back_left_model.toMeters(range_data_adc.back_left);
+  range_data_m.front_left = front_left_model.toMeters(range_data_adc.front_left);
+  range_data_m.gerald_left = gerald_left_model.toMeters(range_data_adc.gerald_left);
+  range_data_m.front = front_model.toMeters(range_data_adc.front);
+  range_data_m.gerald_right = gerald_right_model.toMeters(range_data_adc.gerald_right);
+  range_data_m.front_right = front_right_model.toMeters(range_data_adc.front_right);
+  range_data_m.back_right = back_right_model.toMeters(range_data_adc.back_right);
 
 #ifdef PROFILE
   Serial.print("Sensors, ");

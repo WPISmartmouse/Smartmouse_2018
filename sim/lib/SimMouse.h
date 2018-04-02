@@ -15,7 +15,7 @@
 #include <common/IRSensorModeling/Model.h>
 
 class SimMouse : public Mouse {
-public:
+ public:
   static constexpr int rad_to_tick(double rad) {
     return static_cast<int>(rad / smartmouse::kc::RAD_PER_TICK);
   }
@@ -66,16 +66,16 @@ public:
 
   void resetToStartPose();
 
-// copied from the output of compute_calibration_curves
-  smartmouse::ir::ModelParams back_left_model{1.387919, 0.043049, 0.0, 0.0};
-  smartmouse::ir::ModelParams front_left_model{1.290353, 0.031279, 0.0, 0.0};
-  smartmouse::ir::ModelParams gerald_left_model{1.307681, 0.032274, 0.0, 0.0};
-  smartmouse::ir::ModelParams front_model{1.408344, 0.044311, 0.0, 0.0};
-  smartmouse::ir::ModelParams gerald_right_model{1.325542, 0.034024, 0.0, 0.0};
-  smartmouse::ir::ModelParams front_right_model{1.266203, 0.027914, 0.0, 0.0};
-  smartmouse::ir::ModelParams back_right_model{1.340392, 0.036548, 0.0, 0.0};
+  // copied from the output of compute_calibration_curves
+  smartmouse::ir::ModelParams front_model{1.304576, 0.034583, 295.613524, 0.083000};
+  smartmouse::ir::ModelParams gerald_right_model{1.187237, 0.020162, 658.131265, 0.087692};
+  smartmouse::ir::ModelParams back_right_model{1.235639, 0.026170, 388.385273, 0.054205};
+  smartmouse::ir::ModelParams gerald_left_model{1.195759, 0.020983, 531.855338, 0.087671};
+  smartmouse::ir::ModelParams front_left_model{1.197716, 0.021642, 370.645580, 0.059513};
+  smartmouse::ir::ModelParams back_left_model{1.240250, 0.028287, 380.648090, 0.054208};
+  smartmouse::ir::ModelParams front_right_model{1.168262, 0.017652, 506.691267, 0.059520};
 
-private:
+ private:
 
   SimMouse();
 
