@@ -56,14 +56,6 @@ constexpr SensorPose BACK_RIGHT{BACK_SIDE_ANALOG_X, BACK_SIDE_ANALOG_Y, BACK_ANA
 constexpr SensorPose FRONT_RIGHT{FRONT_SIDE_ANALOG_X, FRONT_SIDE_ANALOG_Y, FRONT_ANALOG_ANGLE};
 constexpr SensorPose GERALD_RIGHT{GERALD_X, GERALD_Y, GERALD_ANGLE};
 
-constexpr smartmouse::ir::ModelParams BACK_LEFT_MODEL{1.387919, 0.043049};
-constexpr smartmouse::ir::ModelParams FRONT_LEFT_MODEL{1.290353, 0.031279};
-constexpr smartmouse::ir::ModelParams GERALD_LEFT_MODEL{1.307681, 0.032274};
-constexpr smartmouse::ir::ModelParams FRONT_MODEL{1.408344, 0.044311};
-constexpr smartmouse::ir::ModelParams GERALD_RIGHT_MODEL{1.325542, 0.034024};
-constexpr smartmouse::ir::ModelParams FRONT_RIGHT_MODEL {1.266203, 0.027914};
-constexpr smartmouse::ir::ModelParams BACK_RIGHT_MODEL {1.340392, 0.036548};
-
 constexpr double cellsToRad(double x) {
   return x * smartmouse::maze::UNIT_DIST_M / WHEEL_RAD;
 }

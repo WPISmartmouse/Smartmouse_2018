@@ -31,7 +31,10 @@ def main():
         return
 
     def clip(x):
-            return x[args.start:-args.end]
+        return x[args.start:-args.end]
+
+    # based on our calibration block
+    calibration_distances = {'B': 0.0542078, 'A': 0.0595125, 'F': 0.0876708, 'E': 0.0830000, 'G': 0.0876917, 'D': 0.0595197, 'H': 0.0542047}
 
     # load data
     MAX_DIST = 0.2
@@ -42,6 +45,7 @@ def main():
     distances = np.arange(D, 0, -1) * args.spacing
     distances[0] = MAX_DIST
     columns = {"B": 0, "A": 1, "F": 2, "E": 3, "G": 4, "D": 5, "H": 6}
+    name_map = {"B": "BACK_LEFT", "A": "FRONT_LEFT", "F": "GERALD_LEFT", "E": "FRONT", "G": "GERALD_RIGHT", "D": "FRONT_RIGHT", "H": "BACK_RIGHT"}
 
     letter_data_map = {}
     for i, log in enumerate(args.logs):
@@ -66,8 +70,8 @@ def main():
     params = np.ndarray((S, 3))
     model_errors = np.ndarray((S, D - args.end - args.start))
     model_predictions = np.ndarray((S, D - args.end - args.start))
-    print("|sensor|a|b|c|")
-    print("|------|-|-|-|")
+    markdown_table_output = "|sensor|a|b|c|\n|------|-|-|-|"
+    generated_code_output = ""
     for i, (letter, m) in enumerate(zip(letter_data_map.keys(), means)):
         # we ignore the first data point here because it doesn't have a proper distance, it's infinitly far
         # we also ignore the last three points where shit starts to go down
@@ -76,10 +80,18 @@ def main():
         p, _ = optimize.curve_fit(sensor_model, m, d, maxfev=100000)
         model_prediction = sensor_model(m, *p)
         model_error = model_prediction - d
-        print("|{:s}|{:0.6f}|{:0.6f}|{:0.6f}|".format(letter, *p))
+
+        markdown_table_output += "|{:s}|{:0.6f}|{:0.6f}|{:0.6f}|\n".format(letter, *p)
+        generated_code_output += "smartmouse::ir::ModelParams"
+        generated_code_output += " {:s}{{{:0.6f}, {:0.6f}, {:0.6f}, {:0.6f}}}\n" .format(name_map[letter], *p, calibration_distances[letter])
+
         params[i] = p
         model_predictions[i] = model_prediction
         model_errors[i] = model_error
+
+    print(markdown_table_output)
+
+    print(generated_code_output)
 
     print("Average Model Parameters (these suck, so beware)")
     print(params.mean(axis=0))

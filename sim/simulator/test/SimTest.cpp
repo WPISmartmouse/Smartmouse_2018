@@ -10,6 +10,7 @@
 #include <sim/simulator/lib/Server.h>
 #include <msgs/world_statistics.pb.h>
 #include <lib/common/RayTracing.h>
+#include <common/IRSensorModeling/Model.h>
 
 TEST(MsgsTest, ConvertMillis) {
   ignition::msgs::Time t = smartmouse::msgs::Convert(10);
@@ -217,6 +218,20 @@ TEST(RayTracingTest, DistanceToWallTest) {
     ASSERT_TRUE(dist);
     EXPECT_EQ(*dist, 0.09);
   }
+}
+
+TEST(CalibrationTest, CalibrationTest) {
+  constexpr int calibration_adc = 1000;
+  constexpr double calibration_distance = 0.04494939885;
+  constexpr int fake_adc = 950;
+  smartmouse::ir::ModelParams p{1.214233, 0.023794, 284.688506, calibration_distance};
+
+  ASSERT_NEAR(p.toMeters(calibration_adc), calibration_distance, 1e-9);
+  ASSERT_NE(p.toMeters(fake_adc), calibration_distance);
+
+  p.calibrate(fake_adc);
+
+  ASSERT_NEAR(p.toMeters(fake_adc), calibration_distance, 1e-9);
 }
 
 int main(int argc, char **argv) {

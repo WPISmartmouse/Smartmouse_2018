@@ -7,14 +7,15 @@
 #include <common/core/AbstractMaze.h>
 #include <common/core/Pose.h>
 
+template<typename T>
 struct RangeData {
-  double gerald_left;
-  double gerald_right;
-  double front_left;
-  double front_right;
-  double back_left;
-  double back_right;
-  double front;
+  T gerald_left;
+  T gerald_right;
+  T front_left;
+  T front_right;
+  T back_left;
+  T back_right;
+  T front;
 
   std::string to_string() {
     std::stringstream ss;

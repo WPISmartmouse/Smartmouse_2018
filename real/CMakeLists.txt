@@ -31,6 +31,7 @@ set(mains
     main/measure_analog_curves.cpp
     main/as5048a_test.cpp
     main/analog_test.cpp
+    main/test_localization.cpp
     main/execute_velocity_profile.cpp
     main/motor_and_battery_test.cpp
     main/profile_encoders.cpp

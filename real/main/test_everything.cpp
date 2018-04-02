@@ -55,13 +55,13 @@ void loop() {
         mouse->checkVoltage(),
         vl,
         vr,
-        mouse->range_data.back_left,
-        mouse->range_data.front_left,
-        mouse->range_data.gerald_left,
-        mouse->range_data.front,
-        mouse->range_data.gerald_right,
-        mouse->range_data.front_right,
-        mouse->range_data.back_right);
+        mouse->range_data_adc.back_left,
+        mouse->range_data_adc.front_left,
+        mouse->range_data_adc.gerald_left,
+        mouse->range_data_adc.front,
+        mouse->range_data_adc.gerald_right,
+        mouse->range_data_adc.front_right,
+        mouse->range_data_adc.back_right);
 
   mouse->setSpeedCps(1, 1);
 

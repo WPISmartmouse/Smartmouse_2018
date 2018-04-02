@@ -4,7 +4,7 @@
 #include <sim/lib/SimMouse.h>
 
 class WaitForStart : public Command {
-public:
+ public:
   WaitForStart();
 
   void initialize();
@@ -15,6 +15,7 @@ public:
 
   void end();
 
-  private:
-    SimMouse *mouse;
+ private:
+  SimMouse *mouse;
+  static bool calibrated;
 };

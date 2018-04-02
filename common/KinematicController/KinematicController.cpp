@@ -76,7 +76,7 @@ void KinematicController::reset_yaw_to(double new_yaw) {
 }
 
 std::pair<double, double>
-KinematicController::run(double dt_s, double left_angle_rad, double right_angle_rad, RangeData range_data) {
+KinematicController::run(double dt_s, double left_angle_rad, double right_angle_rad, RangeData<double> range_data) {
   static std::pair<double, double> abstract_forces;
 
   if (!initialized) {
@@ -195,7 +195,7 @@ GlobalPose KinematicController::forwardKinematics(double vl_cups, double vr_cups
   return GlobalPose(dcol_cu, drow_cu, dtheta_rad);
 }
 
-std::tuple<double, double, bool> KinematicController::estimate_pose(RangeData range_data, Mouse &mouse) {
+std::tuple<double, double, bool> KinematicController::estimate_pose(RangeData<double> range_data, Mouse &mouse) {
   static double last_front_left_analog_dist;
   static double last_front_right_analog_dist;
   static double last_back_left_analog_dist;
@@ -216,6 +216,13 @@ std::tuple<double, double, bool> KinematicController::estimate_pose(RangeData ra
                                                                                     smartmouse::kc::FRONT_RIGHT,
                                                                                     range_data.back_right,
                                                                                     range_data.front_right);
+
+//  print("% 5.3f, % 5.3f, % 5.3f, % 5.3f\r\n",
+//        d_to_wall_left,
+//        d_to_wall_right,
+//        smartmouse::math::rad_to_deg(yaw_left),
+//        smartmouse::math::rad_to_deg(yaw_right));
+
   bool sense_left_wall = range_data.front_left < smartmouse::kc::SIDE_WALL_THRESHOLD &&
       range_data.back_left < smartmouse::kc::SIDE_WALL_THRESHOLD;
   bool sense_right_wall = range_data.front_right < smartmouse::kc::SIDE_WALL_THRESHOLD &&

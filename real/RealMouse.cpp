@@ -4,52 +4,6 @@
 
 RealMouse *RealMouse::instance = nullptr;
 
-IRConverter::IRConverter() : ir_lookup{
-    755, // .01
-    648, // .02
-    492, // .03
-    409, // .04
-    315, // .05
-    268, // .06
-    224, // .07
-    192, // .08
-    165, // .09
-    147, // .10
-    134, // .11
-    115, // .12
-    105, // .13
-    93,  // .14
-    86,  // .15
-    75,  // .16
-    68,  // .17
-    58,  // .18
-}, calibration_offset(0) {}
-
-void IRConverter::calibrate(int avg_adc_value_on_center) {
-  double actual_dist = (0.08 - smartmouse::kc::FRONT_SIDE_ANALOG_Y) / sin(smartmouse::kc::FRONT_ANALOG_ANGLE);
-  int centered_idx = 4;
-  double expected_distance = (avg_adc_value_on_center - ir_lookup[centered_idx]) * 0.01 /
-      (ir_lookup[centered_idx] - ir_lookup[centered_idx - 1]) + (centered_idx + 1) * .01;
-  calibration_offset = actual_dist - expected_distance;
-}
-
-double IRConverter::adcToMeters(int adc) {
-  if (adc > 751) {
-    return 0.01;
-  } else if (adc <= 53) {
-    return 0.18;
-  } else {
-    for (int i = 1; i < 18; i++) {
-      if (adc >= ir_lookup[i]) {
-        // linear map between i and i+1, .01 meters spacing
-        double o = (adc - ir_lookup[i]) * 0.01 / (ir_lookup[i] - ir_lookup[i - 1]) + (i + 1) * .01 + calibration_offset;
-        return o;
-      }
-    }
-    return 0.18;
-  }
-}
-
 RealMouse *RealMouse::inst() {
   if (instance == NULL) {
     instance = new RealMouse();
@@ -59,16 +13,17 @@ RealMouse *RealMouse::inst() {
 
 RealMouse::RealMouse()
     : kinematic_controller(this),
-      range_data({0.18, 0.18, 0.18, 0.18, 0.18}),
+      range_data_adc({}),
+      range_data_m({}),
       left_encoder(LEFT_ENCODER_CS),
       right_encoder(RIGHT_ENCODER_CS) {}
 
 SensorReading RealMouse::checkWalls() {
   SensorReading sr(row, col);
 
-  sr.walls[static_cast<int>(dir)] = range_data.front < 0.17;
-  sr.walls[static_cast<int>(left_of_dir(dir))] = range_data.gerald_left < 0.15;
-  sr.walls[static_cast<int>(right_of_dir(dir))] = range_data.gerald_right < 0.15;
+  sr.walls[static_cast<int>(dir)] = range_data_m.front < 0.17;
+  sr.walls[static_cast<int>(left_of_dir(dir))] = range_data_m.gerald_left < 0.15;
+  sr.walls[static_cast<int>(right_of_dir(dir))] = range_data_m.gerald_right < 0.15;
   sr.walls[static_cast<int>(opposite_direction(dir))] = false;
 
   return sr;
@@ -94,13 +49,21 @@ void RealMouse::run(double dt_s) {
 #ifdef PROFILE
   unsigned long t0 = micros();
 #endif
-  range_data.gerald_left = ir_converter.adcToMeters(analogRead(GERALD_LEFT_ANALOG_PIN));
-  range_data.gerald_right = ir_converter.adcToMeters(analogRead(GERALD_RIGHT_ANALOG_PIN));
-  range_data.front_left = ir_converter.adcToMeters(analogRead(FRONT_LEFT_ANALOG_PIN));
-  range_data.back_left = ir_converter.adcToMeters(analogRead(BACK_LEFT_ANALOG_PIN));
-  range_data.front_right = ir_converter.adcToMeters(analogRead(FRONT_RIGHT_ANALOG_PIN));
-  range_data.back_right = ir_converter.adcToMeters(analogRead(BACK_RIGHT_ANALOG_PIN));
-  range_data.front = ir_converter.adcToMeters(analogRead(FRONT_ANALOG_PIN));
+
+  range_data_adc.back_left = analogRead(BACK_LEFT_ANALOG_PIN);
+  range_data_adc.front_left = analogRead(FRONT_LEFT_ANALOG_PIN);
+  range_data_adc.gerald_left = analogRead(GERALD_LEFT_ANALOG_PIN);
+  range_data_adc.front = analogRead(FRONT_ANALOG_PIN);
+  range_data_adc.gerald_right = analogRead(GERALD_RIGHT_ANALOG_PIN);
+  range_data_adc.front_right = analogRead(FRONT_RIGHT_ANALOG_PIN);
+  range_data_adc.back_right = analogRead(BACK_RIGHT_ANALOG_PIN);
+  range_data_m.back_left = smartmouse::kc::BACK_LEFT_MODEL.toMeters(range_data_adc.back_left);
+  range_data_m.front_left = smartmouse::kc::FRONT_LEFT_MODEL.toMeters(range_data_adc.front_left);
+  range_data_m.gerald_left = smartmouse::kc::GERALD_LEFT_MODEL.toMeters(range_data_adc.gerald_left);
+  range_data_m.front = smartmouse::kc::FRONT_MODEL.toMeters(range_data_adc.front);
+  range_data_m.gerald_right = smartmouse::kc::GERALD_RIGHT_MODEL.toMeters(range_data_adc.gerald_right);
+  range_data_m.front_right = smartmouse::kc::FRONT_RIGHT_MODEL.toMeters(range_data_adc.front_right);
+  range_data_m.back_right = smartmouse::kc::BACK_RIGHT_MODEL.toMeters(range_data_adc.back_right);
 
 #ifdef PROFILE
   Serial.print("Sensors, ");
@@ -111,7 +74,7 @@ void RealMouse::run(double dt_s) {
   unsigned long t1 = micros();
 #endif
   std::tie(abstract_left_force, abstract_right_force) = kinematic_controller.run(dt_s, left_angle_rad,
-                                                                                 right_angle_rad, range_data);
+                                                                                 right_angle_rad, range_data_m);
 #ifdef PROFILE
   Serial.print("KC, ");
   Serial.println(micros() - t1);

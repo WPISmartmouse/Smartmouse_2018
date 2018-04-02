@@ -19,15 +19,19 @@ struct ModelParams {
   /** power based on ADC value **/
   double b;
 
-  /** scales based on angle to the wall **/
+  /** a constant offset **/
   double c;
 
-  /** scales based on reflectivity of the material **/
-  double d;
+  const double CALIBRATION_DISTANCE;
 
-  int toADC(double distance_m);
+  /** calibration offset **/
+  int adc_offset = 0;
 
-  double toMeters(int adc);
+  int toADC(double distance_m) const;
+
+  double toMeters(int adc) const;
+
+  void calibrate(int adc_reading);
 };
 
 }

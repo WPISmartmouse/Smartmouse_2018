@@ -8,17 +8,6 @@
 #include <common/KinematicController/KinematicController.h>
 
 
-class IRConverter {
-public:
-  IRConverter();
-  double adcToMeters(int adc);
-  void calibrate(int avg_adc_value_on_center);
-private:
-  double calibration_offset;
-  std::array<int, 18> ir_lookup;
-
-};
-
 class RealMouse : public Mouse {
 public:
 
@@ -79,10 +68,20 @@ public:
 
   KinematicController kinematic_controller;
   AS5048A left_encoder, right_encoder;
-  IRConverter ir_converter;
   double left_angle_rad;
   double right_angle_rad;
-  RangeData range_data;
+  RangeData<int> range_data_adc;
+
+  /** store this as meters interally. the RoboSimState msg will be in ADC values **/
+  RangeData<double> range_data_m;
+
+  smartmouse::ir::ModelParams back_left_model;
+  smartmouse::ir::ModelParams front_left_model;
+  smartmouse::ir::ModelParams gerald_left_model;
+  smartmouse::ir::ModelParams front_model;
+  smartmouse::ir::ModelParams back_right_model;
+  smartmouse::ir::ModelParams front_right_model;
+  smartmouse::ir::ModelParams gerald_right_model;
 
  private:
   RealMouse();

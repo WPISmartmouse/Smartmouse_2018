@@ -59,20 +59,21 @@ public:
   ignition::transport::Node node;
 
   KinematicController kinematic_controller;
-  RangeData range_data_adc;
+  RangeData<int> range_data_adc;
 
   /** store this as meters interally. the RoboSimState msg will be in ADC values **/
-  RangeData range_data_m;
-
-  smartmouse::ir::ModelParams back_left_model;
-  smartmouse::ir::ModelParams front_left_model;
-  smartmouse::ir::ModelParams gerald_left_model;
-  smartmouse::ir::ModelParams front_model;
-  smartmouse::ir::ModelParams back_right_model;
-  smartmouse::ir::ModelParams front_right_model;
-  smartmouse::ir::ModelParams gerald_right_model;
+  RangeData<double> range_data_m;
 
   void resetToStartPose();
+
+// copied from the output of compute_calibration_curves
+  smartmouse::ir::ModelParams back_left_model{1.387919, 0.043049, 0.0, 0.0};
+  smartmouse::ir::ModelParams front_left_model{1.290353, 0.031279, 0.0, 0.0};
+  smartmouse::ir::ModelParams gerald_left_model{1.307681, 0.032274, 0.0, 0.0};
+  smartmouse::ir::ModelParams front_model{1.408344, 0.044311, 0.0, 0.0};
+  smartmouse::ir::ModelParams gerald_right_model{1.325542, 0.034024, 0.0, 0.0};
+  smartmouse::ir::ModelParams front_right_model{1.266203, 0.027914, 0.0, 0.0};
+  smartmouse::ir::ModelParams back_right_model{1.340392, 0.036548, 0.0, 0.0};
 
 private:
 

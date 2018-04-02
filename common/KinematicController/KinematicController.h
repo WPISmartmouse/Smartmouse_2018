@@ -62,7 +62,7 @@ class KinematicController {
 
   static double sidewaysDispToCenter(Mouse &mouse);
 
-  std::tuple<double, double, bool> estimate_pose(RangeData range_data, Mouse &mouse);
+  std::tuple<double, double, bool> estimate_pose(RangeData<double> range_data, Mouse &mouse);
 
   GlobalPose getGlobalPose();
 
@@ -78,7 +78,7 @@ class KinematicController {
 
   void reset_yaw_to(double new_yaw);
 
-  std::pair<double, double> run(double dt_s, double left_angle_rad, double right_angle_rad, RangeData range_data);
+  std::pair<double, double> run(double dt_s, double left_angle_rad, double right_angle_rad, RangeData<double> range_data);
 
   void setAccelerationCpss(double acceleration_mpss);
 
