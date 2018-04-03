@@ -98,6 +98,8 @@ class KinematicController {
   bool kinematics_enabled;
   unsigned int row;
   unsigned int col;
+  bool sense_left_wall;
+  bool sense_right_wall;
 
   double getCurrentForwardSpeedCUPS();
 

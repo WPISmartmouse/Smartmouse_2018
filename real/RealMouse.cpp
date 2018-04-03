@@ -146,6 +146,10 @@ void RealMouse::setup() {
   Serial.begin(0);
   // But it does here because it's not the USB serial
   Serial1.begin(115200);
+  delay(1000);
+
+  // IR sensor calibration
+  calibrate();
 }
 
 void RealMouse::resetToStartPose() {
@@ -175,4 +179,28 @@ double RealMouse::checkVoltage() {
   }
 
   return voltage;
+}
+
+void RealMouse::calibrate() {
+  digitalWrite(LED_5, HIGH);
+
+  // read the latest values
+  range_data_adc.back_left = analogRead(BACK_LEFT_ANALOG_PIN);
+  range_data_adc.front_left = analogRead(FRONT_LEFT_ANALOG_PIN);
+  range_data_adc.gerald_left = analogRead(GERALD_LEFT_ANALOG_PIN);
+  range_data_adc.front = analogRead(FRONT_ANALOG_PIN);
+  range_data_adc.gerald_right = analogRead(GERALD_RIGHT_ANALOG_PIN);
+  range_data_adc.front_right = analogRead(FRONT_RIGHT_ANALOG_PIN);
+  range_data_adc.back_right = analogRead(BACK_RIGHT_ANALOG_PIN);
+
+  // compute offsets between measured and expected ADC value
+  back_left_model.calibrate(range_data_adc.back_left);
+  front_left_model.calibrate(range_data_adc.front_left);
+  gerald_left_model.calibrate(range_data_adc.gerald_left);
+  front_model.calibrate(range_data_adc.front);
+  gerald_right_model.calibrate(range_data_adc.gerald_right);
+  front_right_model.calibrate(range_data_adc.front_right);
+  back_right_model.calibrate(range_data_adc.back_right);
+
+  digitalWrite(LED_5, LOW);
 }

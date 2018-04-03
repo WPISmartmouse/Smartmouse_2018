@@ -27,13 +27,18 @@ void loop() {
   }
 
   ++idx;
-  if (idx % 200 == 0) {
+  if (idx % 500 == 0) {
     auto p = mouse->getLocalPose();
+    print("%f %f %f %f %f %f, %f\r\n",
+          mouse->range_data_m.back_left,
+          mouse->range_data_m.front_left,
+          mouse->range_data_m.gerald_left,
+          mouse->range_data_m.front,
+          mouse->range_data_m.gerald_right,
+          mouse->range_data_m.front_right,
+          mouse->range_data_m.back_right);
+
     print("%6i %6i %6i %6i %6i %6i, %6i\r\n",
-//          print("%+ 7.3f %+ 7.3f %+ 7.3f %+ 6i %+ 6i %+ 6i %+ 6i %+ 6i %+ 6i, %+ 6i\r\n",
-//          p.to_left,
-//          p.to_back,
-//          p.yaw_from_straight,
           mouse->range_data_adc.back_left,
           mouse->range_data_adc.front_left,
           mouse->range_data_adc.gerald_left,
@@ -42,10 +47,17 @@ void loop() {
           mouse->range_data_adc.front_right,
           mouse->range_data_adc.back_right);
 
+    print("%d %d\r\n",
+          mouse->kinematic_controller.sense_left_wall,
+          mouse->kinematic_controller.sense_right_wall);
+
+    print("%f %f %f\r\n",
+          p.to_left,
+          p.to_back,
+          p.yaw_from_straight);
   }
 
   mouse->run(dt_us / 1e6);
-  mouse->setSpeedCps(1, 1);
 
   last_t_us = now_us;
 }

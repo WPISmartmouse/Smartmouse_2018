@@ -61,7 +61,10 @@ public:
 
   void setSpeedCps(double l_mps, double r_mps);
 
+  void calibrate();
+
   static double checkVoltage();
+
 
   /** runs setup things like pin initializes */
   void setup();
@@ -75,13 +78,14 @@ public:
   /** store this as meters interally. the RoboSimState msg will be in ADC values **/
   RangeData<double> range_data_m;
 
-  smartmouse::ir::ModelParams front_model{1.304576, 0.034583, 295.613524, 0.083000};
-  smartmouse::ir::ModelParams gerald_right_model{1.187237, 0.020162, 658.131265, 0.087692};
-  smartmouse::ir::ModelParams back_right_model{1.235639, 0.026170, 388.385273, 0.054205};
-  smartmouse::ir::ModelParams gerald_left_model{1.195759, 0.020983, 531.855338, 0.087671};
-  smartmouse::ir::ModelParams front_left_model{1.197716, 0.021642, 370.645580, 0.059513};
-  smartmouse::ir::ModelParams back_left_model{1.240250, 0.028287, 380.648090, 0.054208};
-  smartmouse::ir::ModelParams front_right_model{1.168262, 0.017652, 506.691267, 0.059520};
+  /** generated with ./compute_calibration_parameters.py right.csv left.csv front.csv **/
+  smartmouse::ir::ModelParams gerald_right_model = {1.25991, 0.02697, 1164.77724, 0.06928};
+  smartmouse::ir::ModelParams back_right_model = {1.25643, 0.02669, 517.55987, 0.05220};
+  smartmouse::ir::ModelParams front_left_model = {1.19678, 0.02072, 768.14887, 0.06385};
+  smartmouse::ir::ModelParams front_right_model = {1.23762, 0.02446, 653.84782, 0.05959};
+  smartmouse::ir::ModelParams front_model = {1.27046, 0.02867, 600.86490, 0.08000};
+  smartmouse::ir::ModelParams back_left_model = {1.21944, 0.02408, 577.09229, 0.05621};
+  smartmouse::ir::ModelParams gerald_left_model = {1.24543, 0.02568, 654.73110, 0.07390};
 
  private:
   RealMouse();

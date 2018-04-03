@@ -8,7 +8,11 @@ namespace ir {
 
 double ModelParams::toMeters(int adc) const {
   double d = a - std::pow(adc - c - adc_offset, b);
-  if (d > smartmouse::kc::ANALOG_MAX_DIST_M) {
+  if (std::isnan(d)) {
+
+    return smartmouse::kc::ANALOG_MAX_DIST_M;
+  }
+  else if (d > smartmouse::kc::ANALOG_MAX_DIST_M) {
     return smartmouse::kc::ANALOG_MAX_DIST_M;
   }
   else if (d < smartmouse::kc::ANALOG_MIN_DIST_M) {

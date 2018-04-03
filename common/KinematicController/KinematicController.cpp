@@ -12,7 +12,7 @@ const double KinematicController::kDropSafety = 0.8;
 KinematicController::KinematicController(Mouse *mouse)
     : enable_sensor_pose_estimate(true), enabled(true), kinematics_enabled(true), initialized(false),
       ignoring_left(false), ignoring_right(false), mouse(mouse),
-      d_until_left_drop(0), d_until_right_drop(0) {
+      d_until_left_drop(0), d_until_right_drop(0), sense_left_wall(false), sense_right_wall(false) {
   current_pose_estimate_cu.col = 0;
   current_pose_estimate_cu.row = 0;
   current_pose_estimate_cu.yaw = 0;
@@ -217,15 +217,9 @@ std::tuple<double, double, bool> KinematicController::estimate_pose(RangeData<do
                                                                                     range_data.back_right,
                                                                                     range_data.front_right);
 
-//  print("% 5.3f, % 5.3f, % 5.3f, % 5.3f\r\n",
-//        d_to_wall_left,
-//        d_to_wall_right,
-//        smartmouse::math::rad_to_deg(yaw_left),
-//        smartmouse::math::rad_to_deg(yaw_right));
-
-  bool sense_left_wall = range_data.front_left < smartmouse::kc::SIDE_WALL_THRESHOLD &&
+  sense_left_wall = range_data.front_left < smartmouse::kc::SIDE_WALL_THRESHOLD &&
       range_data.back_left < smartmouse::kc::SIDE_WALL_THRESHOLD;
-  bool sense_right_wall = range_data.front_right < smartmouse::kc::SIDE_WALL_THRESHOLD &&
+  sense_right_wall = range_data.front_right < smartmouse::kc::SIDE_WALL_THRESHOLD &&
       range_data.back_right < smartmouse::kc::SIDE_WALL_THRESHOLD;
 
 
@@ -262,14 +256,14 @@ std::tuple<double, double, bool> KinematicController::estimate_pose(RangeData<do
   }
 
   // consider the "logical" state of walls AND actual range reading
-  if (sense_right_wall && mouse.isWallInDirection(right_of_dir(mouse.getDir()))) { // wall is on right
+  if (sense_left_wall && mouse.isWallInDirection(left_of_dir(mouse.getDir()))) { // wall is on left
+    *offset = d_to_wall_left + smartmouse::maze::HALF_WALL_THICKNESS_M;
+    *yaw = dir_to_yaw(mouse.getDir()) + yaw_left;
+    *ignore_walls = false;
+  } else if (sense_right_wall && mouse.isWallInDirection(right_of_dir(mouse.getDir()))) { // wall is on right
     // d_to_wall_right should be positive here for this to be correct
     *offset = smartmouse::maze::UNIT_DIST_M - d_to_wall_right - smartmouse::maze::HALF_WALL_THICKNESS_M;
     *yaw = dir_to_yaw(mouse.getDir()) + yaw_right;
-    *ignore_walls = false;
-  } else if (sense_left_wall && mouse.isWallInDirection(left_of_dir(mouse.getDir()))) { // wall is on left
-    *offset = d_to_wall_left + smartmouse::maze::HALF_WALL_THICKNESS_M;
-    *yaw = dir_to_yaw(mouse.getDir()) + yaw_left;
     *ignore_walls = false;
   } else { // we're too far from any walls, use our pose estimation
     *ignore_walls = true;
