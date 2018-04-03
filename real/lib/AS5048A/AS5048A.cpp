@@ -15,7 +15,7 @@ const int AS5048A_ANGLE = 0x3FFF;
 /**
  * Constructor
  */
-AS5048A::AS5048A(byte arg_cs) {
+AS5048A::AS5048A(byte arg_cs) : inverted(1) {
   _cs = arg_cs;
   errorFlag = false;
   position = 0;
@@ -97,7 +97,7 @@ int AS5048A::getRotation() {
  * Returns the raw angle directly from the sensor
  */
 word AS5048A::getRawRotation() {
-  return AS5048A::read(AS5048A_ANGLE);
+  return inverted * AS5048A::read(AS5048A_ANGLE);
 }
 
 /**
@@ -294,4 +294,8 @@ word AS5048A::write(word registerAddress, word data) {
 
   //Return the data, stripping the parity and error bits
   return (((left_byte & 0xFF) << 8) | (right_byte & 0xFF)) & ~0xC000;
+}
+
+void AS5048A::invert() {
+  inverted *= -1;
 }

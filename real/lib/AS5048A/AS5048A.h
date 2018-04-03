@@ -32,6 +32,11 @@ class AS5048A {
   void init();
 
   /**
+   * Invert
+   */
+   void invert();
+
+  /**
    * Closes the SPI connection
    */
   void close();
@@ -116,5 +121,7 @@ class AS5048A {
  private:
 
   byte spiCalcEvenParity(word);
+
+  unsigned int inverted;
 };
 #endif

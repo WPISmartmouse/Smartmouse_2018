@@ -11,9 +11,8 @@
 ArduinoTimer timer;
 Scheduler *scheduler;
 RealMouse *mouse;
-unsigned long last_t_us, last_blink_us;
+unsigned long last_t_us;
 bool done = false;
-bool on = true;
 smartmouse::kc::VelocityProfile *profile;
 
 void setup() {
@@ -22,10 +21,9 @@ void setup() {
   mouse = RealMouse::inst();
   mouse->setup();
 
-  mouse->kinematic_controller.enabled = false;
+  mouse->kinematic_controller.enable_sensor_pose_estimate = false;
 
   last_t_us = timer.programTimeUs();
-  last_blink_us = timer.programTimeUs();
 
   GlobalPose start(0, 0, 0);
   profile = new smartmouse::kc::VelocityProfile(start, {1, 0, 0});
@@ -36,12 +34,6 @@ void loop() {
 
   unsigned long now_us = timer.programTimeUs();
   double dt_us = now_us - last_t_us;
-
-  if (now_us - last_blink_us > 100000) {
-    last_blink_us = now_us;
-    digitalWrite(RealMouse::SYS_LED, static_cast<uint8_t>(on));
-    on = !on;
-  }
 
   // minimum period of main loop
   if (dt_us < 1500) {
@@ -54,6 +46,7 @@ void loop() {
   // since this program only does this once it's just millis converted to seconds
   double t_s = static_cast<double>(millis()) / 1000.0;
   double v = profile->compute_forward_velocity(t_s);
+  print("% 5.3f, %i, % 5.3f\r\n", v, mouse->kinematic_controller.left_motor.setpoint_rps, mouse->kinematic_controller.left_motor.velocity_rps);
   mouse->setSpeedCps(v, v);
 
   last_t_us = now_us;

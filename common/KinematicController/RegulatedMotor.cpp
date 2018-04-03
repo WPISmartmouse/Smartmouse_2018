@@ -2,11 +2,12 @@
 #include <common/core/Mouse.h>
 #include <common/KinematicController/RobotConfig.h>
 #include <common/KinematicController/RegulatedMotor.h>
+#include <common/math/math.h>
 
 RegulatedMotor::RegulatedMotor()
-    : kP(500),
-      kI(5),
-      kD(6),
+    : kP(25),
+      kI(0),
+      kD(0),
       ff_offset(0),
       ff_scale(4),
       int_cap(75),
@@ -41,7 +42,7 @@ double RegulatedMotor::runPid(double dt_s, double angle_rad) {
     return 0;
   }
 
-  velocity_rps = (angle_rad - last_angle_rad) / dt_s;
+  velocity_rps = smartmouse::math::yaw_diff(last_angle_rad, angle_rad) / dt_s;
   error = regulated_setpoint_rps - velocity_rps;
   derivative = (last_velocity_rps - velocity_rps) / dt_s;
   integral += error * dt_s;

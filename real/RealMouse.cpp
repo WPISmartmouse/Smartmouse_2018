@@ -88,14 +88,12 @@ void RealMouse::run(double dt_s) {
 #ifdef PROFILE
   unsigned long t2 = micros();
 #endif
-  abstract_left_force = 170;
-  abstract_right_force = 170;
   if (abstract_left_force < 0) {
-    analogWrite(MOTOR_LEFT_A1, (int) -abstract_left_force);
-    analogWrite(MOTOR_LEFT_A2, 0);
-  } else {
     analogWrite(MOTOR_LEFT_A1, 0);
-    analogWrite(MOTOR_LEFT_A2, (int) abstract_left_force);
+    analogWrite(MOTOR_LEFT_A2, (int) -abstract_left_force);
+  } else {
+    analogWrite(MOTOR_LEFT_A1, (int) abstract_left_force);
+    analogWrite(MOTOR_LEFT_A2, 0);
   }
 
   if (abstract_right_force < 0) {
@@ -128,14 +126,16 @@ void RealMouse::setup() {
 
   left_encoder.init();
   right_encoder.init();
+  left_encoder.invert();
+
   // pull MOSI high to run encoders in 3 wire mode
   pinMode(MOSI, OUTPUT);
   digitalWrite(MOSI, HIGH);
 
-//  analogWriteFrequency(MOTOR_LEFT_A1, 1831.055);
-//  analogWriteFrequency(MOTOR_LEFT_A2, 1831.055);
-//  analogWriteFrequency(MOTOR_RIGHT_B1, 1831.055);
-//  analogWriteFrequency(MOTOR_RIGHT_B2, 1831.055);
+  analogWriteFrequency(MOTOR_LEFT_A1, 375000);
+  analogWriteFrequency(MOTOR_LEFT_A2, 375000);
+  analogWriteFrequency(MOTOR_RIGHT_B1, 375000);
+  analogWriteFrequency(MOTOR_RIGHT_B2, 375000);
   analogReadResolution(13);
 
   kinematic_controller.setAccelerationCpss(10);
@@ -168,7 +168,7 @@ double RealMouse::checkVoltage() {
   int a = analogRead(BATTERY_ANALOG_PIN);
   double voltage = a / std::pow(2, 13) * 3.3;
 
-  if (voltage < 2.7) {
+  if (2 < voltage && voltage < 2.7) {
     print("VOLTAGE IS TOO LOW. CHARGE THE BATTERY!!!\r\n");
   } else if (voltage > 3.2) {
     print("VOLTAGE IS TOO HIGH. SHE'S GONNA BLOW!!!\r\n");
