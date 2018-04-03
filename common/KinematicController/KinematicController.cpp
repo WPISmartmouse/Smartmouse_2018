@@ -200,11 +200,6 @@ std::tuple<double, double, bool> KinematicController::estimate_pose(RangeData<do
   static double last_front_right_analog_dist;
   static double last_back_left_analog_dist;
   static double last_back_right_analog_dist;
-  std::tuple<double, double, bool> newest_estimate;
-
-  double *yaw = &std::get<0>(newest_estimate);
-  double *offset = &std::get<1>(newest_estimate);
-  bool *ignore_walls = &std::get<2>(newest_estimate);
 
   double d_to_wall_left, yaw_left;
   double d_to_wall_right, yaw_right;
@@ -255,18 +250,24 @@ std::tuple<double, double, bool> KinematicController::estimate_pose(RangeData<do
     sense_right_wall = false;
   }
 
+  bool left_wall_logical = mouse.isWallInDirection(left_of_dir(mouse.getDir()));
+  bool right_wall_logical = mouse.isWallInDirection(right_of_dir(mouse.getDir()));
+
   // consider the "logical" state of walls AND actual range reading
-  if (sense_left_wall && mouse.isWallInDirection(left_of_dir(mouse.getDir()))) { // wall is on left
-    *offset = d_to_wall_left + smartmouse::maze::HALF_WALL_THICKNESS_M;
-    *yaw = dir_to_yaw(mouse.getDir()) + yaw_left;
-    *ignore_walls = false;
-  } else if (sense_right_wall && mouse.isWallInDirection(right_of_dir(mouse.getDir()))) { // wall is on right
+  double yaw = 0;
+  double offset = 0;
+  bool ignore_walls;
+  if (sense_left_wall && left_wall_logical) { // wall is on left
+    offset = d_to_wall_left + smartmouse::maze::HALF_WALL_THICKNESS_M;
+    yaw = dir_to_yaw(mouse.getDir()) + yaw_left;
+    ignore_walls = false;
+  } else if (sense_right_wall && right_wall_logical) { // wall is on right
     // d_to_wall_right should be positive here for this to be correct
-    *offset = smartmouse::maze::UNIT_DIST_M - d_to_wall_right - smartmouse::maze::HALF_WALL_THICKNESS_M;
-    *yaw = dir_to_yaw(mouse.getDir()) + yaw_right;
-    *ignore_walls = false;
+    offset = smartmouse::maze::UNIT_DIST_M - d_to_wall_right - smartmouse::maze::HALF_WALL_THICKNESS_M;
+    yaw = dir_to_yaw(mouse.getDir()) + yaw_right;
+    ignore_walls = false;
   } else { // we're too far from any walls, use our pose estimation
-    *ignore_walls = true;
+    ignore_walls = true;
   }
 
   last_front_left_analog_dist = range_data.front_left;
@@ -274,7 +275,7 @@ std::tuple<double, double, bool> KinematicController::estimate_pose(RangeData<do
   last_back_left_analog_dist = range_data.back_left;
   last_back_right_analog_dist = range_data.back_right;
 
-  return newest_estimate;
+  return std::tuple<double, double, bool>(yaw, offset, ignore_walls);
 };
 
 void KinematicController::setAccelerationCpss(double acceleration_cpss) {

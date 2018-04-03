@@ -64,8 +64,10 @@ void Mouse::internalForward() {
 }
 
 bool Mouse::isWallInDirection(Direction d) {
-  Node *mouse_node;
-  maze->get_node(&mouse_node, row, col);
+  Node *mouse_node = nullptr;
+  if ((maze->get_node(&mouse_node, row, col) == Node::OUT_OF_BOUNDS)) {
+    return false;
+  }
   bool is_wall = mouse_node->neighbor(d) == nullptr;
   return is_wall;
 }
