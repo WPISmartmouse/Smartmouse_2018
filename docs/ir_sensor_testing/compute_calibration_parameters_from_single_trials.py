@@ -49,7 +49,7 @@ def main():
 
     letter_data_map = {}
     for i, log in enumerate(args.logs):
-        letter = os.path.basename(log).strip(".csv")
+        letter = os.path.basename(log).strip(".csv")[-1]
         if letter not in letter_data_map:
             letter_data_map[letter] = []
         data = np.genfromtxt(log, delimiter=', ')[:, columns[letter]]

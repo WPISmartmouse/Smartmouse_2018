@@ -28,5 +28,5 @@ void loop() {
           analogRead(RealMouse::FRONT_RIGHT_ANALOG_PIN),
           analogRead(RealMouse::BACK_RIGHT_ANALOG_PIN));
   }
-  delay(8000);
+  delay(5000);
 }

@@ -44,7 +44,7 @@ def main():
 
     data = np.ndarray((len(args.logs), D, N))
     for i, log in enumerate(args.logs):
-        letter = os.path.basename(log).strip(".csv")
+        letter = os.path.basename(log).strip(".csv")[-1]
         column = columns[letter]
         x = np.genfromtxt(log, delimiter=', ')[:, column]
         x = x.reshape((D, N))
@@ -65,10 +65,11 @@ def main():
         # we also ignore the last three points where shit starts to go down
         m = clip(m)
         d = clip(distances)
+        letter = os.path.basename(args.logs[i]).strip(".csv")[-1]
         p, _ = optimize.curve_fit(sensor_model, m, d, maxfev=100000)
         model_prediction = sensor_model(m, *p)
         model_error = model_prediction - d
-        print("|{:s}|{:0.6f}|{:0.6f}|{:0.6f}|".format(args.logs[i].strip(".csv"), *p))
+        print("|{:s}|{:0.6f}|{:0.6f}|{:0.6f}|".format(letter, *p))
         params[i] = p
         model_predictions[i] = model_prediction
         model_errors[i] = model_error
@@ -104,7 +105,7 @@ def main():
 
         plt.figure()
         for d, predictions, xerr, log in zip(data, model_predictions, ranges, args.logs):
-            letter = os.path.basename(log).strip(".csv")
+            letter = os.path.basename(log).strip(".csv")[-1]
             #plt.scatter(x=d.mean(axis=1), y=distances, label=log, s=4)
             plt.errorbar(x=d.mean(axis=1), y=distances, xerr=xerr, linewidth=1, c=colors[letter])
             plt.plot(clip(d.mean(axis=1)), predictions, label=log + " model", alpha=0.7, linestyle='--', c=colors[letter])
