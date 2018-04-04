@@ -10,9 +10,9 @@
 const double KinematicController::kDropSafety = 0.8;
 
 KinematicController::KinematicController(Mouse *mouse)
-    : enable_sensor_pose_estimate(true), enabled(true), kinematics_enabled(true), initialized(false),
+    : enable_sensor_pose_estimate(true), enabled(true), kinematics_enabled(true), sense_left_wall(false), sense_right_wall(false), initialized(false),
       ignoring_left(false), ignoring_right(false), mouse(mouse),
-      d_until_left_drop(0), d_until_right_drop(0), sense_left_wall(false), sense_right_wall(false) {
+      d_until_left_drop(0), d_until_right_drop(0) {
   current_pose_estimate_cu.col = 0;
   current_pose_estimate_cu.row = 0;
   current_pose_estimate_cu.yaw = 0;
