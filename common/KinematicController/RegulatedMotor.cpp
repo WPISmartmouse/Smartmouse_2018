@@ -5,11 +5,11 @@
 #include <common/math/math.h>
 
 RegulatedMotor::RegulatedMotor()
-    : kP(0),
-      kI(0),
+    : kP(1.5),
+      kI(0.005),
       kD(0),
-      ff_offset(0),
-      ff_scale(5),
+      ff_offset(774),
+      ff_scale(2.52),
       int_cap(75),
       initialized(false),
       abstract_force(0),
@@ -51,12 +51,15 @@ double RegulatedMotor::runPid(double dt_s, double angle_rad) {
   // TODO: use our model model to solve for the theoretical feed forward constant
   if (regulated_setpoint_rps < 0) {
     feed_forward = regulated_setpoint_rps * ff_scale - ff_offset;
-  } else {
+  } else  if (regulated_setpoint_rps > 0)  {
     feed_forward = regulated_setpoint_rps * ff_scale + ff_offset;
+  }
+  else{
+    feed_forward = 0;
   }
   abstract_force = (feed_forward) + (error * kP) + (integral * kI) + (derivative * kD);
 
-  abstract_force = std::max(std::min(255.0, abstract_force), -255.0);
+  abstract_force = std::max(std::min(1023.0, abstract_force), -1023.0);
 
   // TODO remove this, since we have acceleration in KC
   // limit the change in setpoint

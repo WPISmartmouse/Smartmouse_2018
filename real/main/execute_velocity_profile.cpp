@@ -15,9 +15,12 @@ unsigned long last_t_us, last_blink_us;
 bool done = false;
 bool on = true;
 smartmouse::kc::VelocityProfile *profile;
+unsigned long t_0;
 
 void setup() {
   delay(1000);
+  analogWriteResolution(10);
+
   Command::setTimerImplementation(&timer);
   mouse = RealMouse::inst();
   mouse->setup();
@@ -28,6 +31,7 @@ void setup() {
 
   GlobalPose start(0, 0, 0);
   profile = new smartmouse::kc::VelocityProfile(start, {1, 0, 0});
+  t_0 = millis();
 }
 
 void loop() {
@@ -52,8 +56,8 @@ void loop() {
 
   // time since start of the motion in seconds
   // since this program only does this once it's just millis converted to seconds
-  auto t_s = static_cast<double>(millis()) / 1000.0;
-//  double v = profile->compute_forward_velocity(t_s);
+  auto t_s = static_cast<double>(millis()-t_0) / 1000.0;
+  //double v = profile->compute_forward_velocity(t_s);
 
   static unsigned long idx = 0;
   ++idx;
@@ -64,8 +68,8 @@ void loop() {
           mouse->kinematic_controller.left_motor.abstract_force);
   }
 
-//  mouse->setSpeedCps(v, v);
-  mouse->setSpeedCps(3, 3);
+  //mouse->setSpeedCps(v, v);
+  mouse->setSpeedCps(4.5, 4.5);
 
   last_t_us = now_us;
 }
