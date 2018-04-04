@@ -33,18 +33,13 @@ void loop() {
     analogWrite(RealMouse::MOTOR_RIGHT_B2, force);
     analogWrite(RealMouse::MOTOR_RIGHT_B1, 0);
 
-    int last_tl = 0, last_tr = 0;
     for (int i = 0; i < 2000; i++) {
       int tl = mouse->left_encoder.getRotation();
       int tr = mouse->right_encoder.getRotation();
       delay(1);
-      double tl = smartmouse::math::yaw_diff(RealMouse::tick_to_rad(last_tl), RealMouse::tick_to_rad(tl)) / 0.005;
-//      double tr = smartmouse::math::yaw_diff(RealMouse::tick_to_rad(last_tr), RealMouse::tick_to_rad(tr)) / 0.005;
       if (i % 10 == 0) {
         print("%i, %i, %i\r\n", force, tl, tr);
       }
-//      last_tl = tl;
-//      last_tr = tr;
     }
   }
 }

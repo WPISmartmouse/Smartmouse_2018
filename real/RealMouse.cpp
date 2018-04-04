@@ -149,17 +149,15 @@ void RealMouse::setup() {
   delay(1000);
 
   // IR sensor calibration
-  calibrate();
+  // calibrate();
 }
 
 void RealMouse::resetToStartPose() {
   reset(); // resets row, col, and dir
-  left_angle_rad = tick_to_rad(left_encoder.getRotation());
-  right_angle_rad = tick_to_rad(right_encoder.getRotation());
-  kinematic_controller.left_motor.reset_enc_rad(left_angle_rad);
-  kinematic_controller.right_motor.reset_enc_rad(right_angle_rad);
-  kinematic_controller.reset_col_to(0.09);
-  kinematic_controller.reset_row_to(0.09);
+  left_encoder.ResetPosition();
+  right_encoder.ResetPosition();
+  kinematic_controller.reset_col_to(0.5);
+  kinematic_controller.reset_row_to(0.5);
   kinematic_controller.reset_yaw_to(0.0);
 }
 

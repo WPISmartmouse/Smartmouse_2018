@@ -16,7 +16,7 @@ void ForwardN::execute() {
   double l, r;
   double t_s = static_cast<double>(getTime()) / 1000.0;
   std::tie(l, r) = profile->drive_straight_wheel_velocities(*mouse, t_s);
-  mouse->setSpeedCps(l, r);
+  mouse->setSpeedCps(0.4, 0.4);
 }
 
 bool ForwardN::isFinished() {

@@ -5,6 +5,9 @@
 
 #include <real/commands/WaitForStart.h>
 #include <real/commands/Stop.h>
+#include <real/commands/End.h>
+#include <real/commands/Forward.h>
+#include <real/commands/ForwardN.h>
 
 ArduinoTimer timer;
 Scheduler *scheduler;
@@ -18,6 +21,8 @@ class NavTestCommand : public CommandGroup {
  public:
   NavTestCommand() : CommandGroup("NavTestGroup") {
     addSequential(new WaitForStart());
+    addSequential(new Stop(1000));
+    addSequential(new ForwardN(4));
     addSequential(new Stop(10000));
   }
 };
@@ -28,6 +33,7 @@ void setup() {
   mouse->setup();
 
   GlobalProgramSettings.quiet = false;
+//  mouse->kinematic_controller.enable_sensor_pose_estimate = false;
 
   scheduler = new Scheduler(new NavTestCommand());
 
@@ -36,20 +42,23 @@ void setup() {
 }
 
 void loop() {
-  unsigned long now = timer.programTimeMs();
-  double dt_s = (now - last_t_us) / 1000.0;
+  RealMouse::checkVoltage();
 
-  if (not done and now - last_blink > 100) {
-    last_blink = now;
+  unsigned long now_us = timer.programTimeUs();
+  double dt_us = static_cast<double>(now_us - last_t_us);
+
+  if (not done and now_us - last_blink > 100) {
+    last_blink = now_us;
     digitalWrite(RealMouse::SYS_LED, static_cast<uint8_t>(on));
     on = !on;
   }
 
   // minimum period of main loop
-  if (dt_s < 0.010) {
+  if (dt_us < 1500) {
     return;
   }
 
+  auto dt_s = dt_us / 1e6;
   mouse->run(dt_s);
 
   if (not done) {
@@ -61,5 +70,18 @@ void loop() {
     digitalWrite(RealMouse::LED_4, 1);
     digitalWrite(RealMouse::LED_6, 1);
   }
-  last_t_us = now;
+
+  static unsigned long idx = 0;
+  ++idx;
+  auto p = mouse->getGlobalPose();
+  if (idx % 10 == 0) {
+    print("%8f %7.3f, %7.3f, %7.3f, %7.3f\r\n",
+          dt_us,
+          mouse->kinematic_controller.left_motor.setpoint_rps,
+          mouse->kinematic_controller.left_motor.velocity_rps,
+          mouse->kinematic_controller.right_motor.setpoint_rps,
+          mouse->kinematic_controller.right_motor.velocity_rps);
+  }
+
+  last_t_us = now_us;
 }

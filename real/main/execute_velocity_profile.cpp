@@ -30,7 +30,7 @@ void setup() {
   last_t_us = timer.programTimeUs();
 
   GlobalPose start(0, 0, 0);
-  profile = new smartmouse::kc::VelocityProfile(start, {5, 0, 0});
+  profile = new smartmouse::kc::VelocityProfile(start, {3, 0, 0});
   t_0 = millis();
 }
 

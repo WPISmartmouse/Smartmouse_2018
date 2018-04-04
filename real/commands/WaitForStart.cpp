@@ -20,7 +20,6 @@ void WaitForStart::execute() {
   double percent_speed =
       static_cast<double>(mouse->left_encoder.getUnsignedRotation()) / smartmouse::kc::TICKS_PER_REVOLUTION;
   speed = percent_speed * smartmouse::kc::MAX_HARDWARE_SPEED_MPS;
-  print("%f\r\n", percent_speed);
 
   constexpr uint8_t NUM_LEDS = 6;
   uint8_t light_up_until_led_index = static_cast<uint8_t >(percent_speed * NUM_LEDS);
@@ -30,14 +29,6 @@ void WaitForStart::execute() {
     } else {
       digitalWrite(RealMouse::LED_7 - i, 0);
     }
-  }
-
-  // Set arc turn on or off based on left wheel
-  smartmouse::kc::ARC_TURN = mouse->right_encoder.getUnsignedRotation() > smartmouse::kc::TICKS_PER_REVOLUTION / 2;
-  if (smartmouse::kc::ARC_TURN) {
-    digitalWrite(RealMouse::LED_1, 1);
-  } else {
-    digitalWrite(RealMouse::LED_1, 0);
   }
 }
 
@@ -50,7 +41,8 @@ bool WaitForStart::isFinished() {
 }
 
 void WaitForStart::end() {
-  smartmouse::kc::MAX_SPEED_MPS = max(speed, 0.2);
+//  smartmouse::kc::MAX_SPEED_MPS = max(speed, 0.2);
+  smartmouse::kc::MAX_SPEED_MPS = 0.1;
   smartmouse::kc::MAX_SPEED_CUPS = smartmouse::maze::toCellUnits(smartmouse::kc::MAX_SPEED_MPS);
   for (uint8_t i = 0; i < 7; i++) {
     digitalWrite(RealMouse::LED_7 - i, 0);

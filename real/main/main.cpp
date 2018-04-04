@@ -5,7 +5,6 @@
 #include <common/core/util.h>
 #include <common/core/Flood.h>
 #include <common/commands/SolveCommand.h>
-#include <real/commands/BatteryMonitor.h>
 
 ArduinoTimer timer;
 Scheduler *scheduler;
@@ -22,15 +21,15 @@ void setup() {
 
   GlobalProgramSettings.quiet = false;
 
-//  scheduler = new Scheduler(new NavTestCommand());
   scheduler = new Scheduler(new SolveCommand(new Flood(mouse)));
-  scheduler->addCommand(new BatteryMonitor());
 
   last_t_us = timer.programTimeMs();
   last_blink = timer.programTimeMs();
 }
 
 void loop() {
+  RealMouse::checkVoltage();
+
   if (Serial1.available()) {
     int c = Serial1.read();
     if (c == (int) 'p') {

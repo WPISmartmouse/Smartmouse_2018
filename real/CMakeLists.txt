@@ -12,8 +12,6 @@ file(GLOB REAL_LIB_DIRS lib/*)
 include_directories(${CMAKE_SOURCE_DIR} ${REAL_LIB_DIRS} . commands ../common/Eigen)
 add_definitions(-DEMBED)
 
-import_arduino_library(Bounce2)
-import_arduino_library(i2c_t3)
 import_arduino_library(SPI)
 
 add_teensy_core()

@@ -91,9 +91,9 @@ VelocityProfileTiming::VelocityProfileTiming(double d, double v_0, double v_f)
     }
   }
 
-//  print("%0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f\n", t_1, t_2, t_m1, t_m2, t_3, t_4, t_f);
-//  print("%0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f\n", v_0, v_1, v_2, v_m, v_3, v_4, v_f);
-//  print("%0.3f\n", d);
+  print("%0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f\r\n", t_1, t_2, t_m1, t_m2, t_3, t_4, t_f);
+  print("%0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f\r\n", v_0, v_1, v_2, v_m, v_3, v_4, v_f);
+  print("%0.3f\r\n", d);
 }
 
 double VelocityProfileTiming::compute_forward_velocity(double t) const {
