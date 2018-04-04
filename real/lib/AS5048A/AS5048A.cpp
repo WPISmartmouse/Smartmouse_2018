@@ -15,7 +15,7 @@ const int AS5048A_ANGLE = 0x3FFF;
 /**
  * Constructor
  */
-AS5048A::AS5048A(byte arg_cs) : inverted(1) {
+AS5048A::AS5048A(byte arg_cs) : inverted(false) {
   _cs = arg_cs;
   errorFlag = false;
   position = 0;
@@ -301,5 +301,5 @@ word AS5048A::write(word registerAddress, word data) {
 }
 
 void AS5048A::invert() {
-  inverted *= -1;
+  inverted = !inverted;
 }

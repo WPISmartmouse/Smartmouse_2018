@@ -16,7 +16,6 @@ bool on = true;
 bool paused = false;
 
 void setup() {
-  delay(1000);
   Command::setTimerImplementation(&timer);
   mouse = RealMouse::inst();
   mouse->setup();

@@ -1,31 +1,28 @@
 #include <common/core/Mouse.h>
-#include "WaitForStart.h"
-#include "Calibrate.h"
+#include <real/commands/WaitForStart.h>
 
 bool WaitForStart::calibrated = false;
 
-WaitForStart::WaitForStart()
-    : CommandGroup("wait_calibrate"), mouse(RealMouse::inst()), speed(0) {
+WaitForStart::WaitForStart() : CommandGroup("wait_calibrate"), mouse(RealMouse::inst()), speed(0) {
   mouse->kinematic_controller.enabled = false;
   if (!calibrated) {
-    addSequential(new Calibrate());
     calibrated = true;
   }
 }
 
 void WaitForStart::initialize() {
-  mouse->left_encoder.ResetPosition();
-  mouse->right_encoder.ResetPosition();
 }
 
 void WaitForStart::execute() {
   CommandGroup::execute();
 
-  // Set the max speed of the robot based on the right wheel
-  double percent_speed = mouse->left_encoder.getUnsignedRotation() / smartmouse::kc::TICKS_PER_REVOLUTION;
+  // Set the max speed of the robot based on the left wheel
+  double percent_speed =
+      static_cast<double>(mouse->left_encoder.getUnsignedRotation()) / smartmouse::kc::TICKS_PER_REVOLUTION;
   speed = percent_speed * smartmouse::kc::MAX_HARDWARE_SPEED_MPS;
+  print("%f\r\n", percent_speed);
 
-  constexpr uint8_t NUM_LEDS = 7;
+  constexpr uint8_t NUM_LEDS = 6;
   uint8_t light_up_until_led_index = static_cast<uint8_t >(percent_speed * NUM_LEDS);
   for (uint8_t i = 0; i < NUM_LEDS; i++) {
     if (i < light_up_until_led_index) {

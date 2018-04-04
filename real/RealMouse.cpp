@@ -174,8 +174,8 @@ double RealMouse::checkVoltage() {
 
   if (2 < voltage && voltage < 2.7) {
     print("VOLTAGE IS TOO LOW. CHARGE THE BATTERY!!!\r\n");
-  } else if (voltage > 3.2) {
-    print("VOLTAGE IS TOO HIGH. SHE'S GONNA BLOW!!!\r\n");
+  } else if (voltage > 3.3) {
+    print("VOLTAGE [%f] IS TOO HIGH. SHE'S GONNA BLOW!!!\r\n", voltage);
   }
 
   return voltage;

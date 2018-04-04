@@ -122,6 +122,6 @@ class AS5048A {
 
   byte spiCalcEvenParity(word);
 
-  unsigned int inverted;
+  bool inverted;
 };
 #endif

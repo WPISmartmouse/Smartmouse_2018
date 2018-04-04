@@ -30,7 +30,7 @@ void setup() {
   last_t_us = timer.programTimeUs();
 
   GlobalPose start(0, 0, 0);
-  profile = new smartmouse::kc::VelocityProfile(start, {1, 0, 0});
+  profile = new smartmouse::kc::VelocityProfile(start, {5, 0, 0});
   t_0 = millis();
 }
 
@@ -56,20 +56,22 @@ void loop() {
 
   // time since start of the motion in seconds
   // since this program only does this once it's just millis converted to seconds
-  auto t_s = static_cast<double>(millis()-t_0) / 1000.0;
+  auto t_s = static_cast<double>(millis() - t_0) / 1000.0;
   double v = profile->compute_forward_velocity(t_s);
 
   static unsigned long idx = 0;
   ++idx;
-  if (idx % 10 == 0) {
-    print("% 5.3f, % 5.3f, %3.0f\r\n",
+  if (idx % 10 == 0 and v > 0) {
+    print("%8.2f, %8.2f, % 8.2f, % 8.2f, %8.2f, %8.2f\r\n",
           mouse->kinematic_controller.left_motor.setpoint_rps,
           mouse->kinematic_controller.left_motor.velocity_rps,
-          mouse->kinematic_controller.left_motor.abstract_force);
+          mouse->kinematic_controller.left_motor.abstract_force,
+          mouse->kinematic_controller.right_motor.setpoint_rps,
+          mouse->kinematic_controller.right_motor.velocity_rps,
+          mouse->kinematic_controller.right_motor.abstract_force);
   }
 
-  //mouse->setSpeedCps(v, v);
-  mouse->setSpeedCps(4.5, 4.5);
+  mouse->setSpeedCps(v, v);
 
   last_t_us = now_us;
 }

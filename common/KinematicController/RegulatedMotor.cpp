@@ -5,12 +5,12 @@
 #include <common/math/math.h>
 
 RegulatedMotor::RegulatedMotor()
-    : kP(1.5),
-      kI(0.005),
-      kD(0),
-      ff_offset(774),
-      ff_scale(2.52),
-      int_cap(75),
+    : kP(20.0),
+      kI(0.04),
+      kD(0.0),
+      ff_offset(790),
+      ff_scale(2.62),
+      int_cap(50),
       initialized(false),
       abstract_force(0),
       acceleration_rpss(0),
