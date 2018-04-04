@@ -3,7 +3,6 @@
 
 Forward::Forward() : Command("Forward"), mouse(RealMouse::inst()), profile(nullptr) {}
 
-
 void Forward::initialize() {
   start = mouse->getGlobalPose();
   const double goal_disp = KinematicController::dispToNextEdge(*mouse);

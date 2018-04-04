@@ -97,7 +97,11 @@ int AS5048A::getRotation() {
  * Returns the raw angle directly from the sensor
  */
 word AS5048A::getRawRotation() {
-  return inverted * AS5048A::read(AS5048A_ANGLE);
+  if (inverted) {
+    return 16384 - AS5048A::read(AS5048A_ANGLE);
+  } else {
+    return AS5048A::read(AS5048A_ANGLE);
+  }
 }
 
 /**

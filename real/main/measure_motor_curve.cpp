@@ -25,7 +25,7 @@ void setup() {
 }
 
 void loop() {
-  for (int force = 150; force < 255; force += 5) {
+  for (int force = 160; force < 255; force += 5) {
     RealMouse::checkVoltage();
 
     analogWrite(RealMouse::MOTOR_LEFT_A1, force);
@@ -38,13 +38,13 @@ void loop() {
       int tl = mouse->left_encoder.getRotation();
       int tr = mouse->right_encoder.getRotation();
       delay(1);
-      double vl = smartmouse::math::yaw_diff(RealMouse::tick_to_rad(last_tl), RealMouse::tick_to_rad(tl)) / 0.005;
-      double vr = smartmouse::math::yaw_diff(RealMouse::tick_to_rad(last_tr), RealMouse::tick_to_rad(tr)) / 0.005;
+      double tl = smartmouse::math::yaw_diff(RealMouse::tick_to_rad(last_tl), RealMouse::tick_to_rad(tl)) / 0.005;
+//      double tr = smartmouse::math::yaw_diff(RealMouse::tick_to_rad(last_tr), RealMouse::tick_to_rad(tr)) / 0.005;
       if (i % 10 == 0) {
-        print("%i, %0.4f, %0.4f\r\n", force, vl, vr);
+        print("%i, %i, %i\r\n", force, tl, tr);
       }
-      last_tl = tl;
-      last_tr = tr;
+//      last_tl = tl;
+//      last_tr = tr;
     }
   }
 }

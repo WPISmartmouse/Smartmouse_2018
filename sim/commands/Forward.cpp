@@ -1,15 +1,14 @@
 #include <sim/lib/SimMouse.h>
-#include "Forward.h"
+#include <sim/commands/Forward.h>
 
-Forward::Forward() : Command("Forward"), mouse(SimMouse::inst()) {}
-
+Forward::Forward() : Command("Forward"), mouse(SimMouse::inst()), profile(nullptr) {}
 
 void Forward::initialize() {
   start = mouse->getGlobalPose();
   const double goal_disp = KinematicController::dispToNextEdge(*mouse);
   const double v0 = mouse->kinematic_controller.getCurrentForwardSpeedCUPS();
   const double vf = smartmouse::kc::kVf;
-  profile  = new smartmouse::kc::VelocityProfile(start, {goal_disp, v0, vf});
+  profile = new smartmouse::kc::VelocityProfile(start, {goal_disp, v0, vf});
 }
 
 void Forward::execute() {
