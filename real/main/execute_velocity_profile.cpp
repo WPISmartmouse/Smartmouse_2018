@@ -57,7 +57,7 @@ void loop() {
   // time since start of the motion in seconds
   // since this program only does this once it's just millis converted to seconds
   auto t_s = static_cast<double>(millis()-t_0) / 1000.0;
-  //double v = profile->compute_forward_velocity(t_s);
+  double v = profile->compute_forward_velocity(t_s);
 
   static unsigned long idx = 0;
   ++idx;

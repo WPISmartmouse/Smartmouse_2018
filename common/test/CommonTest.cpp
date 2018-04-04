@@ -2,6 +2,7 @@
 
 #include <common/KinematicController/KinematicController.h>
 #include <common/math/math.h>
+#include <common/KinematicController/VelocityProfile.h>
 
 TEST(ForwardKinematicsTest, Forward_one_second) {
   GlobalPose d_pose = KinematicController::forwardKinematics(1, 1, 0, 1);
@@ -134,6 +135,19 @@ TEST(FromSensorsToWallTest, from_sensors_to_wall_right_3) {
   double d;
   std::tie(d, std::ignore) = smartmouse::kc::from_sensors_to_right_wall(back_right, front_right, 3, 1);
   EXPECT_NEAR(d, 2, 1e-6);
+}
+
+TEST(VelocityProfileTest, ForwardTest5) {
+  GlobalPose start(0, 0, 0);
+  smartmouse::kc::VelocityProfileTiming timing(5, 0, 0);
+  auto profile = smartmouse::kc::VelocityProfile(start, timing);
+
+  auto v0 = profile.compute_forward_velocity(0);
+  auto vf = profile.compute_forward_velocity(timing.t_f+1e-6);
+  auto v_middle = profile.compute_forward_velocity((timing.t_m1 + timing.t_m2) / 2);
+  EXPECT_EQ(v0, 0);
+  EXPECT_EQ(v_middle, smartmouse::kc::MAX_SPEED_CUPS);
+  EXPECT_EQ(vf, 0);
 }
 
 int main(int argc, char **argv) {
