@@ -40,7 +40,7 @@ void loop() {
 
   mouse->run(dt_us / 1e6);
   double vl, vr;
-  std::tie(vl, vr) = mouse->getWheelVelocities();
+  std::tie(vl, vr) = mouse->getWheelVelocitiesCPS();
 
   bool pressed = !static_cast<bool>(digitalRead(RealMouse::BUTTON_PIN));
   digitalWrite(RealMouse::LED_1, static_cast<uint8_t>(pressed));

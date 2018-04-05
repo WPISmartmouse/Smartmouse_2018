@@ -9,7 +9,7 @@
 ArduinoTimer timer;
 Scheduler *scheduler;
 RealMouse *mouse;
-unsigned long last_t_us, last_blink;
+unsigned long last_t_us, last_blink_us;
 bool done = false;
 bool on = true;
 bool paused = false;
@@ -24,44 +24,27 @@ void setup() {
   scheduler = new Scheduler(new SolveCommand(new Flood(mouse)));
 
   last_t_us = timer.programTimeMs();
-  last_blink = timer.programTimeMs();
+  last_blink_us = timer.programTimeMs();
 }
 
 void loop() {
   RealMouse::checkVoltage();
 
-  if (Serial1.available()) {
-    int c = Serial1.read();
-    if (c == (int) 'p') {
-      Serial1.clear();
-      analogWrite(RealMouse::MOTOR_LEFT_A1, 0);
-      analogWrite(RealMouse::MOTOR_RIGHT_B1, 0);
-      analogWrite(RealMouse::MOTOR_LEFT_A2, 0);
-      analogWrite(RealMouse::MOTOR_RIGHT_B2, 0);
-      paused = !paused;
-    }
-  }
+  unsigned long now_us = timer.programTimeUs();
+  double dt_us = (now_us - last_t_us) / 1000.0;
 
-  if (paused) {
-    digitalWrite(RealMouse::SYS_LED, 1);
-    return;
-  }
-
-  unsigned long now = timer.programTimeMs();
-  double dt_s = (now - last_t_us) / 1000.0;
-
-  if (now - last_blink > 100) {
-    last_blink = now;
-    digitalWrite(RealMouse::SYS_LED, on);
+  if (now_us - last_blink_us > 10000) {
+    last_blink_us = now_us;
+    digitalWrite(RealMouse::SYS_LED, static_cast<uint8_t>(on));
     on = !on;
   }
 
   // minimum period of main loop
-  if (dt_s < 0.010) {
+  if (dt_us < 1500) {
     return;
   }
 
-  mouse->run(dt_s);
+  mouse->run(dt_us / 1e6);
 
   if (!done) {
 #ifdef PROFILE
@@ -76,5 +59,5 @@ void loop() {
     mouse->setSpeedCps(0, 0);
     digitalWrite(RealMouse::SYS_LED, 1);
   }
-  last_t_us = now;
+  last_t_us = now_us;
 }

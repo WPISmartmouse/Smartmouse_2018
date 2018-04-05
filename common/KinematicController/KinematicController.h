@@ -110,8 +110,6 @@ class KinematicController {
 
   GlobalPose current_pose_estimate_cu;
   Mouse *mouse;
-  double d_until_left_drop;
-  double d_until_right_drop;
   static const double kDropSafety;
   double acceleration_cellpss;
   double dt_s;

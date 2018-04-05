@@ -5,11 +5,11 @@
 #include <common/math/math.h>
 
 RegulatedMotor::RegulatedMotor()
-    : kP(20.0),
+    : kP(10.0),
       kI(0.04),
       kD(0.0),
-      ff_offset(790),
-      ff_scale(2.62),
+      ff_offset(785),
+      ff_scale(2.7),
       int_cap(50),
       initialized(false),
       abstract_force(0),
@@ -37,7 +37,8 @@ double RegulatedMotor::runPid(double dt_s, double angle_rad) {
     return 0;
   }
 
-  velocity_rps = smartmouse::math::yaw_diff(last_angle_rad, angle_rad) / dt_s;
+  auto d_rad = smartmouse::math::yaw_diff(last_angle_rad, angle_rad);
+  velocity_rps = d_rad / dt_s;
   error = setpoint_rps - velocity_rps;
   derivative = (last_velocity_rps - velocity_rps) / dt_s;
   integral += error * dt_s;
@@ -45,10 +46,9 @@ double RegulatedMotor::runPid(double dt_s, double angle_rad) {
 
   if (setpoint_rps < 0) {
     feed_forward = setpoint_rps * ff_scale - ff_offset;
-  } else  if (setpoint_rps > 0)  {
+  } else if (setpoint_rps > 0) {
     feed_forward = setpoint_rps * ff_scale + ff_offset;
-  }
-  else{
+  } else {
     feed_forward = 0;
   }
   abstract_force = (feed_forward) + (error * kP) + (integral * kI) + (derivative * kD);
@@ -67,6 +67,7 @@ void RegulatedMotor::setAccelerationCpss(double acceleration_cellpss) {
 }
 
 #include <iostream>
+
 void RegulatedMotor::setSetpointCps(double setpoint_cups) {
   double s = 0.0;
   if (setpoint_cups > 0.0) {

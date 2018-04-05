@@ -38,7 +38,7 @@ LocalPose RealMouse::getLocalPose() {
   return kinematic_controller.getLocalPose();
 }
 
-std::pair<double, double> RealMouse::getWheelVelocities() {
+std::pair<double, double> RealMouse::getWheelVelocitiesCPS() {
   return kinematic_controller.getWheelVelocitiesCPS();
 };
 
@@ -129,7 +129,6 @@ void RealMouse::setup() {
   right_encoder.init();
   left_encoder.invert();
 
-  // FUCK YOU KEION
   analogWriteResolution(10);
 
   // pull MOSI high to run encoders in 3 wire mode
@@ -148,12 +147,19 @@ void RealMouse::setup() {
 
   // Teensy does USB in software, so serial rate doesn't do anything
   Serial.begin(0);
-  // But it does here because it's not the USB serial
+  // But it does matter here because it's not the USB serial
   Serial1.begin(115200);
-  delay(1000);
 
-  // IR sensor calibration
-  // calibrate();
+  if (!digitalRead(RealMouse::BUTTON_PIN)) {
+    digitalWrite(RealMouse::LED_7, 1);
+    delay(1000);
+    while (digitalRead(RealMouse::BUTTON_PIN)) {}
+    calibrate();
+    delay(1000);
+  } else {
+    delay(1000);
+    loadCalibrate();
+  }
 }
 
 void RealMouse::resetToStartPose() {
@@ -170,29 +176,27 @@ void RealMouse::setSpeedCps(double l_cps, double r_cps) {
 }
 
 void RealMouse::Teleop() {
-  if(Serial1.available()) {
-    if (Serial1.read() == 'w') {
-      toLeft = 0.8;
-      toRight = 0.8;
+  if (Serial.available()) {
+    double left = 0, right = 0;
+    char c = static_cast<char>(Serial.read());
+    if (c == 'w') {
+      left = 0.3;
+      right = 0.3;
+    } else if (c == 'a') {
+      left = 0.30;
+      right = 0.0;
+    } else if (c == 'd') {
+      left = 0.0;
+      right = 0.3;
+    } else if (c == 's') {
+      left = 0;
+      right = 0;
 
     }
-    if (Serial1.read() == 'a') {
-      toLeft = 0.5;
-      toRight = 0;
-    }
-    if (Serial1.read() == 'd') {
-      toRight = 0.5;
-      toRight = 0;
-    }
-    if (Serial1.read() == 's') {
-      toLeft = 0;
-      toRight = 0;
-
-    }
+    setSpeedCps(left, right);
   }
-
-  kinematic_controller.setSpeedCps(toLeft, toRight);
 }
+
 double RealMouse::checkVoltage() {
   // 3.2v is max and 2.7v is min
   int a = analogRead(BATTERY_ANALOG_PIN);
@@ -231,14 +235,15 @@ void RealMouse::calibrate() {
   back_right_model.calibrate(range_data_adc.back_right, 7);
   digitalWrite(LED_6, LOW);
 }
-  void RealMouse::loadCalibrate() {
 
-    back_left_model.loadCalibrate(static_cast<int8_t>(EEPROM.read(1)));
-    front_left_model.loadCalibrate(static_cast<int8_t>(EEPROM.read(2)));
-    gerald_left_model.loadCalibrate(static_cast<int8_t>(EEPROM.read(3)));
-    front_model.loadCalibrate(static_cast<int8_t>(EEPROM.read(4)));
-    gerald_right_model.loadCalibrate(static_cast<int8_t>(EEPROM.read(5)));
-    front_right_model.loadCalibrate(static_cast<int8_t>(EEPROM.read(6)));
-    back_right_model.loadCalibrate(static_cast<int8_t>(EEPROM.read(7)));
+void RealMouse::loadCalibrate() {
+
+  back_left_model.loadCalibrate(static_cast<int8_t>(EEPROM.read(1)));
+  front_left_model.loadCalibrate(static_cast<int8_t>(EEPROM.read(2)));
+  gerald_left_model.loadCalibrate(static_cast<int8_t>(EEPROM.read(3)));
+  front_model.loadCalibrate(static_cast<int8_t>(EEPROM.read(4)));
+  gerald_right_model.loadCalibrate(static_cast<int8_t>(EEPROM.read(5)));
+  front_right_model.loadCalibrate(static_cast<int8_t>(EEPROM.read(6)));
+  back_right_model.loadCalibrate(static_cast<int8_t>(EEPROM.read(7)));
 
 }

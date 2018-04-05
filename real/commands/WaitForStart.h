@@ -13,6 +13,5 @@ public:
 
 private:
   double speed;
-  static bool calibrated;
   RealMouse *mouse;
 };

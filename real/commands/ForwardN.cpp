@@ -1,4 +1,3 @@
-#include <real/RealMouse.h>
 #include "ForwardN.h"
 
 ForwardN::ForwardN(unsigned int n) : Command("Forward"), mouse(RealMouse::inst()), n(n), profile(nullptr) {}
@@ -16,6 +15,19 @@ void ForwardN::execute() {
   double l, r;
   double t_s = static_cast<double>(getTime()) / 1000.0;
   std::tie(l, r) = profile->drive_straight_wheel_velocities(*mouse, t_s);
+
+//  auto p = mouse->getGlobalPose();
+//  print("%.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %d, %d\r\n",
+//        mouse->kinematic_controller.left_motor.setpoint_rps,
+//        mouse->kinematic_controller.left_motor.velocity_rps,
+//        mouse->kinematic_controller.right_motor.setpoint_rps,
+//        mouse->kinematic_controller.right_motor.velocity_rps,
+//        p.row,
+//        p.col,
+//        p.yaw,
+//        mouse->kinematic_controller.sense_left_wall,
+//        mouse->kinematic_controller.sense_right_wall);
+
   mouse->setSpeedCps(l, r);
 }
 

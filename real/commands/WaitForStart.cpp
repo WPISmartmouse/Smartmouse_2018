@@ -1,16 +1,12 @@
 #include <common/core/Mouse.h>
 #include <real/commands/WaitForStart.h>
-
-bool WaitForStart::calibrated = false;
+#include <common/KinematicController/VelocityProfile.h>
 
 WaitForStart::WaitForStart() : CommandGroup("wait_calibrate"), mouse(RealMouse::inst()), speed(0) {
-  mouse->kinematic_controller.enabled = false;
-  if (!calibrated) {
-    calibrated = true;
-  }
 }
 
 void WaitForStart::initialize() {
+  mouse->kinematic_controller.enabled = false;
   mouse->left_encoder.ResetPosition();
   mouse->right_encoder.ResetPosition();
 }
@@ -43,7 +39,8 @@ bool WaitForStart::isFinished() {
 }
 
 void WaitForStart::end() {
-  smartmouse::kc::MAX_SPEED_MPS = max(speed, 0.1);
+  smartmouse::kc::MAX_SPEED_MPS = max(speed, smartmouse::kc::kVf_cps);
+  smartmouse::kc::MAX_SPEED_MPS = 0.09; // FIXME:
   smartmouse::kc::MAX_SPEED_CUPS = smartmouse::maze::toCellUnits(smartmouse::kc::MAX_SPEED_MPS);
   for (uint8_t i = 0; i < 7; i++) {
     digitalWrite(RealMouse::LED_7 - i, 0);

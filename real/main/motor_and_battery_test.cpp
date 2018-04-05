@@ -41,7 +41,7 @@ void loop() {
 
   mouse->run(dt_us / 1e6);
   double vl, vr;
-  std::tie(vl, vr) = mouse->getWheelVelocities();
+  std::tie(vl, vr) = mouse->getWheelVelocitiesCPS();
 
   print("%0.3f, %0.3f\r\n", vl, vr);
 

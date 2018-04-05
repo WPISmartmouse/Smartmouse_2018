@@ -5,6 +5,8 @@
 
 #include <real/commands/WaitForStart.h>
 #include <real/commands/Stop.h>
+#include <real/commands/ForwardToCenter.h>
+#include <real/commands/TurnInPlace.h>
 #include <real/commands/Turn.h>
 #include <real/commands/ForwardN.h>
 
@@ -21,9 +23,10 @@ class NavTestCommand : public CommandGroup {
   NavTestCommand() : CommandGroup("NavTestGroup") {
     addSequential(new WaitForStart());
     addSequential(new Stop(1000));
-    addSequential(new ForwardN(3));
-    addSequential(new Turn(Direction::S));
-    addSequential(new Stop(10000));
+    addSequential(new ForwardN(4));
+//    addSequential(new Turn(Direction::S));
+//    addSequential(new ForwardToCenter());
+//    addSequential(new Stop(10000));
   }
 };
 
@@ -31,20 +34,6 @@ void setup() {
   Command::setTimerImplementation(&timer);
   mouse = RealMouse::inst();
   mouse->setup();
-  if(!digitalRead(RealMouse::BUTTON_PIN)){
-    digitalWrite(RealMouse::LED_7, 1);
-    delay(1000);
-    while(digitalRead(RealMouse::BUTTON_PIN)){}
-    mouse->calibrate();
-    delay(1000);
-    print("%d, %d, %d\r\n", mouse->back_left_model.adc_offset, mouse->front_left_model.adc_offset,
-    mouse->gerald_left_model.adc_offset);
-  }
-  else {
-    mouse->loadCalibrate();
-    print("%d, %d, %d\r\n", mouse->back_left_model.adc_offset, mouse->front_left_model.adc_offset,
-          mouse->gerald_left_model.adc_offset);
-  }
 
   GlobalProgramSettings.quiet = false;
 //  mouse->kinematic_controller.enable_sensor_pose_estimate = false;
@@ -75,8 +64,9 @@ void loop() {
   auto dt_s = dt_us / 1e6;
   mouse->run(dt_s);
 
-  // mouse->Teleop();
   if (not done) {
+    // one of these should be commented out
+//    mouse->Teleop();
     done = scheduler->run();
   } else {
     mouse->setSpeedCps(0, 0);
@@ -86,12 +76,26 @@ void loop() {
     digitalWrite(RealMouse::LED_6, 1);
   }
 
-  static unsigned long idx = 0;
-  ++idx;
-//  if (idx % 10 == 0) {
-//    print("%d\r\n",
-//          mouse->back_left_model.adc_offset);
-//  }
+  if (Serial1.available()) {
+    char c = static_cast<char>(Serial1.read());
+    if (c == 'p') {
+      mouse->setSpeedCps(0, 0);
+    }
+  }
+
+//  print_slow("%4.3f, %4.3f, %4.3f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %d, %d\r\n",
+//             p.row,
+//             p.col,
+//             p.yaw,
+//             mouse->range_data_m.back_left,
+//             mouse->range_data_m.front_left,
+//             mouse->range_data_m.gerald_left,
+//             mouse->range_data_m.front,
+//             mouse->range_data_m.gerald_right,
+//             mouse->range_data_m.front_right,
+//             mouse->range_data_m.back_right,
+//             mouse->kinematic_controller.sense_left_wall,
+//             mouse->kinematic_controller.sense_right_wall);
 
   last_t_us = now_us;
 }

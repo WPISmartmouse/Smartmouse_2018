@@ -3,6 +3,7 @@
 #include <common/core/Direction.h>
 
 #include <real/RealMouse.h>
+#include <common/KinematicController/VelocityProfile.h>
 
 class TurnInPlace : public Command {
 public:
@@ -19,9 +20,12 @@ public:
 private:
   double goal_yaw;
   double yaw_error;
+  bool left_turn;
   RealMouse *mouse;
   Direction dir;
 
-  const double kP = 0.15;
+
+  const static double kP;
+  smartmouse::kc::VelocityProfile *profile;
 };
 

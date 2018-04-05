@@ -10,9 +10,15 @@
 const double KinematicController::kDropSafety = 0.8;
 
 KinematicController::KinematicController(Mouse *mouse)
-    : enable_sensor_pose_estimate(true), enabled(true), kinematics_enabled(true), sense_left_wall(false), sense_right_wall(false), initialized(false),
-      ignoring_left(false), ignoring_right(false), mouse(mouse),
-      d_until_left_drop(0), d_until_right_drop(0) {
+    : enable_sensor_pose_estimate(true),
+      enabled(true),
+      kinematics_enabled(true),
+      sense_left_wall(false),
+      sense_right_wall(false),
+      initialized(false),
+      ignoring_left(false),
+      ignoring_right(false),
+      mouse(mouse) {
   current_pose_estimate_cu.col = 0;
   current_pose_estimate_cu.row = 0;
   current_pose_estimate_cu.yaw = 0;
@@ -113,12 +119,13 @@ KinematicController::run(double dt_s, double left_angle_rad, double right_angle_
       std::tie(est_yaw, offset_m, no_walls) = estimate_pose(range_data, *mouse);
       double offset_cu = smartmouse::maze::toCellUnits(offset_m);
 
+      enable_sensor_pose_estimate = false;
       if (enable_sensor_pose_estimate && !no_walls) {
         current_pose_estimate_cu.yaw = est_yaw;
 
         double d_wall_front_cu = 0;
         bool wall_in_front = false;
-        if (range_data.front < 0.08) {
+        if (range_data.front < smartmouse::kc::USE_FRONT_WALL_FOR_POSE) {
           double yaw_error = smartmouse::math::yaw_diff(current_pose_estimate_cu.yaw, dir_to_yaw(mouse->getDir()));
           double d_wall_front_m = cos(yaw_error) * range_data.front + smartmouse::kc::FRONT_ANALOG_X;
           d_wall_front_cu = smartmouse::maze::toCellUnits(d_wall_front_m);
@@ -163,6 +170,9 @@ KinematicController::run(double dt_s, double left_angle_rad, double right_angle_
     abstract_forces.first = left_motor.runPid(dt_s, left_angle_rad);
     abstract_forces.second = right_motor.runPid(dt_s, right_angle_rad);
   } else {
+    // we need to still call run PID to make sure that we don't loose track of the last_angle_rad
+    abstract_forces.first = left_motor.runPid(dt_s, left_angle_rad);
+    abstract_forces.second = right_motor.runPid(dt_s, right_angle_rad);
     abstract_forces.first = 0;
     abstract_forces.second = 0;
   }
@@ -220,12 +230,10 @@ std::tuple<double, double, bool> KinematicController::estimate_pose(RangeData<do
 
   // check for walls that will fall off in the near future (geralds!)
   if (range_data.gerald_left > smartmouse::kc::GERALD_WALL_THRESHOLD) {
-    d_until_left_drop = kDropSafety * tan(smartmouse::kc::GERALD_ANGLE) * d_to_wall_left;
     sense_left_wall = false;
   }
 
   if (range_data.gerald_right > smartmouse::kc::GERALD_WALL_THRESHOLD) {
-    d_until_right_drop = kDropSafety * tan(smartmouse::kc::GERALD_ANGLE) * d_to_wall_right;
     sense_right_wall = false;
   }
 

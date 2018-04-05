@@ -53,7 +53,7 @@ public:
 
   virtual LocalPose getLocalPose() override;
 
-  std::pair<double, double> getWheelVelocities();
+  std::pair<double, double> getWheelVelocitiesCPS();
 
   void resetToStartPose();
 
@@ -80,17 +80,15 @@ public:
   /** store this as meters interally. the RoboSimState msg will be in ADC values **/
   RangeData<double> range_data_m;
 
-  /** Teleop Starting Variables**/
-  double toLeft = 0, toRight = 0;
-
   /** generated with ./compute_calibration_parameters.py right.csv left.csv front.csv **/
-  smartmouse::ir::ModelParams gerald_right_model = {1.25991, 0.02697, 1164.77724, 0.06928};
-  smartmouse::ir::ModelParams back_right_model = {1.25643, 0.02669, 517.55987, 0.05220};
-  smartmouse::ir::ModelParams front_left_model = {1.19678, 0.02072, 768.14887, 0.06385};
-  smartmouse::ir::ModelParams front_right_model = {1.23762, 0.02446, 653.84782, 0.05959};
-  smartmouse::ir::ModelParams front_model = {1.27046, 0.02867, 600.86490, 0.08000};
   smartmouse::ir::ModelParams back_left_model = {1.21944, 0.02408, 577.09229, 0.05621};
+  smartmouse::ir::ModelParams front_left_model = {1.19678, 0.02072, 768.14887, 0.06385};
   smartmouse::ir::ModelParams gerald_left_model = {1.24543, 0.02568, 654.73110, 0.07390};
+  smartmouse::ir::ModelParams front_model = {1.27046, 0.02867, 600.86490, 0.08000};
+  smartmouse::ir::ModelParams gerald_right_model = {1.25991, 0.02697, 1164.77724, 0.06928};
+  smartmouse::ir::ModelParams front_right_model = {1.23762, 0.02446, 653.84782, 0.05959};
+  smartmouse::ir::ModelParams back_right_model = {1.25643, 0.02669, 517.55987, 0.05220};
+  // 0.0560 0.0644 0.0611 0.0647 0.0700 0.0599 0.0622 0.514215,
 
  private:
   RealMouse();
