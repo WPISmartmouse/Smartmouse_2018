@@ -1,5 +1,5 @@
 #pragma once
-
+#include <cstdint>
 namespace smartmouse {
 
 namespace ir {
@@ -32,6 +32,9 @@ struct ModelParams {
   double toMeters(int adc) const;
 
   void calibrate(int adc_reading);
+  void calibrate(int adc_reading, uint8_t EEPROMpos);
+
+  void loadCalibrate(int EEPROMval);
 };
 
 }

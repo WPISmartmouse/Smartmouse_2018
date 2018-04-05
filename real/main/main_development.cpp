@@ -8,6 +8,7 @@
 #include <real/commands/End.h>
 #include <real/commands/Forward.h>
 #include <real/commands/ForwardN.h>
+#include <EEPROM.h>
 
 ArduinoTimer timer;
 Scheduler *scheduler;
@@ -30,8 +31,9 @@ class NavTestCommand : public CommandGroup {
 void setup() {
   Command::setTimerImplementation(&timer);
   mouse = RealMouse::inst();
+  //EEPROM.write(0,0);//Used to reset calibration
   mouse->setup();
-
+  mouse->calibrate();
   GlobalProgramSettings.quiet = false;
 //  mouse->kinematic_controller.enable_sensor_pose_estimate = false;
 
@@ -64,7 +66,8 @@ void loop() {
   if (not done) {
     done = scheduler->run();
   } else {
-    mouse->setSpeedCps(0, 0);
+    //mouse->setSpeedCps(0, 0);
+    mouse->Teleop();
     digitalWrite(RealMouse::SYS_LED, 1);
     digitalWrite(RealMouse::LED_2, 1);
     digitalWrite(RealMouse::LED_4, 1);

@@ -1,6 +1,7 @@
 #include <common/IRSensorModeling/Model.h>
 #include <cmath>
 #include <common/KinematicController/RobotConfig.h>
+#include <EEPROM.h>
 
 namespace smartmouse {
 
@@ -29,6 +30,14 @@ int ModelParams::toADC(double distance_m) const {
 
 void ModelParams::calibrate(const int adc_reading) {
   adc_offset = adc_reading - toADC(CALIBRATION_DISTANCE);
+}
+void ModelParams::calibrate(const int adc_reading, uint8_t EEPROMPos) {
+  adc_offset = adc_reading - toADC(CALIBRATION_DISTANCE);
+  EEPROM.write(adc_offset, EEPROMPos);
+}
+
+void ModelParams::loadCalibrate(int EEPROMval) {
+  adc_offset = EEPROMval;
 }
 
 }

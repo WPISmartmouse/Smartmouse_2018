@@ -1,6 +1,7 @@
 #include <tuple>
 #include <common/core/Mouse.h>
 #include "RealMouse.h"
+#include <EEPROM.h>
 
 RealMouse *RealMouse::instance = nullptr;
 
@@ -165,6 +166,30 @@ void RealMouse::setSpeedCps(double l_cps, double r_cps) {
   kinematic_controller.setSpeedCps(l_cps, r_cps);
 }
 
+void RealMouse::Teleop() {
+  if(Serial1.available()) {
+    if (Serial1.read() == 'w') {
+      toLeft = 0.8;
+      toRight = 0.8;
+
+    }
+    if (Serial1.read() == 'a') {
+      toLeft = 0.5;
+      toRight = 0;
+    }
+    if (Serial1.read() == 'd') {
+      toRight = 0.5;
+      toRight = 0;
+    }
+    if (Serial1.read() == 's') {
+      toLeft = 0;
+      toRight = 0;
+
+    }
+  }
+
+  kinematic_controller.setSpeedCps(toLeft, toRight);
+}
 double RealMouse::checkVoltage() {
   // 3.2v is max and 2.7v is min
   int a = analogRead(BATTERY_ANALOG_PIN);
@@ -182,23 +207,38 @@ double RealMouse::checkVoltage() {
 void RealMouse::calibrate() {
   digitalWrite(LED_5, HIGH);
 
-  // read the latest values
-  range_data_adc.back_left = analogRead(BACK_LEFT_ANALOG_PIN);
-  range_data_adc.front_left = analogRead(FRONT_LEFT_ANALOG_PIN);
-  range_data_adc.gerald_left = analogRead(GERALD_LEFT_ANALOG_PIN);
-  range_data_adc.front = analogRead(FRONT_ANALOG_PIN);
-  range_data_adc.gerald_right = analogRead(GERALD_RIGHT_ANALOG_PIN);
-  range_data_adc.front_right = analogRead(FRONT_RIGHT_ANALOG_PIN);
-  range_data_adc.back_right = analogRead(BACK_RIGHT_ANALOG_PIN);
+  if(EEPROM.read(0) != 1) {
+    EEPROM.write(0,1);
+    // read the latest values
+    range_data_adc.back_left = analogRead(BACK_LEFT_ANALOG_PIN);
+    range_data_adc.front_left = analogRead(FRONT_LEFT_ANALOG_PIN);
+    range_data_adc.gerald_left = analogRead(GERALD_LEFT_ANALOG_PIN);
+    range_data_adc.front = analogRead(FRONT_ANALOG_PIN);
+    range_data_adc.gerald_right = analogRead(GERALD_RIGHT_ANALOG_PIN);
+    range_data_adc.front_right = analogRead(FRONT_RIGHT_ANALOG_PIN);
+    range_data_adc.back_right = analogRead(BACK_RIGHT_ANALOG_PIN);
 
-  // compute offsets between measured and expected ADC value
-  back_left_model.calibrate(range_data_adc.back_left);
-  front_left_model.calibrate(range_data_adc.front_left);
-  gerald_left_model.calibrate(range_data_adc.gerald_left);
-  front_model.calibrate(range_data_adc.front);
-  gerald_right_model.calibrate(range_data_adc.gerald_right);
-  front_right_model.calibrate(range_data_adc.front_right);
-  back_right_model.calibrate(range_data_adc.back_right);
+    // compute offsets between measured and expected ADC value
+    back_left_model.calibrate(range_data_adc.back_left, 1);
+    front_left_model.calibrate(range_data_adc.front_left, 2);
+    gerald_left_model.calibrate(range_data_adc.gerald_left, 3);
+    front_model.calibrate(range_data_adc.front, 4);
+    gerald_right_model.calibrate(range_data_adc.gerald_right, 5);
+    front_right_model.calibrate(range_data_adc.front_right, 6);
+    back_right_model.calibrate(range_data_adc.back_right, 7);
+  }
+  else
+  {
+    back_left_model.loadCalibrate(EEPROM.read(1));
+    front_left_model.loadCalibrate(EEPROM.read(2));
+    gerald_left_model.loadCalibrate(EEPROM.read(3));
+    front_model.loadCalibrate(EEPROM.read(4));
+    gerald_right_model.loadCalibrate(EEPROM.read(5));
+    front_right_model.loadCalibrate(EEPROM.read(6));
+    back_right_model.loadCalibrate(EEPROM.read(7));
+  }
+
+
 
   digitalWrite(LED_5, LOW);
 }

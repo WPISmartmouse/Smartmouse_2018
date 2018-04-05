@@ -13,6 +13,7 @@ include_directories(${CMAKE_SOURCE_DIR} ${REAL_LIB_DIRS} . commands ../common/Ei
 add_definitions(-DEMBED)
 
 import_arduino_library(SPI)
+import_arduino_library(EEPROM)
 
 add_teensy_core()
 add_teensy_library(real_com ${COM_SRC} ${CORE_COM_SRC} ${COM_COMMAND_SRC} ${REAL_SRC} ${REAL_LIBS_SRC})

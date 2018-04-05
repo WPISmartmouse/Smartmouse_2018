@@ -61,6 +61,8 @@ public:
 
   void setSpeedCps(double l_mps, double r_mps);
 
+  void Teleop();
+
   void calibrate();
 
   static double checkVoltage();
@@ -77,6 +79,9 @@ public:
 
   /** store this as meters interally. the RoboSimState msg will be in ADC values **/
   RangeData<double> range_data_m;
+
+  /** Teleop Starting Variables**/
+  double toLeft = 0, toRight = 0;
 
   /** generated with ./compute_calibration_parameters.py right.csv left.csv front.csv **/
   smartmouse::ir::ModelParams gerald_right_model = {1.25991, 0.02697, 1164.77724, 0.06928};
