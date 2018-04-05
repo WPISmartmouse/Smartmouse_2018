@@ -14,8 +14,6 @@ public:
 
   void setSetpointCps(double setpoint_cups);
 
-  void reset_enc_rad(double rad);
-
   void setParams(double kP, double kI, double kD, double ff_scale, double ff_offset);
 
   double kP;
@@ -35,7 +33,6 @@ public:
   double last_angle_rad;
   double last_error;
   double last_velocity_rps;
-  double regulated_setpoint_rps;
   double setpoint_rps;
   double velocity_rps;
   double second_derivative;

@@ -129,6 +129,9 @@ void RealMouse::setup() {
   right_encoder.init();
   left_encoder.invert();
 
+  // FUCK YOU KEION
+  analogWriteResolution(10);
+
   // pull MOSI high to run encoders in 3 wire mode
   pinMode(MOSI, OUTPUT);
   digitalWrite(MOSI, HIGH);
@@ -196,7 +199,7 @@ double RealMouse::checkVoltage() {
   double voltage = a / std::pow(2, 13) * 3.3;
 
   if (2 < voltage && voltage < 2.7) {
-    print("VOLTAGE IS TOO LOW. CHARGE THE BATTERY!!!\r\n");
+    print("VOLTAGE [%f] IS TOO LOW. CHARGE THE BATTERY!!!\r\n", voltage);
   } else if (voltage > 3.3) {
     print("VOLTAGE [%f] IS TOO HIGH. SHE'S GONNA BLOW!!!\r\n", voltage);
   }
@@ -205,11 +208,11 @@ double RealMouse::checkVoltage() {
 }
 
 void RealMouse::calibrate() {
-  digitalWrite(LED_5, HIGH);
 
   if(EEPROM.read(0) != 1) {
     EEPROM.write(0,1);
     // read the latest values
+    digitalWrite(LED_6, HIGH);
     range_data_adc.back_left = analogRead(BACK_LEFT_ANALOG_PIN);
     range_data_adc.front_left = analogRead(FRONT_LEFT_ANALOG_PIN);
     range_data_adc.gerald_left = analogRead(GERALD_LEFT_ANALOG_PIN);
@@ -226,6 +229,7 @@ void RealMouse::calibrate() {
     gerald_right_model.calibrate(range_data_adc.gerald_right, 5);
     front_right_model.calibrate(range_data_adc.front_right, 6);
     back_right_model.calibrate(range_data_adc.back_right, 7);
+    digitalWrite(LED_6, LOW);
   }
   else
   {
@@ -237,8 +241,4 @@ void RealMouse::calibrate() {
     front_right_model.loadCalibrate(EEPROM.read(6));
     back_right_model.loadCalibrate(EEPROM.read(7));
   }
-
-
-
-  digitalWrite(LED_5, LOW);
 }

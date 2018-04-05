@@ -7,7 +7,7 @@ void ForwardN::initialize() {
   start = mouse->getGlobalPose();
   const double goal_disp = KinematicController::dispToNthEdge(*mouse, n);
   const double v0 = mouse->kinematic_controller.getCurrentForwardSpeedCUPS();
-  const double vf = smartmouse::kc::kVf;
+  const double vf = smartmouse::kc::kVf_cps;
   profile = new smartmouse::kc::VelocityProfile(start, {goal_disp, v0, vf});
   // TODO: eventually use this instead
   // mouse->kinematic_controller.plan_traj(start, KinematicController::poseOfNthEdge(mouse, n));

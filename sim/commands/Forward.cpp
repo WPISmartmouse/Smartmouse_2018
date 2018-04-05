@@ -7,7 +7,7 @@ void Forward::initialize() {
   start = mouse->getGlobalPose();
   const double goal_disp = KinematicController::dispToNextEdge(*mouse);
   const double v0 = mouse->kinematic_controller.getCurrentForwardSpeedCUPS();
-  const double vf = smartmouse::kc::kVf;
+  const double vf = smartmouse::kc::kVf_cps;
   profile = new smartmouse::kc::VelocityProfile(start, {goal_disp, v0, vf});
 }
 

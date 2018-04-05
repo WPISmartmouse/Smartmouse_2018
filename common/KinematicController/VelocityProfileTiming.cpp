@@ -33,9 +33,20 @@ double VelocityProfileTiming::two_phase_profile_d(double v) const {
 VelocityProfileTiming::VelocityProfileTiming(double d, double v_0, double v_f)
     : d(d),
       v_0(v_0),
-      v_f(v_f) {
+      v_f(v_f),
+      t_1(0),
+      t_2(0),
+      t_m1(0),
+      t_m2(0),
+      t_3(0),
+      t_4(0),
+      t_f(0),
+      v_m(0),
+      v_1(0),
+      v_2(0),
+      v_3(0),
+      v_4(0) {
   double v_m_theoretical = compute_v_m(v_0, v_f, a_m, j_m, d);
-
   v_m = std::min(v_m_theoretical, MAX_SPEED_CUPS);
 
   if (v_f > v_0) {
@@ -91,12 +102,13 @@ VelocityProfileTiming::VelocityProfileTiming(double d, double v_0, double v_f)
     }
   }
 
-  print("%0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f\r\n", t_1, t_2, t_m1, t_m2, t_3, t_4, t_f);
-  print("%0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f\r\n", v_0, v_1, v_2, v_m, v_3, v_4, v_f);
-  print("%0.3f\r\n", d);
+//  print("%0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f\r\n", t_1, t_2, t_m1, t_m2, t_3, t_4, t_f);
+//  print("%0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f\r\n", v_0, v_1, v_2, v_m, v_3, v_4, v_f);
+//  print("%0.3f\r\n", d);
 }
 
 double VelocityProfileTiming::compute_forward_velocity(double t) const {
+
   double v_t = 0;
   if (t <= t_1) {
     v_t = v_0 + j_m * std::pow(t, 2) / 2.0;

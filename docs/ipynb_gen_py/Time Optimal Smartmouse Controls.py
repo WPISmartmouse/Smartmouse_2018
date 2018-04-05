@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[22]:
+# In[1]:
 
 
 # dependencies and global setup
@@ -137,7 +137,7 @@ plt.show()
 get_ipython().run_cell_magic('HTML', '', '<img src="./full_velocity_profile.png" alt="velocity profile" style="width: 500px;"/>')
 
 
-# In[147]:
+# In[5]:
 
 
 def compute_v_max(v_0, v_f, a_m, j_m, d):
@@ -245,7 +245,7 @@ def simulate_profile(v_0, v_f, a_m, j_m, v_m_theoretical, V, d):
             v_t = v_f
         vs.append(v_t)
 
-    plt.figure(figsize=(8,4))
+    plt.figure(figsize=(12,10))
     plt.plot(ts, vs, label='velocity')
     plt.plot([t_1, t_1], [0, v_1], color='k', linestyle='--')
     plt.plot([t_2, t_2], [0, v_2], color='k', linestyle='--')
@@ -266,7 +266,25 @@ def simulate_profile(v_0, v_f, a_m, j_m, v_m_theoretical, V, d):
     return t_1, v_1, t_2, v_2, t_m1, t_m2, t_3, t_4, t_f
 
 
-# In[148]:
+# In[6]:
+
+
+def test_profile():
+    v_0=0
+    v_f=0
+    a_m=5
+    j_m=60
+    V = 1
+    d = 2.5
+    
+    v_m = compute_v_max(v_0, v_f, a_m, j_m, d)
+    t_1, v_1, t_2, v_2, t_m1, t_m2, t_3, t_4, t_f = simulate_profile(v_0, v_f, a_m, j_m, v_m, V, d)
+    
+LOG_LVL=0
+test_profile()
+
+
+# In[3]:
 
 
 def test_profile():

@@ -18,7 +18,6 @@ RegulatedMotor::RegulatedMotor()
       last_angle_rad(0),
       last_error(0),
       last_velocity_rps(0),
-      regulated_setpoint_rps(0),
       setpoint_rps(0),
       velocity_rps(0),
       second_derivative(0),
@@ -31,10 +30,6 @@ bool RegulatedMotor::isStopped() {
   return stopped;
 }
 
-void RegulatedMotor::reset_enc_rad(double rad) {
-  last_angle_rad = rad;
-}
-
 double RegulatedMotor::runPid(double dt_s, double angle_rad) {
   if (!initialized) {
     initialized = true;
@@ -43,16 +38,15 @@ double RegulatedMotor::runPid(double dt_s, double angle_rad) {
   }
 
   velocity_rps = smartmouse::math::yaw_diff(last_angle_rad, angle_rad) / dt_s;
-  error = regulated_setpoint_rps - velocity_rps;
+  error = setpoint_rps - velocity_rps;
   derivative = (last_velocity_rps - velocity_rps) / dt_s;
   integral += error * dt_s;
   integral = std::max(std::min(integral, int_cap), -int_cap);
 
-  // TODO: use our model model to solve for the theoretical feed forward constant
-  if (regulated_setpoint_rps < 0) {
-    feed_forward = regulated_setpoint_rps * ff_scale - ff_offset;
-  } else  if (regulated_setpoint_rps > 0)  {
-    feed_forward = regulated_setpoint_rps * ff_scale + ff_offset;
+  if (setpoint_rps < 0) {
+    feed_forward = setpoint_rps * ff_scale - ff_offset;
+  } else  if (setpoint_rps > 0)  {
+    feed_forward = setpoint_rps * ff_scale + ff_offset;
   }
   else{
     feed_forward = 0;
@@ -60,15 +54,6 @@ double RegulatedMotor::runPid(double dt_s, double angle_rad) {
   abstract_force = (feed_forward) + (error * kP) + (integral * kI) + (derivative * kD);
 
   abstract_force = std::max(std::min(1023.0, abstract_force), -1023.0);
-
-  // TODO remove this, since we have acceleration in KC
-  // limit the change in setpoint
-  double acc = acceleration_rpss * dt_s;
-  if (regulated_setpoint_rps < setpoint_rps) {
-    regulated_setpoint_rps = std::min(regulated_setpoint_rps + acc, setpoint_rps);
-  } else if (regulated_setpoint_rps > setpoint_rps) {
-    regulated_setpoint_rps = std::max(regulated_setpoint_rps - acc, setpoint_rps);
-  }
 
   last_error = error;
   last_angle_rad = angle_rad;
