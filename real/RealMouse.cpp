@@ -209,36 +209,36 @@ double RealMouse::checkVoltage() {
 
 void RealMouse::calibrate() {
 
-  if(EEPROM.read(0) != 1) {
-    EEPROM.write(0,1);
-    // read the latest values
-    digitalWrite(LED_6, HIGH);
-    range_data_adc.back_left = analogRead(BACK_LEFT_ANALOG_PIN);
-    range_data_adc.front_left = analogRead(FRONT_LEFT_ANALOG_PIN);
-    range_data_adc.gerald_left = analogRead(GERALD_LEFT_ANALOG_PIN);
-    range_data_adc.front = analogRead(FRONT_ANALOG_PIN);
-    range_data_adc.gerald_right = analogRead(GERALD_RIGHT_ANALOG_PIN);
-    range_data_adc.front_right = analogRead(FRONT_RIGHT_ANALOG_PIN);
-    range_data_adc.back_right = analogRead(BACK_RIGHT_ANALOG_PIN);
 
-    // compute offsets between measured and expected ADC value
-    back_left_model.calibrate(range_data_adc.back_left, 1);
-    front_left_model.calibrate(range_data_adc.front_left, 2);
-    gerald_left_model.calibrate(range_data_adc.gerald_left, 3);
-    front_model.calibrate(range_data_adc.front, 4);
-    gerald_right_model.calibrate(range_data_adc.gerald_right, 5);
-    front_right_model.calibrate(range_data_adc.front_right, 6);
-    back_right_model.calibrate(range_data_adc.back_right, 7);
-    digitalWrite(LED_6, LOW);
-  }
-  else
-  {
-    back_left_model.loadCalibrate(EEPROM.read(1));
-    front_left_model.loadCalibrate(EEPROM.read(2));
-    gerald_left_model.loadCalibrate(EEPROM.read(3));
-    front_model.loadCalibrate(EEPROM.read(4));
-    gerald_right_model.loadCalibrate(EEPROM.read(5));
-    front_right_model.loadCalibrate(EEPROM.read(6));
-    back_right_model.loadCalibrate(EEPROM.read(7));
-  }
+
+  // read the latest values
+  digitalWrite(LED_6, HIGH);
+  range_data_adc.back_left = analogRead(BACK_LEFT_ANALOG_PIN);
+  range_data_adc.front_left = analogRead(FRONT_LEFT_ANALOG_PIN);
+  range_data_adc.gerald_left = analogRead(GERALD_LEFT_ANALOG_PIN);
+  range_data_adc.front = analogRead(FRONT_ANALOG_PIN);
+  range_data_adc.gerald_right = analogRead(GERALD_RIGHT_ANALOG_PIN);
+  range_data_adc.front_right = analogRead(FRONT_RIGHT_ANALOG_PIN);
+  range_data_adc.back_right = analogRead(BACK_RIGHT_ANALOG_PIN);
+
+  // compute offsets between measured and expected ADC value
+  back_left_model.calibrate(range_data_adc.back_left, 1);
+  front_left_model.calibrate(range_data_adc.front_left, 2);
+  gerald_left_model.calibrate(range_data_adc.gerald_left, 3);
+  front_model.calibrate(range_data_adc.front, 4);
+  gerald_right_model.calibrate(range_data_adc.gerald_right, 5);
+  front_right_model.calibrate(range_data_adc.front_right, 6);
+  back_right_model.calibrate(range_data_adc.back_right, 7);
+  digitalWrite(LED_6, LOW);
+}
+  void RealMouse::loadCalibrate() {
+
+    back_left_model.loadCalibrate(static_cast<int8_t>(EEPROM.read(1)));
+    front_left_model.loadCalibrate(static_cast<int8_t>(EEPROM.read(2)));
+    gerald_left_model.loadCalibrate(static_cast<int8_t>(EEPROM.read(3)));
+    front_model.loadCalibrate(static_cast<int8_t>(EEPROM.read(4)));
+    gerald_right_model.loadCalibrate(static_cast<int8_t>(EEPROM.read(5)));
+    front_right_model.loadCalibrate(static_cast<int8_t>(EEPROM.read(6)));
+    back_right_model.loadCalibrate(static_cast<int8_t>(EEPROM.read(7)));
+
 }

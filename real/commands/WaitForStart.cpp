@@ -11,6 +11,8 @@ WaitForStart::WaitForStart() : CommandGroup("wait_calibrate"), mouse(RealMouse::
 }
 
 void WaitForStart::initialize() {
+  mouse->left_encoder.ResetPosition();
+  mouse->right_encoder.ResetPosition();
 }
 
 void WaitForStart::execute() {
@@ -41,8 +43,7 @@ bool WaitForStart::isFinished() {
 }
 
 void WaitForStart::end() {
-//  smartmouse::kc::MAX_SPEED_MPS = max(speed, 0.2);
-  smartmouse::kc::MAX_SPEED_MPS = 0.18;
+  smartmouse::kc::MAX_SPEED_MPS = max(speed, 0.1);
   smartmouse::kc::MAX_SPEED_CUPS = smartmouse::maze::toCellUnits(smartmouse::kc::MAX_SPEED_MPS);
   for (uint8_t i = 0; i < 7; i++) {
     digitalWrite(RealMouse::LED_7 - i, 0);

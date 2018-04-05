@@ -25,7 +25,7 @@ struct ModelParams {
   const double CALIBRATION_DISTANCE;
 
   /** calibration offset **/
-  int adc_offset = 0;
+  int8_t adc_offset = 0;
 
   int toADC(double distance_m) const;
 
@@ -34,7 +34,7 @@ struct ModelParams {
   void calibrate(int adc_reading);
   void calibrate(int adc_reading, uint8_t EEPROMpos);
 
-  void loadCalibrate(int EEPROMval);
+  void loadCalibrate(int8_t EEPROMval);
 };
 
 }

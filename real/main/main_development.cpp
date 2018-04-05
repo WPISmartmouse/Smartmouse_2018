@@ -5,10 +5,8 @@
 
 #include <real/commands/WaitForStart.h>
 #include <real/commands/Stop.h>
-#include <real/commands/End.h>
-#include <real/commands/Forward.h>
+#include <real/commands/Turn.h>
 #include <real/commands/ForwardN.h>
-#include <EEPROM.h>
 
 ArduinoTimer timer;
 Scheduler *scheduler;
@@ -24,6 +22,7 @@ class NavTestCommand : public CommandGroup {
     addSequential(new WaitForStart());
     addSequential(new Stop(1000));
     addSequential(new ForwardN(3));
+    addSequential(new Turn(Direction::S));
     addSequential(new Stop(10000));
   }
 };
@@ -31,9 +30,22 @@ class NavTestCommand : public CommandGroup {
 void setup() {
   Command::setTimerImplementation(&timer);
   mouse = RealMouse::inst();
-//  EEPROM.write(0,0);//Used to reset calibration
   mouse->setup();
-  mouse->calibrate();
+  if(!digitalRead(RealMouse::BUTTON_PIN)){
+    digitalWrite(RealMouse::LED_7, 1);
+    delay(1000);
+    while(digitalRead(RealMouse::BUTTON_PIN)){}
+    mouse->calibrate();
+    delay(1000);
+    print("%d, %d, %d\r\n", mouse->back_left_model.adc_offset, mouse->front_left_model.adc_offset,
+    mouse->gerald_left_model.adc_offset);
+  }
+  else {
+    mouse->loadCalibrate();
+    print("%d, %d, %d\r\n", mouse->back_left_model.adc_offset, mouse->front_left_model.adc_offset,
+          mouse->gerald_left_model.adc_offset);
+  }
+
   GlobalProgramSettings.quiet = false;
 //  mouse->kinematic_controller.enable_sensor_pose_estimate = false;
 
@@ -74,14 +86,11 @@ void loop() {
     digitalWrite(RealMouse::LED_6, 1);
   }
 
-//  static unsigned long idx = 0;
-//  ++idx;
+  static unsigned long idx = 0;
+  ++idx;
 //  if (idx % 10 == 0) {
-//    print("%7.3f, %7.3f, %7.3f, %7.3f\r\n",
-//          mouse->kinematic_controller.left_motor.setpoint_rps,
-//          mouse->kinematic_controller.left_motor.velocity_rps,
-//          mouse->kinematic_controller.right_motor.setpoint_rps,
-//          mouse->kinematic_controller.right_motor.velocity_rps);
+//    print("%d\r\n",
+//          mouse->back_left_model.adc_offset);
 //  }
 
   last_t_us = now_us;

@@ -64,7 +64,7 @@ public:
   void Teleop();
 
   void calibrate();
-
+  void loadCalibrate();
   static double checkVoltage();
 
 

@@ -1,4 +1,6 @@
 .idea
+cmake-build-debug
+
 .real_build
 .real_profile_build
 .sim_build

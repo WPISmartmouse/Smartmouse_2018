@@ -29,14 +29,14 @@ int ModelParams::toADC(double distance_m) const {
 }
 
 void ModelParams::calibrate(const int adc_reading) {
-  adc_offset = adc_reading - toADC(CALIBRATION_DISTANCE);
+  adc_offset = static_cast<int8_t>(adc_reading - toADC(CALIBRATION_DISTANCE));
 }
 void ModelParams::calibrate(const int adc_reading, uint8_t EEPROMPos) {
-  adc_offset = adc_reading - toADC(CALIBRATION_DISTANCE);
-  EEPROM.write(adc_offset, EEPROMPos);
+  adc_offset = static_cast<int8_t>(adc_reading - toADC(CALIBRATION_DISTANCE));
+  EEPROM.write(EEPROMPos, static_cast<uint8_t>(adc_offset));
 }
 
-void ModelParams::loadCalibrate(int EEPROMval) {
+void ModelParams::loadCalibrate(int8_t EEPROMval) {
   adc_offset = EEPROMval;
 }
 
