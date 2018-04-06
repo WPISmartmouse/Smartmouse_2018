@@ -10,6 +10,6 @@ SensorReading::SensorReading(int row, int col, bool *walls) :
         row(row),
         col(col) {}
 
-const bool SensorReading::isWall(Direction dir) {
+bool SensorReading::isWall(Direction dir) {
   return walls[static_cast<int>(dir)];
 }

@@ -32,7 +32,7 @@ void TurnInPlace::execute() {
     vr = -fwd_v;
   }
 
-  if (vl < .01 and vr < .01 and yaw_error > smartmouse::kc::ROT_TOLERANCE) {
+  if (vl < .01 and vr < .01 and fabs(yaw_error) > smartmouse::kc::ROT_TOLERANCE) {
     vl += kP * yaw_error;
     vr -= kP * yaw_error;
   }

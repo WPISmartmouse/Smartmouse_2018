@@ -6,10 +6,10 @@
 #include <common/core/Mouse.h>
 #include <common/core/Pose.h>
 #include <common/KinematicController/KinematicController.h>
-
+#include <real/EEPROMModel.h>
 
 class RealMouse : public Mouse {
-public:
+ public:
 
   static constexpr double tick_to_rad(int ticks) {
     return ticks * smartmouse::kc::RAD_PER_TICK;
@@ -64,9 +64,10 @@ public:
   void Teleop();
 
   void calibrate();
-  void loadCalibrate();
-  static double checkVoltage();
 
+  void loadCalibrate();
+
+  static double checkVoltage();
 
   /** runs setup things like pin initializes */
   void setup();
@@ -81,14 +82,13 @@ public:
   RangeData<double> range_data_m;
 
   /** generated with ./compute_calibration_parameters.py right.csv left.csv front.csv **/
-  smartmouse::ir::ModelParams back_left_model = {1.26828, 0.02980, 511.64145, 0.05621};
-  smartmouse::ir::ModelParams front_left_model = {1.21288, 0.02287, 732.26956, 0.06385};
-  smartmouse::ir::ModelParams gerald_left_model = {1.25924, 0.02768, 618.24344, 0.07390};
-  smartmouse::ir::ModelParams front_model = {1.35994, 0.03864, 357.50577, 0.08000};
-  smartmouse::ir::ModelParams gerald_right_model = {1.21330, 0.02217, 1301.26050, 0.06928};
-  smartmouse::ir::ModelParams front_right_model = {1.18574, 0.01909, 879.04704, 0.05959};
-  smartmouse::ir::ModelParams back_right_model = {1.27625, 0.02885, 447.35837, 0.05220};
-
+  smartmouse::ir::EEPROMModel back_left_model = {1.26828, 0.02980, 511.64145, 0.05621};
+  smartmouse::ir::EEPROMModel front_left_model = {1.21288, 0.02287, 732.26956, 0.06385};
+  smartmouse::ir::EEPROMModel gerald_left_model = {1.25924, 0.02768, 618.24344, 0.07390};
+  smartmouse::ir::EEPROMModel front_model = {1.35994, 0.03864, 357.50577, 0.08000};
+  smartmouse::ir::EEPROMModel gerald_right_model = {1.21330, 0.02217, 1301.26050, 0.06928};
+  smartmouse::ir::EEPROMModel front_right_model = {1.18574, 0.01909, 879.04704, 0.05959};
+  smartmouse::ir::EEPROMModel back_right_model = {1.27625, 0.02885, 447.35837, 0.05220};
 
  private:
   RealMouse();

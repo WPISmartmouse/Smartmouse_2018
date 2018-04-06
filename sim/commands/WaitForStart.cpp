@@ -20,8 +20,6 @@ void WaitForStart::initialize() {
     mouse->gerald_right_model.calibrate(adc.gerald_right);
     mouse->front_right_model.calibrate(adc.front_right);
     mouse->back_right_model.calibrate(adc.back_right);
-    print("Calibration complete.\r\n");
-    print("%i\r\n", mouse->back_left_model.adc_offset);
   }
 
 }

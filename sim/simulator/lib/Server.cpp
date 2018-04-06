@@ -387,7 +387,7 @@ unsigned int Server::getNsOfSimPerStep() const {
 int Server::ComputeADCValue(smartmouse::msgs::SensorDescription sensor) {
   // take the actual distance and the angle and reverse-calculate the ADC value
   double d = ComputeSensorDistToWall(sensor);
-  smartmouse::ir::ModelParams model{sensor.a(), sensor.b(), sensor.c(), sensor.d()};
+  smartmouse::ir::Model model{sensor.a(), sensor.b(), sensor.c(), sensor.d()};
   return model.toADC(d);
 }
 
@@ -451,7 +451,7 @@ void Server::ComputeMaxSensorRange() {
   max_cells_to_check_ = (unsigned int) std::ceil(smartmouse::maze::toCellUnits(max_range));
 }
 
-const double Server::ComputeSensorRange(const smartmouse::msgs::SensorDescription sensor) {
+double Server::ComputeSensorRange(const smartmouse::msgs::SensorDescription sensor) {
   double sensor_x = sensor.p().x();
   double sensor_y = sensor.p().x();
   double range_x = sensor_x + cos(sensor.p().theta()) * smartmouse::kc::ANALOG_MAX_DIST_M;

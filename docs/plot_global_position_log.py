@@ -18,7 +18,7 @@ def main():
 
     plt.figure()
     plt.scatter(x[:, 0], x[:,1])
-    plt.quiver(x[:, 0], x[:,1], np.cos(yaw), np.sin(yaw), scale=10)
+    plt.quiver(x[:, 0], x[:,1], np.cos(yaw), np.sin(yaw), scale=50)
     plt.title("Position")
     plt.xlabel("X (cells)")
     plt.ylabel("Y (cells)")

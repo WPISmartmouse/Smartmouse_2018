@@ -42,7 +42,7 @@ class Server {
   void PublishInternalState();
   void PublishWorldStats(double rtf);
   void ComputeMaxSensorRange();
-  const double ComputeSensorRange(const smartmouse::msgs::SensorDescription sensor);
+  double ComputeSensorRange(const smartmouse::msgs::SensorDescription sensor);
 
   int ComputeADCValue(smartmouse::msgs::SensorDescription sensor);
   double ComputeSensorDistToWall(smartmouse::msgs::SensorDescription sensor);

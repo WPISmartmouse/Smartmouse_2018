@@ -224,7 +224,7 @@ TEST(IRTest, CalibrationTest) {
   constexpr int calibration_adc = 1000;
   constexpr double calibration_distance = 0.04494939885;
   constexpr int fake_adc = 950;
-  smartmouse::ir::ModelParams p{1.214233, 0.023794, 284.688506, calibration_distance};
+  smartmouse::ir::Model p{1.214233, 0.023794, 284.688506, calibration_distance};
 
   ASSERT_NEAR(p.toMeters(calibration_adc), calibration_distance, 1e-9);
   ASSERT_NE(p.toMeters(fake_adc), calibration_distance);
@@ -232,11 +232,6 @@ TEST(IRTest, CalibrationTest) {
   p.calibrate(fake_adc);
 
   ASSERT_NEAR(p.toMeters(fake_adc), calibration_distance, 1e-9);
-}
-
-TEST(IRTest, ModelTest) {
-  smartmouse::ir::ModelParams p{1.214233, 0.023794, 284.688506, 0};
-  ASSERT_NEAR(p.toMeters(calibration_adc), calibration_distance, 1e-9);
 }
 
 int main(int argc, char **argv) {

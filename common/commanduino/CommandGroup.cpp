@@ -35,8 +35,10 @@ void CommandGroup::_execute() {
       Command *removed = commands.remove(currentCommandIndex);
       delete removed;
       currentCommandIndex--;
+      break;
     }
 
+    // FIXME: address sanatizer found a bug here
     if (!executingCommand->inParallel) {
       done = true;
     } else {
