@@ -14,21 +14,21 @@ struct SensorPose {
 };
 
 // most stuff here is meters or meters/second
-constexpr double FRONT_ANALOG_ANGLE = 1.3446;
+constexpr double FRONT_ANALOG_ANGLE = 1.2217;
 constexpr double BACK_ANALOG_ANGLE = 1.48353;
-constexpr double FRONT_SIDE_ANALOG_X = 0.035;
+constexpr double FRONT_SIDE_ANALOG_X = 0.033;
 constexpr double FRONT_SIDE_ANALOG_Y = 0.026;
-constexpr double BACK_SIDE_ANALOG_X = -0.0256;
+constexpr double BACK_SIDE_ANALOG_X = -0.026;
 constexpr double BACK_SIDE_ANALOG_Y = 0.03;
-constexpr double FRONT_ANALOG_X = 0.055;
+constexpr double FRONT_ANALOG_X = 0.045;
 constexpr double GERALD_X = 0.040;
 constexpr double GERALD_Y = 0.022;
-constexpr double GERALD_ANGLE = 0.785398;
+constexpr double GERALD_ANGLE = 1.0472;
 constexpr double MAX_HARDWARE_SPEED_MPS = 0.90;
 constexpr double MIN_SPEED_MPS = 0.0145;
 constexpr double FRONT_WALL_THRESHOLD = 0.12;
-constexpr double SIDE_WALL_THRESHOLD = 0.08;
-constexpr double GERALD_WALL_THRESHOLD = 0.12;
+constexpr double SIDE_WALL_THRESHOLD = 0.12;
+constexpr double GERALD_WALL_THRESHOLD = 0.15;
 constexpr double WALL_CHANGED_THRESHOLD = 0.02;
 constexpr double USE_FRONT_WALL_FOR_POSE = 0.08;
 constexpr double ROT_TOLERANCE = 0.025;

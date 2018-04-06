@@ -1,4 +1,4 @@
-#include "ForwardN.h"
+#include <real/commands/ForwardN.h>
 
 ForwardN::ForwardN(unsigned int n) : Command("Forward"), mouse(RealMouse::inst()), n(n), profile(nullptr) {}
 

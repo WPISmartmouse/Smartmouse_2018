@@ -19,6 +19,9 @@ public:
   void end();
 
 private:
+
+  constexpr static double kPFwd = 5;
+
   GlobalPose start;
   RealMouse *mouse;
   smartmouse::kc::VelocityProfile *profile;

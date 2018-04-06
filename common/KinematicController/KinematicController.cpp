@@ -119,9 +119,9 @@ KinematicController::run(double dt_s, double left_angle_rad, double right_angle_
       std::tie(est_yaw, offset_m, no_walls) = estimate_pose(range_data, *mouse);
       double offset_cu = smartmouse::maze::toCellUnits(offset_m);
 
-      enable_sensor_pose_estimate = false;
       if (enable_sensor_pose_estimate && !no_walls) {
-        current_pose_estimate_cu.yaw = est_yaw;
+        // FIXME:
+        // current_pose_estimate_cu.yaw = est_yaw;
 
         double d_wall_front_cu = 0;
         bool wall_in_front = false;
@@ -237,26 +237,6 @@ std::tuple<double, double, bool> KinematicController::estimate_pose(RangeData<do
     sense_right_wall = false;
   }
 
-  // this logic checks for walls that are "falling off" or "falling on"
-  // if the change in sensor distance is above some threshold, the wall is arriving or leaving
-  // so we don't yet follow the wall
-  double d_back_left = fabs(range_data.back_left - last_back_left_analog_dist);
-  double d_back_right = fabs(range_data.back_right - last_back_right_analog_dist);
-  if (d_back_left > smartmouse::kc::WALL_CHANGED_THRESHOLD) {
-    sense_left_wall = false;
-  }
-  if (d_back_right > smartmouse::kc::WALL_CHANGED_THRESHOLD) {
-    sense_right_wall = false;
-  }
-
-  double d_front_left = fabs(range_data.front_left - last_front_left_analog_dist);
-  double d_front_right = fabs(range_data.front_right - last_front_right_analog_dist);
-  if (d_front_left > smartmouse::kc::WALL_CHANGED_THRESHOLD) {
-    sense_left_wall = false;
-  }
-  if (d_front_right > smartmouse::kc::WALL_CHANGED_THRESHOLD) {
-    sense_right_wall = false;
-  }
 
   bool left_wall_logical = mouse.isWallInDirection(left_of_dir(mouse.getDir()));
   bool right_wall_logical = mouse.isWallInDirection(right_of_dir(mouse.getDir()));

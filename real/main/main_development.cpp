@@ -9,6 +9,7 @@
 #include <real/commands/TurnInPlace.h>
 #include <real/commands/Turn.h>
 #include <real/commands/ForwardN.h>
+#include <real/commands/Forward.h>
 
 ArduinoTimer timer;
 Scheduler *scheduler;
@@ -23,9 +24,10 @@ class NavTestCommand : public CommandGroup {
   NavTestCommand() : CommandGroup("NavTestGroup") {
     addSequential(new WaitForStart());
     addSequential(new Stop(1000));
-    addSequential(new ForwardN(4));
+//    addSequential(new Forward());
+//    addSequential(new ForwardN(2));
+    addSequential(new ForwardToCenter());
 //    addSequential(new Turn(Direction::S));
-//    addSequential(new ForwardToCenter());
 //    addSequential(new Stop(10000));
   }
 };
@@ -50,7 +52,7 @@ void loop() {
   unsigned long now_us = timer.programTimeUs();
   double dt_us = now_us - last_t_us;
 
-  if (now_us - last_blink_us > 50000) {
+  if (now_us - last_blink_us > 100000) {
     last_blink_us = now_us;
     digitalWrite(RealMouse::SYS_LED, static_cast<uint8_t>(on));
     on = !on;
@@ -64,7 +66,7 @@ void loop() {
   auto dt_s = dt_us / 1e6;
   mouse->run(dt_s);
 
-  if (not done) {
+  if (not paused and not done) {
     // one of these should be commented out
 //    mouse->Teleop();
     done = scheduler->run();
@@ -79,10 +81,11 @@ void loop() {
   if (Serial1.available()) {
     char c = static_cast<char>(Serial1.read());
     if (c == 'p') {
-      mouse->setSpeedCps(0, 0);
+      paused = !paused;
     }
   }
 
+//  auto p = mouse->getGlobalPose();
 //  print_slow("%4.3f, %4.3f, %4.3f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %d, %d\r\n",
 //             p.row,
 //             p.col,

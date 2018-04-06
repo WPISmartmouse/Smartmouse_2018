@@ -64,7 +64,7 @@ get_ipython().run_cell_magic('tikz', '-s 400,400', '\\draw[->] (0,0) -- (10,0);\
 
 # ## Code that proves it
 
-# In[25]:
+# In[2]:
 
 
 def profile(V0, Vf, Vmax, d, A, buffer=3e-4):
@@ -131,13 +131,13 @@ plt.show()
 
 # In the case where we have plenty of distance, we will ramp up to max velocity, maintain that maximum velocity for a certain distance, then ramp back down to our final velocity. We will call these **phase 1**, **phase 2**, and  **phase 3**. As mentioned earlier, sometimes we will skip phase 2 entirely. Another weird assumption I'm going to make is that we always have enough time to reach maximum acceleration. If this isn't true than a few of our equations break, but in smartmouse this will never happen.
 
-# In[26]:
+# In[3]:
 
 
 get_ipython().run_cell_magic('HTML', '', '<img src="./full_velocity_profile.png" alt="velocity profile" style="width: 500px;"/>')
 
 
-# In[5]:
+# In[9]:
 
 
 def compute_v_max(v_0, v_f, a_m, j_m, d):
@@ -181,7 +181,8 @@ def simulate_profile(v_0, v_f, a_m, j_m, v_m_theoretical, V, d):
                                       + pow(a_m,2)*j_m*v_f + 2*v_0*pow(a_m,2)*j_m - pow(j_m,2)*pow(v_f,2))/(2*a_m*pow(j_m,2))
         two_phase_stop_profile_d = (4*pow(a_m,2) + 2*pow(a_m,3) - pow(a_m,4) + 2*pow(a_m,3)*j_m + pow(a_m,2)*j_m*v_f
                                     - pow(j_m,2)*pow(v_f,2))/(2*a_m*pow(j_m,2))
-        print(two_phase_stop_profile_d)
+        print("two phase stop profile d", two_phase_stop_profile_d)
+        print("three phase stop profile d", three_phase_stop_profile_d)
         if three_phase_stop_profile_d > d:
             t_1 = 0
             t_2 = 0
@@ -266,7 +267,7 @@ def simulate_profile(v_0, v_f, a_m, j_m, v_m_theoretical, V, d):
     return t_1, v_1, t_2, v_2, t_m1, t_m2, t_3, t_4, t_f
 
 
-# In[6]:
+# In[10]:
 
 
 def test_profile():
@@ -274,8 +275,8 @@ def test_profile():
     v_f=0
     a_m=5
     j_m=60
-    V = 1
-    d = 2.5
+    V = 0.5
+    d = 0.5
     
     v_m = compute_v_max(v_0, v_f, a_m, j_m, d)
     t_1, v_1, t_2, v_2, t_m1, t_m2, t_3, t_4, t_f = simulate_profile(v_0, v_f, a_m, j_m, v_m, V, d)
@@ -284,7 +285,7 @@ LOG_LVL=0
 test_profile()
 
 
-# In[3]:
+# In[11]:
 
 
 def test_profile():

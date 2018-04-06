@@ -46,6 +46,7 @@ VelocityProfileTiming::VelocityProfileTiming(double d, double v_0, double v_f)
       v_2(0),
       v_3(0),
       v_4(0) {
+  print("%f, %f, %f\r\n", v_0, v_f, d);
   double v_m_theoretical = compute_v_m(v_0, v_f, a_m, j_m, d);
   v_m = std::min(v_m_theoretical, MAX_SPEED_CUPS);
 
@@ -102,9 +103,9 @@ VelocityProfileTiming::VelocityProfileTiming(double d, double v_0, double v_f)
     }
   }
 
-//  print("%0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f\r\n", t_1, t_2, t_m1, t_m2, t_3, t_4, t_f);
-//  print("%0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f\r\n", v_0, v_1, v_2, v_m, v_3, v_4, v_f);
-//  print("%0.3f\r\n", d);
+  print("%0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f\r\n", t_1, t_2, t_m1, t_m2, t_3, t_4, t_f);
+  print("%0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f\r\n", v_0, v_1, v_2, v_m, v_3, v_4, v_f);
+  print("%0.3f\r\n", d);
 }
 
 double VelocityProfileTiming::compute_forward_velocity(double t) const {

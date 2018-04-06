@@ -51,7 +51,7 @@ def main():
         'B': (0.006 + calibration_block_left) / np.sin(np.deg2rad(85)),
         'A': (0.010 + calibration_block_left) / np.sin(np.deg2rad(70)),
         'F': (0.014 + calibration_block_left) / np.sin(np.deg2rad(60)),
-        'E': 0.01 + calibration_block_front,
+        'E': 0.010 + calibration_block_front,
         'G': (0.014 + (maze_width - calibration_block_left - robot_width)) / np.sin(np.deg2rad(60)),
         'D': (0.010 + (maze_width - calibration_block_left - robot_width)) / np.sin(np.deg2rad(70)),
         'H': (0.006 + (maze_width - calibration_block_left - robot_width)) / np.sin(np.deg2rad(85))

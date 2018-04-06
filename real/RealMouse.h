@@ -81,14 +81,14 @@ public:
   RangeData<double> range_data_m;
 
   /** generated with ./compute_calibration_parameters.py right.csv left.csv front.csv **/
-  smartmouse::ir::ModelParams back_left_model = {1.21944, 0.02408, 577.09229, 0.05621};
-  smartmouse::ir::ModelParams front_left_model = {1.19678, 0.02072, 768.14887, 0.06385};
-  smartmouse::ir::ModelParams gerald_left_model = {1.24543, 0.02568, 654.73110, 0.07390};
-  smartmouse::ir::ModelParams front_model = {1.27046, 0.02867, 600.86490, 0.08000};
-  smartmouse::ir::ModelParams gerald_right_model = {1.25991, 0.02697, 1164.77724, 0.06928};
-  smartmouse::ir::ModelParams front_right_model = {1.23762, 0.02446, 653.84782, 0.05959};
-  smartmouse::ir::ModelParams back_right_model = {1.25643, 0.02669, 517.55987, 0.05220};
-  // 0.0560 0.0644 0.0611 0.0647 0.0700 0.0599 0.0622 0.514215,
+  smartmouse::ir::ModelParams back_left_model = {1.26828, 0.02980, 511.64145, 0.05621};
+  smartmouse::ir::ModelParams front_left_model = {1.21288, 0.02287, 732.26956, 0.06385};
+  smartmouse::ir::ModelParams gerald_left_model = {1.25924, 0.02768, 618.24344, 0.07390};
+  smartmouse::ir::ModelParams front_model = {1.35994, 0.03864, 357.50577, 0.08000};
+  smartmouse::ir::ModelParams gerald_right_model = {1.21330, 0.02217, 1301.26050, 0.06928};
+  smartmouse::ir::ModelParams front_right_model = {1.18574, 0.01909, 879.04704, 0.05959};
+  smartmouse::ir::ModelParams back_right_model = {1.27625, 0.02885, 447.35837, 0.05220};
+
 
  private:
   RealMouse();
