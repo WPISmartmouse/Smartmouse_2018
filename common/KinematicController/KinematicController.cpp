@@ -335,7 +335,22 @@ double KinematicController::sidewaysDispToCenter(Mouse &mouse) {
 }
 
 double KinematicController::fwdDispToCenter(Mouse &mouse) {
-  return 0.5 - mouse.getLocalPose().to_back;
+//  return 0.5 - mouse.getLocalPose().to_back;
+  switch (mouse.getDir()) {
+    case Direction::N: {
+      return mouse.getRow() + 0.5 - mouse.getGlobalPose().row;
+    }
+    case Direction::S: {
+      return mouse.getGlobalPose().row - (mouse.getRow() - 0.5);
+    }
+    case Direction::E: {
+      return mouse.getCol() + 0.5 - mouse.getGlobalPose().col;
+    }
+    case Direction::W: {
+      return mouse.getGlobalPose().col - (mouse.getCol() - 0.5);
+    }
+    default: exit(-1);
+  }
 }
 
 void KinematicController::setParams(double kP, double kI, double kD, double ff_scale, double ff_offset) {

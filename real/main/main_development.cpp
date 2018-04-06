@@ -24,10 +24,10 @@ class NavTestCommand : public CommandGroup {
   NavTestCommand() : CommandGroup("NavTestGroup") {
     addSequential(new WaitForStart());
     addSequential(new Stop(1000));
-//    addSequential(new Forward());
+    addSequential(new Forward());
 //    addSequential(new ForwardN(2));
-    addSequential(new ForwardToCenter());
-//    addSequential(new Turn(Direction::S));
+//    addSequential(new ForwardToCenter());
+    addSequential(new Turn(Direction::S));
 //    addSequential(new Stop(10000));
   }
 };

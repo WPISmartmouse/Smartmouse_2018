@@ -37,7 +37,8 @@ class VelocityProfileTiming {
 
   double three_phase_profile_d(double v_a, double v_b) const;
 
-  double two_phase_profile_d(double v) const;
+  double two_phase_stop_profile_d(double v_begin) const;
+  double two_phase_start_profile_d(double v_end) const;
 };
 
 

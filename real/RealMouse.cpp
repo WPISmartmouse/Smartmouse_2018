@@ -166,7 +166,7 @@ void RealMouse::resetToStartPose() {
   reset(); // resets row, col, and dir
   left_encoder.ResetPosition();
   right_encoder.ResetPosition();
-  kinematic_controller.reset_col_to(0.0); // FIXME: should be 0.5
+  kinematic_controller.reset_col_to(0.5);
   kinematic_controller.reset_row_to(0.5);
   kinematic_controller.reset_yaw_to(0.0);
 }

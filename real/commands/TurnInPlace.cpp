@@ -2,7 +2,7 @@
 #include <common/math/math.h>
 #include <real/commands/TurnInPlace.h>
 
-const double TurnInPlace::kP = 0.0;
+const double TurnInPlace::kP = 1.0;
 
 TurnInPlace::TurnInPlace(Direction dir)
     : Command("RealTurnInPlace"), mouse(RealMouse::inst()), left_turn(false), dir(dir), goal_yaw(0), yaw_error(0) {}
@@ -31,7 +31,13 @@ void TurnInPlace::execute() {
     vl = fwd_v;
     vr = -fwd_v;
   }
-  mouse->setSpeedCps(vl + kP * yaw_error, vr + kP * yaw_error);
+
+  if (vl < .01 and vr < .01 and yaw_error > smartmouse::kc::ROT_TOLERANCE) {
+    vl += kP * yaw_error;
+    vr -= kP * yaw_error;
+  }
+
+  mouse->setSpeedCps(vl, vr);
 
   // when we get close to aligned, there might be a wall we can use to better estimate our angle
   // this allows us to use that
