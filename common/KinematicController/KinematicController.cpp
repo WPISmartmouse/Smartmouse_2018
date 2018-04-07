@@ -382,11 +382,10 @@ const std::pair<double, double> from_sensors_to_right_wall(smartmouse::kc::Senso
                                                            smartmouse::kc::SensorPose s2,
                                                            double s1_dist_m,
                                                            double s2_dist_m) {
-  // I'm not sure this is right...
   double dist;
   double yaw;
   std::tie(dist, yaw) = from_sensors_to_wall(s1, s2, s1_dist_m, s2_dist_m);
-  return {dist, -yaw};
+  return {dist, yaw};
 };
 
 }

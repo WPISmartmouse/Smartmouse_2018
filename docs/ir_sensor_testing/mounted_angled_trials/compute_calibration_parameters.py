@@ -51,21 +51,24 @@ def main():
     calibration_distances = {
         'B': (0.006 + calibration_block_left) / np.sin(np.deg2rad(85)),
         'A': (0.010 + calibration_block_left) / np.sin(np.deg2rad(70)),
-        'F': (0.014 + calibration_block_left) / np.sin(np.deg2rad(60)),
+        'F': (0.012 + calibration_block_left) / np.sin(np.deg2rad(50)),
         'E': 0.010 + calibration_block_front,
-        'G': (0.014 + (maze_width - calibration_block_left - robot_width)) / np.sin(np.deg2rad(60)),
+        'G': (0.012 + (maze_width - calibration_block_left - robot_width)) / np.sin(np.deg2rad(50)),
         'D': (0.010 + (maze_width - calibration_block_left - robot_width)) / np.sin(np.deg2rad(70)),
         'H': (0.006 + (maze_width - calibration_block_left - robot_width)) / np.sin(np.deg2rad(85))
     }
     hypotenuses = {
         'B': (0.006 + perpendicular_distances) / np.sin(np.deg2rad(85)),
         'A': (0.010 + perpendicular_distances) / np.sin(np.deg2rad(70)),
-        'F': (0.014 + perpendicular_distances) / np.sin(np.deg2rad(60)),
+        'F': (0.012 + perpendicular_distances) / np.sin(np.deg2rad(50)),
         'E': 0.010 + perpendicular_distances[:-2],
-        'G': (0.014 + perpendicular_distances) / np.sin(np.deg2rad(60)),
+        'G': (0.012 + perpendicular_distances) / np.sin(np.deg2rad(50)),
         'D': (0.010 + perpendicular_distances) / np.sin(np.deg2rad(70)),
         'H': (0.006 + perpendicular_distances) / np.sin(np.deg2rad(85))
     }
+
+    hypotenuses['F'][0] = 0.2
+    hypotenuses['G'][0] = 0.2
 
     # will contain sensor data for G, D, and H
     right_data = np.genfromtxt(args.right_side, delimiter=', ')[:, 4:7]
@@ -80,7 +83,6 @@ def main():
     right_data = right_data.reshape((intervals, samples, right_data.shape[1]))
     left_data = left_data.reshape((intervals, samples, left_data.shape[1]))
     front_data = front_data.reshape((intervals, samples, front_data.shape[1]))
-    print(front_data.shape)
     front_data = front_data[:-2,:,:]
 
     # Compute Y-Errors
