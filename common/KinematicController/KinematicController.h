@@ -72,6 +72,8 @@ class KinematicController {
 
   bool isStopped();
 
+  void reset_fwd_to_center();
+
   void reset_col_to(double new_col);
 
   void reset_row_to(double new_row);

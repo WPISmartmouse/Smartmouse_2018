@@ -16,6 +16,7 @@ bool Backup::isFinished() {
 }
 
 void Backup::end() {
+  mouse->kinematic_controller.reset_fwd_to_center();
   digitalWrite(RealMouse::LED_6, 0);
 }
 

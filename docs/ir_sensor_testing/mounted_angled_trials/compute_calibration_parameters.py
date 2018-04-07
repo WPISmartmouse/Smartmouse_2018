@@ -135,13 +135,13 @@ def main():
         print(letter, d, inverse_model(d, *params[letter]))
 
     # print generated code
-    generated_code = ""
+    generated_code = []
     for letter, p in params.items():
         variable_name = variable_names[letter]
         fmt = "smartmouse::ir::EEPROMModel {:s}_model = {{{:.5f}, {:.5f}, {:.5f}, {:.5f}}};\n"
-        generated_code += fmt.format(variable_name, *p, calibration_distances[letter])
+        generated_code.append(fmt.format(variable_name, *p, calibration_distances[letter]))
 
-    print(generated_code)
+    print("".join(sorted(generated_code)))
 
 
     # plotting

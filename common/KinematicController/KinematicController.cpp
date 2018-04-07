@@ -82,6 +82,28 @@ void KinematicController::reset_yaw_to(double new_yaw) {
   current_pose_estimate_cu.yaw = new_yaw;
 }
 
+void KinematicController::reset_fwd_to_center() {
+  auto dir = mouse->getDir();
+  switch (dir) {
+    case Direction::N: {
+      current_pose_estimate_cu.row = row + 0.5;
+    }
+    case Direction::S: {
+      current_pose_estimate_cu.row = row - 0.5;
+    }
+    case Direction::E: {
+      current_pose_estimate_cu.col = col + 0.5;
+    }
+    case Direction::W: {
+      current_pose_estimate_cu.col = col - 0.5;
+    }
+    default: {
+      exit(-1);
+    }
+  }
+
+}
+
 std::pair<double, double>
 KinematicController::run(double dt_s, double left_angle_rad, double right_angle_rad, RangeData<double> range_data) {
   static std::pair<double, double> abstract_forces;

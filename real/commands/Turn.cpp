@@ -17,7 +17,6 @@ void Turn::initialize() {
   } else if (mouse->getDir() != dir) {
     if (smartmouse::kc::WALL_SMASH) {
       addSequential(new WallSmash()) ;
-      addSequential(new Backup()) ;
       addSequential(new TurnInPlace(dir));
       addSequential(new Forward());
     }

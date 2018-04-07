@@ -93,12 +93,12 @@ class RealMouse : public Mouse {
 
   /** generated with ./compute_calibration_parameters.py right.csv left.csv front.csv **/
   smartmouse::ir::EEPROMModel back_left_model = {1.23567, 0.02827, 289.16578, 0.05621};
-  smartmouse::ir::EEPROMModel front_right_model = {1.18836, 0.02113, 294.70847, 0.05959};
-  smartmouse::ir::EEPROMModel front_left_model = {1.18796, 0.02176, 334.80984, 0.06385};
-  smartmouse::ir::EEPROMModel gerald_left_model = {1.22689, 0.02611, 295.01096, 0.07390};
-  smartmouse::ir::EEPROMModel front_model = {1.29464, 0.03575, 186.47132, 0.10000};
   smartmouse::ir::EEPROMModel back_right_model = {1.22176, 0.02502, 339.54924, 0.05220};
-  smartmouse::ir::EEPROMModel gerald_right_model = {1.19695, 0.02267, 285.34393, 0.06928};
+  smartmouse::ir::EEPROMModel front_left_model = {1.18796, 0.02176, 334.80984, 0.06385};
+  smartmouse::ir::EEPROMModel front_model = {1.29464, 0.03575, 186.47132, 0.10000};
+  smartmouse::ir::EEPROMModel front_right_model = {1.18836, 0.02113, 294.70847, 0.05959};
+  smartmouse::ir::EEPROMModel gerald_left_model = {1.22689, 0.02611, 255.01096, 0.07390};
+  smartmouse::ir::EEPROMModel gerald_right_model = {1.19695, 0.02267, 257.34393, 0.06928};
 
 
  private:
