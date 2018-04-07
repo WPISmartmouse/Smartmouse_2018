@@ -80,6 +80,11 @@ def main():
     left_data = left_data.reshape((intervals, samples, left_data.shape[1]))
     front_data = front_data.reshape((intervals, samples, front_data.shape[1]))
 
+    # Compute Y-Errors
+    right_xerr = right_data.max(axis=1) - right_data.min(axis=1)
+    left_xerr = left_data.max(axis=1) - left_data.min(axis=1)
+    front_xerr = front_data.max(axis=1) - front_data.min(axis=1)
+
     # Take the average of the 10 samples
     right_data = right_data.mean(axis=1)
     left_data = left_data.mean(axis=1)
@@ -95,6 +100,16 @@ def main():
             "D": right_data[:, 1],
             "H": right_data[:, 2],
             }
+    xerr_map = {
+            "B": left_xerr[:, 0],
+            "A": left_xerr[:, 1],
+            "F": left_xerr[:, 2],
+            "E": front_xerr[:, 0],
+            "G": right_xerr[:, 0],
+            "D": right_xerr[:, 1],
+            "H": right_xerr[:, 2],
+            }
+
 
     # Fit a curve for each sensor
     predicted_distances = {}
@@ -136,6 +151,7 @@ def main():
         plt.figure()
         for letter, adc_values in data_map.items():
             plt.plot(adc_values, hypotenuses[letter], label=letter, color=colors[letter])
+            plt.errorbar(adc_values, hypotenuses[letter], xerr=xerr_map[letter], label=letter, color=colors[letter])
             px, py = predicted_distances[letter]
             plt.plot(px, py, label=letter + ' model', linestyle='--', color=colors[letter])
         plt.xlabel("ADC value")
