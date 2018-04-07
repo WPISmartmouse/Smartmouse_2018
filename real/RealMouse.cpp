@@ -23,8 +23,8 @@ SensorReading RealMouse::checkWalls() {
   SensorReading sr(row, col);
 
   sr.walls[static_cast<int>(dir)] = range_data_m.front < smartmouse::kc::ANALOG_MAX_DIST_M;
-  sr.walls[static_cast<int>(left_of_dir(dir))] = range_data_m.gerald_left < 0.14;
-  sr.walls[static_cast<int>(right_of_dir(dir))] = range_data_m.gerald_right < 0.14;
+  sr.walls[static_cast<int>(left_of_dir(dir))] = range_data_m.gerald_left < 0.10;
+  sr.walls[static_cast<int>(right_of_dir(dir))] = range_data_m.gerald_right < 0.10;
   sr.walls[static_cast<int>(opposite_direction(dir))] = false;
 
   return sr;
@@ -61,8 +61,8 @@ void RealMouse::run(double dt_s) {
 #ifdef PROFILE
   unsigned long t1 = micros();
 #endif
-  std::tie(abstract_left_force, abstract_right_force) = kinematic_controller.run(dt_s, left_angle_rad,
-                                                                                 right_angle_rad, range_data_m);
+    std::tie(abstract_left_force, abstract_right_force) = kinematic_controller.run(dt_s, left_angle_rad,
+                                                                                   right_angle_rad, range_data_m);
 #ifdef PROFILE
   Serial.print("KC, ");
   Serial.println(micros() - t1);
@@ -170,7 +170,7 @@ void RealMouse::resetToStartPose() {
   right_encoder.ResetPosition();
   kinematic_controller.reset_col_to(0.5);
   kinematic_controller.reset_row_to(0.5);
-  kinematic_controller.reset_yaw_to(0.0);
+  kinematic_controller.reset_yaw_to(dir_to_yaw(dir));
 }
 
 void RealMouse::setSpeedCps(double l_cps, double r_cps) {
@@ -241,7 +241,7 @@ double RealMouse::checkVoltage() {
   int a = analogRead(BATTERY_ANALOG_PIN);
   double voltage = a / std::pow(2, 13) * 3.3;
 
-  if ( voltage < 2.7) {
+  if (voltage < 2.7) {
     print("VOLTAGE [%f] IS TOO LOW. CHARGE THE BATTERY!!!\r\n", voltage);
   } else if (voltage > 3.3) {
     print("VOLTAGE [%f] IS TOO HIGH. SHE'S GONNA BLOW!!!\r\n", voltage);

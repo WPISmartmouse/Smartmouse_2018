@@ -3,6 +3,7 @@
 Forward::Forward() : Command("Forward"), mouse(RealMouse::inst()), profile(nullptr) {}
 
 void Forward::initialize() {
+  setTimeout(3000);
   start = mouse->getGlobalPose();
   const double goal_disp = KinematicController::dispToNextEdge(*mouse);
   const double v0 = mouse->kinematic_controller.getCurrentForwardSpeedCUPS();
@@ -21,7 +22,7 @@ void Forward::execute() {
 }
 
 bool Forward::isFinished() {
-  return profile->dispError() <= 0;
+  return profile->dispError() <= 0 or isTimedOut();
 }
 
 void Forward::end() {

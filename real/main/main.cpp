@@ -46,9 +46,7 @@ void setup() {
   mouse->setup();
 
   GlobalProgramSettings.quiet = false;
-//  mouse->kinematic_controller.enable_sensor_pose_estimate = false;
 
-//  scheduler = new Scheduler(new NavTestCommand());
   scheduler = new Scheduler(new SolveCommand(new Flood(mouse)));
 
   last_t_us = timer.programTimeMs();
@@ -61,7 +59,7 @@ void loop() {
   unsigned long now_us = timer.programTimeUs();
   double dt_us = now_us - last_t_us;
 
-  if (now_us - last_blink_us > 100000) {
+  if (now_us - last_blink_us > 314159) {
     last_blink_us = now_us;
     digitalWrite(RealMouse::SYS_LED, static_cast<uint8_t>(on));
     on = !on;
@@ -72,12 +70,8 @@ void loop() {
     return;
   }
 
-  auto dt_s = dt_us / 1e6;
-  mouse->run(dt_s);
-
   if (not paused and not done) {
     // one of these should be commented out
-//    mouse->Teleop();
     done = scheduler->run();
   } else {
     mouse->setSpeedCps(0, 0);
@@ -87,37 +81,8 @@ void loop() {
     digitalWrite(RealMouse::LED_6, 1);
   }
 
-  if (Serial1.available()) {
-    char c = static_cast<char>(Serial1.read());
-    if (c == 'p') {
-      paused = !paused;
-    }
-  }
-
-//  print_slow("%4.3f %4.3f %4.3f %.4f %.4f %.4f %.4f %d %d\r\n",
-//             mouse->range_data_m.back_left,
-//             mouse->range_data_m.front_left,
-//             mouse->range_data_m.gerald_left,
-//             mouse->range_data_m.front,
-//             mouse->range_data_m.gerald_right,
-//             mouse->range_data_m.front_right,
-//             mouse->range_data_m.back_right,
-//             mouse->kinematic_controller.sense_left_wall,
-//             mouse->kinematic_controller.sense_right_wall);
-//  auto p = mouse->getGlobalPose();
-//  print_slow("%.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f %d %d\r\n",
-//             mouse->range_data_m.back_left,
-//             mouse->range_data_m.front_left,
-//             mouse->range_data_m.gerald_left,
-//             mouse->range_data_m.front,
-//             mouse->range_data_m.gerald_right,
-//             mouse->range_data_m.front_right,
-//             mouse->range_data_m.back_right,
-//             p.row,
-//             p.col,
-//             p.yaw,
-//             mouse->kinematic_controller.sense_left_wall,
-//             mouse->kinematic_controller.sense_right_wall);
+  auto dt_s = dt_us / 1e6;
+  mouse->run(dt_s);
 
   last_t_us = now_us;
 }

@@ -14,4 +14,5 @@ public:
 private:
   double speed;
   RealMouse *mouse;
+  bool dead_reckoning;
 };

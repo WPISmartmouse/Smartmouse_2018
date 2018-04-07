@@ -4,6 +4,7 @@
 ForwardToCenter::ForwardToCenter() : Command("FwdToCenter"), mouse(RealMouse::inst()), profile(nullptr) {}
 
 void ForwardToCenter::initialize() {
+  setTimeout(3000);
   start = mouse->getGlobalPose();
   const double goal_disp = KinematicController::fwdDispToCenter(*mouse);
   const double v0 = mouse->kinematic_controller.getCurrentForwardSpeedCUPS();
@@ -27,7 +28,7 @@ void ForwardToCenter::execute() {
 }
 
 bool ForwardToCenter::isFinished() {
-  return profile->dispError() <= 0.005;
+  return profile->dispError() <= 0.005 or isTimedOut();
 }
 
 void ForwardToCenter::end() {

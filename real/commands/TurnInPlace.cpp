@@ -2,7 +2,7 @@
 #include <common/math/math.h>
 #include <real/commands/TurnInPlace.h>
 
-const double TurnInPlace::kP = 0.7;
+const double TurnInPlace::kP = 0.9;
 
 TurnInPlace::TurnInPlace(Direction dir)
     : Command("RealTurnInPlace"), mouse(RealMouse::inst()), left_turn(false), dir(dir), goal_yaw(0), yaw_error(0) {}

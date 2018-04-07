@@ -119,10 +119,10 @@ KinematicController::run(double dt_s, double left_angle_rad, double right_angle_
       std::tie(est_yaw, offset_m, no_walls) = estimate_pose(range_data, *mouse);
       double offset_cu = smartmouse::maze::toCellUnits(offset_m);
 
-      if (enable_sensor_pose_estimate && !no_walls) {
+      if (enable_sensor_pose_estimate and not no_walls and not GlobalProgramSettings.dead_reckoning) {
         // if there is a wall in front of us and too close, the front side sensors will reflect off of it and ruin
         // out angle estimate
-        if (range_data.front > 0.060) {
+        if (range_data.front > 0.080) {
           current_pose_estimate_cu.yaw = est_yaw;
         }
 
@@ -174,9 +174,6 @@ KinematicController::run(double dt_s, double left_angle_rad, double right_angle_
     abstract_forces.first = left_motor.runPid(dt_s, left_angle_rad);
     abstract_forces.second = right_motor.runPid(dt_s, right_angle_rad);
   } else {
-    // we need to still call run PID to make sure that we don't loose track of the last_angle_rad
-    abstract_forces.first = left_motor.runPid(dt_s, left_angle_rad);
-    abstract_forces.second = right_motor.runPid(dt_s, right_angle_rad);
     abstract_forces.first = 0;
     abstract_forces.second = 0;
   }
@@ -248,7 +245,7 @@ std::tuple<double, double, bool> KinematicController::estimate_pose(RangeData<do
   // consider the "logical" state of walls AND actual range reading
   double yaw = 0;
   double offset = 0;
-  bool ignore_walls;
+  bool ignore_walls = true;
   if (sense_left_wall && left_wall_logical) { // wall is on left
     offset = d_to_wall_left + smartmouse::maze::HALF_WALL_THICKNESS_M;
     yaw = dir_to_yaw(mouse.getDir()) + yaw_left;
