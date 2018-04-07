@@ -26,8 +26,16 @@ class NavTestCommand : public CommandGroup {
   NavTestCommand() : CommandGroup("NavTestGroup") {
     addSequential(new WaitForStart());
     addSequential(new Stop(1000));
-    addSequential(new ForwardN(1));
-    addSequential(new Turn(Direction::S));
+    addSequential(new ForwardN(5));
+    addSequential(new ForwardToCenter());
+//    addSequential(new Turn(Direction::W));
+//    addSequential(new Turn(Direction::S));
+//    addSequential(new Turn(Direction::W));
+//    addSequential(new ForwardN(1));
+//    addSequential(new Turn(Direction::E));
+//    addSequential(new Turn(Direction::S));
+//    addSequential(new Turn(Direction::W));
+//    addSequential(new ForwardN(2));
     addSequential(new Stop(1000));
   }
 };
@@ -86,16 +94,16 @@ void loop() {
     }
   }
 
-//  print_slow("%4.3f %4.3f %4.3f %.4f %.4f %.4f %.4f %d %d\r\n",
-//             mouse->range_data_m.back_left,
-//             mouse->range_data_m.front_left,
-//             mouse->range_data_m.gerald_left,
-//             mouse->range_data_m.front,
-//             mouse->range_data_m.gerald_right,
-//             mouse->range_data_m.front_right,
-//             mouse->range_data_m.back_right,
-//             mouse->kinematic_controller.sense_left_wall,
-//             mouse->kinematic_controller.sense_right_wall);
+  print_slow("%4.3f %4.3f %4.3f %.4f %.4f %.4f %.4f %d %d\r\n",
+             mouse->range_data_m.back_left,
+             mouse->range_data_m.front_left,
+             mouse->range_data_m.gerald_left,
+             mouse->range_data_m.front,
+             mouse->range_data_m.gerald_right,
+             mouse->range_data_m.front_right,
+             mouse->range_data_m.back_right,
+             mouse->kinematic_controller.sense_left_wall,
+             mouse->kinematic_controller.sense_right_wall);
 //  auto p = mouse->getGlobalPose();
 //  print_slow("%4.3f, %4.3f, %4.3f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %d, %d\r\n",
 //             p.row,

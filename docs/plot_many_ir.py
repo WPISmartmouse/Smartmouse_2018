@@ -91,6 +91,7 @@ def main():
             plot.set_xdata(line[0])
             plot.set_ydata(line[1])
         plt.axis('square')
+        ax.set_ylim([-0.2, 0.2])
         fig.canvas.draw()
         c = input()
         if c == 'a' and i > 0:

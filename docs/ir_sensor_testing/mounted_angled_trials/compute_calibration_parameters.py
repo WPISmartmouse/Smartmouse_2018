@@ -10,7 +10,7 @@ def inverse_model(m, a, b, c):
     return pow(a - m, 1/b) + c
 
 def sensor_model(x, a, b, c):
-    return np.minimum(a - np.maximum(x - c, 0) ** b, 0.15)
+    return np.minimum(a - np.maximum(x - c, 0) ** b, 0.20)
 
 def main():
     """ This is for when we do all the sensors mounted and in the maze """
@@ -29,8 +29,9 @@ def main():
     increment = 5
     max_dist = 90
     min_dist = 10
-    intervals = int((max_dist + increment - min_dist) / increment)
-    perpendicular_distances = np.arange(max_dist + increment, min_dist, -increment) * 0.001
+    intervals = int((max_dist + increment - min_dist) / increment) + 1
+    perpendicular_distances = np.arange(max_dist , min_dist - increment, -increment) * 0.001
+    perpendicular_distances = np.concatenate(([0.20], perpendicular_distances))
     samples = 10
     colors = {'A': 'r', 'B': 'b', 'D': 'g', 'E': 'y', 'F': 'm', 'G': 'k', 'H': 'sienna'}
     variable_names = {
@@ -60,7 +61,7 @@ def main():
         'B': (0.006 + perpendicular_distances) / np.sin(np.deg2rad(85)),
         'A': (0.010 + perpendicular_distances) / np.sin(np.deg2rad(70)),
         'F': (0.014 + perpendicular_distances) / np.sin(np.deg2rad(60)),
-        'E': 0.010 + perpendicular_distances,
+        'E': 0.010 + perpendicular_distances[:-2],
         'G': (0.014 + perpendicular_distances) / np.sin(np.deg2rad(60)),
         'D': (0.010 + perpendicular_distances) / np.sin(np.deg2rad(70)),
         'H': (0.006 + perpendicular_distances) / np.sin(np.deg2rad(85))
@@ -79,6 +80,8 @@ def main():
     right_data = right_data.reshape((intervals, samples, right_data.shape[1]))
     left_data = left_data.reshape((intervals, samples, left_data.shape[1]))
     front_data = front_data.reshape((intervals, samples, front_data.shape[1]))
+    print(front_data.shape)
+    front_data = front_data[:-2,:,:]
 
     # Compute Y-Errors
     right_xerr = right_data.max(axis=1) - right_data.min(axis=1)
@@ -119,7 +122,7 @@ def main():
     for letter, adc_values in data_map.items():
         distances = hypotenuses[letter]
         p, _ = optimize.curve_fit(sensor_model, adc_values, distances, bounds=bounds, maxfev=10000)
-        test_adc_values = np.arange(300, 5000, 50)
+        test_adc_values = np.arange(100, 2500, 50)
         prediction = sensor_model(test_adc_values, *p)
         predicted_distances[letter] = (test_adc_values, prediction)
         params[letter] = p
@@ -150,7 +153,6 @@ def main():
 
         plt.figure()
         for letter, adc_values in data_map.items():
-            plt.plot(adc_values, hypotenuses[letter], label=letter, color=colors[letter])
             plt.errorbar(adc_values, hypotenuses[letter], xerr=xerr_map[letter], label=letter, color=colors[letter])
             px, py = predicted_distances[letter]
             plt.plot(px, py, label=letter + ' model', linestyle='--', color=colors[letter])

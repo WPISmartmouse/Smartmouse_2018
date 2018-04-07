@@ -40,7 +40,7 @@ bool WaitForStart::isFinished() {
 
 void WaitForStart::end() {
   smartmouse::kc::MAX_SPEED_MPS = max(speed, smartmouse::kc::kVf_cps);
-  smartmouse::kc::MAX_SPEED_MPS = 0.15; // FIXME:
+  smartmouse::kc::MAX_SPEED_MPS = 0.20; // FIXME:
   smartmouse::kc::MAX_SPEED_CUPS = smartmouse::maze::toCellUnits(smartmouse::kc::MAX_SPEED_MPS);
   for (uint8_t i = 0; i < 7; i++) {
     digitalWrite(RealMouse::LED_7 - i, 0);

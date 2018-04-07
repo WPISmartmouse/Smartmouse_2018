@@ -23,8 +23,8 @@ SensorReading RealMouse::checkWalls() {
   SensorReading sr(row, col);
 
   sr.walls[static_cast<int>(dir)] = range_data_m.front < smartmouse::kc::ANALOG_MAX_DIST_M;
-  sr.walls[static_cast<int>(left_of_dir(dir))] = range_data_m.gerald_left < smartmouse::kc::ANALOG_MAX_DIST_M;
-  sr.walls[static_cast<int>(right_of_dir(dir))] = range_data_m.gerald_right < smartmouse::kc::ANALOG_MAX_DIST_M;
+  sr.walls[static_cast<int>(left_of_dir(dir))] = range_data_m.gerald_left < 0.15;
+  sr.walls[static_cast<int>(right_of_dir(dir))] = range_data_m.gerald_right < 0.15;
   sr.walls[static_cast<int>(opposite_direction(dir))] = false;
 
   return sr;
@@ -178,33 +178,32 @@ void RealMouse::setSpeedCps(double l_cps, double r_cps) {
 }
 
 void RealMouse::readSensors() {
-  digitalWriteFast(BACK_LEFT_ENABLE_PIN, HIGH);
-  range_data_adc.back_left = analogRead(BACK_LEFT_ANALOG_PIN);
-  digitalWriteFast(BACK_LEFT_ENABLE_PIN, LOW);
+  digitalWriteFast(RealMouse::BACK_LEFT_ENABLE_PIN, HIGH);
+  digitalWriteFast(RealMouse::BACK_RIGHT_ENABLE_PIN, HIGH);
+  digitalWriteFast(RealMouse::FRONT_ENABLE_PIN, HIGH);
+  delayMicroseconds(100);
+  range_data_adc.back_left = analogRead(RealMouse::BACK_LEFT_ANALOG_PIN);
+  range_data_adc.back_right = analogRead(RealMouse::BACK_RIGHT_ANALOG_PIN);
+  range_data_adc.front = analogRead(RealMouse::FRONT_ANALOG_PIN);
+  digitalWriteFast(RealMouse::BACK_RIGHT_ENABLE_PIN, LOW);
+  digitalWriteFast(RealMouse::BACK_LEFT_ENABLE_PIN, LOW);
+  digitalWriteFast(RealMouse::FRONT_ENABLE_PIN, LOW);
 
-  digitalWriteFast(FRONT_LEFT_ENABLE_PIN, HIGH);
-  range_data_adc.front_left = analogRead(FRONT_LEFT_ANALOG_PIN);
-  digitalWriteFast(FRONT_LEFT_ENABLE_PIN, LOW);
+  digitalWriteFast(RealMouse::FRONT_LEFT_ENABLE_PIN, HIGH);
+  digitalWriteFast(RealMouse::FRONT_RIGHT_ENABLE_PIN, HIGH);
+  delayMicroseconds(100);
+  range_data_adc.front_left = analogRead(RealMouse::FRONT_LEFT_ANALOG_PIN);
+  range_data_adc.front_right = analogRead(RealMouse::FRONT_RIGHT_ANALOG_PIN);
+  digitalWriteFast(RealMouse::FRONT_LEFT_ENABLE_PIN, LOW);
+  digitalWriteFast(RealMouse::FRONT_RIGHT_ENABLE_PIN, LOW);
 
-  digitalWriteFast(GERALD_LEFT_ENABLE_PIN, HIGH);
-  range_data_adc.gerald_left = analogRead(GERALD_LEFT_ANALOG_PIN);
-  digitalWriteFast(GERALD_LEFT_ENABLE_PIN, LOW);
-
-  digitalWriteFast(FRONT_ENABLE_PIN, HIGH);
-  range_data_adc.front = analogRead(FRONT_ANALOG_PIN);
-  digitalWriteFast(FRONT_ENABLE_PIN, LOW);
-
-  digitalWriteFast(GERALD_RIGHT_ENABLE_PIN, HIGH);
-  range_data_adc.gerald_right = analogRead(GERALD_RIGHT_ANALOG_PIN);
-  digitalWriteFast(GERALD_RIGHT_ENABLE_PIN, LOW);
-
-  digitalWriteFast(FRONT_RIGHT_ENABLE_PIN, HIGH);
-  range_data_adc.front_right = analogRead(FRONT_RIGHT_ANALOG_PIN);
-  digitalWriteFast(FRONT_RIGHT_ENABLE_PIN, LOW);
-
-  digitalWriteFast(BACK_RIGHT_ENABLE_PIN, HIGH);
-  range_data_adc.back_right = analogRead(BACK_RIGHT_ANALOG_PIN);
-  digitalWriteFast(BACK_RIGHT_ENABLE_PIN, LOW);
+  digitalWriteFast(RealMouse::GERALD_LEFT_ENABLE_PIN, HIGH);
+  digitalWriteFast(RealMouse::GERALD_RIGHT_ENABLE_PIN, HIGH);
+  delayMicroseconds(100);
+  range_data_adc.gerald_left = analogRead(RealMouse::GERALD_LEFT_ANALOG_PIN);
+  range_data_adc.gerald_right = analogRead(RealMouse::GERALD_RIGHT_ANALOG_PIN);
+  digitalWriteFast(RealMouse::GERALD_RIGHT_ENABLE_PIN, LOW);
+  digitalWriteFast(RealMouse::GERALD_LEFT_ENABLE_PIN, LOW);
 
   range_data_m.back_left = back_left_model.toMeters(range_data_adc.back_left);
   range_data_m.front_left = front_left_model.toMeters(range_data_adc.front_left);
@@ -252,18 +251,9 @@ double RealMouse::checkVoltage() {
 }
 
 void RealMouse::calibrate() {
-
-
-
   // read the latest values
   digitalWrite(LED_6, HIGH);
-  range_data_adc.back_left = analogRead(BACK_LEFT_ANALOG_PIN);
-  range_data_adc.front_left = analogRead(FRONT_LEFT_ANALOG_PIN);
-  range_data_adc.gerald_left = analogRead(GERALD_LEFT_ANALOG_PIN);
-  range_data_adc.front = analogRead(FRONT_ANALOG_PIN);
-  range_data_adc.gerald_right = analogRead(GERALD_RIGHT_ANALOG_PIN);
-  range_data_adc.front_right = analogRead(FRONT_RIGHT_ANALOG_PIN);
-  range_data_adc.back_right = analogRead(BACK_RIGHT_ANALOG_PIN);
+  readSensors();
 
   // compute offsets between measured and expected ADC value
   back_left_model.calibrate(range_data_adc.back_left, 1);
