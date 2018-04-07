@@ -23,8 +23,8 @@ SensorReading RealMouse::checkWalls() {
   SensorReading sr(row, col);
 
   sr.walls[static_cast<int>(dir)] = range_data_m.front < smartmouse::kc::ANALOG_MAX_DIST_M;
-  sr.walls[static_cast<int>(left_of_dir(dir))] = range_data_m.gerald_left < 0.10;
-  sr.walls[static_cast<int>(right_of_dir(dir))] = range_data_m.gerald_right < 0.10;
+  sr.walls[static_cast<int>(left_of_dir(dir))] = range_data_m.gerald_left < 0.11;
+  sr.walls[static_cast<int>(right_of_dir(dir))] = range_data_m.gerald_right < 0.11;
   sr.walls[static_cast<int>(opposite_direction(dir))] = false;
 
   return sr;

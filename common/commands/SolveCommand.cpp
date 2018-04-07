@@ -18,6 +18,7 @@ void SolveCommand::initialize() {
     addSequential(new WaitForStart());
   }
   solver->setup();
+  addSequential(new Stop(1000));
   addSequential(new SolveMaze(solver, Solver::Goal::CENTER));
   addSequential(new Finish(solver->mouse->maze));
   addSequential(new SolveMaze(solver, Solver::Goal::START));

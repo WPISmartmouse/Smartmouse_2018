@@ -17,8 +17,6 @@ void Forward::execute() {
   double t_s = static_cast<double>(getTime()) / 1000.0;
   std::tie(l, r) = profile->drive_straight_wheel_velocities(*mouse, t_s);
   mouse->setSpeedCps(l, r);
-
-  auto p = mouse->getGlobalPose();
 }
 
 bool Forward::isFinished() {

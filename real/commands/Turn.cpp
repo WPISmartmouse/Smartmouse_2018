@@ -3,6 +3,8 @@
 #include "Forward.h"
 #include "ArcTurn.h"
 #include "ForwardToCenter.h"
+#include "WallSmash.h"
+#include "Backup.h"
 
 Turn::Turn(Direction dir) : CommandGroup("RealTurnGroup"), mouse(RealMouse::inst()), dir(dir) {}
 
@@ -13,8 +15,11 @@ void Turn::initialize() {
     addSequential(new TurnInPlace(dir));
     addSequential(new Forward());
   } else if (mouse->getDir() != dir) {
-    if (smartmouse::kc::ARC_TURN) {
-      addSequential(new ArcTurn(dir)) ;
+    if (smartmouse::kc::WALL_SMASH) {
+      addSequential(new WallSmash()) ;
+      addSequential(new Backup()) ;
+      addSequential(new TurnInPlace(dir));
+      addSequential(new Forward());
     }
     else {
       addSequential(new ForwardToCenter());

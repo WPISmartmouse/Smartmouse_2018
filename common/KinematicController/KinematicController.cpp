@@ -6,6 +6,7 @@
 
 #include <common/core/Mouse.h>
 #include <common/KinematicController/KinematicController.h>
+#include <real/RealMouse.h>
 
 const double KinematicController::kDropSafety = 0.8;
 
@@ -35,12 +36,12 @@ LocalPose KinematicController::getLocalPose() {
   switch (mouse->getDir()) {
     case Direction::N: {
       local_pose_estimate.to_back = ceil(current_pose_estimate_cu.row) - current_pose_estimate_cu.row;
-      local_pose_estimate.to_left = ceil(current_pose_estimate_cu.col) - current_pose_estimate_cu.col;
+      local_pose_estimate.to_left = current_pose_estimate_cu.col - floor(current_pose_estimate_cu.col);
       break;
     }
     case Direction::S: {
       local_pose_estimate.to_back = current_pose_estimate_cu.row - floor(current_pose_estimate_cu.row);
-      local_pose_estimate.to_left = current_pose_estimate_cu.col - floor(current_pose_estimate_cu.col);
+      local_pose_estimate.to_left = ceil(current_pose_estimate_cu.col) - current_pose_estimate_cu.col;
       break;
     }
     case Direction::E: {
@@ -237,7 +238,6 @@ std::tuple<double, double, bool> KinematicController::estimate_pose(RangeData<do
   if (range_data.gerald_right > smartmouse::kc::GERALD_WALL_THRESHOLD) {
     sense_right_wall = false;
   }
-
 
   bool left_wall_logical = mouse.isWallInDirection(left_of_dir(mouse.getDir()));
   bool right_wall_logical = mouse.isWallInDirection(right_of_dir(mouse.getDir()));

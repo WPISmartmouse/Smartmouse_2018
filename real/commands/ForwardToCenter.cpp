@@ -4,7 +4,7 @@
 ForwardToCenter::ForwardToCenter() : Command("FwdToCenter"), mouse(RealMouse::inst()), profile(nullptr) {}
 
 void ForwardToCenter::initialize() {
-  setTimeout(3000);
+  setTimeout(5000);
   start = mouse->getGlobalPose();
   const double goal_disp = KinematicController::fwdDispToCenter(*mouse);
   const double v0 = mouse->kinematic_controller.getCurrentForwardSpeedCUPS();
@@ -18,17 +18,17 @@ void ForwardToCenter::execute() {
   double t_s = static_cast<double>(getTime()) / 1000.0;
   std::tie(l, r) = profile->drive_straight_wheel_velocities(*mouse, t_s);
 
-  auto disp_error = profile->dispError();
-  if (l < .01 and r < .01 and 0 < disp_error and disp_error < 0.25) {
-    l += kPFwd * disp_error;
-    r += kPFwd * disp_error;
-  }
+//  auto disp_error = profile->dispError();
+//  if (l < .01 and r < .01 and 0 < disp_error and disp_error < 0.25) {
+//    l += kPFwd * disp_error;
+//    r += kPFwd * disp_error;
+//  }
 
   mouse->setSpeedCps(l, r);
 }
 
 bool ForwardToCenter::isFinished() {
-  return profile->dispError() <= 0.005 or isTimedOut();
+  return profile->dispError() <= 0.001 or isTimedOut();
 }
 
 void ForwardToCenter::end() {

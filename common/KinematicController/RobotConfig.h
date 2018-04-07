@@ -41,7 +41,7 @@ constexpr int TICKS_PER_REVOLUTION = static_cast<const int>(std::pow(2, 14));
 constexpr double RAD_PER_TICK = 2 * M_PI / TICKS_PER_REVOLUTION;
 
 extern double MAX_SPEED_MPS;
-extern bool ARC_TURN;
+extern bool WALL_SMASH;
 extern double MAX_SPEED_CUPS;
 
 constexpr double TRACK_WIDTH_CU = smartmouse::maze::toCellUnits(TRACK_WIDTH_M);

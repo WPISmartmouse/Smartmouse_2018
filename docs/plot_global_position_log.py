@@ -14,13 +14,13 @@ def main():
 
     args = parser.parse_args()
 
-    x = np.genfromtxt(args.log, delimiter=',')
-    yaw = -x[:, 2] + np.pi/2
+    x = np.genfromtxt(args.log)
+    yaw = -x[:, 11] + np.pi/2
 
     plt.figure()
     c = cm.rainbow(np.linspace(0, 1, x.shape[0]))
-    plt.scatter(x[:, 0], x[:,1], c=c)
-    plt.quiver(x[:, 0], x[:,1], np.cos(yaw), np.sin(yaw), scale=50)
+    plt.scatter(x[:, 9], x[:,10], c=c)
+    plt.quiver(x[:, 9], x[:,10], np.cos(yaw), np.sin(yaw), scale=50)
     plt.title("Position")
     plt.xlabel("X (cells)")
     plt.ylabel("Y (cells)")

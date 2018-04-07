@@ -137,7 +137,7 @@ plt.show()
 get_ipython().run_cell_magic('HTML', '', '<img src="./full_velocity_profile.png" alt="velocity profile" style="width: 500px;"/>')
 
 
-# In[29]:
+# In[2]:
 
 
 def compute_v_max(v_0, v_f, a_m, j_m, d):
@@ -271,16 +271,16 @@ def simulate_profile(v_0, v_f, a_m, j_m, v_m_theoretical, V, d):
     return t_1, v_1, t_2, v_2, t_m1, t_m2, t_3, t_4, t_f
 
 
-# In[32]:
+# In[5]:
 
 
 def test_profile():
-    v_0= 0.524127
-    v_f=0
+    v_0= 0
+    v_f = 1
     a_m=5
     j_m=60
-    V = 0.5
-    d = 0.499043
+    V = 5
+    d = 6
     
     v_m = compute_v_max(v_0, v_f, a_m, j_m, d)
     t_1, v_1, t_2, v_2, t_m1, t_m2, t_3, t_4, t_f = simulate_profile(v_0, v_f, a_m, j_m, v_m, V, d)
