@@ -11,7 +11,6 @@ Model::Model(double a, double b, double c, double d) : a(a), b(b), c(c), CALIBRA
 double Model::toMeters(int adc) const {
   double d = a - std::pow(adc - c - adc_offset, b);
   if (std::isnan(d)) {
-
     return smartmouse::kc::ANALOG_MAX_DIST_M;
   } else if (d > smartmouse::kc::ANALOG_MAX_DIST_M) {
     return smartmouse::kc::ANALOG_MAX_DIST_M;

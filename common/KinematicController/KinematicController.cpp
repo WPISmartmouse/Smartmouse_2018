@@ -122,21 +122,16 @@ KinematicController::run(double dt_s, double left_angle_rad, double right_angle_
       if (enable_sensor_pose_estimate && !no_walls) {
         // FIXME:
 //         current_pose_estimate_cu.yaw = est_yaw;
-        print_slow("%f, %f, %f, %d, %d\r\n",
-                   current_pose_estimate_cu.row,
-                   current_pose_estimate_cu.col,
-                   current_pose_estimate_cu.yaw,
-                   sense_left_wall,
-                   sense_right_wall);
 
         double d_wall_front_cu = 0;
         bool wall_in_front = false;
-        if (range_data.front < smartmouse::kc::USE_FRONT_WALL_FOR_POSE) {
-          double yaw_error = smartmouse::math::yaw_diff(current_pose_estimate_cu.yaw, dir_to_yaw(mouse->getDir()));
-          double d_wall_front_m = cos(yaw_error) * range_data.front + smartmouse::kc::FRONT_ANALOG_X;
-          d_wall_front_cu = smartmouse::maze::toCellUnits(d_wall_front_m);
-          wall_in_front = true;
-        }
+        // FIXME:
+//        if (range_data.front < smartmouse::kc::USE_FRONT_WALL_FOR_POSE) {
+//          double yaw_error = smartmouse::math::yaw_diff(current_pose_estimate_cu.yaw, dir_to_yaw(mouse->getDir()));
+//          double d_wall_front_m = cos(yaw_error) * range_data.front + smartmouse::kc::FRONT_ANALOG_X;
+//          d_wall_front_cu = smartmouse::maze::toCellUnits(d_wall_front_m);
+//          wall_in_front = true;
+//        }
 
         switch (mouse->getDir()) {
           case Direction::N: {
@@ -341,19 +336,18 @@ double KinematicController::sidewaysDispToCenter(Mouse &mouse) {
 }
 
 double KinematicController::fwdDispToCenter(Mouse &mouse) {
-//  return 0.5 - mouse.getLocalPose().to_back;
   switch (mouse.getDir()) {
     case Direction::N: {
-      return mouse.getRow() + 0.5 - mouse.getGlobalPose().row;
+      return mouse.getGlobalPose().row - mouse.getRow() + 0.5;
     }
     case Direction::S: {
-      return mouse.getGlobalPose().row - (mouse.getRow() - 0.5);
+      return (mouse.getRow() + 0.5) - mouse.getGlobalPose().row;
     }
     case Direction::E: {
       return mouse.getCol() + 0.5 - mouse.getGlobalPose().col;
     }
     case Direction::W: {
-      return mouse.getGlobalPose().col - (mouse.getCol() - 0.5);
+      return mouse.getGlobalPose().col - (mouse.getCol() + 0.5);
     }
     default: exit(-1);
   }

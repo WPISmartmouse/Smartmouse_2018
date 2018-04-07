@@ -6,9 +6,7 @@ ForwardToCenter::ForwardToCenter() : Command("FwdToCenter"), mouse(RealMouse::in
 void ForwardToCenter::initialize() {
   start = mouse->getGlobalPose();
   const double goal_disp = KinematicController::fwdDispToCenter(*mouse);
-//  const double goal_disp = 0.50;
   const double v0 = mouse->kinematic_controller.getCurrentForwardSpeedCUPS();
-//  const double v0 = 0.5;
   const double vf = 0.0;
   profile = new smartmouse::kc::VelocityProfile(start, {goal_disp, v0, vf});
   digitalWrite(RealMouse::LED_3, 1);

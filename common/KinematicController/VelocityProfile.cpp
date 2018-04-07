@@ -30,15 +30,6 @@ std::pair<double, double> VelocityProfile::drive_straight_wheel_velocities(Mouse
 
   double correction = kPWall * fabs(yaw_error);
 
-//  auto p = mouse.getGlobalPose();
-//  print_slow("%4.3f, %.4f, %.4f, %0.4f, %.4f, %.4f\r\n",
-//             p.row,
-//             p.col,
-//             p.yaw,
-//             forward_velocity,
-//             goal_yaw,
-//             yaw_error);
-
   if (yaw_error < 0) {
     // need to turn clockwise
     return {forward_velocity, forward_velocity - correction};

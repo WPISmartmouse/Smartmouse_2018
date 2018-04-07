@@ -8,7 +8,7 @@ namespace ir {
 /**
  * We model our sensors as follows:
  *
- * distance in meters = d*(reflectivity)*c*(angle to wall)*(a+(ADC value)^b+180)
+ * distance in meters = a - (adc - c - adc_offset)^b;
  *
  * The 180 value was determined experimentally. It could be another variable but it is not necessary
  */

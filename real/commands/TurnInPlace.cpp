@@ -2,7 +2,7 @@
 #include <common/math/math.h>
 #include <real/commands/TurnInPlace.h>
 
-const double TurnInPlace::kP = 1.0;
+const double TurnInPlace::kP = 0.7;
 
 TurnInPlace::TurnInPlace(Direction dir)
     : Command("RealTurnInPlace"), mouse(RealMouse::inst()), left_turn(false), dir(dir), goal_yaw(0), yaw_error(0) {}
@@ -20,7 +20,6 @@ void TurnInPlace::initialize() {
 }
 
 void TurnInPlace::execute() {
-//  print("turning %f\r\n", yaw_error);
   double t_s = getTime() / 1000.0;
   double fwd_v = profile->compute_forward_velocity(t_s);
   double vl = 0, vr = 0;

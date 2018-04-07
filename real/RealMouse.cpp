@@ -22,9 +22,9 @@ RealMouse::RealMouse()
 SensorReading RealMouse::checkWalls() {
   SensorReading sr(row, col);
 
-  sr.walls[static_cast<int>(dir)] = range_data_m.front < 0.17;
-  sr.walls[static_cast<int>(left_of_dir(dir))] = range_data_m.gerald_left < 0.15;
-  sr.walls[static_cast<int>(right_of_dir(dir))] = range_data_m.gerald_right < 0.15;
+  sr.walls[static_cast<int>(dir)] = range_data_m.front < smartmouse::kc::ANALOG_MAX_DIST_M;
+  sr.walls[static_cast<int>(left_of_dir(dir))] = range_data_m.gerald_left < smartmouse::kc::ANALOG_MAX_DIST_M;
+  sr.walls[static_cast<int>(right_of_dir(dir))] = range_data_m.gerald_right < smartmouse::kc::ANALOG_MAX_DIST_M;
   sr.walls[static_cast<int>(opposite_direction(dir))] = false;
 
   return sr;
@@ -51,20 +51,7 @@ void RealMouse::run(double dt_s) {
   unsigned long t0 = micros();
 #endif
 
-  range_data_adc.back_left = analogRead(BACK_LEFT_ANALOG_PIN);
-  range_data_adc.front_left = analogRead(FRONT_LEFT_ANALOG_PIN);
-  range_data_adc.gerald_left = analogRead(GERALD_LEFT_ANALOG_PIN);
-  range_data_adc.front = analogRead(FRONT_ANALOG_PIN);
-  range_data_adc.gerald_right = analogRead(GERALD_RIGHT_ANALOG_PIN);
-  range_data_adc.front_right = analogRead(FRONT_RIGHT_ANALOG_PIN);
-  range_data_adc.back_right = analogRead(BACK_RIGHT_ANALOG_PIN);
-  range_data_m.back_left = back_left_model.toMeters(range_data_adc.back_left);
-  range_data_m.front_left = front_left_model.toMeters(range_data_adc.front_left);
-  range_data_m.gerald_left = gerald_left_model.toMeters(range_data_adc.gerald_left);
-  range_data_m.front = front_model.toMeters(range_data_adc.front);
-  range_data_m.gerald_right = gerald_right_model.toMeters(range_data_adc.gerald_right);
-  range_data_m.front_right = front_right_model.toMeters(range_data_adc.front_right);
-  range_data_m.back_right = back_right_model.toMeters(range_data_adc.back_right);
+  readSensors();
 
 #ifdef PROFILE
   Serial.print("Sensors, ");
@@ -124,6 +111,21 @@ void RealMouse::setup() {
   pinMode(MOTOR_RIGHT_B1, OUTPUT);
   pinMode(MOTOR_RIGHT_B2, OUTPUT);
   pinMode(BUTTON_PIN, INPUT_PULLUP);
+  pinMode(BACK_LEFT_ENABLE_PIN, OUTPUT);
+  pinMode(FRONT_LEFT_ENABLE_PIN, OUTPUT);
+  pinMode(GERALD_LEFT_ENABLE_PIN, OUTPUT);
+  pinMode(FRONT_ENABLE_PIN, OUTPUT);
+  pinMode(GERALD_RIGHT_ENABLE_PIN, OUTPUT);
+  pinMode(FRONT_RIGHT_ENABLE_PIN, OUTPUT);
+  pinMode(BACK_RIGHT_ENABLE_PIN, OUTPUT);
+
+  digitalWrite(BACK_LEFT_ENABLE_PIN, LOW);
+  digitalWrite(FRONT_LEFT_ENABLE_PIN, LOW);
+  digitalWrite(GERALD_LEFT_ENABLE_PIN, LOW);
+  digitalWrite(FRONT_ENABLE_PIN, LOW);
+  digitalWrite(GERALD_RIGHT_ENABLE_PIN, LOW);
+  digitalWrite(FRONT_RIGHT_ENABLE_PIN, LOW);
+  digitalWrite(BACK_RIGHT_ENABLE_PIN, LOW);
 
   left_encoder.init();
   right_encoder.init();
@@ -175,6 +177,44 @@ void RealMouse::setSpeedCps(double l_cps, double r_cps) {
   kinematic_controller.setSpeedCps(l_cps, r_cps);
 }
 
+void RealMouse::readSensors() {
+  digitalWriteFast(BACK_LEFT_ENABLE_PIN, HIGH);
+  range_data_adc.back_left = analogRead(BACK_LEFT_ANALOG_PIN);
+  digitalWriteFast(BACK_LEFT_ENABLE_PIN, LOW);
+
+  digitalWriteFast(FRONT_LEFT_ENABLE_PIN, HIGH);
+  range_data_adc.front_left = analogRead(FRONT_LEFT_ANALOG_PIN);
+  digitalWriteFast(FRONT_LEFT_ENABLE_PIN, LOW);
+
+  digitalWriteFast(GERALD_LEFT_ENABLE_PIN, HIGH);
+  range_data_adc.gerald_left = analogRead(GERALD_LEFT_ANALOG_PIN);
+  digitalWriteFast(GERALD_LEFT_ENABLE_PIN, LOW);
+
+  digitalWriteFast(FRONT_ENABLE_PIN, HIGH);
+  range_data_adc.front = analogRead(FRONT_ANALOG_PIN);
+  digitalWriteFast(FRONT_ENABLE_PIN, LOW);
+
+  digitalWriteFast(GERALD_RIGHT_ENABLE_PIN, HIGH);
+  range_data_adc.gerald_right = analogRead(GERALD_RIGHT_ANALOG_PIN);
+  digitalWriteFast(GERALD_RIGHT_ENABLE_PIN, LOW);
+
+  digitalWriteFast(FRONT_RIGHT_ENABLE_PIN, HIGH);
+  range_data_adc.front_right = analogRead(FRONT_RIGHT_ANALOG_PIN);
+  digitalWriteFast(FRONT_RIGHT_ENABLE_PIN, LOW);
+
+  digitalWriteFast(BACK_RIGHT_ENABLE_PIN, HIGH);
+  range_data_adc.back_right = analogRead(BACK_RIGHT_ANALOG_PIN);
+  digitalWriteFast(BACK_RIGHT_ENABLE_PIN, LOW);
+
+  range_data_m.back_left = back_left_model.toMeters(range_data_adc.back_left);
+  range_data_m.front_left = front_left_model.toMeters(range_data_adc.front_left);
+  range_data_m.gerald_left = gerald_left_model.toMeters(range_data_adc.gerald_left);
+  range_data_m.front = front_model.toMeters(range_data_adc.front);
+  range_data_m.gerald_right = gerald_right_model.toMeters(range_data_adc.gerald_right);
+  range_data_m.front_right = front_right_model.toMeters(range_data_adc.front_right);
+  range_data_m.back_right = back_right_model.toMeters(range_data_adc.back_right);
+}
+
 void RealMouse::Teleop() {
   if (Serial.available()) {
     double left = 0, right = 0;
@@ -202,7 +242,7 @@ double RealMouse::checkVoltage() {
   int a = analogRead(BATTERY_ANALOG_PIN);
   double voltage = a / std::pow(2, 13) * 3.3;
 
-  if (2 < voltage && voltage < 2.7) {
+  if ( voltage < 2.7) {
     print("VOLTAGE [%f] IS TOO LOW. CHARGE THE BATTERY!!!\r\n", voltage);
   } else if (voltage > 3.3) {
     print("VOLTAGE [%f] IS TOO HIGH. SHE'S GONNA BLOW!!!\r\n", voltage);
@@ -237,7 +277,6 @@ void RealMouse::calibrate() {
 }
 
 void RealMouse::loadCalibrate() {
-
   back_left_model.loadCalibrate(static_cast<int8_t>(EEPROM.read(1)));
   front_left_model.loadCalibrate(static_cast<int8_t>(EEPROM.read(2)));
   gerald_left_model.loadCalibrate(static_cast<int8_t>(EEPROM.read(3)));
@@ -245,5 +284,4 @@ void RealMouse::loadCalibrate() {
   gerald_right_model.loadCalibrate(static_cast<int8_t>(EEPROM.read(5)));
   front_right_model.loadCalibrate(static_cast<int8_t>(EEPROM.read(6)));
   back_right_model.loadCalibrate(static_cast<int8_t>(EEPROM.read(7)));
-
 }

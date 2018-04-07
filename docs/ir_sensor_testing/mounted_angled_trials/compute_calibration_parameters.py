@@ -44,7 +44,7 @@ def main():
     }
     # These are based on our calibration block.
     calibration_block_left = 0.05
-    calibration_block_front = 0.07
+    calibration_block_front = 0.09
     maze_width = 0.168
     robot_width = 0.072
     calibration_distances = {
@@ -118,7 +118,7 @@ def main():
     generated_code = ""
     for letter, p in params.items():
         variable_name = variable_names[letter]
-        fmt = "smartmouse::ir::ModelParams {:s}_model = {{{:.5f}, {:.5f}, {:.5f}, {:.5f}}};\n"
+        fmt = "smartmouse::ir::EEPROMModel {:s}_model = {{{:.5f}, {:.5f}, {:.5f}, {:.5f}}};\n"
         generated_code += fmt.format(variable_name, *p, calibration_distances[letter])
 
     print(generated_code)

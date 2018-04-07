@@ -43,6 +43,14 @@ class RealMouse : public Mouse {
   static const uint8_t LED_7 = 31;
   static const uint8_t SYS_LED = 32;
 
+  static const uint8_t FRONT_LEFT_ENABLE_PIN = 21;
+  static const uint8_t GERALD_LEFT_ENABLE_PIN = 20;
+  static const uint8_t GERALD_RIGHT_ENABLE_PIN = 22;
+  static const uint8_t FRONT_RIGHT_ENABLE_PIN = 19;
+  static const uint8_t FRONT_ENABLE_PIN = 18;
+  static const uint8_t BACK_LEFT_ENABLE_PIN = 2;
+  static const uint8_t BACK_RIGHT_ENABLE_PIN = 4;
+
   static const uint8_t BUTTON_PIN = 23;
 
   static RealMouse *inst();
@@ -52,6 +60,8 @@ class RealMouse : public Mouse {
   virtual GlobalPose getGlobalPose() override;
 
   virtual LocalPose getLocalPose() override;
+
+  void readSensors();
 
   std::pair<double, double> getWheelVelocitiesCPS();
 
@@ -85,7 +95,7 @@ class RealMouse : public Mouse {
   smartmouse::ir::EEPROMModel back_left_model = {1.26828, 0.02980, 511.64145, 0.05621};
   smartmouse::ir::EEPROMModel front_left_model = {1.21288, 0.02287, 732.26956, 0.06385};
   smartmouse::ir::EEPROMModel gerald_left_model = {1.25924, 0.02768, 618.24344, 0.07390};
-  smartmouse::ir::EEPROMModel front_model = {1.35994, 0.03864, 357.50577, 0.08000};
+  smartmouse::ir::EEPROMModel front_model = {1.35994, 0.03864, 357.50577, 0.10000};
   smartmouse::ir::EEPROMModel gerald_right_model = {1.21330, 0.02217, 1301.26050, 0.06928};
   smartmouse::ir::EEPROMModel front_right_model = {1.18574, 0.01909, 879.04704, 0.05959};
   smartmouse::ir::EEPROMModel back_right_model = {1.27625, 0.02885, 447.35837, 0.05220};

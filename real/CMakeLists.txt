@@ -19,19 +19,13 @@ add_teensy_core()
 add_teensy_library(real_com ${COM_SRC} ${CORE_COM_SRC} ${COM_COMMAND_SRC} ${REAL_SRC} ${REAL_LIBS_SRC})
 set_target_properties(real_com PROPERTIES COMPILE_FLAGS "-include ${UTIL_HEADER}")
 
-add_teensy_executable(main main/main.cpp)
-set_target_properties(main PROPERTIES COMPILE_FLAGS "-include ${UTIL_HEADER}")
-target_link_libraries(main real_com)
-target_compile_definitions(main PRIVATE PROFILE)
-
-
 set(mains
     main/test_everything.cpp
     main/measure_analog_curves.cpp
     main/as5048a_test.cpp
     main/analog_test.cpp
     main/test_localization.cpp
-    main/main_development.cpp
+    main/main.cpp
     main/measure_motor_curve.cpp
     main/execute_velocity_profile.cpp
     main/motor_and_battery_test.cpp
