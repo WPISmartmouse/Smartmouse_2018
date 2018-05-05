@@ -6,7 +6,6 @@
 
 #include <common/core/Mouse.h>
 #include <common/KinematicController/KinematicController.h>
-#include <real/RealMouse.h>
 
 const double KinematicController::kDropSafety = 0.8;
 
